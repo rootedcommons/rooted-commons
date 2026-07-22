@@ -35,3 +35,11 @@
 @media(max-width:760px){.shop-controls{align-items:stretch;flex-direction:column}.sort-control{justify-content:space-between}.sort-control select{flex:1}}
 
 .shop-filter-heading{margin:0 0 .15rem;font-size:1rem;line-height:1.2}
+
+/* v1.5 unified orders catalogue */
+.orders-category-shell { width: min(1180px, calc(100% - 2rem)); margin: 1.5rem auto 0; }
+.shop-category-nav { display: flex; gap: .65rem; flex-wrap: wrap; justify-content: center; margin: 0 0 1rem; }
+.shop-category-tab { border: 1px solid var(--border); background: transparent; color: var(--primary); border-radius: 999px; padding: .7rem 1.1rem; font: inherit; font-weight: 700; cursor: pointer; }
+.shop-category-tab.active, .shop-category-tab:hover { background: var(--primary); color: white; }
+.catalogue-panel[hidden] { display: none !important; }
+.catalogue-panel .content-section:first-child, .catalogue-panel .banner-section:first-child { margin-top: 0; }

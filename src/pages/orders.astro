@@ -1,39 +1,68 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PageHero from '../components/PageHero.astro';
 import ProductGrid from '../components/ProductGrid.astro';
 import SectionRenderer from '../components/SectionRenderer.astro';
 import { getSiteData } from '../lib/baserow';
 import { buildSectionBlocks } from '../lib/sections';
+
 const data = await getSiteData();
-const page = data.pages.find((item) => item.slug === 'orders') || { title: 'Weekly Shop', intro: '', titleSize: 'large', introSize: 'medium', heroLayout: 'text-only' };
+const page = data.pages.find((item) => item.slug === 'orders') || {
+  title: 'Weekly Shop', intro: '', titleSize: 'large', introSize: 'medium', heroLayout: 'text-only'
+};
 const orderSections = data.sections.filter((section) => section.page === 'orders');
 const gridSection = orderSections.find((section) => String(section.type).toLowerCase() === 'grid' && (!section.gridSource || String(section.gridSource).toLowerCase() === 'products'));
-const gridOrder = gridSection?.order ?? 999999;
-const beforeBlocks = buildSectionBlocks(orderSections.filter((section) => section !== gridSection && section.order < gridOrder));
-const afterBlocks = buildSectionBlocks(orderSections.filter((section) => section !== gridSection && section.order >= gridOrder));
+const sharedSections = orderSections.filter((section) => section !== gridSection && !section.catalogueCategory);
+const sharedBlocks = buildSectionBlocks(sharedSections);
+const broadCategories = [...new Set(data.products.flatMap((product) => product.categories || [product.category]).filter(Boolean))];
+const preferredOrder = ['Cupboard Staples', 'Fresh Produce', 'Refills'];
+broadCategories.sort((a, b) => {
+  const ai = preferredOrder.indexOf(a); const bi = preferredOrder.indexOf(b);
+  if (ai >= 0 || bi >= 0) return (ai < 0 ? 999 : ai) - (bi < 0 ? 999 : bi);
+  return a.localeCompare(b);
+});
+const categoryBlocks = Object.fromEntries(broadCategories.map((category) => [
+  category,
+  buildSectionBlocks(orderSections.filter((section) => section !== gridSection && section.catalogueCategory === category))
+]));
 const columns = gridSection?.columns || 3;
-const subcategories = [...new Set(data.products.flatMap((product) => product.subcategories || [product.subcategory]).filter(Boolean))].sort();
 const s = data.settings;
 ---
 <BaseLayout settings={s} pages={data.pages} title={page.seoTitle || page.title} description={page.seoDescription || page.intro}>
-  <PageHero page={page} />
-  {beforeBlocks.map((block) => <SectionRenderer block={block} products={data.products} settings={data.settings} />)}
+  <section class="orders-category-shell">
+    <nav class="shop-category-nav" aria-label="Shop categories">
+      {broadCategories.map((category, index) => (
+        <button class={`shop-category-tab ${index === 0 ? 'active' : ''}`} type="button" data-shop-category={category}>
+          {category}
+        </button>
+      ))}
+    </nav>
+
+    {broadCategories.map((category, index) => (
+      <div class="catalogue-panel" data-catalogue-panel={category} hidden={index !== 0}>
+        {(categoryBlocks[category] || []).length
+          ? categoryBlocks[category].map((block) => <SectionRenderer block={block} products={data.products} settings={s} />)
+          : <section class="content-section text-section space-above-medium space-below-small"><div class="section-inner prose-width"><h1>{category}</h1></div></section>}
+      </div>
+    ))}
+  </section>
+
   <section class={`shop-shell background-${gridSection?.backgroundStyle || 'default'} space-above-${gridSection?.spaceAbove || 'small'} space-below-${gridSection?.spaceBelow || 'large'}`}>
-    <div class="shop-section-heading">
-      {gridSection?.eyebrow && <p class="eyebrow">{gridSection.eyebrow}</p>}
-      {gridSection?.heading && <h2 class={`size-${gridSection.headingSize}`}>{gridSection.heading}</h2>}
-      {gridSection?.subheading && <p class={`section-subheading size-${gridSection.subheadingSize}`}>{gridSection.subheading}</p>}
-      {gridSection?.body && <div class={`rich-body size-${gridSection.bodySize}`}>{gridSection.body.split(/\n\s*\n/).map((p) => <p>{p}</p>)}</div>}
-    </div>
     <div id="member-summary" class="member-summary" hidden></div>
     <div class="shop-toolbar">
-      <h2 class="shop-filter-heading">Category</h2>
-      <div class="category-tabs" role="tablist" aria-label="Product subcategories">
-        <button class="category-tab active" type="button" data-category="all">All ({data.products.length})</button>
-        {subcategories.map((subcategory) => { const count=data.products.filter((product)=>(product.subcategories||[]).includes(subcategory)).length; return <button class="category-tab" type="button" data-category={subcategory}>{subcategory} ({count})</button>; })}
+      <h2 class="shop-filter-heading">Subcategory</h2>
+      <div id="subcategory-tabs" class="category-tabs" role="tablist" aria-label="Product subcategories"></div>
+      <div class="shop-controls">
+        <input id="product-search" type="search" placeholder="Search all products…" aria-label="Search all products" />
+        <label class="sort-control">Sort by
+          <select id="product-sort">
+            <option value="popularity">Popularity</option>
+            <option value="price-asc">Price: low to high</option>
+            <option value="price-desc">Price: high to low</option>
+            <option value="name">A–Z</option>
+            <option value="country">Country</option>
+          </select>
+        </label>
       </div>
-      <div class="shop-controls"><input id="product-search" type="search" placeholder="Search all products…" aria-label="Search all products" /><label class="sort-control">Sort by <select id="product-sort"><option value="popularity">Popularity</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option><option value="name">A–Z</option><option value="country">Country</option></select></label></div>
     </div>
     <div class="shop-layout">
       <div id="shop-products"><ProductGrid products={data.products} columns={columns} showControls={true} settings={s} /></div>
@@ -46,7 +75,8 @@ const s = data.settings;
       </aside>
     </div>
   </section>
-  {afterBlocks.map((block) => <SectionRenderer block={block} products={data.products} settings={data.settings} />)}
+
+  {sharedBlocks.map((block) => <SectionRenderer block={block} products={data.products} settings={s} />)}
 
   <button id="floating-basket" class="floating-basket" type="button" aria-controls="basket-drawer" aria-expanded="false">
     <span>{s.basketFloatingLabel}</span><strong><span data-basket-count>0</span> · <span data-basket-total>£0.00</span></strong>
@@ -60,50 +90,73 @@ const s = data.settings;
     <a data-checkout-link class="button" href="/checkout/">{s.basketCheckoutButton}</a>
   </aside>
 
-  <script is:inline define:vars={{ basketEmptyText: s.basketEmptyText, basketNotice: s.basketNotice }}>
+  <script is:inline define:vars={{ basketEmptyText: s.basketEmptyText, basketNotice: s.basketNotice, broadCategories }}>
     const STORAGE_KEY='rooted-commons-basket-v1';
     const TOKEN_KEY='rooted-commons-order-token-v1';
-    const params=new URLSearchParams(location.search); const urlToken=params.get('token');
+    const params=new URLSearchParams(location.search);
+    const urlToken=params.get('token');
     if(urlToken) localStorage.setItem(TOKEN_KEY,urlToken);
     const token=urlToken||localStorage.getItem(TOKEN_KEY)||'';
     let basket={}; try{basket=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')||{};}catch{basket={};}
     const cards=[...document.querySelectorAll('[data-product-card]')];
-    const tabs=[...document.querySelectorAll('.category-tab')]; const search=document.querySelector('#product-search'); const sort=document.querySelector('#product-sort'); const grid=document.querySelector('#shop-products .product-grid');
-    const money=new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}); let member=null;
+    const categoryTabs=[...document.querySelectorAll('[data-shop-category]')];
+    const panels=[...document.querySelectorAll('[data-catalogue-panel]')];
+    const subcategoryTabs=document.querySelector('#subcategory-tabs');
+    const search=document.querySelector('#product-search');
+    const sort=document.querySelector('#product-sort');
+    const grid=document.querySelector('#shop-products .product-grid');
+    const money=new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'});
+    let member=null;
+    let activeCategory=params.get('category') || broadCategories[0] || '';
+    activeCategory=broadCategories.find(category=>slugify(category)===slugify(activeCategory)) || broadCategories[0] || '';
+    let activeSubcategory='all';
+
     const drawer=document.querySelector('#basket-drawer'), backdrop=document.querySelector('#basket-backdrop'), floating=document.querySelector('#floating-basket');
+    function slugify(value){return String(value||'').toLowerCase().trim().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
     function openDrawer(){drawer.classList.add('open');drawer.setAttribute('aria-hidden','false');backdrop.hidden=false;floating.setAttribute('aria-expanded','true');document.body.classList.add('basket-open');}
     function closeDrawer(){drawer.classList.remove('open');drawer.setAttribute('aria-hidden','true');backdrop.hidden=true;floating.setAttribute('aria-expanded','false');document.body.classList.remove('basket-open');}
-    floating?.addEventListener('click',openDrawer);document.querySelector('#close-basket')?.addEventListener('click',closeDrawer);backdrop?.addEventListener('click',closeDrawer);document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+    floating?.addEventListener('click',openDrawer); document.querySelector('#close-basket')?.addEventListener('click',closeDrawer); backdrop?.addEventListener('click',closeDrawer); document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+
     async function loadMember(){ if(!token)return; const r=await fetch(`/api/member?token=${encodeURIComponent(token)}`); if(!r.ok)return; const p=await r.json(); member=p.member; const box=document.querySelector('#member-summary'); box.hidden=false; box.innerHTML=`<strong>Hello ${member.firstName||'member'}.</strong> Current credit: ${money.format(member.credit||0)}${member.collectionPoint?` · Collection: ${member.collectionPoint}`:''}`; renderBasket(); }
     function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(basket));}
     function selected(){return cards.map(card=>({id:card.dataset.id,name:card.querySelector('h3')?.textContent||'',price:Number(card.dataset.price||0),quantity:Number(basket[card.dataset.id]||0)})).filter(i=>i.quantity>0);}
     function renderBasket(){
       const items=selected();
       const lineHtml=(i,includeRemove)=>`<div class="basket-line"><div class="basket-line-copy"><strong>${i.name}</strong><span>${money.format(i.price)} each</span></div><div class="basket-line-actions"><button type="button" data-basket-action="decrease" data-product-id="${i.id}" aria-label="Decrease ${i.name}">−</button><span>${i.quantity}</span><button type="button" data-basket-action="increase" data-product-id="${i.id}" aria-label="Increase ${i.name}">+</button>${includeRemove?`<button type="button" class="basket-remove" data-basket-action="remove" data-product-id="${i.id}">Remove</button>`:''}</div><strong class="basket-line-total">${money.format(i.price*i.quantity)}</strong></div>`;
-      document.querySelectorAll('[data-basket-lines]').forEach(el=>{const includeRemove=el.dataset.basketLines!=='mobile';el.innerHTML=items.length?items.map(i=>lineHtml(i,includeRemove)).join(''):`<p>${basketEmptyText}</p>`;});
+      document.querySelectorAll('[data-basket-lines]').forEach(el=>{const includeRemove=el.dataset.basketLines!=='mobile'; el.innerHTML=items.length?items.map(i=>lineHtml(i,includeRemove)).join(''):`<p>${basketEmptyText}</p>`;});
       const total=items.reduce((sum,item)=>sum+item.price*item.quantity,0);
       document.querySelectorAll('[data-basket-total]').forEach(el=>el.textContent=money.format(total));
       document.querySelectorAll('[data-basket-count]').forEach(el=>el.textContent=String(items.reduce((sum,item)=>sum+item.quantity,0)));
       const creditText=member?`Estimated balance after this basket: ${money.format((member.credit||0)-total)}. Final figures are confirmed on submission.`:basketNotice;
       document.querySelectorAll('[data-credit-line]').forEach(el=>el.textContent=creditText);
-      cards.forEach(card=>{const output=card.querySelector('[data-quantity]');if(output)output.textContent=String(basket[card.dataset.id]||0);});
+      cards.forEach(card=>{const output=card.querySelector('[data-quantity]'); if(output)output.textContent=String(basket[card.dataset.id]||0);});
     }
-    document.addEventListener('click',event=>{
-      const button=event.target.closest('[data-basket-action]'); if(!button)return;
-      const id=button.dataset.productId, action=button.dataset.basketAction;
-      if(action==='increase') basket[id]=Number(basket[id]||0)+1;
-      if(action==='decrease') basket[id]=Math.max(0,Number(basket[id]||0)-1);
-      if(action==='remove'||!basket[id]) delete basket[id];
-      save(); renderBasket();
-    });
+
+    function cardCategories(card){return (card.dataset.categories||'').split('|').filter(Boolean);}
+    function cardSubcategories(card){return (card.dataset.subcategories||'').split('|').filter(Boolean);}
+    function cardsInActiveCategory(){return cards.filter(card=>cardCategories(card).includes(activeCategory));}
+    function rebuildSubcategories(){
+      const relevant=cardsInActiveCategory();
+      const values=[...new Set(relevant.flatMap(card=>cardSubcategories(card)))].sort((a,b)=>a.localeCompare(b));
+      const button=(value,label,count,active=false)=>`<button class="category-tab${active?' active':''}" type="button" data-subcategory="${value.replace(/"/g,'&quot;')}">${label} (${count})</button>`;
+      subcategoryTabs.innerHTML=button('all','All',relevant.length,true)+values.map(value=>button(value,value,relevant.filter(card=>cardSubcategories(card).includes(value)).length)).join('');
+      activeSubcategory='all';
+    }
+    function updateCategoryView(push=true){
+      categoryTabs.forEach(tab=>tab.classList.toggle('active',tab.dataset.shopCategory===activeCategory));
+      panels.forEach(panel=>panel.hidden=panel.dataset.cataloguePanel!==activeCategory);
+      rebuildSubcategories();
+      if(search) search.value='';
+      if(push){const url=new URL(location.href); url.searchParams.set('category',slugify(activeCategory)); history.pushState({category:activeCategory},'',url);}
+      applyFilters();
+    }
     function applyFilters(){
       const q=(search?.value||'').trim().toLowerCase();
-      const active=document.querySelector('.category-tab.active')?.dataset.category||'all';
       cards.forEach(card=>{
-        const subcategories=(card.dataset.subcategories||'').split('|').filter(Boolean);
         const searchMatch=!q||(card.dataset.search||card.textContent.toLowerCase()).includes(q);
-        const categoryMatch=q?true:(active==='all'||subcategories.includes(active));
-        card.hidden=!(searchMatch&&categoryMatch);
+        const categoryMatch=q ? true : cardCategories(card).includes(activeCategory);
+        const subcategoryMatch=q ? true : (activeSubcategory==='all'||cardSubcategories(card).includes(activeSubcategory));
+        card.hidden=!(searchMatch&&categoryMatch&&subcategoryMatch);
       });
     }
     function applySort(){
@@ -117,11 +170,24 @@ const s = data.settings;
       });
       sorted.forEach(card=>grid?.appendChild(card));
     }
-    tabs.forEach(tab=>tab.addEventListener('click',()=>{tabs.forEach(item=>item.classList.remove('active'));tab.classList.add('active');if(search)search.value='';applyFilters();}));
-    search?.addEventListener('input',()=>{if(search.value.trim())tabs.forEach(item=>item.classList.toggle('active',item.dataset.category==='all'));applyFilters();});
-    sort?.addEventListener('change',()=>{applySort();applyFilters();});
-    cards.forEach(card=>card.querySelectorAll('[data-quantity-change]').forEach(button=>button.addEventListener('click',()=>{const id=card.dataset.id;basket[id]=Math.max(0,Number(basket[id]||0)+Number(button.dataset.quantityChange));if(!basket[id])delete basket[id];save();renderBasket();if(Number(button.dataset.quantityChange)>0&&matchMedia('(max-width: 760px)').matches){floating.classList.remove('basket-bump');void floating.offsetWidth;floating.classList.add('basket-bump');}})));
-    document.querySelectorAll('[data-checkout-link]').forEach(link=>link.addEventListener('click',event=>{if(!selected().length){event.preventDefault();alert('Add at least one item before checkout.');}}));
-    applySort(); applyFilters(); renderBasket(); loadMember();
+
+    categoryTabs.forEach(tab=>tab.addEventListener('click',()=>{activeCategory=tab.dataset.shopCategory; updateCategoryView(true);}));
+    subcategoryTabs?.addEventListener('click',event=>{const tab=event.target.closest('[data-subcategory]'); if(!tab)return; activeSubcategory=tab.dataset.subcategory; subcategoryTabs.querySelectorAll('[data-subcategory]').forEach(item=>item.classList.toggle('active',item===tab)); applyFilters();});
+    search?.addEventListener('input',()=>applyFilters());
+    sort?.addEventListener('change',()=>{applySort(); applyFilters();});
+    addEventListener('popstate',()=>{const value=new URL(location.href).searchParams.get('category'); activeCategory=broadCategories.find(category=>slugify(category)===slugify(value))||broadCategories[0]||''; updateCategoryView(false);});
+
+    document.addEventListener('click',event=>{
+      const button=event.target.closest('[data-basket-action]'); if(!button)return;
+      const id=button.dataset.productId, action=button.dataset.basketAction;
+      if(action==='increase') basket[id]=Number(basket[id]||0)+1;
+      if(action==='decrease') basket[id]=Math.max(0,Number(basket[id]||0)-1);
+      if(action==='remove'||!basket[id]) delete basket[id];
+      save(); renderBasket();
+    });
+    cards.forEach(card=>card.querySelectorAll('[data-quantity-change]').forEach(button=>button.addEventListener('click',()=>{const id=card.dataset.id; basket[id]=Math.max(0,Number(basket[id]||0)+Number(button.dataset.quantityChange)); if(!basket[id])delete basket[id]; save(); renderBasket(); if(Number(button.dataset.quantityChange)>0&&matchMedia('(max-width: 760px)').matches){floating.classList.remove('basket-bump'); void floating.offsetWidth; floating.classList.add('basket-bump');}})));
+    document.querySelectorAll('[data-checkout-link]').forEach(link=>link.addEventListener('click',event=>{if(!selected().length){event.preventDefault(); alert('Add at least one item before checkout.');}}));
+
+    applySort(); updateCategoryView(false); renderBasket(); loadMember();
   </script>
 </BaseLayout>

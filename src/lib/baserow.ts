@@ -208,6 +208,7 @@ export async function getSiteData() {
       spaceBelow: normalized(choice(row, 'Space below'), 'medium'),
       gridSource: choice(row, 'Grid source'),
       gridCategory: choice(row, 'Grid category'),
+      catalogueCategory: choice(row, 'Catalogue category', text(row, 'Catalogue category')),
       imagePosition: normalized(choice(row, 'Image position'), 'right'),
       buttonVisible: boolean(row, 'Button visible', Boolean(text(row, 'Button text'))),
       groupKey,

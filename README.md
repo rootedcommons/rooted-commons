@@ -170,3 +170,25 @@ The code discovers any numbered pairs dynamically, so adding `Navigation label 6
 - Product images fill the full card width while retaining their aspect ratio.
 - Subcategory names are no longer printed inside product cards.
 - The Orders filter row has a visible Category heading.
+
+## Unified `/orders/` catalogue views
+
+Cupboard Staples, Fresh Produce and Refills are now internal views of the single `/orders/` page rather than separate Astro pages.
+
+In **Sections**, add a `Catalogue category` single-select field with values matching the broad `Category` values in Products, for example:
+
+- Cupboard Staples
+- Fresh Produce
+- Refills
+
+Attach category-specific Banner, Text or Image and text rows to the `orders` page and set `Catalogue category` appropriately. The website switches those sections when the broad category is selected.
+
+Keep one Products Grid section on the `orders` page with `Catalogue category` blank. The grid is filtered automatically from the Products `Category` field. The lower tab row uses Products `Subcategory` values.
+
+Direct links use:
+
+- `/orders/?category=cupboard-staples`
+- `/orders/?category=fresh-produce`
+- `/orders/?category=refills`
+
+The basket is stored in the browser and remains unchanged when visitors switch category views.
