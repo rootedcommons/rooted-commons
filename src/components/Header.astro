@@ -1,0 +1,19 @@
+---
+const { settings, pages } = Astro.props;
+const pageBySlug = new Map(pages.map((page) => [page.slug, page]));
+const navSlugs = ['our-partners', 'cupboard-staples', 'fresh-produce'];
+const navPages = navSlugs.map((slug) => pageBySlug.get(slug)).filter(Boolean);
+---
+<header class={`site-header height-${settings.headerHeight}`}>
+  <a class={`brand logo-${settings.headerLogoSize}`} href="/" aria-label={`${settings.siteTitle} home`}>
+    {settings.headerLogo ? <img src={settings.headerLogo} alt={settings.siteTitle} /> : <span>{settings.siteTitle}</span>}
+  </a>
+  <nav class={`text-${settings.navigationTextSize}`} aria-label="Main navigation">
+    {navPages.map((page) => <a href={`/${page.slug}/`}>{page.title}</a>)}
+    <a href="/orders/">Weekly Shop</a>
+  </nav>
+  <a class={`button header-cta button-${settings.buttonTextSize}`} href={settings.joinButtonUrl || '/volunteering/'}>
+    {settings.joinButtonText || 'Join our growing network'}
+  </a>
+</header>
+{settings.headerText && <p class="header-message">{settings.headerText}</p>}

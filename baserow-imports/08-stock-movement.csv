@@ -1,0 +1,49 @@
+id,Date,Stock movement,Movement type,Product code,Reference,Order,Notes,Product name
+1,,30,stock check,1010,,,,Brown Rice Short Grain
+2,,10,stock check,1045,,,,Bulghur
+3,,24,stock check,1060,,,,Wholemeal Couscous
+4,,17,stock check,1125,,,,British White Quinoa Grain - gluten-free
+5,,29,stock check,5025,,,,Dried Chickpeas
+6,,29,stock check,5110,,,,Red Split Lentils
+7,,11,stock check,5130,,,,Yellow Split Peas
+8,,18,stock check,6020,,,,Almonds
+9,,11,stock check,6057,,,,Hulled Hemp Seed
+10,,6,stock check,6121,,,,Austrian Pumpkin Seeds
+11,,12,stock check,6130,,,,Sunflower Seed - kernels
+12,,16,stock check,6150,,,,Walnut Light Pieces
+13,,12,stock check,7040,,,,Dates – pitted
+14,,12,stock check,7100,,,,Raisins
+15,,60,stock check,20660,,,,Jumbo Oats - bags
+16,,40,stock check,40540,,,,Wholemeal Strong Bread Flour
+17,,50,stock check,40545,,,,Plain white flour
+18,,73,stock check,40560,,,,Strong White Bread Flour
+19,,0,stock check,80876,,,,Carlin Peas
+20,,22,stock check,80895,,,,Whole Fava Beans
+21,,36,stock check,152563,,,,Wholewheat Spaghetti - in paper
+22,,36,stock check,152565,,,,Wholewheat Fusilli - in paper
+23,,48,stock check,152566,,,,Wholewheat Penne - in paper
+24,,18,stock check,200509,,,,Rapeseed Oil – Cold Pressed
+25,,12,stock check,200516,,,,Tunisian Olive Oil - Extra Virgin
+26,,5,stock check,250280,,,,Crunchy Peanut Butter - jumbo
+27,,11,stock check,250282,,,,Smooth Peanut Butter - jumbo
+28,,29,stock check,370516,,,,Cyder Vinegar
+29,,47,stock check,390105,,,,Tomatoes Chopped
+30,,120,stock check,390115,,,,Passata
+31,,18,stock check,390179,,,,Tomatoes Chopped Peeled - 4 Pack
+32,,23,stock check,390736,,,,Coconut Milk
+33,,36,stock check,441207,,,,Carlin Peas
+34,,36,stock check,441215,,,,Fava Beans (broad beans)
+35,,36,stock check,444490,,,,Baked Beans
+36,,23,stock check,444596,,,,Black Beans
+37,,36,stock check,445505,,,,Red Kidney Beans
+38,,22,stock check,445510,,,,Chickpeas
+39,,64,stock check,580329,,,,Fairtrade Everyday Tea Bags
+40,,36,stock check,601306,,,,Rich Americano R&G Coffee - 4
+41,,87,stock check,723550,,,,Barista Oat (Regenerative)
+42,,14,stock check,793015,,,,Mushroom Stock Cubes
+43,,29,stock check,793065,,,,Vegetable Stock Cubes
+44,,10,stock check,859193,,,,"""Natural Deodorant (Green Fusion, paper tube)"""
+45,,12,stock check,831400,,,,Dishwasher Tablets
+46,,24,stock check,859162,,,,Soap (Hemp/vit. E)
+47,,14,stock check,854307,,,,Shampoo bar (fragrance free)
+48,,24,stock check,861506,,,,Toothpaste (Mint with fluoride)

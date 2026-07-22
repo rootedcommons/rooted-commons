@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProductGrid from '../components/ProductGrid.astro';
+import { getSiteData } from '../lib/baserow';
+const data = await getSiteData();
+const categories = [...new Set(data.products.map((product) => product.category).filter(Boolean))].sort();
+---
+<BaseLayout settings={data.settings} pages={data.pages} title="Weekly Shop" description="Browse the current Rooted Commons product range.">
+  <section class="shop-hero">
+    <p class="eyebrow">Browse before you join</p>
+    <h1>Weekly Shop</h1>
+    <p>Anyone can explore the range and build a basket. Members can verify their secure weekly link at checkout; new customers can request an invitation to join.</p>
+    <div id="member-summary" class="member-summary" hidden></div>
+  </section>
+  <section class="shop-shell">
+    <div class="shop-toolbar">
+      <div class="category-tabs" role="tablist" aria-label="Product categories">
+        <button class="category-tab active" type="button" data-category="all">All</button>
+        {categories.map((category) => <button class="category-tab" type="button" data-category={category}>{category}</button>)}
+      </div>
+      <input id="product-search" type="search" placeholder="Search products" aria-label="Search products" />
+    </div>
+    <div class="shop-layout">
+      <div id="shop-products"><ProductGrid products={data.products} columns={2} showControls={true} /></div>
+      <aside class="basket-panel" aria-live="polite">
+        <h2>Your basket</h2>
+        <div id="basket-lines"><p>Your basket is empty.</p></div>
+        <div class="basket-total"><span>Estimated total</span><strong id="basket-total">£0.00</strong></div>
+        <p id="credit-line" class="small-print">Final prices, stock and collection-point availability are checked at confirmation.</p>
+        <a id="checkout-link" class="button" href="/checkout/">Continue to checkout</a>
+      </aside>
+    </div>
+  </section>
+  <script is:inline>
+    const STORAGE_KEY='rooted-commons-basket-v1';
+    const TOKEN_KEY='rooted-commons-order-token-v1';
+    const params=new URLSearchParams(location.search); const urlToken=params.get('token');
+    if(urlToken) localStorage.setItem(TOKEN_KEY,urlToken);
+    const token=urlToken||localStorage.getItem(TOKEN_KEY)||'';
+    const basket=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+    const cards=[...document.querySelectorAll('[data-product-card]')];
+    const tabs=[...document.querySelectorAll('[data-category]')]; const search=document.querySelector('#product-search');
+    const money=new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}); let member=null;
+    async function loadMember(){ if(!token)return; const r=await fetch(`/api/member?token=${encodeURIComponent(token)}`); if(!r.ok)return; const p=await r.json(); member=p.member; const box=document.querySelector('#member-summary'); box.hidden=false; box.innerHTML=`<strong>Hello ${member.firstName||'member'}.</strong> Current credit: ${money.format(member.credit||0)}${member.collectionPoint?` · Collection: ${member.collectionPoint}`:''}`; renderBasket(); }
+    function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(basket));}
+    function selected(){return cards.map(card=>({id:card.dataset.id,name:card.querySelector('h3')?.textContent||'',price:Number(card.dataset.price||0),quantity:Number(basket[card.dataset.id]||0)})).filter(i=>i.quantity>0);}
+    function renderBasket(){const items=selected(), lines=document.querySelector('#basket-lines'); lines.innerHTML=items.length?items.map(i=>`<div class="basket-line"><span>${i.name} × ${i.quantity}</span><strong>${money.format(i.price*i.quantity)}</strong></div>`).join(''):'<p>Your basket is empty.</p>'; const total=items.reduce((s,i)=>s+i.price*i.quantity,0); document.querySelector('#basket-total').textContent=money.format(total); const credit=document.querySelector('#credit-line'); credit.textContent=member?`Estimated balance after this basket: ${money.format((member.credit||0)-total)}. Final figures are confirmed on submission.`:'Final prices, stock and collection-point availability are checked at confirmation.'; cards.forEach(c=>c.querySelector('[data-quantity]').textContent=String(basket[c.dataset.id]||0));}
+    function filter(){const active=document.querySelector('.category-tab.active')?.dataset.category||'all',q=(search?.value||'').trim().toLowerCase(); cards.forEach(c=>{c.hidden=!((active==='all'||c.dataset.category===active)&&(!q||c.dataset.name.includes(q)||c.textContent.toLowerCase().includes(q)));});}
+    tabs.forEach(t=>t.addEventListener('click',()=>{tabs.forEach(x=>x.classList.remove('active'));t.classList.add('active');filter();})); search?.addEventListener('input',filter);
+    cards.forEach(c=>c.querySelectorAll('[data-quantity-change]').forEach(b=>b.addEventListener('click',()=>{const id=c.dataset.id; basket[id]=Math.max(0,Number(basket[id]||0)+Number(b.dataset.quantityChange)); if(!basket[id])delete basket[id]; save();renderBasket();})));
+    document.querySelector('#checkout-link').addEventListener('click',e=>{if(!selected().length){e.preventDefault();alert('Add at least one item before checkout.');}});
+    renderBasket(); loadMember();
+  </script>
+</BaseLayout>

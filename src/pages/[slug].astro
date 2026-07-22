@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionRenderer from '../components/SectionRenderer.astro';
+import { getSiteData } from '../lib/baserow';
+import { buildSectionBlocks } from '../lib/sections';
+
+export async function getStaticPaths() {
+  const data = await getSiteData();
+  return data.pages
+    .filter((page) => page.slug !== 'home')
+    .map((page) => ({ params: { slug: page.slug }, props: { page, data } }));
+}
+
+const { page, data } = Astro.props;
+const blocks = buildSectionBlocks(data.sections.filter((section) => section.page === page.slug));
+---
+<BaseLayout settings={data.settings} pages={data.pages} title={page.seoTitle || page.title} description={page.seoDescription || page.intro}>
+  <PageHero page={page} />
+  {blocks.map((block) => <SectionRenderer block={block} products={data.products} />)}
+</BaseLayout>

@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionRenderer from '../components/SectionRenderer.astro';
+import { getSiteData } from '../lib/baserow';
+import { buildSectionBlocks } from '../lib/sections';
+const data = await getSiteData();
+const page = data.pages.find((item) => item.slug === 'home') || data.pages[0];
+const blocks = buildSectionBlocks(data.sections.filter((section) => section.page === 'home'));
+---
+<BaseLayout settings={data.settings} pages={data.pages} title={page?.seoTitle || page?.title} description={page?.seoDescription || page?.intro}>
+  {page && <PageHero page={page} />}
+  {blocks.map((block) => <SectionRenderer block={block} products={data.products} />)}
+</BaseLayout>

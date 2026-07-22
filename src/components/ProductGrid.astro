@@ -1,0 +1,29 @@
+---
+const { products, category = '', columns = 3, showControls = false } = Astro.props;
+const filtered = category
+  ? products.filter((product) => product.category.toLowerCase() === category.toLowerCase())
+  : products;
+---
+<div class="product-grid" style={`--columns:${columns}`}>
+  {filtered.map((product) => (
+    <article class="product-card" data-product-card data-category={product.category} data-name={product.name.toLowerCase()} data-id={product.id} data-price={product.priceNumber}>
+      <img src={product.image || '/images/placeholder.svg'} alt="" loading="lazy" />
+      <div class="product-copy">
+        <p class="product-category">{product.category}</p>
+        <h3>{product.link ? <a href={product.link}>{product.name}</a> : product.name}</h3>
+        {product.size && <p class="product-size">{product.size}</p>}
+        {product.description && <p>{product.description}</p>}
+        <div class="product-meta">
+          <strong>{product.price}</strong>
+          {product.producer && <span>{product.producer}</span>}
+        </div>
+        {showControls && <div class="quantity-control" aria-label={`Quantity of ${product.name}`}>
+          <button type="button" data-quantity-change="-1" aria-label="Remove one">−</button>
+          <output data-quantity>0</output>
+          <button type="button" data-quantity-change="1" aria-label="Add one">+</button>
+        </div>}
+      </div>
+    </article>
+  ))}
+</div>
+{filtered.length === 0 && <p>No products currently match this section.</p>}

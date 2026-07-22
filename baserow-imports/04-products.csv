@@ -1,0 +1,49 @@
+id,Code,Size,Product,Producer,Member price,Description,Image,Product Link,Order,Available,Category,Available collection points,Stock Movement,Sections,Display order,Current stock,Items per pack
+1,1010,1kg,Brown Rice Short Grain,Infinity,£3.75,,,,,True,Cupboard Staples,,unnamed row 1,,,30,6
+2,1045,500g,Bulghur,Infinity,£2.00,,,,,True,Cupboard Staples,,unnamed row 2,,,10,6
+3,1060,450g,Wholemeal Couscous,Infinity,£1.75,,,,,True,Cupboard Staples,,unnamed row 3,,,24,6
+4,1125,450g,British White Quinoa Grain - gluten-free,Infinity,£3.50,,,,,True,Cupboard Staples,,unnamed row 4,,,17,6
+5,5025,500g,Dried Chickpeas,Infinity,£2.50,,,,,True,Cupboard Staples,,unnamed row 5,,,29,6
+6,5110,1kg,Red Split Lentils,Infinity,£4.00,,,,,True,Cupboard Staples,,unnamed row 6,,,29,6
+7,5130,500g,Yellow Split Peas,Infinity,£2.00,,,,,True,Cupboard Staples,,unnamed row 7,,,11,6
+8,6020,250g,Almonds,Infinity,£3.75,,,,,True,Cupboard Staples,,unnamed row 8,,,18,6
+9,6057,250g,Hulled Hemp Seed,Infinity,£3.50,,,,,True,Cupboard Staples,,unnamed row 9,,,11,6
+10,6121,250g,Austrian Pumpkin Seeds,Infinity,£3.25,,,,,True,Cupboard Staples,,unnamed row 10,,,6,6
+11,6130,250g,Sunflower Seed - kernels,Infinity,£1.50,,,,,True,Cupboard Staples,,unnamed row 11,,,12,6
+12,6150,250g,Walnut Light Pieces,Infinity,£3.25,,,,,True,Cupboard Staples,,unnamed row 12,,,16,6
+13,7040,500g,Dates – pitted,Infinity,£3.75,,,,,True,Cupboard Staples,,unnamed row 13,,,12,6
+14,7100,500g,Raisins,Infinity,£3.75,,,,,True,Cupboard Staples,,unnamed row 14,,,12,6
+15,20660,850g,Jumbo Oats - bags,Pimhill,£2.50,,,,,True,Cupboard Staples,,unnamed row 15,,,60,12
+16,40540,1.5kg,Wholemeal Strong Bread Flour,Doves,£2.25,,,,,True,Cupboard Staples,,unnamed row 16,,,40,5
+17,40545,1kg,Plain white flour,Doves,£1.75,,,,,True,Cupboard Staples,,unnamed row 17,,,50,5
+18,40560,1.5kg,Strong White Bread Flour,Doves,£2.50,,,,,True,Cupboard Staples,,unnamed row 18,,,73,5
+19,80876,500g,Carlin Peas,Hodmedods,,,,,,False,Cupboard Staples,,unnamed row 19,,,0,12
+20,80895,500g,Whole Fava Beans,Hodmedods,£2.25,,,,,True,Cupboard Staples,,unnamed row 20,,,22,12
+21,152563,500g,Wholewheat Spaghetti - in paper,Suma,£1.50,,,,,True,Cupboard Staples,,unnamed row 21,,,36,12
+22,152565,500g,Wholewheat Fusilli - in paper,Suma,£1.50,,,,,True,Cupboard Staples,,unnamed row 22,,,36,12
+23,152566,500g,Wholewheat Penne - in paper,Suma,£1.50,,,,,True,Cupboard Staples,,unnamed row 23,,,48,12
+24,200509,1L,Rapeseed Oil – Cold Pressed,Clearspring,£6.50,,,,,True,Cupboard Staples,,unnamed row 24,,,18,6
+25,200516,1L,Tunisian Olive Oil - Extra Virgin,Clearspring,£12.50,,,,,True,Cupboard Staples,,unnamed row 25,,,12,6
+26,250280,700g,Crunchy Peanut Butter - jumbo,Carley’s,£6.00,,,,,True,Cupboard Staples,,unnamed row 26,,,5,6
+27,250282,700g,Smooth Peanut Butter - jumbo,Carley’s,£6.00,,,,,True,Cupboard Staples,,unnamed row 27,,,11,6
+28,370516,500ml,Cyder Vinegar,Aspall,£2.50,,,,,True,Cupboard Staples,,unnamed row 28,,,29,6
+29,390105,400g,Tomatoes Chopped,Biona,£1.25,,,,,True,Cupboard Staples,,unnamed row 29,,,47,12
+30,390115,680g,Passata,Biona,£1.75,,,,,True,Cupboard Staples,,unnamed row 30,,,120,12
+31,390179,4x400g,Tomatoes Chopped Peeled - 4 Pack,Biona,£4.00,,,,,True,Cupboard Staples,,unnamed row 31,,,18,6
+32,390736,400g,Coconut Milk,Cocofina,£1.50,,,,,True,Cupboard Staples,,unnamed row 32,,,23,6
+33,441207,400g,Carlin Peas,Hodmedods,£1.50,,,,,True,Cupboard Staples,,unnamed row 33,,,36,12
+34,441215,400g,Fava Beans (broad beans),Hodmedods,£1.50,,,,,True,Cupboard Staples,,unnamed row 34,,,36,12
+35,444490,400g,Baked Beans,Suma,£1.00,,,,,True,Cupboard Staples,,unnamed row 35,,,36,12
+36,444596,400g,Black Beans,Suma,£1.25,,,,,True,Cupboard Staples,,unnamed row 36,,,23,12
+37,445505,400g,Red Kidney Beans,Suma,£1.25,,,,,True,Cupboard Staples,,unnamed row 37,,,36,12
+38,445510,400g,Chickpeas,Suma,£1.25,,,,,True,Cupboard Staples,,unnamed row 38,,,22,12
+39,580329,80 bags,Fairtrade Everyday Tea Bags,Clipper,£3.50,,,,,True,Cupboard Staples,,unnamed row 39,,,64,4
+40,601306,200g,Rich Americano R&G Coffee - 4,Percol,£4.00,,,,,True,Cupboard Staples,,unnamed row 40,,,36,6
+41,723550,1L,Barista Oat (Regenerative),Minor Figures,£1.50,,,,,True,Cupboard Staples,,unnamed row 41,,,87,6
+42,793015,6x11g,Mushroom Stock Cubes,Kallo,£1.50,,,,,True,Cupboard Staples,,unnamed row 42,,,14,15
+43,793065,6x11g,Vegetable Stock Cubes,Kallo,£1.50,,,,,True,Cupboard Staples,,unnamed row 43,,,29,15
+44,859193,40g,"Natural Deodorant (Green Fusion, paper tube)",Ben & Anna,£5.50,,,,,True,Home & Hygiene,,unnamed row 44,,,10,1
+45,831400,25 tabs,Dishwasher Tablets,Ecoleaf,£5.00,,,,,True,Home & Hygiene,,unnamed row 45,,,12,6
+46,859162,90g,Soap (Hemp/vit. E),Alter/Native,£1.75,,,,,True,Home & Hygiene,,unnamed row 46,,,24,12
+47,854307,95g,Shampoo bar (fragrance free),Friendly Soap,£2.50,,,,,True,Home & Hygiene,,unnamed row 47,,,14,7
+48,861506,100ml,Toothpaste (Mint with fluoride),Kingfisher,£3.50,,,,,True,Home & Hygiene,,unnamed row 48,,,24,12

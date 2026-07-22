@@ -1,0 +1,17 @@
+---
+const { page } = Astro.props;
+const hasImage = Boolean(page.heroImage);
+const layout = hasImage ? page.heroLayout : 'text-only';
+const imageStyle = page.heroImageHeight ? `--hero-image-height:${Math.max(180, Math.min(900, page.heroImageHeight))}px` : undefined;
+---
+<section class={`page-hero layout-${layout}`}>
+  <div class="hero-copy">
+    <h1 class={`size-${page.titleSize}`}>{page.title}</h1>
+    {page.subtitle && <p class={`hero-subtitle size-${page.subtitleSize}`}>{page.subtitle}</p>}
+    {page.intro && <div class={`hero-intro size-${page.introSize}`}>{page.intro}</div>}
+    {page.buttonText && page.buttonUrl && <a class="button" href={page.buttonUrl}>{page.buttonText}</a>}
+  </div>
+  {hasImage && <figure class={`hero-media fit-${page.heroImageFit} position-${page.heroImageAlignment}`} style={imageStyle}>
+    <img src={page.heroImage} alt="" />
+  </figure>}
+</section>

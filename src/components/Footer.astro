@@ -1,0 +1,13 @@
+---
+const { settings } = Astro.props;
+---
+<footer class={`site-footer height-${settings.footerHeight}`}>
+  <div class="footer-inner">
+    {settings.footerLogo
+      ? <img class={`footer-logo logo-${settings.footerLogoSize}`} src={settings.footerLogo} alt="Roots to Fruits" />
+      : <strong class="footer-wordmark">Roots to Fruits</strong>}
+    {settings.tagline && <p class="footer-tagline">{settings.tagline}</p>}
+    {settings.footerText && <p>{settings.footerText}</p>}
+    {settings.contactEmail && <p><a href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a></p>}
+  </div>
+</footer>

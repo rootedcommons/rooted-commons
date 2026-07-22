@@ -1,0 +1,118 @@
+---
+import ProductGrid from './ProductGrid.astro';
+const { block, products } = Astro.props;
+const section = block.section;
+const type = block.type;
+const background = `background-${section.backgroundStyle}`;
+const spaces = `space-above-${section.spaceAbove} space-below-${section.spaceBelow}`;
+const alignment = `align-${section.alignment}`;
+const button = section.buttonVisible && section.buttonText && section.buttonUrl;
+const groupTitle = section.eyebrow || (block.key ? block.key.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : '');
+const inferredGridCategory = section.gridCategory || (section.page === 'cupboard-staples' ? 'Cupboard Staples' : section.page === 'fresh-produce' ? 'Fresh Produce' : '');
+---
+{type === 'text' && (
+  <section class={`content-section text-section ${background} ${spaces} ${alignment}`}>
+    <div class="section-inner prose-width">
+      {section.eyebrow && <p class="eyebrow">{section.eyebrow}</p>}
+      {section.heading && <h2 class={`size-${section.headingSize}`}>{section.heading}</h2>}
+      {section.subheading && <p class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
+      {section.body && <div class={`rich-body size-${section.bodySize}`}>{section.body.split(/\n\s*\n/).map((p) => <p>{p}</p>)}</div>}
+      {button && <a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
+    </div>
+  </section>
+)}
+
+{type === 'image-and-text' && (
+  <section class={`content-section split-section image-${section.imagePosition} ${background} ${spaces} ${alignment}`}>
+    <div class="section-inner split-inner">
+      {section.image && <figure class={`section-media image-size-${section.imageSize} fit-${section.imageFit}`}>
+        <img src={section.image} alt={section.imageAlt || ''} loading="lazy" />
+        {section.imageCaption && <figcaption>{section.imageCaption}</figcaption>}
+      </figure>}
+      <div class="section-copy">
+        {section.eyebrow && <p class="eyebrow">{section.eyebrow}</p>}
+        {section.heading && <h2 class={`size-${section.headingSize}`}>{section.heading}</h2>}
+        {section.subheading && <p class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
+        {section.body && <div class={`rich-body size-${section.bodySize}`}>{section.body.split(/\n\s*\n/).map((p) => <p>{p}</p>)}</div>}
+        {button && <a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
+      </div>
+    </div>
+  </section>
+)}
+
+{type === 'banner' && (
+  <section class={`banner-section ${background} ${spaces} ${alignment} image-size-${section.imageSize}`} style={section.image ? `background-image:linear-gradient(rgba(0,0,0,.28),rgba(0,0,0,.28)),url(${section.image})` : undefined}>
+    <div class="banner-copy">
+      {section.eyebrow && <p class="eyebrow">{section.eyebrow}</p>}
+      {section.heading && <h2 class={`size-${section.headingSize}`}>{section.heading}</h2>}
+      {section.subheading && <p class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
+      {section.body && <div class={`rich-body size-${section.bodySize}`}>{section.body.split(/\n\s*\n/).map((p) => <p>{p}</p>)}</div>}
+      {button && <a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
+    </div>
+  </section>
+)}
+
+{type === 'cards' && (
+  <section class={`content-section cards-section ${background} ${spaces}`}>
+    <div class="section-inner">
+      {groupTitle && <h2 class={`group-heading align-${section.alignment} size-${section.headingSize}`}>{groupTitle}</h2>}
+      {section.subheading && <p class={`group-subheading align-${section.alignment} size-${section.subheadingSize}`}>{section.subheading}</p>}
+      <div class="cards-grid" style={`--columns:${section.columns}`}>
+        {block.items.map((item) => (
+          <article class={`content-card align-${item.alignment}`}>
+            {item.image && <figure class={`card-media image-size-${item.imageSize} fit-${item.imageFit}`}>
+              <img src={item.image} alt={item.imageAlt || ''} loading="lazy" />
+              {item.imageCaption && <figcaption>{item.imageCaption}</figcaption>}
+            </figure>}
+            {item.eyebrow && <p class="eyebrow">{item.eyebrow}</p>}
+            {item.heading && <h3 class={`size-${item.headingSize}`}>{item.heading}</h3>}
+            {item.subheading && <p class={`section-subheading size-${item.subheadingSize}`}>{item.subheading}</p>}
+            {item.body && <div class={`rich-body size-${item.bodySize}`}>{item.body.split(/\n\s*\n/).map((p) => <p>{p}</p>)}</div>}
+            {item.buttonVisible && item.buttonText && item.buttonUrl && <a class={`text-link button-${item.buttonSize}`} href={item.buttonUrl}>{item.buttonText}</a>}
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+{type === 'grid' && (
+  <section class={`content-section grid-section ${background} ${spaces}`}>
+    <div class="section-inner">
+      {section.eyebrow && <p class={`eyebrow ${alignment}`}>{section.eyebrow}</p>}
+      {section.heading && <h2 class={`${alignment} size-${section.headingSize}`}>{section.heading}</h2>}
+      {section.subheading && <p class={`section-subheading ${alignment} size-${section.subheadingSize}`}>{section.subheading}</p>}
+      {section.body && <div class={`rich-body ${alignment} size-${section.bodySize}`}>{section.body.split(/\n\s*\n/).map((p) => <p>{p}</p>)}</div>}
+      <ProductGrid products={products} category={inferredGridCategory} columns={section.columns} />
+      {button && <p class={alignment}><a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a></p>}
+    </div>
+  </section>
+)}
+
+{type === 'call-to-action' && (
+  <section class={`content-section cta-section ${background} ${spaces} ${alignment}`}>
+    <div class="section-inner prose-width">
+      {section.eyebrow && <p class="eyebrow">{section.eyebrow}</p>}
+      {section.heading && <h2 class={`size-${section.headingSize}`}>{section.heading}</h2>}
+      {section.subheading && <p class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
+      {section.body && <div class={`rich-body size-${section.bodySize}`}>{section.body.split(/\n\s*\n/).map((p) => <p>{p}</p>)}</div>}
+      {button && <a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
+    </div>
+  </section>
+)}
+
+{type === 'gallery' && (
+  <section class={`content-section gallery-section ${background} ${spaces}`}>
+    <div class="section-inner">
+      {groupTitle && <h2 class={`group-heading align-${section.alignment} size-${section.headingSize}`}>{groupTitle}</h2>}
+      <div class="gallery-grid" style={`--columns:${section.columns}`}>
+        {block.items.filter((item) => item.image).map((item) => (
+          <figure class={`gallery-item image-size-${item.imageSize} fit-${item.imageFit}`}>
+            <img src={item.image} alt={item.imageAlt || ''} loading="lazy" />
+            {(item.imageCaption || item.heading) && <figcaption>{item.imageCaption || item.heading}</figcaption>}
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
