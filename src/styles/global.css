@@ -4,3 +4,12 @@
 
 .member-summary{margin:1.25rem auto 0;padding:1rem 1.25rem;border:1px solid var(--border);border-radius:1rem;max-width:62rem;background:rgba(255,255,255,.32)}
 .checkout-shell{max-width:760px;margin:0 auto;padding:clamp(2rem,6vw,5rem) 1.25rem}.checkout-card{padding:clamp(1.25rem,4vw,2rem);border:1px solid var(--border);border-radius:1rem;margin:1.25rem 0;background:rgba(255,255,255,.25)}.checkout-card label{display:grid;gap:.5rem;font-weight:700}.checkout-card input{font:inherit;padding:.8rem 1rem;border:1px solid var(--border);border-radius:.6rem;background:white}.checkout-card form{display:grid;gap:1rem}.checkout-card button{justify-self:start}
+.shop-section-heading{max-width:900px;margin:0 0 2rem}.floating-basket{display:none}.basket-drawer,.basket-backdrop{display:none}
+@media(max-width:900px){.product-grid{--columns:2!important}.shop-layout{grid-template-columns:1fr}.basket-panel{position:static}}
+@media(max-width:760px){
+  .shop-shell{padding-inline:1rem}.shop-toolbar{align-items:stretch;flex-direction:column}.shop-toolbar input{width:100%}.product-grid{--columns:1!important}.basket-panel{display:none}
+  .floating-basket{display:flex;position:fixed;z-index:80;top:calc(.75rem + env(safe-area-inset-top));right:.75rem;align-items:center;gap:.55rem;border:1px solid var(--primary);border-radius:999px;background:var(--primary);color:var(--background);padding:.65rem .9rem;font:inherit;box-shadow:0 6px 24px rgba(0,0,0,.22);cursor:pointer}.floating-basket strong{font-size:.82rem}.basket-bump{animation:basket-bump .3s ease}
+  .basket-backdrop{display:block;position:fixed;inset:0;z-index:89;background:rgba(0,0,0,.38)}.basket-backdrop[hidden]{display:none}
+  .basket-drawer{display:block;position:fixed;z-index:90;left:0;right:0;bottom:0;max-height:min(78vh,680px);overflow:auto;transform:translateY(105%);transition:transform .22s ease;background:var(--highlight);border-top:1px solid var(--line);padding:1.25rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom));box-shadow:0 -10px 35px rgba(0,0,0,.22)}.basket-drawer.open{transform:translateY(0)}.basket-drawer-header{display:flex;align-items:center;justify-content:space-between}.basket-drawer-header h2{margin:0}.basket-drawer-header button{border:0;background:none;color:inherit;font-size:2rem;line-height:1;cursor:pointer}.basket-drawer .button{width:100%;margin-top:1rem}.basket-open{overflow:hidden}
+}
+@keyframes basket-bump{50%{transform:scale(1.08)}}

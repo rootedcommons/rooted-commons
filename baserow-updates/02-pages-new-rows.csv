@@ -1,0 +1,3 @@
+id,Slug,Title,Intro,Button text,Button URL,Hero image,Subtitle,Visible,SEO title,SEO description,Hero layout,Title size,Subtitle size,Intro size,Hero image height,Hero image fit,Hero image alignment,Sections
+,orders,Weekly Shop,Browse the current range and build a basket. Anyone can explore the shop before becoming a member.,,,,,True,,,Text only,Large,,Medium,,,,
+,checkout,Checkout,Verify your email or secure weekly link before confirming your order.,,,,,True,,,Text only,Large,,Medium,,,,

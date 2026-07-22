@@ -1,21 +1,33 @@
-# Rooted Commons website — v1
+# Rooted Commons website v1.1
 
-This repository contains the public Rooted Commons website and weekly ordering interface.
+This repository contains the Astro website, Cloudflare Pages Functions and Baserow templates for Rooted Commons.
 
-## What it does
+## What this version provides
 
-- Builds public pages from **Site Settings**, **Pages**, and **Sections** in Baserow.
-- Supports section types: **Text**, **Image and text**, **Banner**, **Cards**, **Grid**, **Call to action**, and **Gallery**.
-- A Grid section only displays records from **Products**.
-- Lets any visitor browse `/orders/`, filter categories, search, and build a basket stored in their browser.
-- Lets members arrive through a weekly token link, see current credit and collection point, and submit an order.
-- Lets an unverified visitor enter an email at `/checkout/`; an optional webhook can send the member link or a joining invitation.
-- On confirmed submission, checks current prices, stock and collection-point availability, creates a **Web Order**, creates negative **Stock Movement** rows, and creates a negative **Account Transaction**.
-- Replacing an order reverses the previous stock and account movements before creating the new order.
+- Public pages assembled from **Pages** and **Sections** in Baserow.
+- Section types: Text, Image and text, Banner, Cards, Grid, Call to action and Gallery.
+- A public shop at `/orders/` that anyone can browse.
+- Products may belong to multiple categories.
+- Category tabs are generated automatically from Products.
+- A browser-side basket that persists on the visitor's device.
+- A sticky desktop basket and a floating mobile basket drawer.
+- Checkout at `/checkout/` with member-token and email handoff support.
+- Baserow-backed stock, orders and account-ledger functions from v1.
+
+## Repository contents
+
+```text
+src/                 Astro pages and components
+functions/           Cloudflare Pages Functions
+public/              Static files
+baserow-imports/     Complete current CSV templates
+baserow-updates/     Small CSVs containing only the new v1.1 columns/rows
+.env.example         Environment-variable names
+```
 
 ## Baserow tables
 
-The `baserow-imports/` folder contains the latest exported structures:
+The code expects these tables:
 
 1. Site Settings
 2. Pages
@@ -27,118 +39,92 @@ The `baserow-imports/` folder contains the latest exported structures:
 8. Stock Movement
 9. Account Transactions
 
-CSV exports do not preserve Baserow field types or links. Keep the linked fields configured in Baserow.
+The complete CSV exports are in `baserow-imports/`. The v1.1 additions are also supplied separately in `baserow-updates/` so they can be copied into existing tables.
 
-### Required relationships
+## Applying the v1.1 Baserow updates
 
-- Products ↔ Stock Movement
-- Members ↔ Account Transactions through the linked field **Xero Contact ID**
-- Members ↔ Web Orders through **Member**
-- Web Orders ↔ Stock Movement through **Stock Movement**
-- Web Orders ↔ Account Transactions through **Account Transactions**
-- Members and Products ↔ Collection Points
+### Products: multiple categories
 
-`Products.Current stock` should be a rollup that sums `Stock Movement.Stock movement`.
-`Members.Current credit` should be a rollup that sums `Account Transactions.Amount`.
-
-## GitHub upload
-
-Upload the **contents** of this repository to the root of the GitHub repository. The root should contain:
+Change the **Category** field in Products to a Baserow **Multiple select** field. A product can then have, for example:
 
 ```text
-src/
-functions/
-public/
-baserow-imports/
-package.json
-astro.config.mjs
-README.md
-.env.example
-.gitignore
+Cupboard Staples
+Breakfast
+Organic
 ```
 
-Do not upload `node_modules`, `dist`, or a real `.env` file.
+The code also understands comma-separated exported values such as `Cupboard Staples, Breakfast`, but Multiple select is safer for editing in Baserow.
 
-## Cloudflare Pages build settings
+No extra Products column is required. See `baserow-updates/04-products-category-examples.csv` for examples.
+
+### Orders page and product-grid width
+
+Add the rows from:
+
+```text
+baserow-updates/02-pages-new-rows.csv
+baserow-updates/03-sections-new-rows.csv
+```
+
+The `orders-products` Section row has:
+
+```text
+Section type: Grid
+Grid source: Products
+Columns: 3
+```
+
+Change **Columns** in that row to 2, 3 or 4 to alter the desktop grid. Mobile layouts automatically reduce the number of columns.
+
+### Basket and checkout wording
+
+Add the columns from:
+
+```text
+baserow-updates/01-site-settings-new-columns.csv
+```
+
+These fields control short interface labels, including:
+
+- basket heading and empty message
+- estimated-total label
+- checkout button wording
+- floating-basket label
+- checkout email and confirmation wording
+
+Longer explanatory copy belongs in the `orders` and `checkout` rows of **Pages**, or in Sections linked to those pages.
+
+## Editing the Orders page
+
+- Page title and introductory hero text: **Pages → orders**.
+- Explanatory content before or after the shop: **Sections → Page = orders**.
+- Product grid configuration: the Section with Key `orders-products`.
+- Product data: **Products**.
+- Basket button and interface labels: **Site Settings**.
+
+The product Grid section is used as the insertion point for the interactive shop. Other Sections with an Order below it appear before the catalogue; Sections with a larger Order appear after it.
+
+## Editing Checkout
+
+- Page title and hero introduction: **Pages → checkout**.
+- Longer explanatory content: **Sections → Page = checkout**.
+- Short form/button labels: **Site Settings**.
+
+## Cloudflare build settings
 
 ```text
 Build command: npm run build
 Build output directory: dist
 Root directory: /
-Node version: 22
+NODE_VERSION: 22
 ```
 
-This project deliberately does not include `package-lock.json`, because the previous Cloudflare environment repeatedly failed inside `npm clean-install`. Cloudflare should therefore use `npm install`.
+This project deliberately does not include `package-lock.json`, so Cloudflare uses `npm install` rather than the `npm clean-install` path that previously failed.
 
-## Cloudflare variables
+## Environment variables
 
-Add these as ordinary production variables unless marked **Secret**.
+The required names are listed in `.env.example`. Keep API tokens as Cloudflare Secrets. Table IDs can be ordinary environment variables.
 
-### Build-time public content
+## Uploading to GitHub
 
-```text
-BASEROW_API_URL=https://api.baserow.io
-BASEROW_SITE_SETTINGS_TABLE_ID=
-BASEROW_PAGES_TABLE_ID=
-BASEROW_SECTIONS_TABLE_ID=
-BASEROW_PRODUCTS_TABLE_ID=
-BASEROW_COLLECTION_POINTS_TABLE_ID=
-```
-
-Add `BASEROW_TOKEN` as a **Secret**. It only needs read permission for those five tables.
-
-### Runtime ordering
-
-```text
-BASEROW_MEMBERS_TABLE_ID=
-BASEROW_WEB_ORDERS_TABLE_ID=
-BASEROW_STOCK_MOVEMENT_TABLE_ID=
-BASEROW_ACCOUNT_TRANSACTIONS_TABLE_ID=
-```
-
-Add `BASEROW_RUNTIME_TOKEN` as a **Secret**. Give it only the permissions needed:
-
-- Members: read
-- Products: read
-- Collection Points: read
-- Web Orders: read, create, update
-- Stock Movement: read, create
-- Account Transactions: read, create
-
-The runtime token is never sent to the browser.
-
-### Optional email webhook
-
-`MAGIC_LINK_WEBHOOK_URL` is optional. It should point to an automation endpoint that accepts JSON containing:
-
-```json
-{
-  "email": "member@example.com",
-  "link": "https://your-domain/orders/?token=...",
-  "member": { "firstName": "..." },
-  "basketSummary": []
-}
-```
-
-You can connect this to your existing MailerLite/Baserow workflow. `SITE_URL` is not needed; the function derives the website origin from the request.
-
-## Weekly member links
-
-Send members to:
-
-```text
-https://your-domain/orders/?token=THEIR_ORDER_TOKEN
-```
-
-The token is checked against `Members.Order token`, `Members.Active`, and `Members.Order token expiry`.
-
-## Editing content
-
-- Global logos, colours and footer text: **Site Settings**
-- Hero content and SEO: **Pages**
-- Page content and layouts: **Sections**
-- Sellable items: **Products**
-- Stock balance: calculated from **Stock Movement**
-- Member credit: calculated from **Account Transactions**
-
-Blank presentation settings use sensible responsive defaults.
+Upload the contents of this folder to the repository root. You should see `src`, `functions`, `public`, `baserow-imports`, `baserow-updates`, `package.json` and `astro.config.mjs` at the top level.

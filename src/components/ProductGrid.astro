@@ -1,15 +1,23 @@
 ---
 const { products, category = '', columns = 3, showControls = false } = Astro.props;
-const filtered = category
-  ? products.filter((product) => product.category.toLowerCase() === category.toLowerCase())
+const wanted = String(category || '').trim().toLowerCase();
+const filtered = wanted
+  ? products.filter((product) => (product.categories || [product.category]).some((item) => item.toLowerCase() === wanted))
   : products;
 ---
 <div class="product-grid" style={`--columns:${columns}`}>
   {filtered.map((product) => (
-    <article class="product-card" data-product-card data-category={product.category} data-name={product.name.toLowerCase()} data-id={product.id} data-price={product.priceNumber}>
+    <article
+      class="product-card"
+      data-product-card
+      data-categories={(product.categories || [product.category]).join('|')}
+      data-name={product.name.toLowerCase()}
+      data-id={product.id}
+      data-price={product.priceNumber}
+    >
       <img src={product.image || '/images/placeholder.svg'} alt="" loading="lazy" />
       <div class="product-copy">
-        <p class="product-category">{product.category}</p>
+        {(product.categories || []).length > 0 && <p class="product-category">{product.categories.join(' · ')}</p>}
         <h3>{product.link ? <a href={product.link}>{product.name}</a> : product.name}</h3>
         {product.size && <p class="product-size">{product.size}</p>}
         {product.description && <p>{product.description}</p>}

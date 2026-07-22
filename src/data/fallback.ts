@@ -17,7 +17,24 @@ export const fallbackSettings = {
   headerHeight: 'medium',
   footerHeight: 'medium',
   navigationTextSize: 'medium',
-  buttonTextSize: 'medium'
+  buttonTextSize: 'medium',
+  basketHeading: 'Your basket',
+  basketEmptyText: 'Your basket is empty.',
+  basketTotalLabel: 'Estimated total',
+  basketCheckoutButton: 'Continue to checkout',
+  basketNotice: 'Final prices, stock and collection-point availability are checked at confirmation.',
+  basketFloatingLabel: 'Basket',
+  checkoutBasketHeading: 'Your basket',
+  checkoutEmptyHeading: 'Your basket is empty',
+  checkoutEmptyText: 'Return to the shop to add products.',
+  checkoutVerifyHeading: 'Verify your email',
+  checkoutVerifyBody: 'Already a member? We will send your secure ordering link. Not yet a member? We will send details of how to join. Your basket remains saved on this device.',
+  checkoutEmailLabel: 'Email address',
+  checkoutEmailButton: 'Send me the next step',
+  checkoutConfirmHeading: 'Confirm your member order',
+  checkoutConfirmButton: 'Confirm order',
+  checkoutReturnText: 'Return to the shop',
+  checkoutSuccessHeading: 'Order confirmed'
 };
 
 export const fallbackPages = [
@@ -25,7 +42,9 @@ export const fallbackPages = [
   { slug: 'our-partners', title: 'Our Partners', intro: 'Rooted Commons depends on growers, retailers, volunteers and residents working together.', visible: true },
   { slug: 'cupboard-staples', title: 'Cupboard Staples', intro: 'Affordable organic staples make it possible to shift a small, dependable share of weekly spending into the local food economy.', visible: true },
   { slug: 'fresh-produce', title: 'Fresh Produce', intro: 'Seasonal produce grown by people and organisations in our local network, coordinated through shared distribution.', visible: true },
-  { slug: 'volunteering', title: 'Get Involved', intro: 'Learn, spend time outdoors and support the people building a stronger local food system.', visible: true }
+  { slug: 'volunteering', title: 'Get Involved', intro: 'Learn, spend time outdoors and support the people building a stronger local food system.', visible: true },
+  { slug: 'orders', title: 'Weekly Shop', intro: 'Browse the current range and build your basket. You can explore before becoming a member.', visible: true },
+  { slug: 'checkout', title: 'Checkout', intro: 'Verify your email or secure weekly link before confirming your order.', visible: true }
 ];
 
 export const fallbackSections = [

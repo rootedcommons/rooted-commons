@@ -1,34 +1,41 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionRenderer from '../components/SectionRenderer.astro';
 import { getSiteData } from '../lib/baserow';
+import { buildSectionBlocks } from '../lib/sections';
 const data=await getSiteData();
+const page=data.pages.find((item)=>item.slug==='checkout') || {title:'Checkout',intro:'',titleSize:'large',introSize:'medium',heroLayout:'text-only'};
+const blocks=buildSectionBlocks(data.sections.filter((section)=>section.page==='checkout'));
+const s=data.settings;
 ---
-<BaseLayout settings={data.settings} pages={data.pages} title="Checkout" description="Verify membership or request an invitation to order.">
+<BaseLayout settings={s} pages={data.pages} title={page.seoTitle || page.title} description={page.seoDescription || page.intro}>
+  <PageHero page={page} />
+  {blocks.map((block) => <SectionRenderer block={block} products={data.products} />)}
   <section class="checkout-shell">
-    <p class="eyebrow">Weekly order</p><h1>Checkout</h1>
     <div id="checkout-basket" class="checkout-card"></div>
     <div id="verified-panel" class="checkout-card" hidden>
-      <h2>Confirm your member order</h2><div id="verified-member"></div>
-      <button id="submit-order" class="button" type="button">Confirm order</button>
+      <h2>{s.checkoutConfirmHeading}</h2><div id="verified-member"></div>
+      <button id="submit-order" class="button" type="button">{s.checkoutConfirmButton}</button>
     </div>
     <div id="email-panel" class="checkout-card">
-      <h2>Verify your email</h2>
-      <p>Already a member? We will send your secure ordering link. Not yet a member? We will send details of how to join. Your basket remains saved on this device.</p>
-      <form id="email-form"><label>Email address<input name="email" type="email" required autocomplete="email" /></label><button class="button" type="submit">Send me the next step</button></form>
+      <h2>{s.checkoutVerifyHeading}</h2>
+      <p>{s.checkoutVerifyBody}</p>
+      <form id="email-form"><label>{s.checkoutEmailLabel}<input name="email" type="email" required autocomplete="email" /></label><button class="button" type="submit">{s.checkoutEmailButton}</button></form>
       <p id="email-message" class="small-print"></p>
     </div>
-    <p><a href="/orders/">← Return to the shop</a></p>
+    <p><a href="/orders/">← {s.checkoutReturnText}</a></p>
   </section>
-  <script is:inline>
+  <script is:inline define:vars={{ checkoutBasketHeading:s.checkoutBasketHeading,checkoutEmptyHeading:s.checkoutEmptyHeading,checkoutEmptyText:s.checkoutEmptyText,checkoutConfirmButton:s.checkoutConfirmButton,checkoutSuccessHeading:s.checkoutSuccessHeading }}>
     const STORAGE_KEY='rooted-commons-basket-v1',TOKEN_KEY='rooted-commons-order-token-v1';
-    const basket=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'), token=localStorage.getItem(TOKEN_KEY)||'';
+    let basket={};try{basket=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')||{};}catch{basket={};}const token=localStorage.getItem(TOKEN_KEY)||'';
     const money=new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'});
     const items=Object.entries(basket).filter(([,q])=>Number(q)>0).map(([productId,quantity])=>({productId:Number(productId),quantity:Number(quantity)}));
-    const summary=document.querySelector('#checkout-basket');
-    summary.innerHTML=items.length?`<h2>Your basket</h2><p>${items.reduce((s,i)=>s+i.quantity,0)} item${items.reduce((s,i)=>s+i.quantity,0)===1?'':'s'} selected. Final prices and stock will be checked when submitted.</p>`:'<h2>Your basket is empty</h2><p><a href="/orders/">Return to the shop</a> to add products.</p>';
-    async function verify(){if(!token||!items.length)return; const r=await fetch(`/api/member?token=${encodeURIComponent(token)}`); if(!r.ok)return; const p=await r.json(); document.querySelector('#email-panel').hidden=true; document.querySelector('#verified-panel').hidden=false; document.querySelector('#verified-member').innerHTML=`<p><strong>${p.member.firstName||'Member'}</strong><br>Current credit: ${money.format(p.member.credit||0)}${p.member.collectionPoint?`<br>Collection point: ${p.member.collectionPoint}`:''}</p>`;}
-    document.querySelector('#submit-order').addEventListener('click',async()=>{const btn=document.querySelector('#submit-order');btn.disabled=true;btn.textContent='Submitting…';const r=await fetch('/api/order',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token,items})});const p=await r.json();if(r.ok&&p.ok){localStorage.removeItem(STORAGE_KEY);summary.innerHTML=`<h2>Order confirmed</h2><p>Order <strong>${p.orderNumber}</strong></p><p>Total: ${money.format(p.total)}<br>Estimated closing credit: ${money.format(p.closingCredit)}</p>`;document.querySelector('#verified-panel').hidden=true;}else{alert(p.message||'The order could not be submitted.');btn.disabled=false;btn.textContent='Confirm order';}});
-    document.querySelector('#email-form').addEventListener('submit',async e=>{e.preventDefault();const form=e.currentTarget,msg=document.querySelector('#email-message'),button=form.querySelector('button');button.disabled=true;msg.textContent='Checking…';const r=await fetch('/api/request-link',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:new FormData(form).get('email'),basketSummary:items})});const p=await r.json();msg.textContent=p.message||'Please check your email.';button.disabled=false;});
+    const count=items.reduce((sum,item)=>sum+item.quantity,0), summary=document.querySelector('#checkout-basket');
+    summary.innerHTML=items.length?`<h2>${checkoutBasketHeading}</h2><p>${count} item${count===1?'':'s'} selected. Final prices and stock will be checked when submitted.</p>`:`<h2>${checkoutEmptyHeading}</h2><p>${checkoutEmptyText}</p>`;
+    async function verify(){if(!token||!items.length)return;const r=await fetch(`/api/member?token=${encodeURIComponent(token)}`);if(!r.ok)return;const p=await r.json();document.querySelector('#email-panel').hidden=true;document.querySelector('#verified-panel').hidden=false;document.querySelector('#verified-member').innerHTML=`<p><strong>${p.member.firstName||'Member'}</strong><br>Current credit: ${money.format(p.member.credit||0)}${p.member.collectionPoint?`<br>Collection point: ${p.member.collectionPoint}`:''}</p>`;}
+    document.querySelector('#submit-order').addEventListener('click',async()=>{const btn=document.querySelector('#submit-order');btn.disabled=true;btn.textContent='Submitting…';const r=await fetch('/api/order',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token,items})});const p=await r.json();if(r.ok&&p.ok){localStorage.removeItem(STORAGE_KEY);summary.innerHTML=`<h2>${checkoutSuccessHeading}</h2><p>Order <strong>${p.orderNumber}</strong></p><p>Total: ${money.format(p.total)}<br>Estimated closing credit: ${money.format(p.closingCredit)}</p>`;document.querySelector('#verified-panel').hidden=true;}else{alert(p.message||'The order could not be submitted.');btn.disabled=false;btn.textContent=checkoutConfirmButton;}});
+    document.querySelector('#email-form').addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget,message=document.querySelector('#email-message'),button=form.querySelector('button');button.disabled=true;message.textContent='Checking…';const r=await fetch('/api/request-link',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:new FormData(form).get('email'),basketSummary:items})});const p=await r.json();message.textContent=p.message||'Please check your email.';button.disabled=false;});
     verify();
   </script>
 </BaseLayout>

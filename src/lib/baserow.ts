@@ -113,7 +113,24 @@ export async function getSiteData() {
     headerHeight: normalized(choice(validSettingsRow, 'Header height'), fallbackSettings.headerHeight),
     footerHeight: normalized(choice(validSettingsRow, 'Footer height'), fallbackSettings.footerHeight),
     navigationTextSize: normalized(choice(validSettingsRow, 'Navigation text size'), fallbackSettings.navigationTextSize),
-    buttonTextSize: normalized(choice(validSettingsRow, 'Button text size'), fallbackSettings.buttonTextSize)
+    buttonTextSize: normalized(choice(validSettingsRow, 'Button text size'), fallbackSettings.buttonTextSize),
+    basketHeading: text(validSettingsRow, 'Basket heading', fallbackSettings.basketHeading),
+    basketEmptyText: text(validSettingsRow, 'Basket empty text', fallbackSettings.basketEmptyText),
+    basketTotalLabel: text(validSettingsRow, 'Basket total label', fallbackSettings.basketTotalLabel),
+    basketCheckoutButton: text(validSettingsRow, 'Basket checkout button', fallbackSettings.basketCheckoutButton),
+    basketNotice: text(validSettingsRow, 'Basket notice', fallbackSettings.basketNotice),
+    basketFloatingLabel: text(validSettingsRow, 'Basket floating label', fallbackSettings.basketFloatingLabel),
+    checkoutBasketHeading: text(validSettingsRow, 'Checkout basket heading', fallbackSettings.checkoutBasketHeading),
+    checkoutEmptyHeading: text(validSettingsRow, 'Checkout empty heading', fallbackSettings.checkoutEmptyHeading),
+    checkoutEmptyText: text(validSettingsRow, 'Checkout empty text', fallbackSettings.checkoutEmptyText),
+    checkoutVerifyHeading: text(validSettingsRow, 'Checkout verify heading', fallbackSettings.checkoutVerifyHeading),
+    checkoutVerifyBody: text(validSettingsRow, 'Checkout verify body', fallbackSettings.checkoutVerifyBody),
+    checkoutEmailLabel: text(validSettingsRow, 'Checkout email label', fallbackSettings.checkoutEmailLabel),
+    checkoutEmailButton: text(validSettingsRow, 'Checkout email button', fallbackSettings.checkoutEmailButton),
+    checkoutConfirmHeading: text(validSettingsRow, 'Checkout confirm heading', fallbackSettings.checkoutConfirmHeading),
+    checkoutConfirmButton: text(validSettingsRow, 'Checkout confirm button', fallbackSettings.checkoutConfirmButton),
+    checkoutReturnText: text(validSettingsRow, 'Checkout return text', fallbackSettings.checkoutReturnText),
+    checkoutSuccessHeading: text(validSettingsRow, 'Checkout success heading', fallbackSettings.checkoutSuccessHeading)
   } : fallbackSettings;
 
   const sourcePages = pageRows?.length ? pageRows : fallbackPages;
@@ -196,7 +213,8 @@ export async function getSiteData() {
     link: text(row, 'Product Link', text(row, 'Link')),
     order: numeric(row, 'Display order', numeric(row, 'Order', 9999)),
     available: boolean(row, 'Available', true),
-    category: choice(row, 'Category', 'Other') || 'Other',
+    categories: linkedValues(raw(row, 'Category')).length ? linkedValues(raw(row, 'Category')) : ['Other'],
+    category: linkedValues(raw(row, 'Category'))[0] || 'Other',
     collectionPointIds: linkedIds(raw(row, 'Available collection points')),
     collectionPointNames: linkedValues(raw(row, 'Available collection points'))
   })).filter((product: any) => product.name && product.available).sort((a: any, b: any) => a.order - b.order || a.name.localeCompare(b.name));

@@ -1,18 +1,32 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
 import ProductGrid from '../components/ProductGrid.astro';
+import SectionRenderer from '../components/SectionRenderer.astro';
 import { getSiteData } from '../lib/baserow';
+import { buildSectionBlocks } from '../lib/sections';
 const data = await getSiteData();
-const categories = [...new Set(data.products.map((product) => product.category).filter(Boolean))].sort();
+const page = data.pages.find((item) => item.slug === 'orders') || { title: 'Weekly Shop', intro: '', titleSize: 'large', introSize: 'medium', heroLayout: 'text-only' };
+const orderSections = data.sections.filter((section) => section.page === 'orders');
+const gridSection = orderSections.find((section) => String(section.type).toLowerCase() === 'grid' && (!section.gridSource || String(section.gridSource).toLowerCase() === 'products'));
+const gridOrder = gridSection?.order ?? 999999;
+const beforeBlocks = buildSectionBlocks(orderSections.filter((section) => section !== gridSection && section.order < gridOrder));
+const afterBlocks = buildSectionBlocks(orderSections.filter((section) => section !== gridSection && section.order >= gridOrder));
+const columns = gridSection?.columns || 3;
+const categories = [...new Set(data.products.flatMap((product) => product.categories || [product.category]).filter(Boolean))].sort();
+const s = data.settings;
 ---
-<BaseLayout settings={data.settings} pages={data.pages} title="Weekly Shop" description="Browse the current Rooted Commons product range.">
-  <section class="shop-hero">
-    <p class="eyebrow">Browse before you join</p>
-    <h1>Weekly Shop</h1>
-    <p>Anyone can explore the range and build a basket. Members can verify their secure weekly link at checkout; new customers can request an invitation to join.</p>
+<BaseLayout settings={s} pages={data.pages} title={page.seoTitle || page.title} description={page.seoDescription || page.intro}>
+  <PageHero page={page} />
+  {beforeBlocks.map((block) => <SectionRenderer block={block} products={data.products} />)}
+  <section class={`shop-shell background-${gridSection?.backgroundStyle || 'default'} space-above-${gridSection?.spaceAbove || 'small'} space-below-${gridSection?.spaceBelow || 'large'}`}>
+    <div class="shop-section-heading">
+      {gridSection?.eyebrow && <p class="eyebrow">{gridSection.eyebrow}</p>}
+      {gridSection?.heading && <h2 class={`size-${gridSection.headingSize}`}>{gridSection.heading}</h2>}
+      {gridSection?.subheading && <p class={`section-subheading size-${gridSection.subheadingSize}`}>{gridSection.subheading}</p>}
+      {gridSection?.body && <div class={`rich-body size-${gridSection.bodySize}`}>{gridSection.body.split(/\n\s*\n/).map((p) => <p>{p}</p>)}</div>}
+    </div>
     <div id="member-summary" class="member-summary" hidden></div>
-  </section>
-  <section class="shop-shell">
     <div class="shop-toolbar">
       <div class="category-tabs" role="tablist" aria-label="Product categories">
         <button class="category-tab active" type="button" data-category="all">All</button>
@@ -21,34 +35,52 @@ const categories = [...new Set(data.products.map((product) => product.category).
       <input id="product-search" type="search" placeholder="Search products" aria-label="Search products" />
     </div>
     <div class="shop-layout">
-      <div id="shop-products"><ProductGrid products={data.products} columns={2} showControls={true} /></div>
+      <div id="shop-products"><ProductGrid products={data.products} columns={columns} showControls={true} /></div>
       <aside class="basket-panel" aria-live="polite">
-        <h2>Your basket</h2>
-        <div id="basket-lines"><p>Your basket is empty.</p></div>
-        <div class="basket-total"><span>Estimated total</span><strong id="basket-total">£0.00</strong></div>
-        <p id="credit-line" class="small-print">Final prices, stock and collection-point availability are checked at confirmation.</p>
-        <a id="checkout-link" class="button" href="/checkout/">Continue to checkout</a>
+        <h2>{s.basketHeading}</h2>
+        <div data-basket-lines><p>{s.basketEmptyText}</p></div>
+        <div class="basket-total"><span>{s.basketTotalLabel}</span><strong data-basket-total>£0.00</strong></div>
+        <p data-credit-line class="small-print">{s.basketNotice}</p>
+        <a data-checkout-link class="button" href="/checkout/">{s.basketCheckoutButton}</a>
       </aside>
     </div>
   </section>
-  <script is:inline>
+  {afterBlocks.map((block) => <SectionRenderer block={block} products={data.products} />)}
+
+  <button id="floating-basket" class="floating-basket" type="button" aria-controls="basket-drawer" aria-expanded="false">
+    <span>{s.basketFloatingLabel}</span><strong><span data-basket-count>0</span> · <span data-basket-total>£0.00</span></strong>
+  </button>
+  <div id="basket-backdrop" class="basket-backdrop" hidden></div>
+  <aside id="basket-drawer" class="basket-drawer" aria-hidden="true" aria-live="polite">
+    <div class="basket-drawer-header"><h2>{s.basketHeading}</h2><button id="close-basket" type="button" aria-label="Close basket">×</button></div>
+    <div data-basket-lines><p>{s.basketEmptyText}</p></div>
+    <div class="basket-total"><span>{s.basketTotalLabel}</span><strong data-basket-total>£0.00</strong></div>
+    <p data-credit-line class="small-print">{s.basketNotice}</p>
+    <a data-checkout-link class="button" href="/checkout/">{s.basketCheckoutButton}</a>
+  </aside>
+
+  <script is:inline define:vars={{ basketEmptyText: s.basketEmptyText, basketNotice: s.basketNotice }}>
     const STORAGE_KEY='rooted-commons-basket-v1';
     const TOKEN_KEY='rooted-commons-order-token-v1';
     const params=new URLSearchParams(location.search); const urlToken=params.get('token');
     if(urlToken) localStorage.setItem(TOKEN_KEY,urlToken);
     const token=urlToken||localStorage.getItem(TOKEN_KEY)||'';
-    const basket=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+    let basket={}; try{basket=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')||{};}catch{basket={};}
     const cards=[...document.querySelectorAll('[data-product-card]')];
-    const tabs=[...document.querySelectorAll('[data-category]')]; const search=document.querySelector('#product-search');
+    const tabs=[...document.querySelectorAll('.category-tab')]; const search=document.querySelector('#product-search');
     const money=new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}); let member=null;
+    const drawer=document.querySelector('#basket-drawer'), backdrop=document.querySelector('#basket-backdrop'), floating=document.querySelector('#floating-basket');
+    function openDrawer(){drawer.classList.add('open');drawer.setAttribute('aria-hidden','false');backdrop.hidden=false;floating.setAttribute('aria-expanded','true');document.body.classList.add('basket-open');}
+    function closeDrawer(){drawer.classList.remove('open');drawer.setAttribute('aria-hidden','true');backdrop.hidden=true;floating.setAttribute('aria-expanded','false');document.body.classList.remove('basket-open');}
+    floating?.addEventListener('click',openDrawer);document.querySelector('#close-basket')?.addEventListener('click',closeDrawer);backdrop?.addEventListener('click',closeDrawer);document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
     async function loadMember(){ if(!token)return; const r=await fetch(`/api/member?token=${encodeURIComponent(token)}`); if(!r.ok)return; const p=await r.json(); member=p.member; const box=document.querySelector('#member-summary'); box.hidden=false; box.innerHTML=`<strong>Hello ${member.firstName||'member'}.</strong> Current credit: ${money.format(member.credit||0)}${member.collectionPoint?` · Collection: ${member.collectionPoint}`:''}`; renderBasket(); }
     function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(basket));}
     function selected(){return cards.map(card=>({id:card.dataset.id,name:card.querySelector('h3')?.textContent||'',price:Number(card.dataset.price||0),quantity:Number(basket[card.dataset.id]||0)})).filter(i=>i.quantity>0);}
-    function renderBasket(){const items=selected(), lines=document.querySelector('#basket-lines'); lines.innerHTML=items.length?items.map(i=>`<div class="basket-line"><span>${i.name} × ${i.quantity}</span><strong>${money.format(i.price*i.quantity)}</strong></div>`).join(''):'<p>Your basket is empty.</p>'; const total=items.reduce((s,i)=>s+i.price*i.quantity,0); document.querySelector('#basket-total').textContent=money.format(total); const credit=document.querySelector('#credit-line'); credit.textContent=member?`Estimated balance after this basket: ${money.format((member.credit||0)-total)}. Final figures are confirmed on submission.`:'Final prices, stock and collection-point availability are checked at confirmation.'; cards.forEach(c=>c.querySelector('[data-quantity]').textContent=String(basket[c.dataset.id]||0));}
-    function filter(){const active=document.querySelector('.category-tab.active')?.dataset.category||'all',q=(search?.value||'').trim().toLowerCase(); cards.forEach(c=>{c.hidden=!((active==='all'||c.dataset.category===active)&&(!q||c.dataset.name.includes(q)||c.textContent.toLowerCase().includes(q)));});}
-    tabs.forEach(t=>t.addEventListener('click',()=>{tabs.forEach(x=>x.classList.remove('active'));t.classList.add('active');filter();})); search?.addEventListener('input',filter);
-    cards.forEach(c=>c.querySelectorAll('[data-quantity-change]').forEach(b=>b.addEventListener('click',()=>{const id=c.dataset.id; basket[id]=Math.max(0,Number(basket[id]||0)+Number(b.dataset.quantityChange)); if(!basket[id])delete basket[id]; save();renderBasket();})));
-    document.querySelector('#checkout-link').addEventListener('click',e=>{if(!selected().length){e.preventDefault();alert('Add at least one item before checkout.');}});
+    function renderBasket(){const items=selected(), html=items.length?items.map(i=>`<div class="basket-line"><span>${i.name} × ${i.quantity}</span><strong>${money.format(i.price*i.quantity)}</strong></div>`).join(''):`<p>${basketEmptyText}</p>`; document.querySelectorAll('[data-basket-lines]').forEach(el=>el.innerHTML=html); const total=items.reduce((sum,item)=>sum+item.price*item.quantity,0);document.querySelectorAll('[data-basket-total]').forEach(el=>el.textContent=money.format(total));document.querySelectorAll('[data-basket-count]').forEach(el=>el.textContent=String(items.reduce((sum,item)=>sum+item.quantity,0)));const creditText=member?`Estimated balance after this basket: ${money.format((member.credit||0)-total)}. Final figures are confirmed on submission.`:basketNotice;document.querySelectorAll('[data-credit-line]').forEach(el=>el.textContent=creditText);cards.forEach(card=>{const output=card.querySelector('[data-quantity]');if(output)output.textContent=String(basket[card.dataset.id]||0);});}
+    function filter(){const active=document.querySelector('.category-tab.active')?.dataset.category||'all',q=(search?.value||'').trim().toLowerCase();cards.forEach(card=>{const cats=(card.dataset.categories||'').split('|');card.hidden=!((active==='all'||cats.includes(active))&&(!q||card.dataset.name.includes(q)||card.textContent.toLowerCase().includes(q)));});}
+    tabs.forEach(tab=>tab.addEventListener('click',()=>{tabs.forEach(item=>item.classList.remove('active'));tab.classList.add('active');filter();})); search?.addEventListener('input',filter);
+    cards.forEach(card=>card.querySelectorAll('[data-quantity-change]').forEach(button=>button.addEventListener('click',()=>{const id=card.dataset.id;basket[id]=Math.max(0,Number(basket[id]||0)+Number(button.dataset.quantityChange));if(!basket[id])delete basket[id];save();renderBasket();if(Number(button.dataset.quantityChange)>0&&matchMedia('(max-width: 760px)').matches){floating.classList.remove('basket-bump');void floating.offsetWidth;floating.classList.add('basket-bump');}})));
+    document.querySelectorAll('[data-checkout-link]').forEach(link=>link.addEventListener('click',event=>{if(!selected().length){event.preventDefault();alert('Add at least one item before checkout.');}}));
     renderBasket(); loadMember();
   </script>
 </BaseLayout>
