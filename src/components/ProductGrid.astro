@@ -39,28 +39,27 @@ const certificationLogos = {
     >
       <img src={product.image || '/images/placeholder.svg'} alt="" loading="lazy" />
       <div class="product-copy">
-        {(product.subcategories || []).length > 0 && <p class="product-category">{product.subcategories.join(' · ')}</p>}
         <h3>{product.link ? <a href={product.link}>{product.name}</a> : product.name}</h3>
+        {product.producer && <p class="product-producer">{product.producer}</p>}
         {product.size && <p class="product-size">{product.size}</p>}
         {product.description && <p>{product.description}</p>}
         <div class="product-meta">
           <strong>{money.format(product.priceNumber || 0)}</strong>
-          {product.producer && <span>{product.producer}</span>}
+          <div class="product-origin-badges" aria-label="Origin and certification">
+            {(product.certifications || []).map((certification) => {
+              const logo = certificationLogos[String(certification).toLowerCase()];
+              return logo
+                ? <img class="certification-logo" src={logo} alt={certification} title={certification} loading="lazy" />
+                : <span class="certification-text" title={certification}>{certification}</span>;
+            })}
+            {(product.grownIn || []).map((country) => <span class="country-flag" title={country} aria-label={`Grown in ${country}`}>{flagFor(country)}</span>)}
+          </div>
         </div>
         {showControls && <div class="quantity-control" aria-label={`Quantity of ${product.name}`}>
           <button type="button" data-quantity-change="-1" aria-label="Remove one">−</button>
           <output data-quantity>0</output>
           <button type="button" data-quantity-change="1" aria-label="Add one">+</button>
         </div>}
-        <div class="product-origin-badges" aria-label="Origin and certification">
-          {(product.certifications || []).map((certification) => {
-            const logo = certificationLogos[String(certification).toLowerCase()];
-            return logo
-              ? <img class="certification-logo" src={logo} alt={certification} title={certification} loading="lazy" />
-              : <span class="certification-text" title={certification}>{certification}</span>;
-          })}
-          {(product.grownIn || []).map((country) => <span class="country-flag" title={country} aria-label={`Grown in ${country}`}>{flagFor(country)}</span>)}
-        </div>
       </div>
     </article>
   ))}

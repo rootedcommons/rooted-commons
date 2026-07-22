@@ -28,7 +28,8 @@ const s = data.settings;
     </div>
     <div id="member-summary" class="member-summary" hidden></div>
     <div class="shop-toolbar">
-      <div class="category-tabs" role="tablist" aria-label="Product categories">
+      <h2 class="shop-filter-heading">Category</h2>
+      <div class="category-tabs" role="tablist" aria-label="Product subcategories">
         <button class="category-tab active" type="button" data-category="all">All ({data.products.length})</button>
         {subcategories.map((subcategory) => { const count=data.products.filter((product)=>(product.subcategories||[]).includes(subcategory)).length; return <button class="category-tab" type="button" data-category={subcategory}>{subcategory} ({count})</button>; })}
       </div>
@@ -38,7 +39,7 @@ const s = data.settings;
       <div id="shop-products"><ProductGrid products={data.products} columns={columns} showControls={true} settings={s} /></div>
       <aside class="basket-panel" aria-live="polite">
         <h2>{s.basketHeading}</h2>
-        <div data-basket-lines><p>{s.basketEmptyText}</p></div>
+        <div data-basket-lines="desktop"><p>{s.basketEmptyText}</p></div>
         <div class="basket-total"><span>{s.basketTotalLabel}</span><strong data-basket-total>£0.00</strong></div>
         <p data-credit-line class="small-print">{s.basketNotice}</p>
         <a data-checkout-link class="button" href="/checkout/">{s.basketCheckoutButton}</a>
@@ -53,7 +54,7 @@ const s = data.settings;
   <div id="basket-backdrop" class="basket-backdrop" hidden></div>
   <aside id="basket-drawer" class="basket-drawer" aria-hidden="true" aria-live="polite">
     <div class="basket-drawer-header"><h2>{s.basketHeading}</h2><button id="close-basket" type="button" aria-label="Close basket">×</button></div>
-    <div data-basket-lines><p>{s.basketEmptyText}</p></div>
+    <div data-basket-lines="mobile"><p>{s.basketEmptyText}</p></div>
     <div class="basket-total"><span>{s.basketTotalLabel}</span><strong data-basket-total>£0.00</strong></div>
     <p data-credit-line class="small-print">{s.basketNotice}</p>
     <a data-checkout-link class="button" href="/checkout/">{s.basketCheckoutButton}</a>
@@ -78,8 +79,8 @@ const s = data.settings;
     function selected(){return cards.map(card=>({id:card.dataset.id,name:card.querySelector('h3')?.textContent||'',price:Number(card.dataset.price||0),quantity:Number(basket[card.dataset.id]||0)})).filter(i=>i.quantity>0);}
     function renderBasket(){
       const items=selected();
-      const html=items.length?items.map(i=>`<div class="basket-line"><div class="basket-line-copy"><strong>${i.name}</strong><span>${money.format(i.price)} each</span></div><div class="basket-line-actions"><button type="button" data-basket-action="decrease" data-product-id="${i.id}" aria-label="Decrease ${i.name}">−</button><span>${i.quantity}</span><button type="button" data-basket-action="increase" data-product-id="${i.id}" aria-label="Increase ${i.name}">+</button><button type="button" class="basket-remove" data-basket-action="remove" data-product-id="${i.id}">Remove</button></div><strong class="basket-line-total">${money.format(i.price*i.quantity)}</strong></div>`).join(''):`<p>${basketEmptyText}</p>`;
-      document.querySelectorAll('[data-basket-lines]').forEach(el=>el.innerHTML=html);
+      const lineHtml=(i,includeRemove)=>`<div class="basket-line"><div class="basket-line-copy"><strong>${i.name}</strong><span>${money.format(i.price)} each</span></div><div class="basket-line-actions"><button type="button" data-basket-action="decrease" data-product-id="${i.id}" aria-label="Decrease ${i.name}">−</button><span>${i.quantity}</span><button type="button" data-basket-action="increase" data-product-id="${i.id}" aria-label="Increase ${i.name}">+</button>${includeRemove?`<button type="button" class="basket-remove" data-basket-action="remove" data-product-id="${i.id}">Remove</button>`:''}</div><strong class="basket-line-total">${money.format(i.price*i.quantity)}</strong></div>`;
+      document.querySelectorAll('[data-basket-lines]').forEach(el=>{const includeRemove=el.dataset.basketLines!=='mobile';el.innerHTML=items.length?items.map(i=>lineHtml(i,includeRemove)).join(''):`<p>${basketEmptyText}</p>`;});
       const total=items.reduce((sum,item)=>sum+item.price*item.quantity,0);
       document.querySelectorAll('[data-basket-total]').forEach(el=>el.textContent=money.format(total));
       document.querySelectorAll('[data-basket-count]').forEach(el=>el.textContent=String(items.reduce((sum,item)=>sum+item.quantity,0)));

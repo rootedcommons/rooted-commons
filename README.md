@@ -1,4 +1,4 @@
-# Rooted Commons website v1.2
+# Rooted Commons website v1.4
 
 This repository contains the Astro website, Cloudflare Pages Functions and Baserow templates for Rooted Commons.
 
@@ -39,7 +39,7 @@ The code expects these tables:
 8. Stock Movement
 9. Account Transactions
 
-The complete CSV exports are in `baserow-imports/`. The v1.2 additions are also supplied separately in `baserow-updates/` so they can be copied into existing tables.
+The complete CSV exports are in `baserow-imports/`. The current additions are also supplied separately in `baserow-updates/` so they can be copied into existing tables.
 
 ## Applying the v1.2 Baserow updates
 
@@ -160,3 +160,13 @@ Header navigation is controlled by numbered pairs in Site Settings:
 - and so on.
 
 The code discovers any numbered pairs dynamically, so adding `Navigation label 6` and `Navigation URL 6` later will add a sixth link without a code change. The right-side button uses `Header button text` and `Header Button URL`.
+
+
+## v1.4 shop-card refinements
+
+- The mobile basket drawer uses only decrease and increase controls; the desktop basket retains its Remove button.
+- Producer appears directly below the product name.
+- Origin flags and certification logos appear to the right of the price.
+- Product images fill the full card width while retaining their aspect ratio.
+- Subcategory names are no longer printed inside product cards.
+- The Orders filter row has a visible Category heading.
