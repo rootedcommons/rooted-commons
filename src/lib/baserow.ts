@@ -100,6 +100,8 @@ export async function getSiteData() {
     footerText: text(validSettingsRow, 'Footer text', fallbackSettings.footerText),
     joinButtonText: text(validSettingsRow, 'Join button text', fallbackSettings.joinButtonText),
     joinButtonUrl: text(validSettingsRow, 'Join button URL', fallbackSettings.joinButtonUrl),
+    headerButtonText: text(validSettingsRow, 'Header button text', text(validSettingsRow, 'Header Button Text', fallbackSettings.headerButtonText)),
+    headerButtonUrl: text(validSettingsRow, 'Header Button URL', text(validSettingsRow, 'Header button URL', fallbackSettings.headerButtonUrl)),
     backgroundColour: text(validSettingsRow, 'Background colour', fallbackSettings.backgroundColour),
     primaryColour: text(validSettingsRow, 'Primary colour', fallbackSettings.primaryColour),
     highlightColour: text(validSettingsRow, 'Highlight colour', fallbackSettings.highlightColour),
@@ -130,7 +132,21 @@ export async function getSiteData() {
     checkoutConfirmHeading: text(validSettingsRow, 'Checkout confirm heading', fallbackSettings.checkoutConfirmHeading),
     checkoutConfirmButton: text(validSettingsRow, 'Checkout confirm button', fallbackSettings.checkoutConfirmButton),
     checkoutReturnText: text(validSettingsRow, 'Checkout return text', fallbackSettings.checkoutReturnText),
-    checkoutSuccessHeading: text(validSettingsRow, 'Checkout success heading', fallbackSettings.checkoutSuccessHeading)
+    checkoutSuccessHeading: text(validSettingsRow, 'Checkout success heading', fallbackSettings.checkoutSuccessHeading),
+    soilAssociationLogo: fileUrl(validSettingsRow, 'Soil Association logo'),
+    euOrganicLogo: fileUrl(validSettingsRow, 'EU Organic logo'),
+    wildfarmedLogo: fileUrl(validSettingsRow, 'Wildfarmed logo'),
+    navigationLinks: Object.keys(validSettingsRow)
+      .map((key) => {
+        const match = key.match(/^Navigation label\s*(\d+)$/i);
+        if (!match) return null;
+        const number = match[1];
+        const label = text(validSettingsRow, key);
+        const url = text(validSettingsRow, `Navigation URL ${number}`);
+        return label && url ? { order: Number(number), label, url } : null;
+      })
+      .filter(Boolean)
+      .sort((a: any, b: any) => a.order - b.order)
   } : fallbackSettings;
 
   const sourcePages = pageRows?.length ? pageRows : fallbackPages;
@@ -211,10 +227,15 @@ export async function getSiteData() {
     description: text(row, 'Description'),
     image: fileUrl(row, 'Image', '/images/placeholder.svg'),
     link: text(row, 'Product Link', text(row, 'Link')),
-    order: numeric(row, 'Display order', numeric(row, 'Order', 9999)),
+    popularity: numeric(row, 'Popularity', numeric(row, 'Display order', numeric(row, 'Order', 9999))),
+    order: numeric(row, 'Popularity', numeric(row, 'Display order', numeric(row, 'Order', 9999))),
     available: boolean(row, 'Available', true),
     categories: linkedValues(raw(row, 'Category')).length ? linkedValues(raw(row, 'Category')) : ['Other'],
     category: linkedValues(raw(row, 'Category'))[0] || 'Other',
+    subcategories: linkedValues(raw(row, 'Subcategory')).length ? linkedValues(raw(row, 'Subcategory')) : ['Other'],
+    subcategory: linkedValues(raw(row, 'Subcategory'))[0] || 'Other',
+    grownIn: linkedValues(raw(row, 'Grown in')),
+    certifications: linkedValues(raw(row, 'Certification')),
     collectionPointIds: linkedIds(raw(row, 'Available collection points')),
     collectionPointNames: linkedValues(raw(row, 'Available collection points'))
   })).filter((product: any) => product.name && product.available).sort((a: any, b: any) => a.order - b.order || a.name.localeCompare(b.name));

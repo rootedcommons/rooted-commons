@@ -4,6 +4,18 @@ export const fallbackSettings = {
   footerText: 'Rooted Commons is a pilot project operated by Roots to Fruits CIC.',
   joinButtonText: 'Join our growing network',
   joinButtonUrl: '/volunteering/',
+  headerButtonText: 'Join our growing network',
+  headerButtonUrl: '/volunteering/',
+  navigationLinks: [
+    { order: 1, label: 'Home', url: '/' },
+    { order: 2, label: 'Cupboard Staples', url: '/cupboard-staples/' },
+    { order: 3, label: 'Fresh Produce', url: '/fresh-produce/' },
+    { order: 4, label: 'Refills', url: '/refills/' },
+    { order: 5, label: 'Our Partners', url: '/our-partners/' }
+  ],
+  soilAssociationLogo: '',
+  euOrganicLogo: '',
+  wildfarmedLogo: '',
   backgroundColour: '#ded8cc',
   primaryColour: '#5a2d4d',
   highlightColour: '#eef3ea',

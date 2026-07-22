@@ -1,9 +1,27 @@
 ---
-const { products, category = '', columns = 3, showControls = false } = Astro.props;
+const { products, category = '', columns = 3, showControls = false, settings = {} } = Astro.props;
 const wanted = String(category || '').trim().toLowerCase();
+const money = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' });
 const filtered = wanted
-  ? products.filter((product) => (product.categories || [product.category]).some((item) => item.toLowerCase() === wanted))
+  ? products.filter((product) => (product.categories || [product.category]).some((item) => String(item).toLowerCase() === wanted))
   : products;
+
+const countryCodes = {
+  'united kingdom':'GB','uk':'GB','great britain':'GB','england':'GB','scotland':'GB','wales':'GB','northern ireland':'GB',
+  'ireland':'IE','italy':'IT','france':'FR','spain':'ES','portugal':'PT','greece':'GR','germany':'DE','belgium':'BE',
+  'netherlands':'NL','sweden':'SE','denmark':'DK','norway':'NO','finland':'FI','poland':'PL','austria':'AT','switzerland':'CH',
+  'tunisia':'TN','morocco':'MA','turkey':'TR','united states':'US','usa':'US','canada':'CA','india':'IN','china':'CN',
+  'sri lanka':'LK','peru':'PE','brazil':'BR','ecuador':'EC','colombia':'CO','south africa':'ZA','new zealand':'NZ','australia':'AU'
+};
+function flagFor(country='') {
+  const code = countryCodes[String(country).trim().toLowerCase()] || (/^[A-Za-z]{2}$/.test(String(country).trim()) ? String(country).trim().toUpperCase() : '');
+  return code ? [...code].map((char) => String.fromCodePoint(127397 + char.charCodeAt(0))).join('') : '🌍';
+}
+const certificationLogos = {
+  'soil association': settings.soilAssociationLogo,
+  'eu organic': settings.euOrganicLogo,
+  'wildfarmed': settings.wildfarmedLogo
+};
 ---
 <div class="product-grid" style={`--columns:${columns}`}>
   {filtered.map((product) => (
@@ -11,18 +29,22 @@ const filtered = wanted
       class="product-card"
       data-product-card
       data-categories={(product.categories || [product.category]).join('|')}
+      data-subcategories={(product.subcategories || [product.subcategory]).join('|')}
       data-name={product.name.toLowerCase()}
+      data-search={[product.name, product.producer, product.description, ...(product.categories||[]), ...(product.subcategories||[]), ...(product.grownIn||[])].filter(Boolean).join(' ').toLowerCase()}
       data-id={product.id}
       data-price={product.priceNumber}
+      data-popularity={product.popularity ?? product.order ?? 9999}
+      data-country={(product.grownIn || [])[0] || ''}
     >
       <img src={product.image || '/images/placeholder.svg'} alt="" loading="lazy" />
       <div class="product-copy">
-        {(product.categories || []).length > 0 && <p class="product-category">{product.categories.join(' · ')}</p>}
+        {(product.subcategories || []).length > 0 && <p class="product-category">{product.subcategories.join(' · ')}</p>}
         <h3>{product.link ? <a href={product.link}>{product.name}</a> : product.name}</h3>
         {product.size && <p class="product-size">{product.size}</p>}
         {product.description && <p>{product.description}</p>}
         <div class="product-meta">
-          <strong>{product.price}</strong>
+          <strong>{money.format(product.priceNumber || 0)}</strong>
           {product.producer && <span>{product.producer}</span>}
         </div>
         {showControls && <div class="quantity-control" aria-label={`Quantity of ${product.name}`}>
@@ -30,6 +52,15 @@ const filtered = wanted
           <output data-quantity>0</output>
           <button type="button" data-quantity-change="1" aria-label="Add one">+</button>
         </div>}
+        <div class="product-origin-badges" aria-label="Origin and certification">
+          {(product.certifications || []).map((certification) => {
+            const logo = certificationLogos[String(certification).toLowerCase()];
+            return logo
+              ? <img class="certification-logo" src={logo} alt={certification} title={certification} loading="lazy" />
+              : <span class="certification-text" title={certification}>{certification}</span>;
+          })}
+          {(product.grownIn || []).map((country) => <span class="country-flag" title={country} aria-label={`Grown in ${country}`}>{flagFor(country)}</span>)}
+        </div>
       </div>
     </article>
   ))}

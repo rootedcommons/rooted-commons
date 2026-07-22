@@ -1,19 +1,18 @@
 ---
 const { settings, pages } = Astro.props;
-const pageBySlug = new Map(pages.map((page) => [page.slug, page]));
-const navSlugs = ['our-partners', 'cupboard-staples', 'fresh-produce'];
-const navPages = navSlugs.map((slug) => pageBySlug.get(slug)).filter(Boolean);
+const links = Array.isArray(settings.navigationLinks) && settings.navigationLinks.length
+  ? settings.navigationLinks
+  : pages.filter((page) => !['home','checkout'].includes(page.slug)).slice(0,5).map((page, index) => ({ order:index+1, label:page.title, url:`/${page.slug}/` }));
 ---
 <header class={`site-header height-${settings.headerHeight}`}>
   <a class={`brand logo-${settings.headerLogoSize}`} href="/" aria-label={`${settings.siteTitle} home`}>
     {settings.headerLogo ? <img src={settings.headerLogo} alt={settings.siteTitle} /> : <span>{settings.siteTitle}</span>}
   </a>
   <nav class={`text-${settings.navigationTextSize}`} aria-label="Main navigation">
-    {navPages.map((page) => <a href={`/${page.slug}/`}>{page.title}</a>)}
-    <a href="/orders/">Weekly Shop</a>
+    {links.map((link) => <a href={link.url}>{link.label}</a>)}
   </nav>
-  <a class={`button header-cta button-${settings.buttonTextSize}`} href={settings.joinButtonUrl || '/volunteering/'}>
-    {settings.joinButtonText || 'Join our growing network'}
+  <a class={`button header-cta button-${settings.buttonTextSize}`} href={settings.headerButtonUrl || settings.joinButtonUrl || '/volunteering/'}>
+    {settings.headerButtonText || settings.joinButtonText || 'Join our growing network'}
   </a>
 </header>
 {settings.headerText && <p class="header-message">{settings.headerText}</p>}

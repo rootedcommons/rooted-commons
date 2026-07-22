@@ -1,6 +1,6 @@
 ---
 import ProductGrid from './ProductGrid.astro';
-const { block, products } = Astro.props;
+const { block, products, settings } = Astro.props;
 const section = block.section;
 const type = block.type;
 const background = `background-${section.backgroundStyle}`;
@@ -8,7 +8,7 @@ const spaces = `space-above-${section.spaceAbove} space-below-${section.spaceBel
 const alignment = `align-${section.alignment}`;
 const button = section.buttonVisible && section.buttonText && section.buttonUrl;
 const groupTitle = section.eyebrow || (block.key ? block.key.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : '');
-const inferredGridCategory = section.gridCategory || (section.page === 'cupboard-staples' ? 'Cupboard Staples' : section.page === 'fresh-produce' ? 'Fresh Produce' : '');
+const inferredGridCategory = section.gridCategory || (section.page === 'cupboard-staples' ? 'Cupboard Staples' : section.page === 'fresh-produce' ? 'Fresh Produce' : section.page === 'refills' ? 'Refills' : '');
 ---
 {type === 'text' && (
   <section class={`content-section text-section ${background} ${spaces} ${alignment}`}>
@@ -83,7 +83,7 @@ const inferredGridCategory = section.gridCategory || (section.page === 'cupboard
       {section.heading && <h2 class={`${alignment} size-${section.headingSize}`}>{section.heading}</h2>}
       {section.subheading && <p class={`section-subheading ${alignment} size-${section.subheadingSize}`}>{section.subheading}</p>}
       {section.body && <div class={`rich-body ${alignment} size-${section.bodySize}`}>{section.body.split(/\n\s*\n/).map((p) => <p>{p}</p>)}</div>}
-      <ProductGrid products={products} category={inferredGridCategory} columns={section.columns} />
+      <ProductGrid products={products} category={inferredGridCategory} columns={section.columns} settings={settings} />
       {button && <p class={alignment}><a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a></p>}
     </div>
   </section>
