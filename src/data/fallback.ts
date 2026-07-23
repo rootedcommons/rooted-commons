@@ -19,6 +19,13 @@ export const fallbackSettings = {
   founder10Badge: '',
   founder25Badge: '',
   founder50Badge: '',
+  membershipPerks: [
+    { order: 1, unlockWeeks: 1, label: 'Priority access to limited seasonal produce' },
+    { order: 2, unlockWeeks: 12, label: 'Access to quarterly wholesale orders' },
+    { order: 3, unlockWeeks: 25, label: 'One free workshop' }
+  ],
+  increaseCommitmentButtonText: 'Increase my weekly BACS amount',
+  increaseCommitmentButtonUrl: '',
   backgroundColour: '#ded8cc',
   primaryColour: '#5a2d4d',
   highlightColour: '#eef3ea',

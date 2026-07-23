@@ -85,7 +85,7 @@ export function publicCollectionPoint(point) {
   };
 }
 
-export function publicMember(member, { collectionPoint = null, lastOrder = null } = {}) {
+export function publicMember(member, { collectionPoint = null, lastOrder = null, account = null } = {}) {
   const memberSince = member['Member since'] || member['Joined date'] || member['Join date'] || '';
   const founderBadge = unwrap(member['Founder badge'] || member['Founder level'] || member['Membership badge']);
   const sinceTime = memberSince ? new Date(memberSince).getTime() : NaN;
@@ -102,6 +102,7 @@ export function publicMember(member, { collectionPoint = null, lastOrder = null 
     founderBadge,
     memberSince: memberSince || '',
     membershipWeeks,
+    account: account || { payments: [], averageWeeklySpend: 0, totalOrderSpend: 0 },
     lastOrder: lastOrder ? {
       orderNumber: unwrap(lastOrder['Order number']),
       submittedAt: lastOrder['Submitted at'] || '',

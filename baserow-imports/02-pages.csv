@@ -1,8 +1,8 @@
-id,Slug,Title,Intro,Button text,Button URL,Hero image,Subtitle,Visible,SEO title,SEO description,Hero layout,Title size,Subtitle size,Intro size,Hero image height,Hero image fit,Hero image alignment,Sections
-1,home,Rooted Commons,"Get fresh, local produce and organic cupboard staples at wholesale-to-community prices, while helping build the infrastructure local producers need to thrive.",,,,,True,,,,,,,,,,"how-1,how-2,how-3"
-3,our-partners,Our Partners,"Rooted Commons depends on growers, retailers, volunteers and residents working together.",,,,,True,,,,,,,,,,
-2,cupboard-staples,Cupboard Staples,"Affordable organic staples make it possible to shift a small, dependable share of weekly spending into the local food economy.",,,,,True,,,,,,,,,,"why,prices,infinity"
-4,fresh-produce,Fresh Produce,"Seasonal produce grown by people and organisations in our local network, coordinated through shared distribution.",,,,,True,,,,,,,,,,local
-5,volunteering,Get Involved,"Learn, spend time outdoors and support the people building a stronger local food system.",,,,,True,,,,,,,,,,intro
-,orders,Weekly Shop,Browse the current range and build a basket. Anyone can explore the shop before becoming a member.,,,,,True,,,Text only,Large,,Medium,,,,
-,checkout,Checkout,Verify your email or secure weekly link before confirming your order.,,,,,True,,,Text only,Large,,Medium,,,,
+id,Slug,Title,Intro,Button text,Button URL,Hero image,Subtitle,Visible,SEO title,SEO description,Hero layout,Title size,Subtitle size,Intro size,Hero image height,Hero image fit,Hero image alignment,Sections,Hero alignment,Hero padding,Hero width
+1,home,Rooted Commons,"Get fresh, local produce and organic cupboard staples at wholesale-to-community prices, while helping build the infrastructure local producers need to thrive.",,,,,True,,,,,,,,,,"how-1,how-2,how-3",,,
+3,our-partners,Our Partners,"Rooted Commons depends on growers, retailers, volunteers and residents working together.",,,,,True,,,,,,,,,,,,,
+2,cupboard-staples,Cupboard Staples,"Affordable organic staples make it possible to shift a small, dependable share of weekly spending into the local food economy.",,,,,True,,,,,,,,,,"why,prices,infinity",,,
+4,fresh-produce,Fresh Produce,"Seasonal produce grown by people and organisations in our local network, coordinated through shared distribution.",,,,,True,,,,,,,,,,local,,,
+5,volunteering,Get Involved,"Learn, spend time outdoors and support the people building a stronger local food system.",,,,,True,,,,,,,,,,intro,,,
+,orders,Weekly Shop,Browse the current range and build a basket. Anyone can explore the shop before becoming a member.,,,,,True,,,Text only,Large,,Medium,,,,,,,
+,checkout,Checkout,Verify your email or secure weekly link before confirming your order.,,,,,True,,,Text only,Large,,Medium,,,,,,,

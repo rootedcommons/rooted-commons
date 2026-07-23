@@ -139,6 +139,22 @@ export async function getSiteData() {
     founder10Badge: fileUrl(validSettingsRow, 'Founder 10 badge'),
     founder25Badge: fileUrl(validSettingsRow, 'Founder 25 badge'),
     founder50Badge: fileUrl(validSettingsRow, 'Founder 50 badge'),
+    membershipPerks: (() => {
+      const configured = Object.keys(validSettingsRow)
+        .map((key) => {
+          const match = key.match(/^Perk\s*(\d+)\s*text$/i);
+          if (!match) return null;
+          const number = match[1];
+          const label = text(validSettingsRow, key);
+          const unlockWeeks = numeric(validSettingsRow, `Perk ${number} unlock weeks`, 0);
+          return label ? { order: Number(number), label, unlockWeeks } : null;
+        })
+        .filter(Boolean)
+        .sort((a: any, b: any) => a.unlockWeeks - b.unlockWeeks || a.order - b.order);
+      return configured.length ? configured : fallbackSettings.membershipPerks;
+    })(),
+    increaseCommitmentButtonText: text(validSettingsRow, 'Increase commitment button text', 'Increase my weekly BACS amount'),
+    increaseCommitmentButtonUrl: text(validSettingsRow, 'Increase commitment button URL', ''),
     navigationLinks: Object.keys(validSettingsRow)
       .map((key) => {
         const match = key.match(/^Navigation label\s*(\d+)$/i);
@@ -167,7 +183,10 @@ export async function getSiteData() {
       visible: boolean(row, 'Visible', row.visible ?? true),
       seoTitle: text(row, 'SEO title', row.seoTitle || ''),
       seoDescription: text(row, 'SEO description', row.seoDescription || ''),
-      heroLayout: normalized(choice(row, 'Hero layout'), heroImage ? 'text-left-image-right' : 'text-only'),
+      heroLayout: normalized(choice(row, 'Hero layout'), heroImage ? 'text-left' : 'text-only'),
+      heroAlignment: normalized(choice(row, 'Hero alignment'), 'left'),
+      heroPadding: normalized(choice(row, 'Hero padding'), 'normal'),
+      heroWidth: normalized(choice(row, 'Hero width'), 'normal'),
       titleSize: normalized(choice(row, 'Title size'), 'large'),
       subtitleSize: normalized(choice(row, 'Subtitle size'), 'medium'),
       introSize: normalized(choice(row, 'Intro size'), 'medium'),

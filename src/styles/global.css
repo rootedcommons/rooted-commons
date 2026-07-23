@@ -149,3 +149,36 @@
   .collection-point-grid,.checkout-paths{grid-template-columns:1fr}
   .dashboard-membership-card{grid-template-columns:1fr}.dashboard-badge{order:-1;min-height:120px}.dashboard-badge img{width:min(70vw,240px)}
 }
+
+/* v1.9 hero controls and dashboard account detail */
+.page-hero{min-height:0}
+.page-hero.hero-padding-none{padding-top:0;padding-bottom:0}
+.page-hero.hero-padding-compact{padding-top:1.5rem;padding-bottom:1.5rem}
+.page-hero.hero-padding-normal{padding-top:3.5rem;padding-bottom:3.5rem}
+.page-hero.hero-padding-spacious{padding-top:6rem;padding-bottom:6rem}
+.page-hero.hero-width-narrow{max-width:700px}
+.page-hero.hero-width-normal{max-width:1050px}
+.page-hero.hero-width-wide{max-width:1350px}
+.page-hero.hero-width-full{max-width:none;width:100%}
+.page-hero.hero-align-left .hero-copy{text-align:left}.page-hero.hero-align-left .hero-intro{margin-right:auto}
+.page-hero.hero-align-center .hero-copy{text-align:center}.page-hero.hero-align-center .hero-intro{margin-inline:auto}
+.page-hero.hero-align-right .hero-copy{text-align:right}.page-hero.hero-align-right .hero-intro{margin-left:auto}
+.page-hero.layout-text-left{grid-template-columns:minmax(0,1fr) minmax(300px,1fr)}
+.page-hero.layout-text-right{grid-template-columns:minmax(300px,1fr) minmax(0,1fr)}
+.page-hero.layout-text-right .hero-media{order:-1}
+.page-hero.layout-text-only{display:block}
+.page-hero.layout-banner{position:relative;display:grid;min-height:420px;max-width:none;width:100%;padding-inline:max(2rem,calc((100vw - var(--max))/2));overflow:hidden;color:white}
+.page-hero.layout-banner .hero-copy{position:relative;z-index:2;align-self:center;max-width:800px;text-shadow:0 2px 18px rgba(0,0,0,.55)}
+.page-hero.layout-banner .hero-media{position:absolute;inset:0;height:100%;z-index:0}
+.page-hero.layout-banner:after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.28);z-index:1}
+.collection-deadline-readable,.collection-deadline{font-weight:700;line-height:1.35}
+.dashboard-detail-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:1.25rem;margin-top:1.25rem;align-items:start}
+.dashboard-membership-card{margin:0}
+.dashboard-membership-copy{min-width:0}
+.dashboard-perks{margin-top:1.25rem;padding-top:1.1rem;border-top:1px solid color-mix(in srgb,var(--border) 75%,transparent)}
+.dashboard-perks h3{margin:0 0 .55rem;font-size:1.15rem}.dashboard-perks ul{margin:.3rem 0 0;padding-left:1.25rem}.dashboard-perks li{margin:.35rem 0}.next-perk{margin-top:1rem;font-size:.9rem;opacity:.85}
+.commitment-amount{display:flex;align-items:baseline;gap:.35rem;margin:.35rem 0 .8rem}.commitment-amount strong{font-size:clamp(2.2rem,5vw,4rem);line-height:1;color:var(--primary)}.commitment-amount span{font-weight:700}
+.commitment-metrics{display:grid;gap:.55rem;margin:1.25rem 0}.commitment-metrics>div,.topup-line{display:flex;justify-content:space-between;gap:1rem;padding-bottom:.5rem;border-bottom:1px solid color-mix(in srgb,var(--border) 72%,transparent)}.commitment-metrics span,.topup-line span{opacity:.8}.commitment-metrics strong,.topup-line strong{text-align:right}
+.recent-topups h3{margin:1.25rem 0 .65rem;font-size:1.1rem}.commitment-prompt{margin-top:1.25rem;padding:1rem;border-radius:.75rem;background:color-mix(in srgb,var(--highlight) 70%,white)}.commitment-prompt p{margin-top:0}.commitment-prompt .button{margin-top:.25rem}
+@media(max-width:900px){.dashboard-detail-grid{grid-template-columns:1fr}.page-hero.layout-text-left,.page-hero.layout-text-right{grid-template-columns:1fr}.page-hero.layout-text-right .hero-media{order:0}}
+@media(max-width:640px){.page-hero.hero-padding-spacious{padding-top:3.5rem;padding-bottom:3.5rem}.page-hero.hero-padding-normal{padding-top:2.5rem;padding-bottom:2.5rem}.page-hero.layout-banner{min-height:320px}}

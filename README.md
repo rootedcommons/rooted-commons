@@ -279,3 +279,49 @@ ENABLE_LEDGER_WRITES=false
 ```
 
 A confirmed order will create or replace a Web Orders row but will not yet alter stock or member credit. After Web Orders submission is proven, set it to `true` to enable Stock Movement and Account Transaction writes.
+
+
+## v1.9: hero controls and expanded member dashboard
+
+### Pages hero fields
+
+The code recognises these exact values:
+
+- `Hero layout`: `text-left`, `text-right`, `text-only`, `banner`, `none`
+- `Hero alignment`: `left`, `centre`, `right`
+- `Hero padding`: `none`, `compact`, `normal`, `spacious`
+- `Hero width`: `narrow`, `normal`, `wide`, `full`
+
+`Hero layout = none` now renders no hero markup and no empty hero spacing.
+
+### Collection-point deadlines
+
+`Orders close` is displayed in the fixed `Europe/London` local time zone. This prevents the visitor's device time zone from changing an entered UK collection deadline.
+
+### Membership perks
+
+Add numbered fields to Site Settings following this exact pattern:
+
+- `Perk 1 unlock weeks`
+- `Perk 1 text`
+- `Perk 2 unlock weeks`
+- `Perk 2 text`
+
+Continue the pattern up to five or beyond. The dashboard automatically discovers every numbered pair, shows unlocked perks, and identifies the next perk.
+
+### Weekly commitment card
+
+The dashboard reads:
+
+- `Weekly commitment` from Members;
+- recent `Payment` or `Top-up` rows from Account Transactions;
+- recent `Order` transactions, with Web Orders used as a fallback for the average and total impact.
+
+It displays recent top-ups, average weekly ordering over eight weeks, approximate credit runway, and cumulative spending redirected through the network.
+
+Optional Site Settings fields:
+
+- `Increase commitment button text`
+- `Increase commitment button URL`
+
+The increase prompt appears when average weekly ordering is at least £2 or 15% above the regular weekly commitment, whichever is greater.

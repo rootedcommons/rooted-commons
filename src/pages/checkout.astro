@@ -24,6 +24,19 @@ const checkoutProducts = data.products.map((product) => ({
   categories: product.categories || [product.category]
 }));
 const checkoutPoints = data.collectionPoints;
+
+const formatCollectionDeadline = (value) => {
+  if (!value) return '';
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return String(value);
+  return new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London',
+    weekday: 'long',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  }).format(parsed).replace(' am','am').replace(' pm','pm');
+};
 ---
 <BaseLayout settings={s} pages={data.pages} title={page.seoTitle || page.title} description={page.seoDescription || page.intro}>
   <PageHero page={page} />
@@ -55,7 +68,7 @@ const checkoutPoints = data.collectionPoints;
               {point.collectionTime && <span>{point.collectionTime}</span>}
               {point.address && <span>{point.address}</span>}
               {point.description && <span>{point.description}</span>}
-              {point.ordersClose && <span class="collection-deadline">Orders close: {point.ordersClose}</span>}
+              {point.ordersClose && <span class="collection-deadline">Orders close {formatCollectionDeadline(point.ordersClose)}</span>}
               {(point.availableCategories || []).length > 0 && <span class="collection-categories">{point.availableCategories.join(' · ')}</span>}
             </span>
             <span class="collection-select-label">Select</span>
