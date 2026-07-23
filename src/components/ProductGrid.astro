@@ -3,7 +3,7 @@ const { products, category = '', columns = 3, showControls = false, settings = {
 const wanted = String(category || '').trim().toLowerCase();
 const money = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' });
 const filtered = wanted
-  ? products.filter((product) => (product.categories || [product.category]).some((item) => String(item).toLowerCase() === wanted))
+  ? products.filter((product) => (product.categories || [product.category]).some((item) => String(item).trim().toLowerCase() === wanted))
   : products;
 
 const countryCodes = {
@@ -22,46 +22,58 @@ const certificationLogos = {
   'eu organic': settings.euOrganicLogo,
   'wildfarmed': settings.wildfarmedLogo
 };
+const cleanValues = (values = []) => values.map((value) => String(value || '').trim()).filter(Boolean);
 ---
 <div class="product-grid" style={`--columns:${columns}`}>
-  {filtered.map((product) => (
-    <article
-      class="product-card"
-      data-product-card
-      data-categories={(product.categories || [product.category]).join('|')}
-      data-subcategories={(product.subcategories || [product.subcategory]).join('|')}
-      data-name={product.name.toLowerCase()}
-      data-search={[product.name, product.producer, product.description, ...(product.categories||[]), ...(product.subcategories||[]), ...(product.grownIn||[])].filter(Boolean).join(' ').toLowerCase()}
-      data-id={product.id}
-      data-price={product.priceNumber}
-      data-popularity={product.popularity ?? product.order ?? 9999}
-      data-country={(product.grownIn || [])[0] || ''}
-    >
-      <img src={product.image || '/images/placeholder.svg'} alt="" loading="lazy" />
-      <div class="product-copy">
-        <h3>{product.link ? <a href={product.link}>{product.name}</a> : product.name}</h3>
-        {product.producer && <p class="product-producer">{product.producer}</p>}
-        {product.size && <p class="product-size">{product.size}</p>}
-        {product.description && <p>{product.description}</p>}
-        <div class="product-meta">
-          <strong>{money.format(product.priceNumber || 0)}</strong>
-          <div class="product-origin-badges" aria-label="Origin and certification">
-            {(product.certifications || []).map((certification) => {
-              const logo = certificationLogos[String(certification).toLowerCase()];
-              return logo
-                ? <img class="certification-logo" src={logo} alt={certification} title={certification} loading="lazy" />
-                : <span class="certification-text" title={certification}>{certification}</span>;
-            })}
-            {(product.grownIn || []).map((country) => <span class="country-flag" title={country} aria-label={`Grown in ${country}`}>{flagFor(country)}</span>)}
+  {filtered.map((product) => {
+    const categories = cleanValues(product.categories || [product.category]);
+    const subcategories = cleanValues(product.subcategories || [product.subcategory]);
+    const countries = cleanValues(product.grownIn || []);
+    const certifications = cleanValues(product.certifications || []);
+    return (
+      <article
+        class="product-card"
+        data-product-card
+        data-categories={categories.join('|')}
+        data-subcategories={subcategories.join('|')}
+        data-name={String(product.name || '').toLowerCase()}
+        data-search={[product.name, product.producer, product.description, ...categories, ...subcategories, ...countries].filter(Boolean).join(' ').toLowerCase()}
+        data-id={product.id}
+        data-price={product.priceNumber}
+        data-popularity={product.popularity ?? product.order ?? 9999}
+        data-country={countries[0] || ''}
+      >
+        <img src={product.image || '/images/placeholder.svg'} alt="" loading="lazy" />
+        <div class="product-copy">
+          <h3>{product.link ? <a href={product.link}>{product.name}</a> : product.name}</h3>
+
+          <div class="product-producer-row">
+            {product.producer ? <p class="product-producer">{product.producer}</p> : <span></span>}
+            <div class="product-origin-badges" aria-label="Origin and certification">
+              {certifications.map((certification) => {
+                const logo = certificationLogos[String(certification).toLowerCase()];
+                return logo
+                  ? <img class="certification-logo" src={logo} alt={certification} title={certification} loading="lazy" />
+                  : <span class="certification-text" title={certification}>{certification}</span>;
+              })}
+              {countries.map((country) => <span class="country-flag" title={country} aria-label={`Grown in ${country}`}>{flagFor(country)}</span>)}
+            </div>
+          </div>
+
+          {product.size && <p class="product-size">{product.size}</p>}
+          {product.description && <p class="product-description">{product.description}</p>}
+
+          <div class="product-purchase-row">
+            <strong class="product-price">{money.format(product.priceNumber || 0)}</strong>
+            {showControls && <div class="quantity-control quantity-control-solid" aria-label={`Quantity of ${product.name}`}>
+              <button type="button" data-quantity-change="-1" aria-label="Remove one">−</button>
+              <output data-quantity>0</output>
+              <button type="button" data-quantity-change="1" aria-label="Add one">+</button>
+            </div>}
           </div>
         </div>
-        {showControls && <div class="quantity-control" aria-label={`Quantity of ${product.name}`}>
-          <button type="button" data-quantity-change="-1" aria-label="Remove one">−</button>
-          <output data-quantity>0</output>
-          <button type="button" data-quantity-change="1" aria-label="Add one">+</button>
-        </div>}
-      </div>
-    </article>
-  ))}
+      </article>
+    );
+  })}
 </div>
 {filtered.length === 0 && <p>No products currently match this section.</p>}

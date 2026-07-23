@@ -91,103 +91,180 @@ const s = data.settings;
   </aside>
 
   <script is:inline define:vars={{ basketEmptyText: s.basketEmptyText, basketNotice: s.basketNotice, broadCategories }}>
-    const STORAGE_KEY='rooted-commons-basket-v1';
-    const TOKEN_KEY='rooted-commons-order-token-v1';
-    const params=new URLSearchParams(location.search);
-    const urlToken=params.get('token');
-    if(urlToken) localStorage.setItem(TOKEN_KEY,urlToken);
-    const token=urlToken||localStorage.getItem(TOKEN_KEY)||'';
-    let basket={}; try{basket=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')||{};}catch{basket={};}
-    const cards=[...document.querySelectorAll('[data-product-card]')];
-    const categoryTabs=[...document.querySelectorAll('[data-shop-category]')];
-    const panels=[...document.querySelectorAll('[data-catalogue-panel]')];
-    const subcategoryTabs=document.querySelector('#subcategory-tabs');
-    const search=document.querySelector('#product-search');
-    const sort=document.querySelector('#product-sort');
-    const grid=document.querySelector('#shop-products .product-grid');
-    const money=new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'});
-    let member=null;
-    let activeCategory=params.get('category') || broadCategories[0] || '';
-    activeCategory=broadCategories.find(category=>slugify(category)===slugify(activeCategory)) || broadCategories[0] || '';
-    let activeSubcategory='all';
+    const STORAGE_KEY = 'rooted-commons-basket-v1';
+    const TOKEN_KEY = 'rooted-commons-order-token-v1';
+    const money = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' });
+    const normalise = (value) => String(value || '').trim().toLowerCase();
+    const slugify = (value) => normalise(value).replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const splitValues = (value) => String(value || '').split('|').map(item => item.trim()).filter(Boolean);
 
-    const drawer=document.querySelector('#basket-drawer'), backdrop=document.querySelector('#basket-backdrop'), floating=document.querySelector('#floating-basket');
-    function slugify(value){return String(value||'').toLowerCase().trim().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
-    function openDrawer(){drawer.classList.add('open');drawer.setAttribute('aria-hidden','false');backdrop.hidden=false;floating.setAttribute('aria-expanded','true');document.body.classList.add('basket-open');}
-    function closeDrawer(){drawer.classList.remove('open');drawer.setAttribute('aria-hidden','true');backdrop.hidden=true;floating.setAttribute('aria-expanded','false');document.body.classList.remove('basket-open');}
-    floating?.addEventListener('click',openDrawer); document.querySelector('#close-basket')?.addEventListener('click',closeDrawer); backdrop?.addEventListener('click',closeDrawer); document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+    const params = new URLSearchParams(location.search);
+    const urlToken = params.get('token');
+    if (urlToken) localStorage.setItem(TOKEN_KEY, urlToken);
+    const token = urlToken || localStorage.getItem(TOKEN_KEY) || '';
 
-    async function loadMember(){ if(!token)return; const r=await fetch(`/api/member?token=${encodeURIComponent(token)}`); if(!r.ok)return; const p=await r.json(); member=p.member; const box=document.querySelector('#member-summary'); box.hidden=false; box.innerHTML=`<strong>Hello ${member.firstName||'member'}.</strong> Current credit: ${money.format(member.credit||0)}${member.collectionPoint?` · Collection: ${member.collectionPoint}`:''}`; renderBasket(); }
+    let basket = {};
+    try { basket = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {}; } catch { basket = {}; }
+
+    const cards = [...document.querySelectorAll('[data-product-card]')];
+    const categoryTabs = [...document.querySelectorAll('[data-shop-category]')];
+    const panels = [...document.querySelectorAll('[data-catalogue-panel]')];
+    const subcategoryTabs = document.querySelector('#subcategory-tabs');
+    const search = document.querySelector('#product-search');
+    const sort = document.querySelector('#product-sort');
+    const grid = document.querySelector('#shop-products .product-grid');
+
+    const state = {
+      category: broadCategories.find(category => slugify(category) === slugify(params.get('category'))) || broadCategories[0] || '',
+      subcategory: 'all',
+      search: '',
+      sort: 'popularity'
+    };
+    let member = null;
+
+    const drawer = document.querySelector('#basket-drawer');
+    const backdrop = document.querySelector('#basket-backdrop');
+    const floating = document.querySelector('#floating-basket');
+    function openDrawer(){drawer?.classList.add('open');drawer?.setAttribute('aria-hidden','false');if(backdrop)backdrop.hidden=false;floating?.setAttribute('aria-expanded','true');document.body.classList.add('basket-open');}
+    function closeDrawer(){drawer?.classList.remove('open');drawer?.setAttribute('aria-hidden','true');if(backdrop)backdrop.hidden=true;floating?.setAttribute('aria-expanded','false');document.body.classList.remove('basket-open');}
+    floating?.addEventListener('click',openDrawer);
+    document.querySelector('#close-basket')?.addEventListener('click',closeDrawer);
+    backdrop?.addEventListener('click',closeDrawer);
+    document.addEventListener('keydown',event=>{if(event.key==='Escape')closeDrawer();});
+
+    function categoriesFor(card){ return splitValues(card.dataset.categories); }
+    function subcategoriesFor(card){ return splitValues(card.dataset.subcategories); }
+    function matchesValue(values, selected){ return values.some(value => normalise(value) === normalise(selected)); }
+
+    function relevantCards(){
+      return cards.filter(card => matchesValue(categoriesFor(card), state.category));
+    }
+
+    function rebuildSubcategories(){
+      const relevant = relevantCards();
+      const values = [...new Set(relevant.flatMap(subcategoriesFor))].sort((a,b)=>a.localeCompare(b));
+      const makeButton = (value,label,count) => `<button class="category-tab${normalise(state.subcategory)===normalise(value)?' active':''}" type="button" data-subcategory="${String(value).replace(/"/g,'&quot;')}">${label} (${count})</button>`;
+      if (!values.some(value => normalise(value) === normalise(state.subcategory))) state.subcategory = 'all';
+      subcategoryTabs.innerHTML = makeButton('all','All',relevant.length) + values.map(value => makeButton(value,value,relevant.filter(card=>matchesValue(subcategoriesFor(card),value)).length)).join('');
+    }
+
+    function visibleCards(){
+      const query = normalise(state.search);
+      return cards.filter(card => {
+        // A search intentionally searches the entire catalogue, irrespective of selected category.
+        if (query) return normalise(card.dataset.search || card.textContent).includes(query);
+        if (!matchesValue(categoriesFor(card), state.category)) return false;
+        if (state.subcategory !== 'all' && !matchesValue(subcategoriesFor(card), state.subcategory)) return false;
+        return true;
+      });
+    }
+
+    function compareCards(a,b){
+      if(state.sort==='price-asc') return Number(a.dataset.price)-Number(b.dataset.price);
+      if(state.sort==='price-desc') return Number(b.dataset.price)-Number(a.dataset.price);
+      if(state.sort==='name') return String(a.dataset.name).localeCompare(String(b.dataset.name));
+      if(state.sort==='country') return String(a.dataset.country||'').localeCompare(String(b.dataset.country||'')) || String(a.dataset.name).localeCompare(String(b.dataset.name));
+      return Number(a.dataset.popularity||9999)-Number(b.dataset.popularity||9999) || String(a.dataset.name).localeCompare(String(b.dataset.name));
+    }
+
+    function renderCatalogue({ updateUrl = false, rebuildTabs = false } = {}){
+      categoryTabs.forEach(tab => tab.classList.toggle('active', normalise(tab.dataset.shopCategory) === normalise(state.category)));
+      panels.forEach(panel => panel.hidden = normalise(panel.dataset.cataloguePanel) !== normalise(state.category));
+      if (rebuildTabs) rebuildSubcategories();
+      const visible = new Set(visibleCards());
+      cards.sort(compareCards).forEach(card => {
+        card.hidden = !visible.has(card);
+        grid?.appendChild(card);
+      });
+      if(updateUrl){
+        const url = new URL(location.href);
+        url.searchParams.set('category',slugify(state.category));
+        history.pushState({category:state.category},'',url);
+      }
+    }
+
+    categoryTabs.forEach(tab => tab.addEventListener('click',()=>{
+      state.category = tab.dataset.shopCategory || broadCategories[0] || '';
+      state.subcategory = 'all';
+      state.search = '';
+      if(search) search.value = '';
+      renderCatalogue({updateUrl:true,rebuildTabs:true});
+    }));
+    subcategoryTabs?.addEventListener('click',event=>{
+      const tab = event.target.closest('[data-subcategory]');
+      if(!tab)return;
+      state.subcategory = tab.dataset.subcategory || 'all';
+      renderCatalogue({rebuildTabs:true});
+    });
+    search?.addEventListener('input',()=>{
+      state.search = search.value;
+      renderCatalogue();
+    });
+    sort?.addEventListener('change',()=>{
+      state.sort = sort.value;
+      renderCatalogue();
+    });
+    addEventListener('popstate',()=>{
+      const value = new URL(location.href).searchParams.get('category');
+      state.category = broadCategories.find(category=>slugify(category)===slugify(value)) || broadCategories[0] || '';
+      state.subcategory = 'all';
+      state.search = '';
+      if(search) search.value='';
+      renderCatalogue({rebuildTabs:true});
+    });
+
+    async function loadMember(){
+      if(!token)return;
+      const response=await fetch(`/api/member?token=${encodeURIComponent(token)}`);
+      if(!response.ok)return;
+      const payload=await response.json();
+      member=payload.member;
+      const box=document.querySelector('#member-summary');
+      box.hidden=false;
+      box.innerHTML=`<strong>Hello ${member.firstName||'member'}.</strong> Current credit: ${money.format(member.credit||0)}${member.collectionPoint?` · Collection: ${member.collectionPoint}`:''}`;
+      renderBasket();
+    }
     function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(basket));}
-    function selected(){return cards.map(card=>({id:card.dataset.id,name:card.querySelector('h3')?.textContent||'',price:Number(card.dataset.price||0),quantity:Number(basket[card.dataset.id]||0)})).filter(i=>i.quantity>0);}
+    function selected(){return cards.map(card=>({id:card.dataset.id,name:card.querySelector('h3')?.textContent||'',price:Number(card.dataset.price||0),quantity:Number(basket[card.dataset.id]||0)})).filter(item=>item.quantity>0);}
     function renderBasket(){
       const items=selected();
-      const lineHtml=(i,includeRemove)=>`<div class="basket-line"><div class="basket-line-copy"><strong>${i.name}</strong><span>${money.format(i.price)} each</span></div><div class="basket-line-actions"><button type="button" data-basket-action="decrease" data-product-id="${i.id}" aria-label="Decrease ${i.name}">−</button><span>${i.quantity}</span><button type="button" data-basket-action="increase" data-product-id="${i.id}" aria-label="Increase ${i.name}">+</button>${includeRemove?`<button type="button" class="basket-remove" data-basket-action="remove" data-product-id="${i.id}">Remove</button>`:''}</div><strong class="basket-line-total">${money.format(i.price*i.quantity)}</strong></div>`;
-      document.querySelectorAll('[data-basket-lines]').forEach(el=>{const includeRemove=el.dataset.basketLines!=='mobile'; el.innerHTML=items.length?items.map(i=>lineHtml(i,includeRemove)).join(''):`<p>${basketEmptyText}</p>`;});
+      const lineHtml=(item,includeRemove)=>`<div class="basket-line"><div class="basket-line-copy"><strong>${item.name}</strong><span>${money.format(item.price)} each</span></div><div class="basket-line-actions"><button type="button" data-basket-action="decrease" data-product-id="${item.id}" aria-label="Decrease ${item.name}">−</button><span>${item.quantity}</span><button type="button" data-basket-action="increase" data-product-id="${item.id}" aria-label="Increase ${item.name}">+</button>${includeRemove?`<button type="button" class="basket-remove" data-basket-action="remove" data-product-id="${item.id}">Remove</button>`:''}</div><strong class="basket-line-total">${money.format(item.price*item.quantity)}</strong></div>`;
+      document.querySelectorAll('[data-basket-lines]').forEach(element=>{const includeRemove=element.dataset.basketLines!=='mobile';element.innerHTML=items.length?items.map(item=>lineHtml(item,includeRemove)).join(''):`<p>${basketEmptyText}</p>`;});
       const total=items.reduce((sum,item)=>sum+item.price*item.quantity,0);
-      document.querySelectorAll('[data-basket-total]').forEach(el=>el.textContent=money.format(total));
-      document.querySelectorAll('[data-basket-count]').forEach(el=>el.textContent=String(items.reduce((sum,item)=>sum+item.quantity,0)));
+      document.querySelectorAll('[data-basket-total]').forEach(element=>element.textContent=money.format(total));
+      document.querySelectorAll('[data-basket-count]').forEach(element=>element.textContent=String(items.reduce((sum,item)=>sum+item.quantity,0)));
       const creditText=member?`Estimated balance after this basket: ${money.format((member.credit||0)-total)}. Final figures are confirmed on submission.`:basketNotice;
-      document.querySelectorAll('[data-credit-line]').forEach(el=>el.textContent=creditText);
-      cards.forEach(card=>{const output=card.querySelector('[data-quantity]'); if(output)output.textContent=String(basket[card.dataset.id]||0);});
+      document.querySelectorAll('[data-credit-line]').forEach(element=>element.textContent=creditText);
+      cards.forEach(card=>{const output=card.querySelector('[data-quantity]');if(output)output.textContent=String(basket[card.dataset.id]||0);});
     }
-
-    function cardCategories(card){return (card.dataset.categories||'').split('|').filter(Boolean);}
-    function cardSubcategories(card){return (card.dataset.subcategories||'').split('|').filter(Boolean);}
-    function cardsInActiveCategory(){return cards.filter(card=>cardCategories(card).includes(activeCategory));}
-    function rebuildSubcategories(){
-      const relevant=cardsInActiveCategory();
-      const values=[...new Set(relevant.flatMap(card=>cardSubcategories(card)))].sort((a,b)=>a.localeCompare(b));
-      const button=(value,label,count,active=false)=>`<button class="category-tab${active?' active':''}" type="button" data-subcategory="${value.replace(/"/g,'&quot;')}">${label} (${count})</button>`;
-      subcategoryTabs.innerHTML=button('all','All',relevant.length,true)+values.map(value=>button(value,value,relevant.filter(card=>cardSubcategories(card).includes(value)).length)).join('');
-      activeSubcategory='all';
-    }
-    function updateCategoryView(push=true){
-      categoryTabs.forEach(tab=>tab.classList.toggle('active',tab.dataset.shopCategory===activeCategory));
-      panels.forEach(panel=>panel.hidden=panel.dataset.cataloguePanel!==activeCategory);
-      rebuildSubcategories();
-      if(search) search.value='';
-      if(push){const url=new URL(location.href); url.searchParams.set('category',slugify(activeCategory)); history.pushState({category:activeCategory},'',url);}
-      applyFilters();
-    }
-    function applyFilters(){
-      const q=(search?.value||'').trim().toLowerCase();
-      cards.forEach(card=>{
-        const searchMatch=!q||(card.dataset.search||card.textContent.toLowerCase()).includes(q);
-        const categoryMatch=q ? true : cardCategories(card).includes(activeCategory);
-        const subcategoryMatch=q ? true : (activeSubcategory==='all'||cardSubcategories(card).includes(activeSubcategory));
-        card.hidden=!(searchMatch&&categoryMatch&&subcategoryMatch);
-      });
-    }
-    function applySort(){
-      const mode=sort?.value||'popularity';
-      const sorted=[...cards].sort((a,b)=>{
-        if(mode==='price-asc') return Number(a.dataset.price)-Number(b.dataset.price);
-        if(mode==='price-desc') return Number(b.dataset.price)-Number(a.dataset.price);
-        if(mode==='name') return a.dataset.name.localeCompare(b.dataset.name);
-        if(mode==='country') return (a.dataset.country||'').localeCompare(b.dataset.country||'')||a.dataset.name.localeCompare(b.dataset.name);
-        return Number(a.dataset.popularity||9999)-Number(b.dataset.popularity||9999)||a.dataset.name.localeCompare(b.dataset.name);
-      });
-      sorted.forEach(card=>grid?.appendChild(card));
-    }
-
-    categoryTabs.forEach(tab=>tab.addEventListener('click',()=>{activeCategory=tab.dataset.shopCategory; updateCategoryView(true);}));
-    subcategoryTabs?.addEventListener('click',event=>{const tab=event.target.closest('[data-subcategory]'); if(!tab)return; activeSubcategory=tab.dataset.subcategory; subcategoryTabs.querySelectorAll('[data-subcategory]').forEach(item=>item.classList.toggle('active',item===tab)); applyFilters();});
-    search?.addEventListener('input',()=>applyFilters());
-    sort?.addEventListener('change',()=>{applySort(); applyFilters();});
-    addEventListener('popstate',()=>{const value=new URL(location.href).searchParams.get('category'); activeCategory=broadCategories.find(category=>slugify(category)===slugify(value))||broadCategories[0]||''; updateCategoryView(false);});
 
     document.addEventListener('click',event=>{
-      const button=event.target.closest('[data-basket-action]'); if(!button)return;
-      const id=button.dataset.productId, action=button.dataset.basketAction;
-      if(action==='increase') basket[id]=Number(basket[id]||0)+1;
-      if(action==='decrease') basket[id]=Math.max(0,Number(basket[id]||0)-1);
-      if(action==='remove'||!basket[id]) delete basket[id];
-      save(); renderBasket();
+      const basketButton=event.target.closest('[data-basket-action]');
+      if(basketButton){
+        const id=basketButton.dataset.productId;
+        const action=basketButton.dataset.basketAction;
+        if(action==='increase')basket[id]=Number(basket[id]||0)+1;
+        if(action==='decrease')basket[id]=Math.max(0,Number(basket[id]||0)-1);
+        if(action==='remove'||!basket[id])delete basket[id];
+        save();renderBasket();return;
+      }
+      const quantityButton=event.target.closest('[data-quantity-change]');
+      if(quantityButton){
+        const card=quantityButton.closest('[data-product-card]');
+        if(!card)return;
+        const id=card.dataset.id;
+        basket[id]=Math.max(0,Number(basket[id]||0)+Number(quantityButton.dataset.quantityChange));
+        if(!basket[id])delete basket[id];
+        save();renderBasket();
+        if(Number(quantityButton.dataset.quantityChange)>0&&matchMedia('(max-width:760px)').matches){floating?.classList.remove('basket-bump');void floating?.offsetWidth;floating?.classList.add('basket-bump');}
+      }
     });
-    cards.forEach(card=>card.querySelectorAll('[data-quantity-change]').forEach(button=>button.addEventListener('click',()=>{const id=card.dataset.id; basket[id]=Math.max(0,Number(basket[id]||0)+Number(button.dataset.quantityChange)); if(!basket[id])delete basket[id]; save(); renderBasket(); if(Number(button.dataset.quantityChange)>0&&matchMedia('(max-width: 760px)').matches){floating.classList.remove('basket-bump'); void floating.offsetWidth; floating.classList.add('basket-bump');}})));
-    document.querySelectorAll('[data-checkout-link]').forEach(link=>link.addEventListener('click',event=>{if(!selected().length){event.preventDefault(); alert('Add at least one item before checkout.');}}));
+    document.querySelectorAll('[data-checkout-link]').forEach(link=>link.addEventListener('click',event=>{if(!selected().length){event.preventDefault();alert('Add at least one item before checkout.');}}));
 
-    applySort(); updateCategoryView(false); renderBasket(); loadMember();
+    state.sort = sort?.value || 'popularity';
+    rebuildSubcategories();
+    renderCatalogue();
+    renderBasket();
+    loadMember();
   </script>
 </BaseLayout>

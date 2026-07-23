@@ -43,3 +43,18 @@
 .shop-category-tab.active, .shop-category-tab:hover { background: var(--primary); color: white; }
 .catalogue-panel[hidden] { display: none !important; }
 .catalogue-panel .content-section:first-child, .catalogue-panel .banner-section:first-child { margin-top: 0; }
+
+/* v1.6 catalogue filtering and card layout */
+.product-producer-row{display:flex;align-items:center;justify-content:space-between;gap:.75rem;min-height:1.8rem}
+.product-producer-row .product-producer{margin:0;min-width:0}
+.product-origin-badges{display:flex;align-items:center;justify-content:flex-end;gap:.4rem;flex:0 0 auto}
+.certification-logo,.country-flag{height:1.45rem;width:auto;object-fit:contain}
+.country-flag{font-size:1.35rem;line-height:1}
+.product-size{margin:.1rem 0 0!important}
+.product-description{margin:.35rem 0!important}
+.product-purchase-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:auto;padding-top:.15rem}
+.product-price{white-space:nowrap}
+.quantity-control.quantity-control-solid{align-self:auto;margin-top:0;background:var(--primary);color:var(--background);border-color:var(--primary)}
+.quantity-control.quantity-control-solid button{color:inherit}
+.quantity-control.quantity-control-solid output{font-weight:700}
+.product-card[hidden]{display:none!important}

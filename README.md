@@ -192,3 +192,10 @@ Direct links use:
 - `/orders/?category=refills`
 
 The basket is stored in the browser and remains unchanged when visitors switch category views.
+
+## v1.6 changes
+
+- Rebuilt shop filtering around one browser-side state and render function.
+- Broad category, subcategory, search and sorting now consistently update the static product grid.
+- Product card origin badges share the producer line.
+- Solid quantity selector sits to the right of the price.
