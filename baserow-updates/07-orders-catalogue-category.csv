@@ -1,0 +1,4 @@
+Page,Key,Section type,Catalogue category,Heading,Body,Order,Visible
+orders,orders-cupboard-header,Banner,Cupboard Staples,Cupboard Staples,Edit this text in Baserow.,10,true
+orders,orders-fresh-header,Banner,Fresh Produce,Fresh Produce,Edit this text in Baserow.,20,true
+orders,orders-refills-header,Banner,Refills,Refills,Edit this text in Baserow.,30,true
