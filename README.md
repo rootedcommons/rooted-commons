@@ -208,3 +208,74 @@ The basket is stored in the browser and remains unchanged when visitors switch c
 - Four desktop grid columns, three tablet/landscape-phone columns, and two portrait-phone columns.
 - Trash icon on basket lines.
 - Larger product-card prices.
+
+## v1.8: member dashboard and checkout
+
+This version adds:
+
+- `/dashboard/?token=...` as the personalised landing page from the weekly email;
+- current member credit, preferred collection point, founder badge and last website order;
+- collection-point cards on checkout, filtered against the basket's broad product categories;
+- separate **Already a member?** and **Not a member yet?** checkout panels;
+- successful verified-member submissions to the Web Orders table;
+- Web Orders-only testing by default.
+
+### Additional Baserow fields
+
+**Members**
+
+- `Member since` — date
+- `Founder badge` — single select: `Founder 10`, `Founder 25`, `Founder 50`
+
+**Site Settings**
+
+- `Founder 10 badge` — file
+- `Founder 25 badge` — file
+- `Founder 50 badge` — file
+
+**Collection Points**
+
+- `Image` — file
+- `Link` — URL
+- `Description` — long text
+- `Available to collect here` — multiple select
+- `Collection time` — text
+- `Orders close` — text
+
+The field `Available to collect here` should use the same broad names as Products `Category`.
+
+### Checkout content in Sections
+
+Create three rows linked to the Checkout page, with these exact Keys:
+
+- `checkout-collection`
+- `checkout-member`
+- `checkout-join`
+
+Their Heading, Body and button fields control the checkout copy.
+
+### Test a member token
+
+Open:
+
+```text
+https://rootedcommons.uk/dashboard/?token=YOUR_TOKEN
+```
+
+or:
+
+```text
+https://rootedcommons.uk/checkout/?token=YOUR_TOKEN
+```
+
+The member must be Active and the Order token expiry must be in the future.
+
+### Web Orders first
+
+Keep this Cloudflare variable unset or set to `false` while testing:
+
+```text
+ENABLE_LEDGER_WRITES=false
+```
+
+A confirmed order will create or replace a Web Orders row but will not yet alter stock or member credit. After Web Orders submission is proven, set it to `true` to enable Stock Movement and Account Transaction writes.

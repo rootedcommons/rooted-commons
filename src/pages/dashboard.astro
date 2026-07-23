@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionRenderer from '../components/SectionRenderer.astro';
+import { getSiteData } from '../lib/baserow';
+import { buildSectionBlocks } from '../lib/sections';
+
+const data=await getSiteData();
+const page=data.pages.find((item)=>item.slug==='dashboard') || {title:'Your Rooted Commons',intro:'Your weekly market, membership and local food network in one place.',titleSize:'large',introSize:'medium',heroLayout:'text-only'};
+const blocks=buildSectionBlocks(data.sections.filter((section)=>section.page==='dashboard'));
+const s=data.settings;
+const badgeLogos={
+  'Founder 10':s.founder10Badge,
+  'Founder 25':s.founder25Badge,
+  'Founder 50':s.founder50Badge
+};
+---
+<BaseLayout settings={s} pages={data.pages} title={page.seoTitle || page.title} description={page.seoDescription || page.intro}>
+  <PageHero page={page} />
+
+  <main class="dashboard-shell">
+    <section id="dashboard-loading" class="dashboard-card"><p>Loading your membership…</p></section>
+    <section id="dashboard-content" hidden>
+      <div class="dashboard-overview">
+        <article class="dashboard-card dashboard-welcome">
+          <p class="eyebrow">Your weekly market</p>
+          <h2 id="dashboard-greeting">Welcome</h2>
+          <p class="dashboard-credit"><span>Member credit</span><strong id="dashboard-credit">£0.00</strong></p>
+          <div id="dashboard-order-status" class="dashboard-status">Orders are open</div>
+          <a id="dashboard-shop-link" class="button" href="/orders/">Browse this week’s market</a>
+        </article>
+
+        <article class="dashboard-card dashboard-collection">
+          <p class="eyebrow">Collection point</p>
+          <h2 id="dashboard-point-name">Not selected</h2>
+          <p id="dashboard-point-time"></p>
+          <p id="dashboard-point-address"></p>
+          <p id="dashboard-point-deadline" class="small-print"></p>
+        </article>
+      </div>
+
+      <div class="dashboard-membership-row">
+        <article class="dashboard-card dashboard-membership-card">
+          <div>
+            <p class="eyebrow">Your membership</p>
+            <h2 id="dashboard-founder-level">Rooted Commons member</h2>
+            <p id="dashboard-member-since"></p>
+            <p id="dashboard-last-order"></p>
+          </div>
+          <div id="dashboard-badge" class="dashboard-badge"></div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  {blocks.map((block)=><SectionRenderer block={block} products={data.products} settings={s} />)}
+
+  <script is:inline define:vars={{ badgeLogos }}>
+    const TOKEN_KEY='rooted-commons-order-token-v1';
+    const params=new URLSearchParams(location.search);
+    const urlToken=params.get('token');
+    if(urlToken)localStorage.setItem(TOKEN_KEY,urlToken);
+    const token=urlToken||localStorage.getItem(TOKEN_KEY)||'';
+    const money=new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'});
+    const relativeDate=value=>{
+      if(!value)return 'No previous website order';
+      const days=Math.max(0,Math.floor((Date.now()-new Date(value).getTime())/86400000));
+      if(days===0)return 'You last ordered today';
+      if(days===1)return 'You last ordered yesterday';
+      if(days<14)return `You last ordered ${days} days ago`;
+      const weeks=Math.floor(days/7);
+      return `You last ordered ${weeks} week${weeks===1?'':'s'} ago`;
+    };
+    async function load(){
+      if(!token){location.href='/orders/';return;}
+      const response=await fetch(`/api/member?token=${encodeURIComponent(token)}`);
+      if(!response.ok){document.querySelector('#dashboard-loading').innerHTML='<h2>This secure link is no longer valid</h2><p>Request a new link from checkout or use the latest weekly email.</p>';return;}
+      const {member}=await response.json();
+      document.querySelector('#dashboard-loading').hidden=true;
+      document.querySelector('#dashboard-content').hidden=false;
+      document.querySelector('#dashboard-greeting').textContent=`Hi ${member.firstName||'there'}`;
+      document.querySelector('#dashboard-credit').textContent=money.format(member.credit||0);
+      document.querySelector('#dashboard-shop-link').href=`/orders/?token=${encodeURIComponent(token)}`;
+      const point=member.collectionPoint||{};
+      document.querySelector('#dashboard-point-name').textContent=point.name||'Choose at checkout';
+      document.querySelector('#dashboard-point-time').textContent=point.collectionTime||'';
+      document.querySelector('#dashboard-point-address').textContent=point.address||'';
+      document.querySelector('#dashboard-point-deadline').textContent=point.ordersClose?`Orders close ${point.ordersClose} for this slot.`:'';
+      document.querySelector('#dashboard-founder-level').textContent=member.founderBadge||'Rooted Commons member';
+      document.querySelector('#dashboard-member-since').textContent=member.membershipWeeks!=null?`${member.membershipWeeks} weeks supporting local producers.`:(member.memberSince?`Member since ${new Date(member.memberSince).toLocaleDateString('en-GB',{month:'long',year:'numeric'})}.`:'');
+      document.querySelector('#dashboard-last-order').textContent=relativeDate(member.lastOrder?.submittedAt);
+      const logo=badgeLogos[member.founderBadge];
+      if(logo)document.querySelector('#dashboard-badge').innerHTML=`<img src="${logo}" alt="${member.founderBadge}">`;
+    }
+    load();
+  </script>
+</BaseLayout>

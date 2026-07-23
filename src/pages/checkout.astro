@@ -4,38 +4,264 @@ import PageHero from '../components/PageHero.astro';
 import SectionRenderer from '../components/SectionRenderer.astro';
 import { getSiteData } from '../lib/baserow';
 import { buildSectionBlocks } from '../lib/sections';
-const data=await getSiteData();
-const page=data.pages.find((item)=>item.slug==='checkout') || {title:'Checkout',intro:'',titleSize:'large',introSize:'medium',heroLayout:'text-only'};
-const blocks=buildSectionBlocks(data.sections.filter((section)=>section.page==='checkout'));
-const s=data.settings;
+
+const data = await getSiteData();
+const page = data.pages.find((item) => item.slug === 'checkout') || {
+  title:'Checkout', intro:'Review your order, choose a collection point and continue as a member.', titleSize:'large', introSize:'medium', heroLayout:'text-only'
+};
+const pageSections = data.sections.filter((section) => section.page === 'checkout');
+const specialKeys = new Set(['checkout-collection','checkout-member','checkout-join']);
+const ordinaryBlocks = buildSectionBlocks(pageSections.filter((section) => !specialKeys.has(section.key)));
+const sectionByKey = (key) => pageSections.find((section) => section.key === key);
+const collectionCopy = sectionByKey('checkout-collection') || { heading:'Choose where to collect', body:'Select a collection point that can fulfil everything in your basket.' };
+const memberCopy = sectionByKey('checkout-member') || { heading:'Already a member?', body:'Enter your email and we will send your secure ordering link.' };
+const joinCopy = sectionByKey('checkout-join') || { heading:'Not a member yet?', body:'Join Rooted Commons to order from the weekly market and help strengthen the local food network.', buttonText:'Become a member', buttonUrl:'/become-a-member/' };
+const s = data.settings;
+const checkoutProducts = data.products.map((product) => ({
+  id: product.id,
+  name: product.name,
+  price: product.priceNumber,
+  categories: product.categories || [product.category]
+}));
+const checkoutPoints = data.collectionPoints;
 ---
 <BaseLayout settings={s} pages={data.pages} title={page.seoTitle || page.title} description={page.seoDescription || page.intro}>
   <PageHero page={page} />
-  {blocks.map((block) => <SectionRenderer block={block} products={data.products} settings={data.settings} />)}
-  <section class="checkout-shell">
-    <div id="checkout-basket" class="checkout-card"></div>
-    <div id="verified-panel" class="checkout-card" hidden>
-      <h2>{s.checkoutConfirmHeading}</h2><div id="verified-member"></div>
-      <button id="submit-order" class="button" type="button">{s.checkoutConfirmButton}</button>
+
+  <main class="checkout-shell checkout-shell-wide">
+    <section class="checkout-card checkout-review" aria-labelledby="checkout-order-heading">
+      <h2 id="checkout-order-heading">{s.checkoutBasketHeading}</h2>
+      <div id="checkout-basket-lines"></div>
+      <div class="checkout-total-row"><span>{s.basketTotalLabel}</span><strong id="checkout-total">£0.00</strong></div>
+    </section>
+
+    <section class="checkout-stage" aria-labelledby="collection-heading">
+      <div class="checkout-stage-heading">
+        <h2 id="collection-heading">{collectionCopy.heading}</h2>
+        {collectionCopy.body && <div class="rich-body">{collectionCopy.body.split(/\n\s*\n/).map((paragraph) => <p>{paragraph}</p>)}</div>}
+      </div>
+      <div id="collection-point-grid" class="collection-point-grid">
+        {checkoutPoints.map((point) => (
+          <button
+            class="collection-point-card"
+            type="button"
+            data-collection-point
+            data-point-id={point.id}
+            data-available-categories={(point.availableCategories || []).join('|')}
+          >
+            {point.image && <img src={point.image} alt="" loading="lazy" />}
+            <span class="collection-point-copy">
+              <strong>{point.name}</strong>
+              {point.collectionTime && <span>{point.collectionTime}</span>}
+              {point.address && <span>{point.address}</span>}
+              {point.description && <span>{point.description}</span>}
+              {point.ordersClose && <span class="collection-deadline">Orders close: {point.ordersClose}</span>}
+              {(point.availableCategories || []).length > 0 && <span class="collection-categories">{point.availableCategories.join(' · ')}</span>}
+            </span>
+            <span class="collection-select-label">Select</span>
+          </button>
+        ))}
+      </div>
+      <p id="collection-message" class="small-print"></p>
+    </section>
+
+    <div class="checkout-paths">
+      <section id="member-path" class="checkout-card checkout-path-card">
+        <div id="unverified-member-panel">
+          <h2>{memberCopy.heading}</h2>
+          {memberCopy.body && <div class="rich-body">{memberCopy.body.split(/\n\s*\n/).map((paragraph) => <p>{paragraph}</p>)}</div>}
+          <form id="email-form">
+            <label>{s.checkoutEmailLabel}<input name="email" type="email" required autocomplete="email" /></label>
+            <button class="button" type="submit">{s.checkoutEmailButton}</button>
+          </form>
+          <p id="email-message" class="small-print" aria-live="polite"></p>
+        </div>
+
+        <div id="verified-member-panel" hidden>
+          <h2>{s.checkoutConfirmHeading}</h2>
+          <div id="verified-member"></div>
+          <button id="submit-order" class="button" type="button" disabled>{s.checkoutConfirmButton}</button>
+          <p id="submit-message" class="small-print" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="checkout-card checkout-path-card checkout-join-card">
+        <h2>{joinCopy.heading}</h2>
+        {joinCopy.body && <div class="rich-body">{joinCopy.body.split(/\n\s*\n/).map((paragraph) => <p>{paragraph}</p>)}</div>}
+        {joinCopy.buttonText && joinCopy.buttonUrl && <a class="button" href={joinCopy.buttonUrl}>{joinCopy.buttonText}</a>}
+      </section>
     </div>
-    <div id="email-panel" class="checkout-card">
-      <h2>{s.checkoutVerifyHeading}</h2>
-      <p>{s.checkoutVerifyBody}</p>
-      <form id="email-form"><label>{s.checkoutEmailLabel}<input name="email" type="email" required autocomplete="email" /></label><button class="button" type="submit">{s.checkoutEmailButton}</button></form>
-      <p id="email-message" class="small-print"></p>
-    </div>
-    <p><a href="/orders/">← {s.checkoutReturnText}</a></p>
-  </section>
-  <script is:inline define:vars={{ checkoutBasketHeading:s.checkoutBasketHeading,checkoutEmptyHeading:s.checkoutEmptyHeading,checkoutEmptyText:s.checkoutEmptyText,checkoutConfirmButton:s.checkoutConfirmButton,checkoutSuccessHeading:s.checkoutSuccessHeading }}>
-    const STORAGE_KEY='rooted-commons-basket-v1',TOKEN_KEY='rooted-commons-order-token-v1';
-    let basket={};try{basket=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')||{};}catch{basket={};}const token=localStorage.getItem(TOKEN_KEY)||'';
+
+    <p class="checkout-return"><a href="/orders/">← {s.checkoutReturnText}</a></p>
+  </main>
+
+  {ordinaryBlocks.map((block) => <SectionRenderer block={block} products={data.products} settings={data.settings} />)}
+
+  <script is:inline define:vars={{
+    products: checkoutProducts,
+    points: checkoutPoints,
+    checkoutEmptyHeading: s.checkoutEmptyHeading,
+    checkoutEmptyText: s.checkoutEmptyText,
+    checkoutConfirmButton: s.checkoutConfirmButton,
+    checkoutSuccessHeading: s.checkoutSuccessHeading
+  }}>
+    const STORAGE_KEY='rooted-commons-basket-v1';
+    const TOKEN_KEY='rooted-commons-order-token-v1';
+    const POINT_KEY='rooted-commons-collection-point-v1';
     const money=new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'});
-    const items=Object.entries(basket).filter(([,q])=>Number(q)>0).map(([productId,quantity])=>({productId:Number(productId),quantity:Number(quantity)}));
-    const count=items.reduce((sum,item)=>sum+item.quantity,0), summary=document.querySelector('#checkout-basket');
-    summary.innerHTML=items.length?`<h2>${checkoutBasketHeading}</h2><p>${count} item${count===1?'':'s'} selected. Final prices and stock will be checked when submitted.</p>`:`<h2>${checkoutEmptyHeading}</h2><p>${checkoutEmptyText}</p>`;
-    async function verify(){if(!token||!items.length)return;const r=await fetch(`/api/member?token=${encodeURIComponent(token)}`);if(!r.ok)return;const p=await r.json();document.querySelector('#email-panel').hidden=true;document.querySelector('#verified-panel').hidden=false;document.querySelector('#verified-member').innerHTML=`<p><strong>${p.member.firstName||'Member'}</strong><br>Current credit: ${money.format(p.member.credit||0)}${p.member.collectionPoint?`<br>Collection point: ${p.member.collectionPoint}`:''}</p>`;}
-    document.querySelector('#submit-order').addEventListener('click',async()=>{const btn=document.querySelector('#submit-order');btn.disabled=true;btn.textContent='Submitting…';const r=await fetch('/api/order',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token,items})});const p=await r.json();if(r.ok&&p.ok){localStorage.removeItem(STORAGE_KEY);summary.innerHTML=`<h2>${checkoutSuccessHeading}</h2><p>Order <strong>${p.orderNumber}</strong></p><p>Total: ${money.format(p.total)}<br>Estimated closing credit: ${money.format(p.closingCredit)}</p>`;document.querySelector('#verified-panel').hidden=true;}else{alert(p.message||'The order could not be submitted.');btn.disabled=false;btn.textContent=checkoutConfirmButton;}});
-    document.querySelector('#email-form').addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget,message=document.querySelector('#email-message'),button=form.querySelector('button');button.disabled=true;message.textContent='Checking…';const r=await fetch('/api/request-link',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:new FormData(form).get('email'),basketSummary:items})});const p=await r.json();message.textContent=p.message||'Please check your email.';button.disabled=false;});
-    verify();
+    const productMap=new Map(products.map(product=>[Number(product.id),product]));
+    const pointMap=new Map(points.map(point=>[Number(point.id),point]));
+    const normalise=value=>String(value||'').trim().toLowerCase();
+
+    const params=new URLSearchParams(location.search);
+    const urlToken=params.get('token');
+    if(urlToken)localStorage.setItem(TOKEN_KEY,urlToken);
+    let token=urlToken||localStorage.getItem(TOKEN_KEY)||'';
+    let member=null;
+    let selectedPointId=Number(localStorage.getItem(POINT_KEY)||0);
+    let basket={};
+    try{basket=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')||{};}catch{basket={};}
+
+    const basketLines=document.querySelector('#checkout-basket-lines');
+    const totalElement=document.querySelector('#checkout-total');
+    const collectionCards=[...document.querySelectorAll('[data-collection-point]')];
+    const collectionMessage=document.querySelector('#collection-message');
+    const submitButton=document.querySelector('#submit-order');
+    const submitMessage=document.querySelector('#submit-message');
+
+    function selectedItems(){
+      return Object.entries(basket)
+        .map(([productId,quantity])=>({product:productMap.get(Number(productId)),productId:Number(productId),quantity:Number(quantity)}))
+        .filter(item=>item.product&&item.quantity>0);
+    }
+    function basketTotal(){return selectedItems().reduce((sum,item)=>sum+(Number(item.product.price)||0)*item.quantity,0);}
+    function basketCategories(){return [...new Set(selectedItems().flatMap(item=>item.product.categories||[]).filter(Boolean))];}
+    function saveBasket(){localStorage.setItem(STORAGE_KEY,JSON.stringify(basket));}
+    function pointCompatible(point){
+      const supported=(point.availableCategories||[]).map(normalise);
+      if(!supported.length)return true;
+      return selectedItems().every(item=>{
+        const categories=(item.product.categories||[]).map(normalise);
+        return !categories.length||categories.some(category=>supported.includes(category));
+      });
+    }
+    function selectedPoint(){return pointMap.get(Number(selectedPointId));}
+
+    function renderBasket(){
+      const items=selectedItems();
+      if(!items.length){
+        basketLines.innerHTML=`<h3>${checkoutEmptyHeading}</h3><p>${checkoutEmptyText}</p>`;
+      }else{
+        const trash='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-.7 11H7.7L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z"/></svg>';
+        basketLines.innerHTML=items.map(item=>`<div class="checkout-line"><div><strong>${item.product.name}</strong><span>${money.format(item.product.price)} each</span></div><div class="checkout-line-controls"><button type="button" data-checkout-action="decrease" data-product-id="${item.productId}" aria-label="Decrease ${item.product.name}">−</button><span>${item.quantity}</span><button type="button" data-checkout-action="increase" data-product-id="${item.productId}" aria-label="Increase ${item.product.name}">+</button><button type="button" class="checkout-trash" data-checkout-action="remove" data-product-id="${item.productId}" aria-label="Remove ${item.product.name}">${trash}</button></div><strong>${money.format(item.product.price*item.quantity)}</strong></div>`).join('');
+      }
+      totalElement.textContent=money.format(basketTotal());
+      renderCollectionPoints();
+      renderMemberSummary();
+    }
+
+    function renderCollectionPoints(){
+      const categories=basketCategories();
+      collectionCards.forEach(card=>{
+        const point=pointMap.get(Number(card.dataset.pointId));
+        const compatible=point&&pointCompatible(point);
+        card.disabled=!compatible;
+        card.classList.toggle('incompatible',!compatible);
+        card.classList.toggle('selected',compatible&&Number(point.id)===Number(selectedPointId));
+        const label=card.querySelector('.collection-select-label');
+        if(label)label.textContent=!compatible?'Not available':Number(point.id)===Number(selectedPointId)?'Selected':'Select';
+      });
+      const current=selectedPoint();
+      if(current&&!pointCompatible(current)){
+        selectedPointId=0;
+        localStorage.removeItem(POINT_KEY);
+      }
+      collectionMessage.textContent=categories.length?`This basket includes: ${categories.join(', ')}.`:'';
+      updateSubmitState();
+    }
+
+    function renderMemberSummary(){
+      if(!member)return;
+      const total=basketTotal();
+      const point=selectedPoint();
+      document.querySelector('#verified-member').innerHTML=`<div class="verified-summary"><p><strong>Hi ${member.firstName||'member'}</strong></p><dl><div><dt>Member credit</dt><dd>${money.format(member.credit||0)}</dd></div><div><dt>This order</dt><dd>−${money.format(total)}</dd></div><div><dt>Estimated balance</dt><dd>${money.format((member.credit||0)-total)}</dd></div><div><dt>Collection</dt><dd>${point?point.name:'Choose a collection point'}</dd></div></dl></div>`;
+      updateSubmitState();
+    }
+
+    function updateSubmitState(){
+      const point=selectedPoint();
+      submitButton.disabled=!(member&&selectedItems().length&&point&&pointCompatible(point));
+    }
+
+    collectionCards.forEach(card=>card.addEventListener('click',()=>{
+      if(card.disabled)return;
+      selectedPointId=Number(card.dataset.pointId);
+      localStorage.setItem(POINT_KEY,String(selectedPointId));
+      renderCollectionPoints();
+      renderMemberSummary();
+    }));
+
+    document.addEventListener('click',event=>{
+      const button=event.target.closest('[data-checkout-action]');
+      if(!button)return;
+      const id=button.dataset.productId;
+      const action=button.dataset.checkoutAction;
+      if(action==='increase')basket[id]=Number(basket[id]||0)+1;
+      if(action==='decrease')basket[id]=Math.max(0,Number(basket[id]||0)-1);
+      if(action==='remove'||!basket[id])delete basket[id];
+      saveBasket();
+      renderBasket();
+    });
+
+    async function verifyMember(){
+      if(!token)return;
+      const response=await fetch(`/api/member?token=${encodeURIComponent(token)}`);
+      if(!response.ok)return;
+      const payload=await response.json();
+      member=payload.member;
+      document.querySelector('#unverified-member-panel').hidden=true;
+      document.querySelector('#verified-member-panel').hidden=false;
+      if(!selectedPointId&&member.collectionPoint?.id){
+        const preferred=pointMap.get(Number(member.collectionPoint.id));
+        if(preferred&&pointCompatible(preferred)){
+          selectedPointId=Number(preferred.id);
+          localStorage.setItem(POINT_KEY,String(selectedPointId));
+        }
+      }
+      renderBasket();
+    }
+
+    document.querySelector('#email-form').addEventListener('submit',async event=>{
+      event.preventDefault();
+      const form=event.currentTarget;
+      const message=document.querySelector('#email-message');
+      const button=form.querySelector('button');
+      button.disabled=true;
+      message.textContent='Checking…';
+      const response=await fetch('/api/request-link',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:new FormData(form).get('email'),basketSummary:selectedItems().map(item=>({productId:item.productId,quantity:item.quantity})),returnPath:'/checkout/'})});
+      const payload=await response.json();
+      message.textContent=payload.message||'Please check your email.';
+      button.disabled=false;
+    });
+
+    submitButton.addEventListener('click',async()=>{
+      submitButton.disabled=true;
+      submitButton.textContent='Submitting…';
+      submitMessage.textContent='Checking prices, availability and your secure member link…';
+      const response=await fetch('/api/order',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token,collectionPointId:selectedPointId,items:selectedItems().map(item=>({productId:item.productId,quantity:item.quantity}))})});
+      const payload=await response.json();
+      if(response.ok&&payload.ok){
+        localStorage.removeItem(STORAGE_KEY);
+        basket={};
+        document.querySelector('.checkout-shell').innerHTML=`<section class="checkout-card checkout-success"><h2>${checkoutSuccessHeading}</h2><p>Your order <strong>${payload.orderNumber}</strong> has been received.</p><p>Total: <strong>${money.format(payload.total)}</strong><br>Collection: <strong>${payload.collectionPoint}</strong><br>Estimated closing credit: <strong>${money.format(payload.closingCredit)}</strong></p><a class="button" href="/dashboard/?token=${encodeURIComponent(token)}">Return to your dashboard</a></section>`;
+      }else{
+        submitMessage.textContent=payload.message||'The order could not be submitted.';
+        submitButton.disabled=false;
+        submitButton.textContent=checkoutConfirmButton;
+      }
+    });
+
+    renderBasket();
+    verifyMember();
   </script>
 </BaseLayout>

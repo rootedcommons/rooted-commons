@@ -8,7 +8,7 @@ import { buildSectionBlocks } from '../lib/sections';
 export async function getStaticPaths() {
   const data = await getSiteData();
   return data.pages
-    .filter((page) => !['home', 'orders', 'checkout'].includes(page.slug))
+    .filter((page) => !['home', 'orders', 'checkout', 'dashboard'].includes(page.slug))
     .map((page) => ({ params: { slug: page.slug }, props: { page, data } }));
 }
 

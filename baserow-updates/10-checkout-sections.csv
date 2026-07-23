@@ -1,0 +1,4 @@
+Page,Key,Section type,Heading,Body,Button text,Button URL,Order,Visible
+checkout,checkout-collection,Text,Choose where to collect,Select a collection point that can fulfil everything in your basket.,,,10,True
+checkout,checkout-member,Text,Already a member?,Enter your email and we will send your secure ordering link.,,,20,True
+checkout,checkout-join,Call to action,Not a member yet?,Join Rooted Commons to order from the weekly market and help strengthen the local food network.,Become a member,/become-a-member/,30,True

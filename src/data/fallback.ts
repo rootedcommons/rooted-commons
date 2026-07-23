@@ -16,6 +16,9 @@ export const fallbackSettings = {
   soilAssociationLogo: '',
   euOrganicLogo: '',
   wildfarmedLogo: '',
+  founder10Badge: '',
+  founder25Badge: '',
+  founder50Badge: '',
   backgroundColour: '#ded8cc',
   primaryColour: '#5a2d4d',
   highlightColour: '#eef3ea',
@@ -56,7 +59,8 @@ export const fallbackPages = [
   { slug: 'fresh-produce', title: 'Fresh Produce', intro: 'Seasonal produce grown by people and organisations in our local network, coordinated through shared distribution.', visible: true },
   { slug: 'volunteering', title: 'Get Involved', intro: 'Learn, spend time outdoors and support the people building a stronger local food system.', visible: true },
   { slug: 'orders', title: 'Weekly Shop', intro: 'Browse the current range and build your basket. You can explore before becoming a member.', visible: true },
-  { slug: 'checkout', title: 'Checkout', intro: 'Verify your email or secure weekly link before confirming your order.', visible: true }
+  { slug: 'checkout', title: 'Checkout', intro: 'Review your order, choose a collection point and continue as a member.', visible: true },
+  { slug: 'dashboard', title: 'Your Rooted Commons', intro: 'Your weekly market, membership and local food network in one place.', visible: true }
 ];
 
 export const fallbackSections = [

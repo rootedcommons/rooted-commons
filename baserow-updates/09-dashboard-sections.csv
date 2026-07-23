@@ -1,0 +1,3 @@
+Page,Key,Section type,Heading,Body,Button text,Button URL,Order,Visible
+dashboard,dashboard-community,Text,Community,"Use this section for upcoming events, latest news, volunteer opportunities and wholesale ordering dates.",,,100,True
+dashboard,dashboard-impact,Cards,Your impact,"Add cards here for orders placed, money redirected locally, community veg boxes funded or weeks supporting producers.",,,200,True

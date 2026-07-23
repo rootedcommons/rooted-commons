@@ -136,6 +136,9 @@ export async function getSiteData() {
     soilAssociationLogo: fileUrl(validSettingsRow, 'Soil Association logo'),
     euOrganicLogo: fileUrl(validSettingsRow, 'EU Organic logo'),
     wildfarmedLogo: fileUrl(validSettingsRow, 'Wildfarmed logo'),
+    founder10Badge: fileUrl(validSettingsRow, 'Founder 10 badge'),
+    founder25Badge: fileUrl(validSettingsRow, 'Founder 25 badge'),
+    founder50Badge: fileUrl(validSettingsRow, 'Founder 50 badge'),
     navigationLinks: Object.keys(validSettingsRow)
       .map((key) => {
         const match = key.match(/^Navigation label\s*(\d+)$/i);
@@ -246,7 +249,13 @@ export async function getSiteData() {
     id: Number(row.id),
     name: text(row, 'Name'),
     address: text(row, 'Address'),
-    active: boolean(row, 'Active', true)
+    active: boolean(row, 'Active', true),
+    image: fileUrl(row, 'Image'),
+    link: text(row, 'Link', text(row, 'Website', text(row, 'URL'))),
+    description: text(row, 'Description'),
+    collectionTime: text(row, 'Collection time', text(row, 'Collection slot', text(row, 'Collection day/time'))),
+    ordersClose: text(row, 'Orders close', text(row, 'Order deadline')),
+    availableCategories: linkedValues(raw(row, 'Available to collect here'))
   })).filter((point: any) => point.name && point.active);
 
   return { settings, pages, sections, products, collectionPoints };

@@ -7,7 +7,10 @@ export async function onRequestPost({ request, env }) {
     const member=members.find(row=>normaliseEmail(row.Email)===email && row.Active !== false);
     if (member && env.MAGIC_LINK_WEBHOOK_URL) {
       const origin=new URL(request.url).origin;
-      const link=`${origin}/orders/?token=${encodeURIComponent(member['Order token'] || '')}`;
+      const requestedPath=String(body.returnPath||'/dashboard/');
+      const safePath=requestedPath.startsWith('/')&&!requestedPath.startsWith('//')?requestedPath:'/dashboard/';
+      const separator=safePath.includes('?')?'&':'?';
+      const link=`${origin}${safePath}${separator}token=${encodeURIComponent(member['Order token'] || '')}`;
       await fetch(env.MAGIC_LINK_WEBHOOK_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email,link,member:{firstName:member['First name']||''},basketSummary:body.basketSummary||[]})});
     }
     return json({ok:true,message:'If that email belongs to an active member, a secure ordering link will be sent. Otherwise, we will send information about joining.'});
