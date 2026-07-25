@@ -1,327 +1,75 @@
-# Rooted Commons website v1.4
+# Rooted Commons website v2.0
 
-This repository contains the Astro website, Cloudflare Pages Functions and Baserow templates for Rooted Commons.
+Astro website, secure order functions and Baserow templates for Rooted Commons. Baserow is the operational data source; Xero is the payment source; the web host stores no authoritative business data.
 
-## What this version provides
+## Features
 
-- Public pages assembled from **Pages** and **Sections** in Baserow.
-- Section types: Text, Image and text, Banner, Cards, Grid, Call to action and Gallery.
-- A public shop at `/orders/` that anyone can browse.
-- Products may belong to multiple categories.
-- Category tabs are generated automatically from Products.
-- A browser-side basket that persists on the visitor's device.
-- A sticky desktop basket and a floating mobile basket drawer.
-- Checkout at `/checkout/` with member-token and email handoff support.
-- Baserow-backed stock, orders and account-ledger functions from v1.
+- Baserow-managed pages, sections, products and collection points.
+- Member dashboard with credit, commitment, recent top-ups and unlocked benefits.
+- Stock-aware catalogue: out-of-stock and low-stock states, quantity caps and server-side validation.
+- Idempotent Confirm Order flow using `Client request ID`.
+- Structured Order Lines and append-only stock movements.
+- Replacement orders that release the old allocation before checking the new basket.
+- Xero Receive Money design for 15-minute Baserow polling.
+- Local collection deadlines displayed exactly as entered.
 
-## Repository contents
+## Build from scratch
 
-```text
-src/                 Astro pages and components
-functions/           Cloudflare Pages Functions
-public/              Static files
-baserow-imports/     Complete current CSV templates
-baserow-updates/     Small CSVs containing only the new v1.2 columns/rows
-.env.example         Environment-variable names
+Requirements: Node.js 22, npm, a Baserow database, and optionally a Xero organisation for payment sync.
+
+```bash
+npm install
+cp .env.example .env
+npm run dev
 ```
 
-## Baserow tables
+For production:
 
-The code expects these tables:
-
-1. Site Settings
-2. Pages
-3. Sections
-4. Products
-5. Collection Points
-6. Members
-7. Web Orders
-8. Stock Movement
-9. Account Transactions
-
-The complete CSV exports are in `baserow-imports/`. The current additions are also supplied separately in `baserow-updates/` so they can be copied into existing tables.
-
-## Applying the v1.2 Baserow updates
-
-### Products: multiple categories
-
-Change the **Category** field in Products to a Baserow **Multiple select** field. A product can then have, for example:
-
-```text
-Cupboard Staples
-Breakfast
-Organic
+```bash
+npm run build
 ```
 
-The code also understands comma-separated exported values such as `Cupboard Staples, Breakfast`, but Multiple select is safer for editing in Baserow.
+Deploy `dist/` and the `functions/` directory to a host that supports Astro static output plus server functions. Cloudflare Pages works, but no Cloudflare-specific database or state service is used.
 
-No extra Products column is required. See `baserow-updates/04-products-category-examples.csv` for examples.
+## Configure Baserow
 
-### Orders page and product-grid width
+Import the CSVs in `baserow-imports/`, then set field types and select options using [docs/BASEROW_SCHEMA.md](docs/BASEROW_SCHEMA.md). Existing installations should add the new Order Lines, Order Submissions and Xero Sync State tables and the v2 fields listed there.
 
-Add the rows from:
+Use two credentials:
 
-```text
-baserow-updates/02-pages-new-rows.csv
-baserow-updates/03-sections-new-rows.csv
-```
+1. A build-time read-only token for Site Settings, Pages, Sections, Products and Collection Points.
+2. A restricted runtime token for Members, Web Orders, Order Lines, Order Submissions, Stock Movement and Account Transactions.
 
-The `orders-products` Section row has:
+Copy table IDs into `.env`. Never commit `.env` or tokens.
 
-```text
-Section type: Grid
-Grid source: Products
-Columns: 3
-```
+## Where to edit content
 
-Change **Columns** in that row to 2, 3 or 4 to alter the desktop grid. Mobile layouts automatically reduce the number of columns.
+- Header, footer, interface labels, badges and perks: `Site Settings`.
+- Page titles and hero settings: `Pages`.
+- Page body blocks: `Sections`.
+- Products, prices, categories and current availability: `Products`.
+- Addresses, slots and order-closing times: `Collection Points`.
+- Member credit and commitment: `Members` plus `Account Transactions`.
 
-### Basket and checkout wording
+## Stock
 
-Add the columns from:
+`Available stock` is the value shown by the website. It must reconcile to the Stock Movement ledger. Use positive movements for deliveries/opening/adjustments and negative movements for orders/wastage. The low-stock threshold defaults to 5.
 
-```text
-baserow-updates/01-site-settings-new-columns.csv
-```
+## Orders
 
-These fields control short interface labels, including:
+Checkout sends one complete order and an opaque `Client request ID`. The server reloads all prices and stock from Baserow. Confirmed lines are written to Order Lines when `ENABLE_LEDGER_WRITES=true`. Keep this false until the v2 tables and permissions are verified.
 
-- basket heading and empty message
-- estimated-total label
-- checkout button wording
-- floating-basket label
-- checkout email and confirmation wording
+## Xero
 
-Longer explanatory copy belongs in the `orders` and `checkout` rows of **Pages**, or in Sections linked to those pages.
+See [docs/XERO_SYNC.md](docs/XERO_SYNC.md). The normal operating method is: enter Receive Money in Xero; Baserow polls every 15 minutes; the member credit updates; later reconciliation updates the same imported record.
 
-## Editing the Orders page
+## Documentation
 
-- Page title and introductory hero text: **Pages → orders**.
-- Explanatory content before or after the shop: **Sections → Page = orders**.
-- Product grid configuration: the Section with Key `orders-products`.
-- Product data: **Products**.
-- Basket button and interface labels: **Site Settings**.
+- [Architecture](docs/ARCHITECTURE.md)
+- [Baserow schema](docs/BASEROW_SCHEMA.md)
+- [Xero sync](docs/XERO_SYNC.md)
+- [Testing](docs/TESTING.md)
 
-The product Grid section is used as the insertion point for the interactive shop. Other Sections with an Order below it appear before the catalogue; Sections with a larger Order appear after it.
+## Important limitations
 
-## Editing Checkout
-
-- Page title and hero introduction: **Pages → checkout**.
-- Longer explanatory content: **Sections → Page = checkout**.
-- Short form/button labels: **Site Settings**.
-
-## Cloudflare build settings
-
-```text
-Build command: npm run build
-Build output directory: dist
-Root directory: /
-NODE_VERSION: 22
-```
-
-This project deliberately does not include `package-lock.json`, so Cloudflare uses `npm install` rather than the `npm clean-install` path that previously failed.
-
-## Environment variables
-
-The required names are listed in `.env.example`. Keep API tokens as Cloudflare Secrets. Table IDs can be ordinary environment variables.
-
-## Uploading to GitHub
-
-Upload the contents of this folder to the repository root. You should see `src`, `functions`, `public`, `baserow-imports`, `baserow-updates`, `package.json` and `astro.config.mjs` at the top level.
-
-
-## Price and basket behaviour
-
-Product prices are formatted by the website as GBP (`£0.00`) regardless of how the numeric field is visually formatted inside Baserow. Basket lines include increase, decrease and remove controls on desktop and mobile.
-
-
-## v1.3 shop fields
-
-Products now use:
-
-- `Category` for the broad page (`Cupboard Staples`, `Fresh Produce`, `Refills`)
-- `Subcategory` for the filter tabs on shop grids
-- `Grown in` for country names; the website converts these to flag emoji
-- `Certification` with `Soil Association`, `EU Organic`, or `Wildfarmed`
-- `Popularity` for the default sort order (lower numbers appear first)
-
-Upload the three certification logo files to **Site Settings** using File fields named exactly:
-
-- `Soil Association logo`
-- `EU Organic logo`
-- `Wildfarmed logo`
-
-They render at the same visual height as the country flag.
-
-Header navigation is controlled by numbered pairs in Site Settings:
-
-- `Navigation label 1` / `Navigation URL 1`
-- `Navigation label 2` / `Navigation URL 2`
-- and so on.
-
-The code discovers any numbered pairs dynamically, so adding `Navigation label 6` and `Navigation URL 6` later will add a sixth link without a code change. The right-side button uses `Header button text` and `Header Button URL`.
-
-
-## v1.4 shop-card refinements
-
-- The mobile basket drawer uses only decrease and increase controls; the desktop basket retains its Remove button.
-- Producer appears directly below the product name.
-- Origin flags and certification logos appear to the right of the price.
-- Product images fill the full card width while retaining their aspect ratio.
-- Subcategory names are no longer printed inside product cards.
-- The Orders filter row has a visible Category heading.
-
-## Unified `/orders/` catalogue views
-
-Cupboard Staples, Fresh Produce and Refills are now internal views of the single `/orders/` page rather than separate Astro pages.
-
-In **Sections**, add a `Catalogue category` single-select field with values matching the broad `Category` values in Products, for example:
-
-- Cupboard Staples
-- Fresh Produce
-- Refills
-
-Attach category-specific Banner, Text or Image and text rows to the `orders` page and set `Catalogue category` appropriately. The website switches those sections when the broad category is selected.
-
-Keep one Products Grid section on the `orders` page with `Catalogue category` blank. The grid is filtered automatically from the Products `Category` field. The lower tab row uses Products `Subcategory` values.
-
-Direct links use:
-
-- `/orders/?category=cupboard-staples`
-- `/orders/?category=fresh-produce`
-- `/orders/?category=refills`
-
-The basket is stored in the browser and remains unchanged when visitors switch category views.
-
-## v1.7 changes
-
-- Rebuilt shop filtering around one browser-side state and render function.
-- Broad category, subcategory, search and sorting now consistently update the static product grid.
-- Product card origin badges share the producer line.
-- Solid quantity selector sits to the right of the price.
-
-
-## v1.7 catalogue polish
-
-- Floating basket on desktop and mobile.
-- Right-side drawer on desktop; bottom sheet on portrait and landscape phones.
-- Four desktop grid columns, three tablet/landscape-phone columns, and two portrait-phone columns.
-- Trash icon on basket lines.
-- Larger product-card prices.
-
-## v1.8: member dashboard and checkout
-
-This version adds:
-
-- `/dashboard/?token=...` as the personalised landing page from the weekly email;
-- current member credit, preferred collection point, founder badge and last website order;
-- collection-point cards on checkout, filtered against the basket's broad product categories;
-- separate **Already a member?** and **Not a member yet?** checkout panels;
-- successful verified-member submissions to the Web Orders table;
-- Web Orders-only testing by default.
-
-### Additional Baserow fields
-
-**Members**
-
-- `Member since` — date
-- `Founder badge` — single select: `Founder 10`, `Founder 25`, `Founder 50`
-
-**Site Settings**
-
-- `Founder 10 badge` — file
-- `Founder 25 badge` — file
-- `Founder 50 badge` — file
-
-**Collection Points**
-
-- `Image` — file
-- `Link` — URL
-- `Description` — long text
-- `Available to collect here` — multiple select
-- `Collection time` — text
-- `Orders close` — text
-
-The field `Available to collect here` should use the same broad names as Products `Category`.
-
-### Checkout content in Sections
-
-Create three rows linked to the Checkout page, with these exact Keys:
-
-- `checkout-collection`
-- `checkout-member`
-- `checkout-join`
-
-Their Heading, Body and button fields control the checkout copy.
-
-### Test a member token
-
-Open:
-
-```text
-https://rootedcommons.uk/dashboard/?token=YOUR_TOKEN
-```
-
-or:
-
-```text
-https://rootedcommons.uk/checkout/?token=YOUR_TOKEN
-```
-
-The member must be Active and the Order token expiry must be in the future.
-
-### Web Orders first
-
-Keep this Cloudflare variable unset or set to `false` while testing:
-
-```text
-ENABLE_LEDGER_WRITES=false
-```
-
-A confirmed order will create or replace a Web Orders row but will not yet alter stock or member credit. After Web Orders submission is proven, set it to `true` to enable Stock Movement and Account Transaction writes.
-
-
-## v1.9: hero controls and expanded member dashboard
-
-### Pages hero fields
-
-The code recognises these exact values:
-
-- `Hero layout`: `text-left`, `text-right`, `text-only`, `banner`, `none`
-- `Hero alignment`: `left`, `centre`, `right`
-- `Hero padding`: `none`, `compact`, `normal`, `spacious`
-- `Hero width`: `narrow`, `normal`, `wide`, `full`
-
-`Hero layout = none` now renders no hero markup and no empty hero spacing.
-
-### Collection-point deadlines
-
-`Orders close` is displayed in the fixed `Europe/London` local time zone. This prevents the visitor's device time zone from changing an entered UK collection deadline.
-
-### Membership perks
-
-Add numbered fields to Site Settings following this exact pattern:
-
-- `Perk 1 unlock weeks`
-- `Perk 1 text`
-- `Perk 2 unlock weeks`
-- `Perk 2 text`
-
-Continue the pattern up to five or beyond. The dashboard automatically discovers every numbered pair, shows unlocked perks, and identifies the next perk.
-
-### Weekly commitment card
-
-The dashboard reads:
-
-- `Weekly commitment` from Members;
-- recent `Payment` or `Top-up` rows from Account Transactions;
-- recent `Order` transactions, with Web Orders used as a fallback for the average and total impact.
-
-It displays recent top-ups, average weekly ordering over eight weeks, approximate credit runway, and cumulative spending redirected through the network.
-
-Optional Site Settings fields:
-
-- `Increase commitment button text`
-- `Increase commitment button URL`
-
-The increase prompt appears when average weekly ordering is at least £2 or 15% above the regular weekly commitment, whichever is greater.
+Baserow remains authoritative, but Baserow Cloud does not necessarily provide a multi-row database transaction for an entire basket. The queue, idempotency keys and integrity checks materially reduce overselling risk, but the system should flag and halt any product whose calculated stock becomes negative.

@@ -27,15 +27,11 @@ const checkoutPoints = data.collectionPoints;
 
 const formatCollectionDeadline = (value) => {
   if (!value) return '';
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return String(value);
-  return new Intl.DateTimeFormat('en-GB', {
-    timeZone: 'Europe/London',
-    weekday: 'long',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
-  }).format(parsed).replace(' am','am').replace(' pm','pm');
+  const raw = String(value).trim();
+  const match = raw.match(/^(?:\d{4}-\d{2}-\d{2}[T\s])?(\d{1,2})[:.](\d{2})/);
+  if (!match) return raw;
+  const hour = Number(match[1]);
+  return `${hour % 12 || 12}:${match[2]}${hour >= 12 ? 'pm' : 'am'}`;
 };
 ---
 <BaseLayout settings={s} pages={data.pages} title={page.seoTitle || page.title} description={page.seoDescription || page.intro}>
@@ -121,10 +117,12 @@ const formatCollectionDeadline = (value) => {
     const STORAGE_KEY='rooted-commons-basket-v1';
     const TOKEN_KEY='rooted-commons-order-token-v1';
     const POINT_KEY='rooted-commons-collection-point-v1';
+    const REQUEST_KEY='rooted-commons-checkout-request-v2';
     const money=new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'});
     const productMap=new Map(products.map(product=>[Number(product.id),product]));
     const pointMap=new Map(points.map(point=>[Number(point.id),point]));
     const normalise=value=>String(value||'').trim().toLowerCase();
+    const requestId=()=>crypto.randomUUID?crypto.randomUUID():`rc-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
     const params=new URLSearchParams(location.search);
     const urlToken=params.get('token');
@@ -261,10 +259,13 @@ const formatCollectionDeadline = (value) => {
       submitButton.disabled=true;
       submitButton.textContent='Submitting…';
       submitMessage.textContent='Checking prices, availability and your secure member link…';
-      const response=await fetch('/api/order',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token,collectionPointId:selectedPointId,items:selectedItems().map(item=>({productId:item.productId,quantity:item.quantity}))})});
+      let clientRequestId=sessionStorage.getItem(REQUEST_KEY);
+      if(!clientRequestId){clientRequestId=requestId();sessionStorage.setItem(REQUEST_KEY,clientRequestId);}
+      const response=await fetch('/api/order',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token,clientRequestId,collectionPointId:selectedPointId,items:selectedItems().map(item=>({productId:item.productId,quantity:item.quantity}))})});
       const payload=await response.json();
       if(response.ok&&payload.ok){
         localStorage.removeItem(STORAGE_KEY);
+        sessionStorage.removeItem(REQUEST_KEY);
         basket={};
         document.querySelector('.checkout-shell').innerHTML=`<section class="checkout-card checkout-success"><h2>${checkoutSuccessHeading}</h2><p>Your order <strong>${payload.orderNumber}</strong> has been received.</p><p>Total: <strong>${money.format(payload.total)}</strong><br>Collection: <strong>${payload.collectionPoint}</strong><br>Estimated closing credit: <strong>${money.format(payload.closingCredit)}</strong></p><a class="button" href="/dashboard/?token=${encodeURIComponent(token)}">Return to your dashboard</a></section>`;
       }else{

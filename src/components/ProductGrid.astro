@@ -30,9 +30,13 @@ const cleanValues = (values = []) => values.map((value) => String(value || '').t
     const subcategories = cleanValues(product.subcategories || [product.subcategory]);
     const countries = cleanValues(product.grownIn || []);
     const certifications = cleanValues(product.certifications || []);
+    const availableStock = Math.max(0, Number(product.availableStock ?? 0));
+    const lowStockThreshold = Math.max(0, Number(product.lowStockThreshold ?? 5));
+    const outOfStock = product.available === false || availableStock <= 0;
+    const lowStock = !outOfStock && availableStock <= lowStockThreshold;
     return (
       <article
-        class="product-card"
+        class:list={["product-card", {"product-card-out-of-stock":outOfStock,"product-card-low-stock":lowStock}]}
         data-product-card
         data-categories={categories.join('|')}
         data-subcategories={subcategories.join('|')}
@@ -42,6 +46,8 @@ const cleanValues = (values = []) => values.map((value) => String(value || '').t
         data-price={product.priceNumber}
         data-popularity={product.popularity ?? product.order ?? 9999}
         data-country={countries[0] || ''}
+        data-stock={availableStock}
+        data-out-of-stock={outOfStock ? 'true' : 'false'}
       >
         <img src={product.image || '/images/placeholder.svg'} alt="" loading="lazy" />
         <div class="product-copy">
@@ -62,10 +68,12 @@ const cleanValues = (values = []) => values.map((value) => String(value || '').t
 
           {product.size && <p class="product-size">{product.size}</p>}
           {product.description && <p class="product-description">{product.description}</p>}
+          {outOfStock && <p class="stock-warning stock-warning-out">Out of stock</p>}
+          {lowStock && <p class="stock-warning">Low stock — {availableStock} left</p>}
 
           <div class="product-purchase-row">
             <strong class="product-price">{money.format(product.priceNumber || 0)}</strong>
-            {showControls && <div class="quantity-control quantity-control-solid" aria-label={`Quantity of ${product.name}`}>
+            {showControls && !outOfStock && <div class="quantity-control quantity-control-solid" aria-label={`Quantity of ${product.name}`}>
               <button type="button" data-quantity-change="-1" aria-label="Remove one">−</button>
               <output data-quantity>0</output>
               <button type="button" data-quantity-change="1" aria-label="Add one">+</button>

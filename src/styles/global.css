@@ -182,3 +182,11 @@
 .recent-topups h3{margin:1.25rem 0 .65rem;font-size:1.1rem}.commitment-prompt{margin-top:1.25rem;padding:1rem;border-radius:.75rem;background:color-mix(in srgb,var(--highlight) 70%,white)}.commitment-prompt p{margin-top:0}.commitment-prompt .button{margin-top:.25rem}
 @media(max-width:900px){.dashboard-detail-grid{grid-template-columns:1fr}.page-hero.layout-text-left,.page-hero.layout-text-right{grid-template-columns:1fr}.page-hero.layout-text-right .hero-media{order:0}}
 @media(max-width:640px){.page-hero.hero-padding-spacious{padding-top:3.5rem;padding-bottom:3.5rem}.page-hero.hero-padding-normal{padding-top:2.5rem;padding-bottom:2.5rem}.page-hero.layout-banner{min-height:320px}}
+
+
+/* v2 stock states */
+.product-card-out-of-stock{opacity:.58;filter:grayscale(.65)}
+.product-card-out-of-stock .product-copy{background:rgba(245,245,245,.85)}
+.stock-warning{margin:.45rem 0 0;font-weight:700;font-size:.9rem}
+.stock-warning-out{letter-spacing:.02em;text-transform:uppercase}
+.product-card-low-stock{outline:2px solid color-mix(in srgb,var(--primary) 35%,transparent)}

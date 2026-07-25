@@ -10,6 +10,8 @@ export function envConfig(env) {
     orders: env.BASEROW_WEB_ORDERS_TABLE_ID,
     stock: env.BASEROW_STOCK_MOVEMENT_TABLE_ID,
     transactions: env.BASEROW_ACCOUNT_TRANSACTIONS_TABLE_ID,
+    orderLines: env.BASEROW_ORDER_LINES_TABLE_ID,
+    submissions: env.BASEROW_ORDER_SUBMISSIONS_TABLE_ID,
     enableLedgers: String(env.ENABLE_LEDGER_WRITES || '').toLowerCase() === 'true'
   };
 }
@@ -59,6 +61,10 @@ export async function listRows(cfg, tableId) {
 export async function createRow(cfg, tableId, fields) {
   return apiRequest(cfg, `/api/database/rows/table/${tableId}/?user_field_names=true`, {method:'POST', body:JSON.stringify(fields)});
 }
+export async function deleteRow(cfg, tableId, rowId) {
+  return apiRequest(cfg, `/api/database/rows/table/${tableId}/${rowId}/`, {method:'DELETE'});
+}
+
 export async function updateRow(cfg, tableId, rowId, fields) {
   return apiRequest(cfg, `/api/database/rows/table/${tableId}/${rowId}/?user_field_names=true`, {method:'PATCH', body:JSON.stringify(fields)});
 }

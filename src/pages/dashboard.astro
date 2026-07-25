@@ -59,7 +59,6 @@ const membershipPerks=s.membershipPerks || [];
           <p>Your regular contribution creates predictable demand that local producers can plan around.</p>
           <div class="commitment-metrics">
             <div><span>Average weekly orders</span><strong id="dashboard-average-spend">£0.00</strong></div>
-            <div id="dashboard-credit-runway-row"><span>Credit runway</span><strong id="dashboard-credit-runway">—</strong></div>
             <div id="dashboard-impact-row"><span>Redirected locally</span><strong id="dashboard-impact">£0.00</strong></div>
           </div>
           <div class="recent-topups">
@@ -87,9 +86,14 @@ const membershipPerks=s.membershipPerks || [];
     const formatDate=value=>value?new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',year:'numeric'}).format(new Date(value)):'';
     const formatLocalDeadline=value=>{
       if(!value)return '';
-      const parsed=new Date(value);
-      if(Number.isNaN(parsed.getTime()))return String(value);
-      return new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',weekday:'long',hour:'numeric',minute:'2-digit',hour12:true}).format(parsed).replace(' am','am').replace(' pm','pm');
+      const raw=String(value).trim();
+      const match=raw.match(/^(?:\d{4}-\d{2}-\d{2}[T\s])?(\d{1,2})[:.](\d{2})/);
+      if(!match)return raw;
+      const hour=Number(match[1]);
+      const minute=match[2];
+      const suffix=hour>=12?'pm':'am';
+      const displayHour=hour%12||12;
+      return `${displayHour}:${minute}${suffix}`;
     };
     const relativeDate=value=>{
       if(!value)return 'No previous website order';
@@ -144,8 +148,6 @@ const membershipPerks=s.membershipPerks || [];
       document.querySelector('#dashboard-commitment').textContent=money.format(commitment).replace('.00','');
       document.querySelector('#dashboard-average-spend').textContent=money.format(average);
       document.querySelector('#dashboard-impact').textContent=money.format(totalImpact);
-      const runway=average>0?(Number(member.credit)||0)/average:0;
-      document.querySelector('#dashboard-credit-runway').textContent=runway>0?`${runway.toFixed(runway<2?1:0)} week${Math.round(runway)===1?'':'s'}`:'—';
       renderTopups(member.account?.payments||[]);
       const threshold=Math.max(2,commitment*.15);
       if(commitment>0&&average>=commitment+threshold){
