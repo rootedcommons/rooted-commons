@@ -23,31 +23,34 @@ const certificationLogos = {
   'wildfarmed': settings.wildfarmedLogo
 };
 const cleanValues = (values = []) => values.map((value) => String(value || '').trim()).filter(Boolean);
+
+const displayProducts = filtered.map((product) => {
+  const categories = cleanValues(product.categories || [product.category]);
+  const subcategories = cleanValues(product.subcategories || [product.subcategory]);
+  const countries = cleanValues(product.grownIn || []);
+  const certifications = cleanValues(product.certifications || []);
+  const availableStock = Math.max(0, Number(product.availableStock ?? 0));
+  const lowStockThreshold = Math.max(0, Number(product.lowStockThreshold ?? 5));
+  const outOfStock = product.available === false || availableStock < 1;
+  const lowStock = !outOfStock && availableStock <= lowStockThreshold;
+  return { ...product, categories, subcategories, countries, certifications, availableStock, outOfStock, lowStock };
+});
 ---
 <div class="product-grid" style={`--columns:${columns}`}>
-  {filtered.map((product) => {
-    const categories = cleanValues(product.categories || [product.category]);
-    const subcategories = cleanValues(product.subcategories || [product.subcategory]);
-    const countries = cleanValues(product.grownIn || []);
-    const certifications = cleanValues(product.certifications || []);
-    const availableStock = Math.max(0, Number(product.availableStock ?? 0));
-    const lowStockThreshold = Math.max(0, Number(product.lowStockThreshold ?? 5));
-    const outOfStock = product.available === false || availableStock <= 0;
-    const lowStock = !outOfStock && availableStock <= lowStockThreshold;
-    return (
+  {displayProducts.map((product) => (
       <article
-        class:list={["product-card", {"product-card-out-of-stock":outOfStock,"product-card-low-stock":lowStock}]}
+        class:list={["product-card", {"product-card-out-of-stock":product.outOfStock,"product-card-low-stock":product.lowStock}]}
         data-product-card
-        data-categories={categories.join('|')}
-        data-subcategories={subcategories.join('|')}
+        data-categories={product.categories.join('|')}
+        data-subcategories={product.subcategories.join('|')}
         data-name={String(product.name || '').toLowerCase()}
-        data-search={[product.name, product.producer, product.description, ...categories, ...subcategories, ...countries].filter(Boolean).join(' ').toLowerCase()}
+        data-search={[product.name, product.producer, product.description, ...product.categories, ...product.subcategories, ...product.countries].filter(Boolean).join(' ').toLowerCase()}
         data-id={product.id}
         data-price={product.priceNumber}
         data-popularity={product.popularity ?? product.order ?? 9999}
-        data-country={countries[0] || ''}
-        data-stock={availableStock}
-        data-out-of-stock={outOfStock ? 'true' : 'false'}
+        data-country={product.countries[0] || ''}
+        data-stock={product.availableStock}
+        data-out-of-stock={product.outOfStock ? 'true' : 'false'}
       >
         <img src={product.image || '/images/placeholder.svg'} alt="" loading="lazy" />
         <div class="product-copy">
@@ -56,24 +59,24 @@ const cleanValues = (values = []) => values.map((value) => String(value || '').t
           <div class="product-producer-row">
             {product.producer ? <p class="product-producer">{product.producer}</p> : <span></span>}
             <div class="product-origin-badges" aria-label="Origin and certification">
-              {certifications.map((certification) => {
+              {product.certifications.map((certification) => {
                 const logo = certificationLogos[String(certification).toLowerCase()];
                 return logo
                   ? <img class="certification-logo" src={logo} alt={certification} title={certification} loading="lazy" />
                   : <span class="certification-text" title={certification}>{certification}</span>;
               })}
-              {countries.map((country) => <span class="country-flag" title={country} aria-label={`Grown in ${country}`}>{flagFor(country)}</span>)}
+              {product.countries.map((country) => <span class="country-flag" title={country} aria-label={`Grown in ${country}`}>{flagFor(country)}</span>)}
             </div>
           </div>
 
           {product.size && <p class="product-size">{product.size}</p>}
           {product.description && <p class="product-description">{product.description}</p>}
-          {outOfStock && <p class="stock-warning stock-warning-out">Out of stock</p>}
-          {lowStock && <p class="stock-warning">Low stock — {availableStock} left</p>}
+          {product.outOfStock && <p class="stock-warning stock-warning-out">Out of stock</p>}
+          {product.lowStock && <p class="stock-warning">Low stock — {product.availableStock} left</p>}
 
           <div class="product-purchase-row">
             <strong class="product-price">{money.format(product.priceNumber || 0)}</strong>
-            {showControls && !outOfStock && <div class="quantity-control quantity-control-solid" aria-label={`Quantity of ${product.name}`}>
+            {showControls && !product.outOfStock && <div class="quantity-control quantity-control-solid" aria-label={`Quantity of ${product.name}`}>
               <button type="button" data-quantity-change="-1" aria-label="Remove one">−</button>
               <output data-quantity>0</output>
               <button type="button" data-quantity-change="1" aria-label="Add one">+</button>
@@ -81,7 +84,7 @@ const cleanValues = (values = []) => values.map((value) => String(value || '').t
           </div>
         </div>
       </article>
-    );
-  })}
+  ))}
+
 </div>
-{filtered.length === 0 && <p>No products currently match this section.</p>}
+{displayProducts.length === 0 && <p>No products currently match this section.</p>}
