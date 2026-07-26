@@ -17,11 +17,9 @@ Required: `Order`, `Product`, `Quantity`, `Unit price`, `Line total` (formula), 
 ## Stock Movement
 Required: `Product name` (link to Products), `Quantity change`, `Movement type`, `Order`, `Order Line`, `Date`, `Idempotency key`, `Reference`, `Notes`, `Active`, `Created by`. `Quantity change` is signed: receipts and releases are positive; orders and wastage are negative. Movement type options: `Opening`, `Delivery`, `Order`, `Release`, `Adjustment`, `Wastage`.
 
-## Order Submissions
-Required: `Client request ID`, `Member`, `Collection point`, `Basket payload`, `Status`, `Submitted at`, `Processing started at`, `Processing completed at`, `Result order`, `Failure reason`, `Attempt count`. Status options: `Pending`, `Processing`, `Accepted`, `Rejected`.
 
 ## Account Transactions
-Required: `Xero Transaction ID`, `Date`, `Imported at`, `Last updated from Xero`, `Amount`, `Type`, `Transaction reference`, `Contact name`, `Xero Contact ID`, `Bank account`, `Member`, `Match status`, `Reconciled`, `Status`, `Included in credit`, `Order`, `Notes`. Match status options: `Matched`, `Unmatched`, `Ambiguous`, `Ignored`. `Amount` is signed: credits/top-ups are positive and debits/order charges/refunds paid out are negative.
+Required for all rows: `Date`, `Amount`, `Type`, `Member`, `Included in credit`, `Transaction reference`, `Order`, `Notes`. `Amount` is signed: credits/top-ups and order reversals are positive; order charges and outgoing payments are negative. Website order types: `Order charge`, `Order reversal`. Xero-only fields may remain blank on website rows: `Xero Transaction ID`, `Xero Payment ID`, `Xero Contact ID`, `Contact name`, `Bank account`, `Imported at`, `Last updated from Xero`, `Reconciled`, `Status`. Match status options for imported Xero rows: `Matched`, `Unmatched`, `Ambiguous`, `Ignored`.
 
 ## Collection Points
 Required: `Name`, `Address`, `Description`, `Image`, `Link`, `Active`, `Available to collect here`, `Collection time`, `Orders close`. Store `Orders close` as a local text value such as `18:00`; do not store it as UTC.

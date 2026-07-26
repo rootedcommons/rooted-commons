@@ -13,9 +13,11 @@ export function buildSectionBlocks(sections: any[]): SectionBlock[] {
   const grouped = new Map<string, SectionBlock>();
 
   for (const section of sections) {
-    const type = normalizedType(section.type);
+    const key = String(section.key || '').trim();
+    const inferredHowItWorks = section.page === 'home' && /^how-[1-9]\d*$/i.test(key);
+    const type = inferredHowItWorks ? 'cards' : normalizedType(section.type);
     const groupable = type === 'cards' || type === 'gallery';
-    const groupKey = section.groupKey || (groupable ? `${section.page}-${type}` : '');
+    const groupKey = section.groupKey || (inferredHowItWorks ? 'how-it-works' : (groupable ? `${section.page}-${type}` : ''));
 
     if (groupable && groupKey) {
       const mapKey = `${type}:${groupKey}`;

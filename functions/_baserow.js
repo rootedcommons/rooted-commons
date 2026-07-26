@@ -10,9 +10,7 @@ export function envConfig(env) {
     orders: env.BASEROW_WEB_ORDERS_TABLE_ID,
     stock: env.BASEROW_STOCK_MOVEMENT_TABLE_ID,
     transactions: env.BASEROW_ACCOUNT_TRANSACTIONS_TABLE_ID,
-    orderLines: env.BASEROW_ORDER_LINES_TABLE_ID,
-    submissions: env.BASEROW_ORDER_SUBMISSIONS_TABLE_ID,
-    enableLedgers: String(env.ENABLE_LEDGER_WRITES || '').toLowerCase() === 'true'
+    orderLines: env.BASEROW_ORDER_LINES_TABLE_ID
   };
 }
 

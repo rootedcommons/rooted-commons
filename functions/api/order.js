@@ -19,7 +19,8 @@ function compatibleWithPoint(product, point) {
 }
 
 export async function onRequestPost({request,env}) {
-  const cfg=envConfig(env); let submission=null;
+  const cfg=envConfig(env);
+  let createdOrder=null;
   try {
     const body=await request.json();
     const token=String(body.token||'');
@@ -29,12 +30,10 @@ export async function onRequestPost({request,env}) {
     if(!token||!clientRequestId||!requested.length)return json({ok:false,message:'Your basket or secure link is missing.'},400);
     if(!selectedPointId)return json({ok:false,message:'Choose a collection point before confirming your order.'},400);
 
-    const [members,productRows,orders,points,submissions]=await Promise.all([
+    const [members,productRows,orders,points]=await Promise.all([
       listRows(cfg,cfg.members), listRows(cfg,cfg.products), listRows(cfg,cfg.orders),
-      listRows(cfg,cfg.collectionPoints), cfg.submissions?listRows(cfg,cfg.submissions):Promise.resolve([])
+      listRows(cfg,cfg.collectionPoints)
     ]);
-    const existingSubmission=submissions.find(row=>String(row['Client request ID']||'')===clientRequestId);
-    if(existingSubmission&&String(existingSubmission.Status||'')==='Rejected')return json({ok:false,message:unwrap(existingSubmission['Failure reason'])||'This order was rejected.'},409);
 
     const member=members.find(row=>tokenValid(row,token));
     if(!member)return json({ok:false,message:'This ordering link is invalid or has expired.'},401);
@@ -54,11 +53,6 @@ export async function onRequestPost({request,env}) {
     }
     const selectedPoint=points.find(row=>Number(row.id)===selectedPointId&&truthy(row.Active,true));
     if(!selectedPoint)return json({ok:false,message:'That collection point is not currently available.'},409);
-
-    if(cfg.submissions&&!existingSubmission)submission=await createRow(cfg,cfg.submissions,{
-      'Client request ID':clientRequestId, Member:[member.id], 'Collection point':[selectedPoint.id],
-      'Basket payload':JSON.stringify(requested), Status:'Processing', 'Submitted at':new Date().toISOString(), 'Attempt count':1
-    });
 
     const week=orderWeek();
     const previous=orders.find(row=>sameMember(row,member.id)&&String(row['Order week']||'')===week&&!['Replaced','Cancelled'].includes(String(row.Status||'')));
@@ -80,26 +74,29 @@ export async function onRequestPost({request,env}) {
     const startingCredit=number(member['Current credit']);
     const orderNumber=`RC-${week.replace('-W','')}-${String(Date.now()).slice(-6)}`;
 
-    const order=await createRow(cfg,cfg.orders,{
-      'Submitted at':new Date().toISOString(),'Confirmed at':new Date().toISOString(),'Order source':'Website','Order week':week,
-      'Collection point':[selectedPoint.id],'Item JSON':JSON.stringify(lines),'Order total':total,Status:'Confirmed','Order number':orderNumber,
+    const order=createdOrder=await createRow(cfg,cfg.orders,{
+      'Submitted at':new Date().toISOString(),'Order source':'Website','Order week':week,
+      'Collection point':[selectedPoint.id],'Item JSON':JSON.stringify(lines),'Order total':total,Status:'Processing','Order number':orderNumber,
       'Client request ID':clientRequestId,Member:[member.id],Email:member.Email||'',...(previous?{'Replaces order':[previous.id]}:{})
     });
-    if(previous)await updateRow(cfg,cfg.orders,previous.id,{Status:'Replaced'});
-
-    if(cfg.enableLedgers){
-      if(previous){for(const item of oldItems)await createRow(cfg,cfg.stock,{Date:new Date().toISOString(),'Quantity change':Math.abs(Number(item.quantity||0)),'Movement type':'Release',Reference:`Replacement of ${previous['Order number']||previous.id}`,Order:[previous.id],'Product name':[Number(item.productId)],'Idempotency key':`${clientRequestId}:release:${item.productId}`,Active:true,Notes:'Automatic release before replacement order'});}
-      for(const line of lines){
-        let movement=null;
-        movement=await createRow(cfg,cfg.stock,{Date:new Date().toISOString(),'Quantity change':-Math.abs(line.quantity),'Movement type':'Order',Reference:orderNumber,Order:[order.id],'Product name':[line.productId],'Idempotency key':`${clientRequestId}:order:${line.productId}`,Active:true,Notes:'Website order'});
-        if(cfg.orderLines)await createRow(cfg,cfg.orderLines,{Order:[order.id],Product:[line.productId],Quantity:line.quantity,'Unit price':line.unitPrice,'Product name snapshot':line.name,'Unit snapshot':line.code||'',Status:'Active',...(movement?{'Stock movement':[movement.id]}:{})});
+    if(!cfg.stock||!cfg.transactions||!cfg.orderLines)throw new Error('The Stock Movement, Account Transactions or Order Lines table ID is missing.');
+    if(previous){
+      for(const item of oldItems){
+        await createRow(cfg,cfg.stock,{Date:new Date().toISOString(),'Quantity change':Math.abs(Number(item.quantity||0)),'Movement type':'Release',Reference:`Replacement of ${previous['Order number']||previous.id}`,Order:[previous.id],'Product name':[Number(item.productId)],'Idempotency key':`${clientRequestId}:release:${item.productId}`,Active:true,Notes:'Automatic release before replacement order'});
       }
-      await createRow(cfg,cfg.transactions,{Date:new Date().toISOString(),'Xero Contact ID':[member.id],Type:'Order',Amount:-Math.abs(total),Order:[order.id],Email:member.Email||'',Notes:`Website order ${orderNumber}`,'Transaction reference':orderNumber,'Included in credit':true});
+      await createRow(cfg,cfg.transactions,{Date:new Date().toISOString(),Member:[member.id],Type:'Order reversal',Amount:Math.abs(number(previous['Order total'])),Order:[previous.id],Email:member.Email||'',Notes:`Reversal for replaced website order ${previous['Order number']||previous.id}`,'Transaction reference':`${previous['Order number']||previous.id}-REV`,'Included in credit':true});
     }
-    if(submission)await updateRow(cfg,cfg.submissions,submission.id,{Status:'Accepted','Processing completed at':new Date().toISOString(),'Result order':[order.id]});
+    for(const line of lines){
+      const movement=await createRow(cfg,cfg.stock,{Date:new Date().toISOString(),'Quantity change':-Math.abs(line.quantity),'Movement type':'Order',Reference:orderNumber,Order:[order.id],'Product name':[line.productId],'Idempotency key':`${clientRequestId}:order:${line.productId}`,Active:true,Notes:'Website order'});
+      const orderLine=await createRow(cfg,cfg.orderLines,{Order:[order.id],Product:[line.productId],Quantity:line.quantity,'Unit price':line.unitPrice,'Product name snapshot':line.name,'Unit snapshot':line.code||'',Status:'Active','Stock movement':[movement.id]});
+      await updateRow(cfg,cfg.stock,movement.id,{'Order Line':[orderLine.id]});
+    }
+    await createRow(cfg,cfg.transactions,{Date:new Date().toISOString(),Member:[member.id],Type:'Order charge',Amount:-Math.abs(total),Order:[order.id],Email:member.Email||'',Notes:`Website order ${orderNumber}`,'Transaction reference':orderNumber,'Included in credit':true});
+    await updateRow(cfg,cfg.orders,order.id,{Status:'Confirmed','Confirmed at':new Date().toISOString()});
+    if(previous)await updateRow(cfg,cfg.orders,previous.id,{Status:'Replaced'});
     return json({ok:true,orderNumber,total,startingCredit,closingCredit:Math.round((startingCredit-total)*100)/100,collectionPoint:unwrap(selectedPoint.Name),message:'Your order has been confirmed.'});
   }catch(error){
-    if(submission){try{await updateRow(cfg,cfg.submissions,submission.id,{Status:'Rejected','Processing completed at':new Date().toISOString(),'Failure reason':String(error.message||error)});}catch{}}
+    if(createdOrder){try{await updateRow(cfg,cfg.orders,createdOrder.id,{Status:'Rejected'});}catch{}}
     return json({ok:false,message:String(error.message||'The order could not be submitted.')},Number(error.status)||500);
   }
 }

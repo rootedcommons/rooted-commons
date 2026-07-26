@@ -11,8 +11,23 @@ const links = Array.isArray(settings.navigationLinks) && settings.navigationLink
   <nav class={`text-${settings.navigationTextSize}`} aria-label="Main navigation">
     {links.map((link) => <a href={link.url}>{link.label}</a>)}
   </nav>
-  <a class={`button header-cta button-${settings.buttonTextSize}`} href={settings.headerButtonUrl || settings.joinButtonUrl || '/volunteering/'}>
+  <a id="membership-header-button" class={`button header-cta button-${settings.buttonTextSize}`} href={settings.headerButtonUrl || settings.joinButtonUrl || '/volunteering/'}>
     {settings.headerButtonText || settings.joinButtonText || 'Join our growing network'}
   </a>
 </header>
 {settings.headerText && <p class="header-message">{settings.headerText}</p>}
+
+<script is:inline>
+  (() => {
+    const TOKEN_KEY = 'rooted-commons-order-token-v1';
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get('token');
+    if (urlToken) localStorage.setItem(TOKEN_KEY, urlToken);
+    const token = urlToken || localStorage.getItem(TOKEN_KEY);
+    if (!token) return;
+    const button = document.querySelector('#membership-header-button');
+    if (!button) return;
+    button.textContent = 'My Membership';
+    button.setAttribute('href', '/dashboard/');
+  })();
+</script>

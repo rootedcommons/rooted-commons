@@ -7,7 +7,7 @@ const background = `background-${section.backgroundStyle}`;
 const spaces = `space-above-${section.spaceAbove} space-below-${section.spaceBelow}`;
 const alignment = `align-${section.alignment}`;
 const button = section.buttonVisible && section.buttonText && section.buttonUrl;
-const groupTitle = section.eyebrow || (block.key ? block.key.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : '');
+const groupTitle = section.eyebrow || (block.key ? (() => { const label = block.key.replace(/[-_]+/g, ' ').trim(); return label ? label.charAt(0).toUpperCase() + label.slice(1) : ''; })() : '');
 const inferredGridCategory = section.gridCategory || (section.page === 'cupboard-staples' ? 'Cupboard Staples' : section.page === 'fresh-produce' ? 'Fresh Produce' : section.page === 'refills' ? 'Refills' : '');
 ---
 {type === 'text' && (
