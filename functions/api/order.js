@@ -82,12 +82,12 @@ export async function onRequestPost({request,env}) {
     if(!cfg.stock||!cfg.transactions||!cfg.orderLines)throw new Error('The Stock Movement, Account Transactions or Order Lines table ID is missing.');
     if(previous){
       for(const item of oldItems){
-        await createRow(cfg,cfg.stock,{Date:new Date().toISOString(),'Quantity change':Math.abs(Number(item.quantity||0)),'Movement type':'Release',Reference:`Replacement of ${previous['Order number']||previous.id}`,Order:[previous.id],'Product name':[Number(item.productId)],'Idempotency key':`${clientRequestId}:release:${item.productId}`,Active:true,Notes:'Automatic release before replacement order'});
+        await createRow(cfg,cfg.stock,{Date:new Date().toISOString(),'Quantity change':Math.abs(Number(item.quantity||0)),'Movement type':'Release',Reference:`Replacement of ${previous['Order number']||previous.id}`,Order:[previous.id],'Product code':[Number(item.productId)],'Idempotency key':`${clientRequestId}:release:${item.productId}`,Active:true,Notes:'Automatic release before replacement order'});
       }
       await createRow(cfg,cfg.transactions,{Date:new Date().toISOString(),Member:[member.id],Type:'Order reversal',Amount:Math.abs(number(previous['Order total'])),Order:[previous.id],Email:member.Email||'',Notes:`Reversal for replaced website order ${previous['Order number']||previous.id}`,'Transaction reference':`${previous['Order number']||previous.id}-REV`,'Included in credit':true});
     }
     for(const line of lines){
-      const movement=await createRow(cfg,cfg.stock,{Date:new Date().toISOString(),'Quantity change':-Math.abs(line.quantity),'Movement type':'Order',Reference:orderNumber,Order:[order.id],'Product name':[line.productId],'Idempotency key':`${clientRequestId}:order:${line.productId}`,Active:true,Notes:'Website order'});
+      const movement=await createRow(cfg,cfg.stock,{Date:new Date().toISOString(),'Quantity change':-Math.abs(line.quantity),'Movement type':'Order',Reference:orderNumber,Order:[order.id],'Product code':[line.productId],'Idempotency key':`${clientRequestId}:order:${line.productId}`,Active:true,Notes:'Website order'});
       const orderLine=await createRow(cfg,cfg.orderLines,{Order:[order.id],Product:[line.productId],Quantity:line.quantity,'Unit price':line.unitPrice,'Product name snapshot':line.name,'Unit snapshot':line.code||'',Status:'Active','Stock movement':[movement.id]});
       await updateRow(cfg,cfg.stock,movement.id,{'Order Line':[orderLine.id]});
     }

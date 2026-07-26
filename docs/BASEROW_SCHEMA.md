@@ -15,7 +15,7 @@ Required writable fields: `Order number`, `Member`, `Order week`, `Collection po
 Required: `Order`, `Product`, `Quantity`, `Unit price`, `Line total` (formula), `Status`, `Stock movement`, `Product name snapshot`, `Unit snapshot`. Status options: `Active`, `Released`, `Cancelled`.
 
 ## Stock Movement
-Required: `Product name` (link to Products), `Quantity change`, `Movement type`, `Order`, `Order Line`, `Date`, `Idempotency key`, `Reference`, `Notes`, `Active`, `Created by`. `Quantity change` is signed: receipts and releases are positive; orders and wastage are negative. Movement type options: `Opening`, `Delivery`, `Order`, `Release`, `Adjustment`, `Wastage`.
+Required: `Product code` (link to Products); `Product name` should be a lookup from that link, `Quantity change`, `Movement type`, `Order`, `Order Line`, `Date`, `Idempotency key`, `Reference`, `Notes`, `Active`, `Created by`. `Quantity change` is signed: receipts and releases are positive; orders and wastage are negative. Movement type options: `Opening`, `Delivery`, `Order`, `Release`, `Adjustment`, `Wastage`.
 
 
 ## Account Transactions
