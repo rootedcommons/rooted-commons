@@ -30,7 +30,7 @@ export function unwrap(value) {
 }
 export function linkedIds(value) { return Array.isArray(value) ? value.map(v => Number(v?.id ?? v)).filter(Number.isFinite) : []; }
 export function linkedValues(value) { return Array.isArray(value) ? value.map(v => unwrap(v?.value ?? v?.name ?? v)).filter(Boolean) : unwrap(value).split(',').map(v=>v.trim()).filter(Boolean); }
-export function number(value, fallback = 0) { const n = Number(String(value ?? '').replace(/[^0-9.-]/g,'')); return Number.isFinite(n) ? n : fallback; }
+export function number(value, fallback = 0) { const n = Number(unwrap(value).replace(/[^0-9.-]/g,'')); return Number.isFinite(n) ? n : fallback; }
 export function truthy(value, fallback=true) { if (value == null || value === '') return fallback; if (typeof value === 'boolean') return value; return !['false','0','no','off'].includes(String(value).toLowerCase()); }
 export function fileUrl(value) {
   if (Array.isArray(value) && value.length) return value[0]?.url || value[0]?.thumbnails?.large?.url || value[0]?.thumbnails?.card_cover?.url || '';

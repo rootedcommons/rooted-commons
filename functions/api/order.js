@@ -33,13 +33,25 @@ export async function onRequestPost({request,env}) {
       listRows(cfg,cfg.members), listRows(cfg,cfg.products), listRows(cfg,cfg.orders),
       listRows(cfg,cfg.collectionPoints), cfg.submissions?listRows(cfg,cfg.submissions):Promise.resolve([])
     ]);
-    const duplicate=orders.find(row=>String(row['Client request ID']||'')===clientRequestId);
-    if(duplicate)return json({ok:true,orderNumber:unwrap(duplicate['Order number']),total:number(duplicate['Order total']),closingCredit:number(duplicate['Estimated closing credit']),collectionPoint:linkedValues(duplicate['Collection point'])[0],duplicate:true});
     const existingSubmission=submissions.find(row=>String(row['Client request ID']||'')===clientRequestId);
     if(existingSubmission&&String(existingSubmission.Status||'')==='Rejected')return json({ok:false,message:unwrap(existingSubmission['Failure reason'])||'This order was rejected.'},409);
 
     const member=members.find(row=>tokenValid(row,token));
     if(!member)return json({ok:false,message:'This ordering link is invalid or has expired.'},401);
+    const duplicate=orders.find(row=>String(row['Client request ID']||'')===clientRequestId&&sameMember(row,member.id));
+    if(duplicate){
+      const duplicateTotal=number(duplicate['Order total']);
+      const storedClosing=number(duplicate['Estimated closing credit'],NaN);
+      const currentCredit=number(member['Current credit']);
+      return json({
+        ok:true,
+        orderNumber:unwrap(duplicate['Order number']),
+        total:duplicateTotal,
+        closingCredit:Number.isFinite(storedClosing)?storedClosing:Math.round((currentCredit-duplicateTotal)*100)/100,
+        collectionPoint:linkedValues(duplicate['Collection point'])[0],
+        duplicate:true
+      });
+    }
     const selectedPoint=points.find(row=>Number(row.id)===selectedPointId&&truthy(row.Active,true));
     if(!selectedPoint)return json({ok:false,message:'That collection point is not currently available.'},409);
 
@@ -70,8 +82,7 @@ export async function onRequestPost({request,env}) {
 
     const order=await createRow(cfg,cfg.orders,{
       'Submitted at':new Date().toISOString(),'Confirmed at':new Date().toISOString(),'Order source':'Website','Order week':week,
-      'Collection point':[selectedPoint.id],'Item JSON':JSON.stringify(lines),'Order total':total,'Starting credit':startingCredit,
-      'Estimated closing credit':Math.round((startingCredit-total)*100)/100,Status:'Confirmed','Order number':orderNumber,
+      'Collection point':[selectedPoint.id],'Item JSON':JSON.stringify(lines),'Order total':total,Status:'Confirmed','Order number':orderNumber,
       'Client request ID':clientRequestId,Member:[member.id],Email:member.Email||'',...(previous?{'Replaces order':[previous.id]}:{})
     });
     if(previous)await updateRow(cfg,cfg.orders,previous.id,{Status:'Replaced'});

@@ -9,7 +9,7 @@ Required: `Product`, `Code`, `Member price`, `Available`, `Available stock`, `Lo
 Required: `First name`, `Email`, `Active`, `Order token`, `Order token expiry`, `Current credit`, `Weekly commitment`, `Collection point`, `Member since`, `Founder badge`, `Payment reference`. Founder badge options: `Founder 10`, `Founder 25`, `Founder 50`.
 
 ## Web Orders
-Required: `Order number`, `Member`, `Order week`, `Collection point`, `Status`, `Client request ID`, `Item JSON`, `Order total`, `Starting credit`, `Estimated closing credit`, `Submitted at`, `Confirmed at`, `Replaces order`, `Order source`, `Email`. Status options: `Pending`, `Processing`, `Confirmed`, `Rejected`, `Replaced`, `Cancelled`.
+Required writable fields: `Order number`, `Member`, `Order week`, `Collection point`, `Status`, `Client request ID`, `Item JSON`, `Order total`, `Submitted at`, `Confirmed at`, `Replaces order`, `Order source`, `Email`. `Starting credit` and `Estimated closing credit` may remain as Baserow lookup/formula fields, but the website does not write to them. Status options: `Pending`, `Processing`, `Confirmed`, `Rejected`, `Replaced`, `Cancelled`.
 
 ## Order Lines
 Required: `Order`, `Product`, `Quantity`, `Unit price`, `Line total` (formula), `Status`, `Stock movement`, `Product name snapshot`, `Unit snapshot`. Status options: `Active`, `Released`, `Cancelled`.
