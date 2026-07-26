@@ -4,7 +4,7 @@ function productPayload(row) {
   return {
     id:Number(row.id), name:unwrap(row.Product), code:unwrap(row.Code),
     price:number(row['Member price']),
-    stock:number(row['Available stock'], number(row['Current stock'])),
+    stock:Math.max(0, number(row['Available stock'])),
     available:truthy(row.Available, true), categories:linkedValues(row.Category),
     collectionPointIds:linkedIds(row['Available collection points'])
   };
@@ -77,10 +77,10 @@ export async function onRequestPost({request,env}) {
     if(previous)await updateRow(cfg,cfg.orders,previous.id,{Status:'Replaced'});
 
     if(cfg.enableLedgers){
-      if(previous){for(const item of oldItems)await createRow(cfg,cfg.stock,{Date:new Date().toISOString(),'Quantity change':Math.abs(Number(item.quantity||0)),'Stock Movement':Math.abs(Number(item.quantity||0)),'Movement type':'Release',Reference:`Replacement of ${previous['Order number']||previous.id}`,Order:[previous.id],'Product name':[Number(item.productId)],'Idempotency key':`${clientRequestId}:release:${item.productId}`,Active:true,Notes:'Automatic release before replacement order'});}
+      if(previous){for(const item of oldItems)await createRow(cfg,cfg.stock,{Date:new Date().toISOString(),'Quantity change':Math.abs(Number(item.quantity||0)),'Movement type':'Release',Reference:`Replacement of ${previous['Order number']||previous.id}`,Order:[previous.id],'Product name':[Number(item.productId)],'Idempotency key':`${clientRequestId}:release:${item.productId}`,Active:true,Notes:'Automatic release before replacement order'});}
       for(const line of lines){
         let movement=null;
-        movement=await createRow(cfg,cfg.stock,{Date:new Date().toISOString(),'Quantity change':-Math.abs(line.quantity),'Stock Movement':-Math.abs(line.quantity),'Movement type':'Order',Reference:orderNumber,Order:[order.id],'Product name':[line.productId],'Idempotency key':`${clientRequestId}:order:${line.productId}`,Active:true,Notes:'Website order'});
+        movement=await createRow(cfg,cfg.stock,{Date:new Date().toISOString(),'Quantity change':-Math.abs(line.quantity),'Movement type':'Order',Reference:orderNumber,Order:[order.id],'Product name':[line.productId],'Idempotency key':`${clientRequestId}:order:${line.productId}`,Active:true,Notes:'Website order'});
         if(cfg.orderLines)await createRow(cfg,cfg.orderLines,{Order:[order.id],Product:[line.productId],Quantity:line.quantity,'Unit price':line.unitPrice,'Product name snapshot':line.name,'Unit snapshot':line.code||'',Status:'Active',...(movement?{'Stock movement':[movement.id]}:{})});
       }
       await createRow(cfg,cfg.transactions,{Date:new Date().toISOString(),'Xero Contact ID':[member.id],Type:'Order',Amount:-Math.abs(total),Order:[order.id],Email:member.Email||'',Notes:`Website order ${orderNumber}`,'Transaction reference':orderNumber,'Included in credit':true});

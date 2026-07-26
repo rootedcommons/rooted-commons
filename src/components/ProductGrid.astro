@@ -71,12 +71,12 @@ const displayProducts = filtered.map((product) => {
 
           {product.size && <p class="product-size">{product.size}</p>}
           {product.description && <p class="product-description">{product.description}</p>}
-          {product.outOfStock && <p class="stock-warning stock-warning-out">Out of stock</p>}
-          {product.lowStock && <p class="stock-warning">Low stock — {product.availableStock} left</p>}
+          <p class="stock-warning stock-warning-out" data-stock-out hidden={!product.outOfStock}>Out of stock</p>
+          <p class="stock-warning" data-stock-low hidden={!product.lowStock}>Low stock — <span data-stock-count>{product.availableStock}</span> left</p>
 
           <div class="product-purchase-row">
             <strong class="product-price">{money.format(product.priceNumber || 0)}</strong>
-            {showControls && !product.outOfStock && <div class="quantity-control quantity-control-solid" aria-label={`Quantity of ${product.name}`}>
+            {showControls && <div class="quantity-control quantity-control-solid" data-quantity-control hidden={product.outOfStock} aria-label={`Quantity of ${product.name}`}>
               <button type="button" data-quantity-change="-1" aria-label="Remove one">−</button>
               <output data-quantity>0</output>
               <button type="button" data-quantity-change="1" aria-label="Add one">+</button>

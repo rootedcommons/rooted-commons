@@ -253,7 +253,7 @@ export async function getSiteData() {
     popularity: numeric(row, 'Popularity', numeric(row, 'Display order', numeric(row, 'Order', 9999))),
     order: numeric(row, 'Popularity', numeric(row, 'Display order', numeric(row, 'Order', 9999))),
     available: boolean(row, 'Available', true),
-    availableStock: numeric(row, 'Available stock', numeric(row, 'Current stock', 0)),
+    availableStock: numeric(row, 'Available stock', 0),
     lowStockThreshold: numeric(row, 'Low stock threshold', 5),
     categories: linkedValues(raw(row, 'Category')).length ? linkedValues(raw(row, 'Category')) : ['Other'],
     category: linkedValues(raw(row, 'Category'))[0] || 'Other',

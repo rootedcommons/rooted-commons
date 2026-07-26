@@ -53,7 +53,7 @@ Copy table IDs into `.env`. Never commit `.env` or tokens.
 
 ## Stock
 
-`Available stock` is the value shown by the website. It must reconcile to the Stock Movement ledger. Use positive movements for deliveries/opening/adjustments and negative movements for orders/wastage. The low-stock threshold defaults to 5.
+`Available stock` is a Products-table rollup from the Stock Movement ledger. The catalogue is built with product descriptive data, then `/orders/` reloads current availability from `/api/products` at runtime on every visit. Use positive movements for deliveries/opening/adjustments and negative movements for orders/wastage. The low-stock threshold defaults to 5.
 
 ## Orders
 
