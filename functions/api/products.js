@@ -5,7 +5,8 @@ function stockPayload(row) {
     id: Number(row.id),
     availableStock: Math.max(0, number(row['Available stock'])),
     lowStockThreshold: Math.max(0, number(row['Low stock threshold'], 5)),
-    available: truthy(row.Available, true)
+    available: truthy(row.Available, true),
+    memberPrice: Math.round(number(row['Member price']) * 100) / 100
   };
 }
 

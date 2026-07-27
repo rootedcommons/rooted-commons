@@ -8,9 +8,7 @@ export function envConfig(env) {
     products: env.BASEROW_PRODUCTS_TABLE_ID,
     collectionPoints: env.BASEROW_COLLECTION_POINTS_TABLE_ID,
     orders: env.BASEROW_WEB_ORDERS_TABLE_ID,
-    stock: env.BASEROW_STOCK_MOVEMENT_TABLE_ID,
-    transactions: env.BASEROW_ACCOUNT_TRANSACTIONS_TABLE_ID,
-    orderLines: env.BASEROW_ORDER_LINES_TABLE_ID
+    transactions: env.BASEROW_ACCOUNT_TRANSACTIONS_TABLE_ID
   };
 }
 

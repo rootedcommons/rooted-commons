@@ -1,49 +1,49 @@
-id,Date,Quantity change,Movement type,Product code,Reference,Order,Notes,Product name
-1,,30,Opening,1010,,,,Brown Rice Short Grain
-2,,10,Opening,1045,,,,Bulghur
-3,,24,Opening,1060,,,,Wholemeal Couscous
-4,,17,Opening,1125,,,,British White Quinoa Grain - gluten-free
-5,,29,Opening,5025,,,,Dried Chickpeas
-6,,29,Opening,5110,,,,Red Split Lentils
-7,,11,Opening,5130,,,,Yellow Split Peas
-8,,18,Opening,6020,,,,Almonds
-9,,11,Opening,6057,,,,Hulled Hemp Seed
-10,,6,Opening,6121,,,,Austrian Pumpkin Seeds
-11,,12,Opening,6130,,,,Sunflower Seed - kernels
-12,,16,Opening,6150,,,,Walnut Light Pieces
-13,,12,Opening,7040,,,,Dates – pitted
-14,,12,Opening,7100,,,,Raisins
-15,,60,Opening,20660,,,,Jumbo Oats - bags
-16,,40,Opening,40540,,,,Wholemeal Strong Bread Flour
-17,,50,Opening,40545,,,,Plain white flour
-18,,73,Opening,40560,,,,Strong White Bread Flour
-19,,0,Opening,80876,,,,Carlin Peas
-20,,22,Opening,80895,,,,Whole Fava Beans
-21,,36,Opening,152563,,,,Wholewheat Spaghetti - in paper
-22,,36,Opening,152565,,,,Wholewheat Fusilli - in paper
-23,,48,Opening,152566,,,,Wholewheat Penne - in paper
-24,,18,Opening,200509,,,,Rapeseed Oil – Cold Pressed
-25,,12,Opening,200516,,,,Tunisian Olive Oil - Extra Virgin
-26,,5,Opening,250280,,,,Crunchy Peanut Butter - jumbo
-27,,11,Opening,250282,,,,Smooth Peanut Butter - jumbo
-28,,29,Opening,370516,,,,Cyder Vinegar
-29,,47,Opening,390105,,,,Tomatoes Chopped
-30,,120,Opening,390115,,,,Passata
-31,,18,Opening,390179,,,,Tomatoes Chopped Peeled - 4 Pack
-32,,23,Opening,390736,,,,Coconut Milk
-33,,36,Opening,441207,,,,Carlin Peas
-34,,36,Opening,441215,,,,Fava Beans (broad beans)
-35,,36,Opening,444490,,,,Baked Beans
-36,,23,Opening,444596,,,,Black Beans
-37,,36,Opening,445505,,,,Red Kidney Beans
-38,,22,Opening,445510,,,,Chickpeas
-39,,64,Opening,580329,,,,Fairtrade Everyday Tea Bags
-40,,36,Opening,601306,,,,Rich Americano R&G Coffee - 4
-41,,87,Opening,723550,,,,Barista Oat (Regenerative)
-42,,14,Opening,793015,,,,Mushroom Stock Cubes
-43,,29,Opening,793065,,,,Vegetable Stock Cubes
-44,,10,Opening,859193,,,,"""Natural Deodorant (Green Fusion, paper tube)"""
-45,,12,Opening,831400,,,,Dishwasher Tablets
-46,,24,Opening,859162,,,,Soap (Hemp/vit. E)
-47,,14,Opening,854307,,,,Shampoo bar (fragrance free)
-48,,24,Opening,861506,,,,Toothpaste (Mint with fluoride)
+id,Date,Quantity change,Unit price,Movement type,Product code,Reference,Order,Notes,Product name,Idempotency key,Active
+1,,30,,Opening,1010,,,,Brown Rice Short Grain,,true
+2,,10,,Opening,1045,,,,Bulghur,,true
+3,,24,,Opening,1060,,,,Wholemeal Couscous,,true
+4,,17,,Opening,1125,,,,British White Quinoa Grain - gluten-free,,true
+5,,29,,Opening,5025,,,,Dried Chickpeas,,true
+6,,29,,Opening,5110,,,,Red Split Lentils,,true
+7,,11,,Opening,5130,,,,Yellow Split Peas,,true
+8,,18,,Opening,6020,,,,Almonds,,true
+9,,11,,Opening,6057,,,,Hulled Hemp Seed,,true
+10,,6,,Opening,6121,,,,Austrian Pumpkin Seeds,,true
+11,,12,,Opening,6130,,,,Sunflower Seed - kernels,,true
+12,,16,,Opening,6150,,,,Walnut Light Pieces,,true
+13,,12,,Opening,7040,,,,Dates – pitted,,true
+14,,12,,Opening,7100,,,,Raisins,,true
+15,,60,,Opening,20660,,,,Jumbo Oats - bags,,true
+16,,40,,Opening,40540,,,,Wholemeal Strong Bread Flour,,true
+17,,50,,Opening,40545,,,,Plain white flour,,true
+18,,73,,Opening,40560,,,,Strong White Bread Flour,,true
+19,,0,,Opening,80876,,,,Carlin Peas,,true
+20,,22,,Opening,80895,,,,Whole Fava Beans,,true
+21,,36,,Opening,152563,,,,Wholewheat Spaghetti - in paper,,true
+22,,36,,Opening,152565,,,,Wholewheat Fusilli - in paper,,true
+23,,48,,Opening,152566,,,,Wholewheat Penne - in paper,,true
+24,,18,,Opening,200509,,,,Rapeseed Oil – Cold Pressed,,true
+25,,12,,Opening,200516,,,,Tunisian Olive Oil - Extra Virgin,,true
+26,,5,,Opening,250280,,,,Crunchy Peanut Butter - jumbo,,true
+27,,11,,Opening,250282,,,,Smooth Peanut Butter - jumbo,,true
+28,,29,,Opening,370516,,,,Cyder Vinegar,,true
+29,,47,,Opening,390105,,,,Tomatoes Chopped,,true
+30,,120,,Opening,390115,,,,Passata,,true
+31,,18,,Opening,390179,,,,Tomatoes Chopped Peeled - 4 Pack,,true
+32,,23,,Opening,390736,,,,Coconut Milk,,true
+33,,36,,Opening,441207,,,,Carlin Peas,,true
+34,,36,,Opening,441215,,,,Fava Beans (broad beans),,true
+35,,36,,Opening,444490,,,,Baked Beans,,true
+36,,23,,Opening,444596,,,,Black Beans,,true
+37,,36,,Opening,445505,,,,Red Kidney Beans,,true
+38,,22,,Opening,445510,,,,Chickpeas,,true
+39,,64,,Opening,580329,,,,Fairtrade Everyday Tea Bags,,true
+40,,36,,Opening,601306,,,,Rich Americano R&G Coffee - 4,,true
+41,,87,,Opening,723550,,,,Barista Oat (Regenerative),,true
+42,,14,,Opening,793015,,,,Mushroom Stock Cubes,,true
+43,,29,,Opening,793065,,,,Vegetable Stock Cubes,,true
+44,,10,,Opening,859193,,,,"""Natural Deodorant (Green Fusion, paper tube)""",,true
+45,,12,,Opening,831400,,,,Dishwasher Tablets,,true
+46,,24,,Opening,859162,,,,Soap (Hemp/vit. E),,true
+47,,14,,Opening,854307,,,,Shampoo bar (fragrance free),,true
+48,,24,,Opening,861506,,,,Toothpaste (Mint with fluoride),,true

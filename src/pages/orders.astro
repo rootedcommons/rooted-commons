@@ -227,6 +227,11 @@ const s = data.settings;
       const lowStock = !outOfStock && stock <= threshold;
       card.dataset.stock = String(stock);
       card.dataset.outOfStock = outOfStock ? 'true' : 'false';
+      if (Number.isFinite(Number(product.memberPrice))) {
+        card.dataset.price = String(Number(product.memberPrice));
+        const priceElement = card.querySelector('.product-price');
+        if (priceElement) priceElement.textContent = money.format(Number(product.memberPrice));
+      }
       card.classList.toggle('product-card-out-of-stock', outOfStock);
       card.classList.toggle('product-card-low-stock', lowStock);
       const outMessage = card.querySelector('[data-stock-out]');

@@ -217,12 +217,40 @@ const formatCollectionDeadline = (value) => {
       if(!button)return;
       const id=button.dataset.productId;
       const action=button.dataset.checkoutAction;
-      if(action==='increase')basket[id]=Number(basket[id]||0)+1;
+      if(action==='increase'){const product=productMap.get(Number(id));const maximum=Math.max(0,Number(product?.availableStock??Infinity));basket[id]=Math.min(maximum,Number(basket[id]||0)+1);}
       if(action==='decrease')basket[id]=Math.max(0,Number(basket[id]||0)-1);
       if(action==='remove'||!basket[id])delete basket[id];
       saveBasket();
       renderBasket();
     });
+
+    async function loadLiveProducts(){
+      try{
+        const response=await fetch('/api/products',{headers:{accept:'application/json'},cache:'no-store'});
+        const payload=await response.json();
+        if(!response.ok||!payload.ok)throw new Error(payload.message||'Live product data could not be loaded.');
+        for(const live of payload.products||[]){
+          const product=productMap.get(Number(live.id));
+          if(!product)continue;
+          if(Number.isFinite(Number(live.memberPrice)))product.price=Number(live.memberPrice);
+          product.availableStock=Math.max(0,Number(live.availableStock||0));
+          product.available=live.available!==false;
+        }
+        for(const item of selectedItems()){
+          const maximum=item.product.available===false?0:Number(item.product.availableStock||0);
+          if(item.quantity>maximum){
+            if(maximum>0)basket[item.productId]=maximum;
+            else delete basket[item.productId];
+          }
+        }
+        saveBasket();
+        renderBasket();
+      }catch(error){
+        submitMessage.textContent='Current prices and availability could not be loaded. Please refresh before confirming.';
+        submitButton.disabled=true;
+        console.error(error);
+      }
+    }
 
     async function verifyMember(){
       if(!token)return;
@@ -276,6 +304,7 @@ const formatCollectionDeadline = (value) => {
     });
 
     renderBasket();
+    loadLiveProducts();
     verifyMember();
   </script>
 </BaseLayout>

@@ -1,14 +1,41 @@
 # Architecture
 
-Rooted Commons v2.0 keeps Baserow as the operational source of truth. Astro renders the public site. The narrow `/api/*` functions protect member and order data; they contain no permanent business state. Xero remains the accounting source for payments.
+## Responsibilities
 
-## Data flow
+### Astro/browser
 
-1. Public catalogue data is read from Baserow during the site build.
-2. A member verifies through a secure opaque token.
-3. Checkout posts one complete order with a client request ID.
-4. The order adapter validates member, collection point, prices and stock against Baserow.
-5. Confirmed orders create Order Lines and stock ledger movements.
-6. A Baserow automation polls Xero every 15 minutes and upserts Receive Money transactions by BankTransactionID.
+- renders the public website;
+- loads current product price and availability through `/api/products`;
+- stores the unconfirmed basket in local storage;
+- sends product IDs and quantities only.
 
-The host may be replaced if it supports Astro and equivalent secure server functions. No Cloudflare database, queue or Durable Object is required.
+### Restricted order endpoint
+
+- validates the opaque member token;
+- loads current Products and Collection Points from Baserow;
+- checks `Available stock` and `Member price`;
+- rejects a second order for the same member and ordering week;
+- creates one Web Orders row with `Status = Processing`;
+- returns immediately.
+
+### Baserow automation
+
+- parses the authoritative `Item JSON` snapshot;
+- batch-creates Stock Movement rows;
+- creates the Account Transaction;
+- marks the order Confirmed;
+- builds and sends the HTML email.
+
+### Xero
+
+- is the source for manual Receive Money transactions;
+- is polled by Baserow every 15 minutes;
+- updates the Account Transactions ledger by immutable Xero ID.
+
+## No automatic replacement
+
+Once a member has a Processing or Confirmed order for the current ordering week, the endpoint rejects another order. Administrators handle amendments, cancellation, stock correction and refunds manually.
+
+## Concurrency
+
+Basket contents do not reserve stock. The endpoint rechecks stock immediately before creating a Web Order. A narrow race remains if two members confirm the last units before either Baserow automation writes its Stock Movements. This is accepted as proportionate for the present scale. Monitor for negative `Available stock` and resolve any exceptional oversell manually.

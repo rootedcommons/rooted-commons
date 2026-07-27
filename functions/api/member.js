@@ -65,7 +65,7 @@ export async function onRequestGet({ request, env }) {
     const pointId = linkedIds(member['Collection point'])[0];
     const point = points.find(row => Number(row.id) === Number(pointId));
     const memberOrders = orders
-      .filter(order => orderBelongsToMember(order, member) && !['Cancelled','Replaced'].includes(String(order.Status || '')))
+      .filter(order => orderBelongsToMember(order, member) && String(order.Status || '') !== 'Cancelled')
       .sort((a,b) => new Date(b['Submitted at'] || 0) - new Date(a['Submitted at'] || 0));
     const account = summariseTransactions(transactions, member);
     if (!account.averageWeeklySpend && memberOrders.length) {
