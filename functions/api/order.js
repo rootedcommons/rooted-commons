@@ -133,6 +133,17 @@ export async function onRequestPost({ request, env }) {
     const startingCredit = number(member['Current credit']);
     const orderNumber = `RC-${week.replace('-W', '')}-${String(Date.now()).slice(-6)}`;
     const submittedAt = new Date().toISOString();
+    const movementDate = submittedAt.replace(/\.\d{3}Z$/, 'Z');
+    const stockMovementRows = lines.map((line) => ({
+      'Product code': [line.product_id],
+      'Quantity change': -Math.abs(line.quantity),
+      'Unit price': line.unit_price,
+      'Movement type': 'Order',
+      Order: [orderNumber],
+      Date: movementDate,
+      'Idempotency key': `order-${orderNumber}-product-${line.product_id}`,
+      Active: true
+    }));
 
     await createRow(cfg, cfg.orders, {
       'Submitted at': submittedAt,
@@ -140,6 +151,7 @@ export async function onRequestPost({ request, env }) {
       'Order week': week,
       'Collection point': [selectedPoint.id],
       'Item JSON': JSON.stringify(lines),
+      'Stock Movement JSON': JSON.stringify(stockMovementRows),
       'Order total': total,
       Status: 'Processing',
       'Order number': orderNumber,

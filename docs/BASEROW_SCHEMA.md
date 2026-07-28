@@ -51,6 +51,7 @@ Writable by the website:
 - `Status` — single select
 - `Client request ID` — text
 - `Item JSON` — long text
+- `Stock Movement JSON` — long text; server-generated payload for Batch create rows
 - `Order total` — number/currency, 2 decimals
 - `Submitted at` — date/time
 - `Confirmed at` — date/time

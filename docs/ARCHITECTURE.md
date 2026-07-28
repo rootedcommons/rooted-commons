@@ -20,7 +20,7 @@
 
 ### Baserow automation
 
-- parses the authoritative `Item JSON` snapshot;
+- batch-creates stock ledger rows from the authoritative `Stock Movement JSON` payload;
 - batch-creates Stock Movement rows;
 - creates the Account Transaction;
 - marks the order Confirmed;

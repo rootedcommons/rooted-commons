@@ -1,19 +1,18 @@
-# Rooted Commons website v2.1
+# Rooted Commons website v2.1.2
 
 Astro website and restricted server functions for Rooted Commons. Baserow is the operational data source; Xero is the payment source; the web host stores no authoritative business state.
 
 ## V2.1 architecture
 
-The browser sends only product row IDs and quantities. The order endpoint reloads the member, current prices, `Available stock`, and collection-point rules from Baserow. It calculates the authoritative order total and creates one `Web Orders` row with `Status = Processing` and a price snapshot in `Item JSON`.
+The browser sends only product row IDs and quantities. The order endpoint reloads the member, current prices, `Available stock`, and collection-point rules from Baserow. It calculates the authoritative order total and creates one `Web Orders` row with `Status = Processing`, a readable price snapshot in `Item JSON`, and a batch-ready payload in `Stock Movement JSON`.
 
 A published Baserow automation then:
 
-1. parses `Item JSON`;
-2. creates one Stock Movement row per product;
-3. creates one negative Account Transaction;
-4. marks the Web Order `Confirmed`;
-5. sends the HTML confirmation email;
-6. records that the email was sent.
+1. batch-creates all Stock Movement rows from `Stock Movement JSON`;
+2. creates one negative Account Transaction;
+3. marks the Web Order `Confirmed`;
+4. sends the confirmation email in a separate workflow;
+5. records that the email was sent.
 
 The website does not create Stock Movement or Account Transactions rows. There are no Order Lines, Order Submissions, automatic replacement orders, release movements, or automatic order reversals.
 
@@ -95,7 +94,7 @@ Browser prices are display values only. At confirmation, the server reloads `Pro
 ]
 ```
 
-The automation copies `unit_price` into Stock Movement, so later price changes do not rewrite historical sales.
+The server also generates `Stock Movement JSON`, which the automation batch-creates in one action. It includes each historical `unit_price`, so later product-price changes do not rewrite historical sales.
 
 ## Orders
 
