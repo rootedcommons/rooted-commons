@@ -155,6 +155,9 @@ export async function getSiteData() {
     })(),
     increaseCommitmentButtonText: text(validSettingsRow, 'Increase commitment button text', 'Increase my weekly BACS amount'),
     increaseCommitmentButtonUrl: text(validSettingsRow, 'Increase commitment button URL', ''),
+    bankAccountName: text(validSettingsRow, 'Bank account name', fallbackSettings.bankAccountName),
+    bankSortCode: text(validSettingsRow, 'Bank sort code', fallbackSettings.bankSortCode),
+    bankAccountNumber: text(validSettingsRow, 'Bank account number', fallbackSettings.bankAccountNumber),
     navigationLinks: Object.keys(validSettingsRow)
       .map((key) => {
         const match = key.match(/^Navigation label\s*(\d+)$/i);

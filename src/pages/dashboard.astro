@@ -57,13 +57,53 @@ const membershipPerks=s.membershipPerks || [];
           <p class="eyebrow">Your weekly commitment</p>
           <p class="commitment-amount"><strong id="dashboard-commitment">£0</strong><span>/week</span></p>
           <p>Your regular contribution creates predictable demand that local producers can plan around.</p>
+          <p id="dashboard-monthly-equivalent" class="small-print"></p>
+          <section class="regular-payment-details">
+            <h3>Your regular payment</h3>
+            <p>Please use a weekly standing order for your core commitment. BACS is the only payment method offered for this regular payment.</p>
+            <dl class="bank-details">
+              <div><dt>Account name</dt><dd id="dashboard-regular-bank-name"></dd></div>
+              <div><dt>Sort code</dt><dd id="dashboard-regular-sort-code"></dd></div>
+              <div><dt>Account number</dt><dd id="dashboard-regular-account-number"></dd></div>
+              <div><dt>Reference</dt><dd id="dashboard-regular-payment-reference"></dd></div>
+            </dl>
+            <p class="small-print">Regular BACS payments have no processing charge and help us keep member prices low.</p>
+          </section>
           <div class="commitment-metrics">
             <div><span>Average weekly orders</span><strong id="dashboard-average-spend">£0.00</strong></div>
             <div id="dashboard-impact-row"><span>Redirected locally</span><strong id="dashboard-impact">£0.00</strong></div>
           </div>
+          <section class="commitment-topup-section" aria-labelledby="extra-topups-heading">
+            <h3 id="extra-topups-heading">Extra top-ups</h3>
+            <p>Your regular standing order is intended to cover your normal weekly spending. If you spend more than your available credit, you can make a one-off bank transfer (recommended) or pay online for convenience.</p>
+            <div id="dashboard-topup-status" class="topup-status"></div>
+            <div id="dashboard-payment-options" hidden>
+              <div class="payment-method payment-method-preferred">
+                <p class="payment-label">Recommended</p>
+                <h4>Top up by bank transfer</h4>
+                <dl class="bank-details">
+                  <div><dt>Account name</dt><dd id="dashboard-bank-name"></dd></div>
+                  <div><dt>Sort code</dt><dd id="dashboard-sort-code"></dd></div>
+                  <div><dt>Account number</dt><dd id="dashboard-account-number"></dd></div>
+                  <div><dt>Reference</dt><dd id="dashboard-payment-reference"></dd></div>
+                </dl>
+                <p class="small-print">Bank transfers have no processing charge and help us keep member prices low.</p>
+              </div>
+              <div class="payment-method payment-method-online">
+                <h4>Pay securely online</h4>
+                <p>Online payment is available for convenience when you need to top up immediately.</p>
+                <a id="dashboard-mollie-link" class="button button-secondary" hidden>Pay securely online</a>
+                <p id="dashboard-mollie-unavailable" class="small-print">Online payment is temporarily unavailable. You can still top up by bank transfer.</p>
+              </div>
+            </div>
+          </section>
           <div class="recent-topups">
-            <h3>Recent top-ups</h3>
-            <div id="dashboard-topups"><p class="small-print">No recent top-ups found.</p></div>
+            <h3>Recent payments</h3>
+            <div id="dashboard-topups"><p class="small-print">No recent payments found.</p></div>
+            <details id="dashboard-account-activity" class="account-activity">
+              <summary>View full account activity</summary>
+              <div id="dashboard-activity"></div>
+            </details>
           </div>
           <div id="dashboard-increase-prompt" class="commitment-prompt" hidden>
             <p id="dashboard-increase-copy"></p>
@@ -76,7 +116,7 @@ const membershipPerks=s.membershipPerks || [];
 
   {blocks.map((block)=><SectionRenderer block={block} products={data.products} settings={s} />)}
 
-  <script is:inline define:vars={{ badgeLogos, membershipPerks }}>
+  <script is:inline define:vars={{ badgeLogos, membershipPerks, bankAccountName:s.bankAccountName, bankSortCode:s.bankSortCode, bankAccountNumber:s.bankAccountNumber }}>
     const TOKEN_KEY='rooted-commons-order-token-v1';
     const params=new URLSearchParams(location.search);
     const urlToken=params.get('token');
@@ -115,7 +155,17 @@ const membershipPerks=s.membershipPerks || [];
     const renderTopups=payments=>{
       const container=document.querySelector('#dashboard-topups');
       if(!payments?.length)return;
-      container.innerHTML=payments.map(item=>`<div class="topup-line"><span>${formatDate(item.date)}</span><strong>+${money.format(Math.abs(item.amount||0))}</strong></div>`).join('');
+      container.innerHTML=payments.map(item=>`<div class="topup-line"><span>${formatDate(item.date)}${item.type?` · ${item.type}`:''}</span><strong>+${money.format(Math.abs(item.amount||0))}</strong></div>`).join('');
+    };
+
+    const renderActivity=activity=>{
+      const container=document.querySelector('#dashboard-activity');
+      if(!activity?.length){document.querySelector('#dashboard-account-activity').hidden=true;return;}
+      container.innerHTML=activity.map(item=>{
+        const amount=Number(item.amount)||0;
+        const sign=amount>0?'+':'';
+        return `<div class="activity-line"><span>${formatDate(item.date)}<small>${item.type||item.notes||'Account activity'}</small></span><strong class="${amount<0?'amount-negative':'amount-positive'}">${sign}${money.format(amount)}</strong></div>`;
+      }).join('');
     };
     async function load(){
       if(!token){location.href='/orders/';return;}
@@ -146,9 +196,31 @@ const membershipPerks=s.membershipPerks || [];
       const average=Number(member.account?.averageWeeklySpend)||0;
       const totalImpact=Number(member.account?.totalOrderSpend)||0;
       document.querySelector('#dashboard-commitment').textContent=money.format(commitment).replace('.00','');
+      document.querySelector('#dashboard-monthly-equivalent').textContent=commitment>0?`Equivalent to ${money.format(commitment*52/12)} per month, paid by regular BACS standing order.`:'';
+      document.querySelector('#dashboard-regular-bank-name').textContent=bankAccountName||'Roots to Fruits CIC';
+      document.querySelector('#dashboard-regular-sort-code').textContent=bankSortCode||'Contact us for bank details';
+      document.querySelector('#dashboard-regular-account-number').textContent=bankAccountNumber||'—';
+      document.querySelector('#dashboard-regular-payment-reference').textContent=member.paymentReference||`RC-${member.id}`;
       document.querySelector('#dashboard-average-spend').textContent=money.format(average);
       document.querySelector('#dashboard-impact').textContent=money.format(totalImpact);
       renderTopups(member.account?.payments||[]);
+      renderActivity(member.account?.activity||[]);
+      const credit=Number(member.credit)||0;
+      const topupStatus=document.querySelector('#dashboard-topup-status');
+      const paymentOptions=document.querySelector('#dashboard-payment-options');
+      if(credit<0){
+        topupStatus.innerHTML=`<p class="balance-label">Balance to clear</p><strong class="balance-to-clear">${money.format(Math.abs(credit))}</strong><p class="payment-deadline">Your order will only be fulfilled if your account is back to £0.00 or above before collection. If it is not, the order will be refunded.</p>`;
+        paymentOptions.hidden=false;
+        document.querySelector('#dashboard-bank-name').textContent=bankAccountName||'Roots to Fruits CIC';
+        document.querySelector('#dashboard-sort-code').textContent=bankSortCode||'Contact us for bank details';
+        document.querySelector('#dashboard-account-number').textContent=bankAccountNumber||'—';
+        document.querySelector('#dashboard-payment-reference').textContent=member.paymentReference||`RC-${member.id}`;
+        const mollie=document.querySelector('#dashboard-mollie-link');
+        const unavailable=document.querySelector('#dashboard-mollie-unavailable');
+        if(member.molliePaymentUrl){mollie.href=member.molliePaymentUrl;mollie.textContent=`Pay ${money.format(Math.abs(credit))} securely`;mollie.hidden=false;unavailable.hidden=true;}
+      }else{
+        topupStatus.innerHTML=`<p class="balance-label">Current credit</p><strong class="current-credit">${money.format(credit)}</strong><p class="topup-ok">✓ No extra top-up needed</p>`;
+      }
       const threshold=Math.max(2,commitment*.15);
       if(commitment>0&&average>=commitment+threshold){
         document.querySelector('#dashboard-increase-prompt').hidden=false;

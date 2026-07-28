@@ -89,6 +89,12 @@ const formatCollectionDeadline = (value) => {
         <div id="verified-member-panel" hidden>
           <h2>{s.checkoutConfirmHeading}</h2>
           <div id="verified-member"></div>
+          <aside id="checkout-payment-explainer" class="checkout-payment-explainer">
+            <h3>Paying for this order</h3>
+            <p>Your regular commitment is paid by BACS standing order. If this order takes your balance below zero, you can make an extra bank transfer (recommended) or use the secure online payment option shown on your dashboard and in your confirmation email.</p>
+            <p><strong>Your balance must be £0.00 or above before collection for the order to be fulfilled.</strong> If payment has not been received before orders are prepared, your order will be refunded and the produce returned to available stock.</p>
+            <p class="small-print">Bank transfers avoid payment-processing costs and help us keep member prices low.</p>
+          </aside>
           <button id="submit-order" class="button" type="button" disabled>{s.checkoutConfirmButton}</button>
           <p id="submit-message" class="small-print" aria-live="polite"></p>
         </div>
@@ -195,7 +201,8 @@ const formatCollectionDeadline = (value) => {
       if(!member)return;
       const total=basketTotal();
       const point=selectedPoint();
-      document.querySelector('#verified-member').innerHTML=`<div class="verified-summary"><p><strong>Hi ${member.firstName||'member'}</strong></p><dl><div><dt>Member credit</dt><dd>${money.format(member.credit||0)}</dd></div><div><dt>This order</dt><dd>−${money.format(total)}</dd></div><div><dt>Estimated balance</dt><dd>${money.format((member.credit||0)-total)}</dd></div><div><dt>Collection</dt><dd>${point?point.name:'Choose a collection point'}</dd></div></dl></div>`;
+      const closing=(Number(member.credit)||0)-total;
+      document.querySelector('#verified-member').innerHTML=`<div class="verified-summary"><p><strong>Hi ${member.firstName||'member'}</strong></p><dl><div><dt>Member credit</dt><dd>${money.format(member.credit||0)}</dd></div><div><dt>This order</dt><dd>−${money.format(total)}</dd></div><div><dt>Estimated balance</dt><dd class="${closing<0?'amount-negative':''}">${money.format(closing)}</dd></div><div><dt>Collection</dt><dd>${point?point.name:'Choose a collection point'}</dd></div></dl>${closing<0?`<div class="checkout-balance-warning"><strong>Extra top-up needed: ${money.format(Math.abs(closing))}</strong><p>You can still confirm your order, but your account must be £0.00 or above before collection.</p></div>`:'<p class="checkout-balance-ok">Your account will remain at £0.00 or above.</p>'}</div>`;
       updateSubmitState();
     }
 
@@ -295,7 +302,8 @@ const formatCollectionDeadline = (value) => {
         localStorage.removeItem(STORAGE_KEY);
         sessionStorage.removeItem(REQUEST_KEY);
         basket={};
-        document.querySelector('.checkout-shell').innerHTML=`<section class="checkout-card checkout-success"><h2>${checkoutSuccessHeading}</h2><p>Your order <strong>${payload.orderNumber}</strong> has been received.</p><p>Total: <strong>${money.format(payload.total)}</strong><br>Collection: <strong>${payload.collectionPoint}</strong><br>Estimated closing credit: <strong>${money.format(payload.closingCredit)}</strong></p><a class="button" href="/dashboard/?token=${encodeURIComponent(token)}">Return to your dashboard</a></section>`;
+        const paymentNotice=payload.closingCredit<0?`<div class="checkout-payment-required"><h3>Payment required before collection</h3><p>Your estimated balance is <strong>${money.format(payload.closingCredit)}</strong>.</p><p>Please ensure your account is <strong>£0.00 or above</strong> before your collection time. If payment has not been received before orders are prepared, your order will be refunded and the produce returned to available stock.</p><p>Bank transfer is recommended. An optional secure online payment link will be available in your confirmation email and membership dashboard.</p></div>`:`<p class="checkout-balance-ok">Your account remains at £0.00 or above.</p>`;
+        document.querySelector('.checkout-shell').innerHTML=`<section class="checkout-card checkout-success"><h2>${checkoutSuccessHeading}</h2><p>Your produce has been reserved under order <strong>${payload.orderNumber}</strong>.</p><p>Total: <strong>${money.format(payload.total)}</strong><br>Collection: <strong>${payload.collectionPoint}</strong><br>Estimated closing credit: <strong>${money.format(payload.closingCredit)}</strong></p>${paymentNotice}<a class="button" href="/dashboard/?token=${encodeURIComponent(token)}">Return to your dashboard</a></section>`;
       }else{
         submitMessage.textContent=payload.message||'The order could not be submitted.';
         submitButton.disabled=false;

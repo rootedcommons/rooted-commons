@@ -29,6 +29,18 @@ Required:
 - `Current credit`
 - `Weekly commitment`
 - `Collection point`
+- `Payment reference` — unique BACS reference; code falls back to `RC-{row ID}`
+- `Mollie payment URL` — optional hosted payment URL shown only when the member is below zero
+
+## Site Settings payment fields
+
+Add:
+
+- `Bank account name`
+- `Bank sort code`
+- `Bank account number`
+
+These are shown to authenticated members in the dashboard and used in the confirmation-email template.
 
 ## Collection Points
 

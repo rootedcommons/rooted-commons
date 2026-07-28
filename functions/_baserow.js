@@ -97,6 +97,8 @@ export function publicMember(member, { collectionPoint = null, lastOrder = null,
     firstName: unwrap(member['First name']),
     credit: number(member['Current credit']),
     weeklyCommitment: number(member['Weekly commitment']),
+    paymentReference: unwrap(member['Payment reference']) || `RC-${member.id}`,
+    molliePaymentUrl: unwrap(member['Mollie payment URL'] || member['Online payment URL']),
     collectionPoint: collectionPoint || {
       id: linkedIds(member['Collection point'])[0] || null,
       name: linkedValues(member['Collection point'])[0] || ''

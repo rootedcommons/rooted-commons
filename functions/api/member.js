@@ -1,4 +1,4 @@
-import { envConfig, json, listRows, tokenValid, publicMember, publicCollectionPoint, linkedIds, linkedValues, unwrap, number } from '../_baserow.js';
+import { envConfig, json, listRows, tokenValid, publicMember, publicCollectionPoint, linkedIds, linkedValues, unwrap, number, truthy } from '../_baserow.js';
 
 function belongsToMember(row, member) {
   const memberId = Number(member.id);
@@ -35,18 +35,21 @@ function summariseTransactions(rows, member) {
       date: transactionDate(row),
       type: transactionType(row),
       amount: transactionAmount(row),
-      notes: unwrap(row.Notes || row.Description || row.Reference)
+      notes: unwrap(row.Notes || row.Description || row.Reference),
+      reference: unwrap(row['Transaction reference'] || row.Reference),
+      includedInCredit: truthy(row['Included in credit'], true)
     }))
     .sort((a,b) => new Date(b.date || 0) - new Date(a.date || 0));
 
-  const payments = mine.filter(item => /payment|top.?up/i.test(item.type) && item.amount > 0).slice(0,4);
-  const recentOrders = mine.filter(item => /order/i.test(item.type) && !/reversal|refund/i.test(item.type));
+  const included = mine.filter(item => item.includedInCredit);
+  const payments = included.filter(item => item.amount > 0).slice(0,4);
+  const recentOrders = included.filter(item => /order/i.test(item.type) && !/reversal|refund/i.test(item.type));
   const eightWeekSpend = recentOrders
     .filter(item => new Date(item.date || 0).getTime() >= eightWeeksAgo)
     .reduce((sum,item) => sum + Math.abs(item.amount), 0);
   const averageWeeklySpend = eightWeekSpend / 8;
   const totalOrderSpend = recentOrders.reduce((sum,item) => sum + Math.abs(item.amount), 0);
-  return { payments, averageWeeklySpend, totalOrderSpend };
+  return { payments, activity: included.slice(0,20), averageWeeklySpend, totalOrderSpend };
 }
 
 export async function onRequestGet({ request, env }) {

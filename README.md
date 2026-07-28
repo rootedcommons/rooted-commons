@@ -107,3 +107,15 @@ One member may place one `Processing` or `Confirmed` order per ordering week. Co
 - [Order automation](docs/BASEROW_ORDER_AUTOMATION.md)
 - [Xero sync](docs/XERO_SYNC.md)
 - [Testing](docs/TESTING.md)
+
+
+## V2.2 member payments
+
+V2.2 expands the existing **Your weekly commitment** dashboard card. The original average-spend and increase-standing-order prompt is unchanged.
+
+Add these Baserow fields before deployment:
+
+- Site Settings: `Bank account name`, `Bank sort code`, `Bank account number`
+- Members: `Payment reference`, optional `Mollie payment URL`
+
+The dashboard treats the regular commitment as BACS-only. If a member is below zero, it displays preferred one-off BACS details and, only when configured, a secondary Mollie payment link. Checkout and the confirmation screen state that the balance must be £0.00 or above before collection.
