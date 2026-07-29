@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.3.0 — 2026-07-29
+
+- Added multi-select certification logo support for Gluten Free and Organic Food Federation.
+- Added Moldova, Bulgaria and Argentina country flags.
+- Shortened weekly customer order references to a collision-checked three-digit suffix.
+- Added distinct Order confirmed and Order reserved checkout outcomes.
+- Removed positive-balance reassurance text from checkout.
+- Fixed the member information bar collection-point object display.
+- Hid the join card for authenticated members and renamed the checkout heading to Your member order.
+- Added a dashboard collection-point editor backed by the Baserow Members table.
+- Added a complete /privacy notice.
+
+
 ## 2.2.0
 
 - Expanded the existing weekly-commitment card with extra top-up guidance.

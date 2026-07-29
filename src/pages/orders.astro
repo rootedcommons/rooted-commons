@@ -214,7 +214,10 @@ const s = data.settings;
       member=payload.member;
       const box=document.querySelector('#member-summary');
       box.hidden=false;
-      box.innerHTML=`<strong>Hello ${member.firstName||'member'}.</strong> Current credit: ${money.format(member.credit||0)}${member.collectionPoint?` · Collection: ${member.collectionPoint}`:''}`;
+      const pointName=typeof member.collectionPoint==='string'
+        ? member.collectionPoint
+        : (member.collectionPoint?.name||'');
+      box.innerHTML=`<strong>Hello ${member.firstName||'member'}.</strong> Current credit: ${money.format(member.credit||0)}${pointName?` · Collection: ${pointName}`:''}`;
       renderBasket();
     }
     function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(basket));}

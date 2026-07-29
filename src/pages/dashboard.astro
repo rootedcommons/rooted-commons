@@ -38,6 +38,16 @@ const membershipPerks=s.membershipPerks || [];
           <p id="dashboard-point-address"></p>
           <p id="dashboard-point-deadline" class="collection-deadline-readable"></p>
           <a id="dashboard-point-link" class="text-link" hidden>View collection point →</a>
+          <button id="dashboard-change-point" class="button button-secondary dashboard-change-point" type="button">Change collection point</button>
+          <form id="dashboard-point-form" class="dashboard-point-form" hidden>
+            <label for="dashboard-point-select">Choose your collection point</label>
+            <select id="dashboard-point-select" required></select>
+            <div class="dashboard-point-actions">
+              <button class="button" type="submit">Save collection point</button>
+              <button id="dashboard-cancel-point" class="button button-secondary" type="button">Cancel</button>
+            </div>
+            <p id="dashboard-point-message" class="small-print" aria-live="polite"></p>
+          </form>
         </article>
       </div>
 
@@ -116,7 +126,7 @@ const membershipPerks=s.membershipPerks || [];
 
   {blocks.map((block)=><SectionRenderer block={block} products={data.products} settings={s} />)}
 
-  <script is:inline define:vars={{ badgeLogos, membershipPerks, bankAccountName:s.bankAccountName, bankSortCode:s.bankSortCode, bankAccountNumber:s.bankAccountNumber }}>
+  <script is:inline define:vars={{ badgeLogos, membershipPerks, collectionPoints:data.collectionPoints, bankAccountName:s.bankAccountName, bankSortCode:s.bankSortCode, bankAccountNumber:s.bankAccountNumber }}>
     const TOKEN_KEY='rooted-commons-order-token-v1';
     const params=new URLSearchParams(location.search);
     const urlToken=params.get('token');
@@ -124,6 +134,35 @@ const membershipPerks=s.membershipPerks || [];
     const token=urlToken||localStorage.getItem(TOKEN_KEY)||'';
     const money=new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'});
     const formatDate=value=>value?new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',year:'numeric'}).format(new Date(value)):'';
+    const pointSelect=document.querySelector('#dashboard-point-select');
+    const pointForm=document.querySelector('#dashboard-point-form');
+    const pointMessage=document.querySelector('#dashboard-point-message');
+    const populatePointSelect=(selectedId)=>{
+      pointSelect.innerHTML=(collectionPoints||[]).map(point=>`<option value="${point.id}" ${Number(point.id)===Number(selectedId)?'selected':''}>${point.name}${point.collectionTime?` — ${point.collectionTime}`:''}</option>`).join('');
+    };
+    document.querySelector('#dashboard-change-point').addEventListener('click',()=>{pointForm.hidden=false;pointMessage.textContent='';pointSelect.focus();});
+    document.querySelector('#dashboard-cancel-point').addEventListener('click',()=>{pointForm.hidden=true;pointMessage.textContent='';});
+    pointForm.addEventListener('submit',async event=>{
+      event.preventDefault();
+      const button=pointForm.querySelector('button[type="submit"]');
+      button.disabled=true;
+      pointMessage.textContent='Saving…';
+      const response=await fetch('/api/member',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({token,collectionPointId:Number(pointSelect.value)})});
+      const payload=await response.json();
+      if(response.ok&&payload.ok){
+        const point=payload.collectionPoint||{};
+        document.querySelector('#dashboard-point-name').textContent=point.name||'Not selected';
+        document.querySelector('#dashboard-point-time').textContent=point.collectionTime||'';
+        document.querySelector('#dashboard-point-address').textContent=point.address||'';
+        document.querySelector('#dashboard-point-deadline').textContent=point.ordersClose?`Orders close ${formatLocalDeadline(point.ordersClose)} for this slot.`:'';
+        const pointLink=document.querySelector('#dashboard-point-link');
+        pointLink.hidden=!point.link;
+        if(point.link)pointLink.href=point.link;
+        pointMessage.textContent='Collection point updated.';
+        setTimeout(()=>{pointForm.hidden=true;pointMessage.textContent='';},900);
+      }else pointMessage.textContent=payload.message||'The collection point could not be updated.';
+      button.disabled=false;
+    });
     const formatLocalDeadline=value=>{
       if(!value)return '';
       const raw=String(value).trim();
@@ -178,6 +217,7 @@ const membershipPerks=s.membershipPerks || [];
       document.querySelector('#dashboard-credit-value').textContent=money.format(member.credit||0);
       document.querySelector('#dashboard-shop-link').href=`/orders/?token=${encodeURIComponent(token)}`;
       const point=member.collectionPoint||{};
+      populatePointSelect(point.id);
       document.querySelector('#dashboard-point-name').textContent=point.name||'Choose at checkout';
       document.querySelector('#dashboard-point-time').textContent=point.collectionTime||'';
       document.querySelector('#dashboard-point-address').textContent=point.address||'';

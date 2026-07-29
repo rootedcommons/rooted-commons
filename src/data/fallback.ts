@@ -56,7 +56,7 @@ export const fallbackSettings = {
   checkoutVerifyBody: 'Already a member? We will send your secure ordering link. Not yet a member? We will send details of how to join. Your basket remains saved on this device.',
   checkoutEmailLabel: 'Email address',
   checkoutEmailButton: 'Send me the next step',
-  checkoutConfirmHeading: 'Confirm your member order',
+  checkoutConfirmHeading: 'Your member order',
   checkoutConfirmButton: 'Confirm order',
   checkoutReturnText: 'Return to the shop',
   checkoutSuccessHeading: 'Order confirmed'

@@ -11,7 +11,8 @@ const countryCodes = {
   'ireland':'IE','italy':'IT','france':'FR','spain':'ES','portugal':'PT','greece':'GR','germany':'DE','belgium':'BE',
   'netherlands':'NL','sweden':'SE','denmark':'DK','norway':'NO','finland':'FI','poland':'PL','austria':'AT','switzerland':'CH',
   'tunisia':'TN','morocco':'MA','turkey':'TR','united states':'US','usa':'US','canada':'CA','india':'IN','china':'CN',
-  'sri lanka':'LK','peru':'PE','brazil':'BR','ecuador':'EC','colombia':'CO','south africa':'ZA','new zealand':'NZ','australia':'AU'
+  'sri lanka':'LK','peru':'PE','brazil':'BR','ecuador':'EC','colombia':'CO','south africa':'ZA','new zealand':'NZ','australia':'AU',
+  'moldova':'MD','republic of moldova':'MD','bulgaria':'BG','argentina':'AR'
 };
 function flagFor(country='') {
   const code = countryCodes[String(country).trim().toLowerCase()] || (/^[A-Za-z]{2}$/.test(String(country).trim()) ? String(country).trim().toUpperCase() : '');
@@ -20,7 +21,9 @@ function flagFor(country='') {
 const certificationLogos = {
   'soil association': settings.soilAssociationLogo,
   'eu organic': settings.euOrganicLogo,
-  'wildfarmed': settings.wildfarmedLogo
+  'wildfarmed': settings.wildfarmedLogo,
+  'gluten free': settings.glutenFreeLogo,
+  'organic food federation': settings.organicFoodFederationLogo
 };
 const cleanValues = (values = []) => values.map((value) => String(value || '').trim()).filter(Boolean);
 

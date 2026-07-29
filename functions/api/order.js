@@ -131,7 +131,20 @@ export async function onRequestPost({ request, env }) {
 
     const total = Math.round(lines.reduce((sum, line) => sum + line.line_total, 0) * 100) / 100;
     const startingCredit = number(member['Current credit']);
-    const orderNumber = `RC-${week.replace('-W', '')}-${String(Date.now()).slice(-6)}`;
+    const prefix = `RC-${week.replace('-W', '')}-`;
+    const usedSuffixes = new Set(orders
+      .map(row => unwrap(row['Order number']))
+      .filter(value => value.startsWith(prefix))
+      .map(value => value.slice(prefix.length)));
+    let suffix = '';
+    for (let attempt = 0; attempt < 1000 && !suffix; attempt += 1) {
+      const candidate = String(Math.floor(Math.random() * 1000)).padStart(3, '0');
+      if (!usedSuffixes.has(candidate)) suffix = candidate;
+    }
+    if (!suffix) {
+      return json({ ok: false, message: 'The weekly order-number range is full. Please contact us.' }, 503);
+    }
+    const orderNumber = `${prefix}${suffix}`;
     const submittedAt = new Date().toISOString();
     const movementDate = submittedAt.replace(/\.\d{3}Z$/, 'Z');
     const stockMovementRows = lines.map((line) => ({

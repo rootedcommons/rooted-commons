@@ -136,6 +136,8 @@ export async function getSiteData() {
     soilAssociationLogo: fileUrl(validSettingsRow, 'Soil Association logo'),
     euOrganicLogo: fileUrl(validSettingsRow, 'EU Organic logo'),
     wildfarmedLogo: fileUrl(validSettingsRow, 'Wildfarmed logo'),
+    glutenFreeLogo: fileUrl(validSettingsRow, 'Gluten Free logo'),
+    organicFoodFederationLogo: fileUrl(validSettingsRow, 'Organic Food Federation logo'),
     founder10Badge: fileUrl(validSettingsRow, 'Founder 10 badge'),
     founder25Badge: fileUrl(validSettingsRow, 'Founder 25 badge'),
     founder50Badge: fileUrl(validSettingsRow, 'Founder 50 badge'),

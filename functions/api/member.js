@@ -1,4 +1,4 @@
-import { envConfig, json, listRows, tokenValid, publicMember, publicCollectionPoint, linkedIds, linkedValues, unwrap, number, truthy } from '../_baserow.js';
+import { envConfig, json, listRows, updateRow, tokenValid, publicMember, publicCollectionPoint, linkedIds, linkedValues, unwrap, number, truthy } from '../_baserow.js';
 
 function belongsToMember(row, member) {
   const memberId = Number(member.id);
@@ -87,5 +87,25 @@ export async function onRequestGet({ request, env }) {
     })});
   } catch (error) {
     return json({error:'Member lookup failed', detail:String(error.message||error)},500);
+  }
+}
+
+
+export async function onRequestPatch({ request, env }) {
+  try {
+    const body = await request.json();
+    const token = String(body.token || '');
+    const collectionPointId = Number(body.collectionPointId || 0);
+    if (!token || !collectionPointId) return json({ ok:false, message:'Choose a collection point.' }, 400);
+    const cfg = envConfig(env);
+    const [members, points] = await Promise.all([listRows(cfg, cfg.members), listRows(cfg, cfg.collectionPoints)]);
+    const member = members.find(row => tokenValid(row, token));
+    if (!member) return json({ ok:false, message:'This secure link is invalid or has expired.' }, 401);
+    const point = points.find(row => Number(row.id) === collectionPointId && truthy(row.Active, true));
+    if (!point) return json({ ok:false, message:'That collection point is not currently available.' }, 409);
+    await updateRow(cfg, cfg.members, member.id, { 'Collection point':[collectionPointId] });
+    return json({ ok:true, collectionPoint:publicCollectionPoint(point) });
+  } catch (error) {
+    return json({ ok:false, message:'The collection point could not be updated.', detail:String(error.message||error) }, 500);
   }
 }

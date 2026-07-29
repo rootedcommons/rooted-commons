@@ -196,3 +196,16 @@
 .commitment-topup-section h3{margin:0 0 .65rem}.topup-status{margin:1rem 0}.balance-label{margin:0;font-size:.9rem;font-weight:700;opacity:.8}.balance-to-clear,.current-credit{display:block;margin:.15rem 0;font-size:clamp(1.65rem,4vw,2.35rem);color:var(--primary)}.payment-deadline{padding:.85rem 1rem;border-left:4px solid var(--primary);background:color-mix(in srgb,var(--highlight) 64%,white);font-weight:650}.topup-ok{margin:.4rem 0 0;font-weight:700}.payment-method{margin-top:1rem;padding:1rem;border:1px solid var(--border);border-radius:.8rem}.payment-method-preferred{background:color-mix(in srgb,var(--highlight) 42%,white)}.payment-label{margin:0 0 .25rem;text-transform:uppercase;letter-spacing:.08em;font-size:.75rem;font-weight:800;color:var(--primary)}.payment-method h4{margin:.1rem 0 .6rem}.bank-details{display:grid;gap:.4rem;margin:.8rem 0}.bank-details div{display:flex;justify-content:space-between;gap:1rem}.bank-details dt{opacity:.75}.bank-details dd{margin:0;font-weight:750;text-align:right}.button-secondary{background:transparent!important;color:var(--primary)!important;border:1px solid var(--primary)!important}.account-activity{margin-top:.8rem}.account-activity summary{cursor:pointer;font-weight:750;color:var(--primary)}.account-activity>div{margin-top:.8rem}.activity-line{display:flex;justify-content:space-between;gap:1rem;padding:.65rem 0;border-bottom:1px solid color-mix(in srgb,var(--border) 72%,transparent)}.activity-line span{display:grid}.activity-line small{opacity:.7}.amount-negative{color:#8a2936}.amount-positive{color:#315f3b}.checkout-payment-explainer{margin:1.2rem 0;padding:1rem;border-radius:.8rem;background:color-mix(in srgb,var(--highlight) 55%,white);border-left:4px solid var(--primary)}.checkout-payment-explainer h3{margin-top:0}.checkout-balance-warning,.checkout-payment-required{margin:1rem 0;padding:1rem;border-left:4px solid var(--primary);background:color-mix(in srgb,var(--highlight) 52%,white)}.checkout-balance-warning p,.checkout-payment-required p{margin-bottom:.35rem}.checkout-balance-ok{font-weight:700;color:#315f3b}
 
 .regular-payment-details{margin:1rem 0;padding:1rem;border:1px solid var(--border);border-radius:.8rem;background:rgba(255,255,255,.3)}.regular-payment-details h3{margin-top:0}
+
+
+/* V2.3 account controls and privacy page */
+.dashboard-change-point{margin-top:1rem}
+.dashboard-point-form{margin-top:1rem;padding-top:1rem;border-top:1px solid color-mix(in srgb,var(--border) 75%,transparent)}
+.dashboard-point-form label{display:block;font-weight:750;margin-bottom:.4rem}
+.dashboard-point-form select{width:100%;padding:.75rem;border:1px solid var(--border);border-radius:.6rem;background:var(--background);color:inherit}
+.dashboard-point-actions{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:.8rem}
+.legal-page{width:min(920px,calc(100% - 2rem));margin:0 auto;padding:clamp(2rem,6vw,5rem) 0}
+.legal-content{padding:clamp(1.25rem,4vw,3rem);border:1px solid var(--border);border-radius:1.2rem;background:color-mix(in srgb,var(--highlight) 55%,transparent)}
+.legal-content h1{font-size:clamp(2.2rem,6vw,4.5rem);margin:.15rem 0 1rem}
+.legal-content h2{margin-top:2rem;font-size:clamp(1.3rem,3vw,1.75rem)}
+.legal-content li{margin:.65rem 0}
