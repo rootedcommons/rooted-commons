@@ -209,3 +209,40 @@
 .legal-content h1{font-size:clamp(2.2rem,6vw,4.5rem);margin:.15rem 0 1rem}
 .legal-content h2{margin-top:2rem;font-size:clamp(1.3rem,3vw,1.75rem)}
 .legal-content li{margin:.65rem 0}
+
+/* v2.4 product cards, product details and member summary */
+.product-card>img,.product-image-button img{display:block;width:100%;height:auto;aspect-ratio:1/1;object-fit:contain;background:#fff}
+.product-image-button{display:block;width:100%;padding:0;border:0;background:#fff;cursor:pointer}
+.product-title-button{padding:0;border:0;background:none;color:inherit;font:inherit;font-weight:inherit;text-align:left;cursor:pointer}
+.product-title-button:hover{text-decoration:underline;text-underline-offset:.18em}
+.product-copy{padding:1.15rem;gap:.18rem}
+.product-copy h3{font-size:1.18rem;line-height:1.25;margin:.05rem 0 .35rem}
+.product-description,.product-origin{font-size:.9rem;line-height:1.35;opacity:.82}
+.product-origin{margin-top:.05rem!important}
+.product-certifications{display:flex;align-items:center;flex-wrap:wrap;gap:.55rem;min-height:1.8rem;margin:.55rem 0 .2rem}
+.certification-logo{display:block;width:auto;height:26px;max-width:88px;object-fit:contain}
+.certification-text{font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;opacity:.72}
+.product-transaction-row{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;margin-top:auto;padding-top:1rem;border-top:1px solid color-mix(in srgb,var(--border) 72%,transparent)}
+.product-size{font-size:.88rem;opacity:.72;padding-bottom:.48rem}
+.product-buying{display:flex;flex-direction:column;align-items:flex-end;gap:.5rem}
+.product-price{font-size:1.15rem;line-height:1}
+.product-buying .quantity-control{margin:0;align-self:flex-end}
+.product-detail-dialog{width:min(900px,calc(100% - 2rem));max-height:calc(100vh - 2rem);padding:0;border:1px solid var(--border);border-radius:1.2rem;background:var(--background);color:inherit;box-shadow:0 24px 70px rgba(0,0,0,.25)}
+.product-detail-dialog::backdrop{background:rgba(20,28,22,.55);backdrop-filter:blur(2px)}
+.product-detail-close{position:sticky;float:right;top:.7rem;right:.7rem;z-index:2;width:2.4rem;height:2.4rem;border:1px solid var(--border);border-radius:999px;background:var(--background);color:inherit;font-size:1.5rem;cursor:pointer}
+.product-detail-layout{display:grid;grid-template-columns:minmax(250px,.85fr) minmax(0,1.15fr);gap:clamp(1.5rem,4vw,3rem);padding:clamp(1.2rem,4vw,3rem)}
+.product-detail-image{width:100%;height:auto;position:sticky;top:1rem}
+.product-detail-copy h2{font-size:clamp(1.8rem,4vw,3rem);margin:.2rem 0 1rem}
+.product-detail-copy h3{font-size:1rem;margin:1.25rem 0 .25rem}
+.product-detail-copy p{line-height:1.55;margin:.3rem 0}
+.product-detail-overview{font-size:1.08rem}
+.why-we-stock{margin-top:1.4rem;padding:1rem 1.1rem;border-left:3px solid var(--primary);background:var(--highlight)}
+.product-detail-note{margin-top:1.5rem!important;font-size:.78rem;opacity:.7}
+.member-summary{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:1rem;margin:0 0 1.25rem;padding:.85rem 1rem;border:1px solid var(--border);border-radius:1rem;background:color-mix(in srgb,var(--highlight) 76%,transparent);box-shadow:0 8px 24px rgba(30,45,35,.05)}
+.member-summary-greeting{margin:0 0 .4rem;font-family:var(--heading-font,serif);font-weight:700;font-size:1.05rem}
+.member-summary-facts{display:flex;flex-wrap:wrap;gap:.6rem 1.4rem;margin:0}
+.member-summary-facts div{display:flex;gap:.4rem;align-items:baseline}.member-summary-facts dt{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;opacity:.65}.member-summary-facts dd{margin:0;font-weight:700}
+.member-summary-change{white-space:nowrap;margin:0}
+.member-summary-form{grid-column:1/-1;display:grid;grid-template-columns:auto minmax(180px,1fr) auto auto minmax(0,1fr);align-items:center;gap:.65rem;padding-top:.8rem;border-top:1px solid color-mix(in srgb,var(--border) 72%,transparent)}
+.member-summary-form[hidden]{display:none}.member-summary-form label{font-weight:700}.member-summary-form select{padding:.65rem;border:1px solid var(--border);border-radius:.55rem;background:var(--background);color:inherit}.text-button{border:0;background:none;color:inherit;text-decoration:underline;cursor:pointer}
+@media(max-width:700px){.product-detail-layout{grid-template-columns:1fr}.product-detail-image{position:static;max-height:42vh;object-fit:contain}.member-summary{grid-template-columns:1fr}.member-summary-change{justify-self:start}.member-summary-form{grid-template-columns:1fr}.member-summary-form .button,.member-summary-form .text-button{justify-self:start}}

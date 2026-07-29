@@ -1,3 +1,9 @@
+# v2.4.0
+
+- Calm, provenance-led product cards and expanded product information dialog.
+- Compact redesigned member summary with collection-point editing.
+- New Baserow product information fields and import CSV.
+
 # Changelog
 
 ## 2.3.0 — 2026-07-29

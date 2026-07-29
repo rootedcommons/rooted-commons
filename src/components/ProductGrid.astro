@@ -6,23 +6,10 @@ const filtered = wanted
   ? products.filter((product) => (product.categories || [product.category]).some((item) => String(item).trim().toLowerCase() === wanted))
   : products;
 
-const countryCodes = {
-  'united kingdom':'GB','uk':'GB','great britain':'GB','england':'GB','scotland':'GB','wales':'GB','northern ireland':'GB',
-  'ireland':'IE','italy':'IT','france':'FR','spain':'ES','portugal':'PT','greece':'GR','germany':'DE','belgium':'BE',
-  'netherlands':'NL','sweden':'SE','denmark':'DK','norway':'NO','finland':'FI','poland':'PL','austria':'AT','switzerland':'CH',
-  'tunisia':'TN','morocco':'MA','turkey':'TR','united states':'US','usa':'US','canada':'CA','india':'IN','china':'CN',
-  'sri lanka':'LK','peru':'PE','brazil':'BR','ecuador':'EC','colombia':'CO','south africa':'ZA','new zealand':'NZ','australia':'AU',
-  'moldova':'MD','republic of moldova':'MD','bulgaria':'BG','argentina':'AR'
-};
-function flagFor(country='') {
-  const code = countryCodes[String(country).trim().toLowerCase()] || (/^[A-Za-z]{2}$/.test(String(country).trim()) ? String(country).trim().toUpperCase() : '');
-  return code ? [...code].map((char) => String.fromCodePoint(127397 + char.charCodeAt(0))).join('') : '🌍';
-}
 const certificationLogos = {
   'soil association': settings.soilAssociationLogo,
   'eu organic': settings.euOrganicLogo,
   'wildfarmed': settings.wildfarmedLogo,
-  'gluten free': settings.glutenFreeLogo,
   'organic food federation': settings.organicFoodFederationLogo
 };
 const cleanValues = (values = []) => values.map((value) => String(value || '').trim()).filter(Boolean);
@@ -36,48 +23,47 @@ const displayProducts = filtered.map((product) => {
   const lowStockThreshold = Math.max(0, Number(product.lowStockThreshold ?? 5));
   const outOfStock = product.available === false || availableStock < 1;
   const lowStock = !outOfStock && availableStock <= lowStockThreshold;
-  return { ...product, categories, subcategories, countries, certifications, availableStock, outOfStock, lowStock };
+  const hasDetails = Boolean(product.expandedDescription || product.ingredients || product.allergens || product.storage || product.suggestedUses || product.whyWeStockIt);
+  return { ...product, categories, subcategories, countries, certifications, availableStock, outOfStock, lowStock, hasDetails };
 });
 ---
 <div class="product-grid" style={`--columns:${columns}`}>
   {displayProducts.map((product) => (
-      <article
-        class:list={["product-card", {"product-card-out-of-stock":product.outOfStock,"product-card-low-stock":product.lowStock}]}
-        data-product-card
-        data-categories={product.categories.join('|')}
-        data-subcategories={product.subcategories.join('|')}
-        data-name={String(product.name || '').toLowerCase()}
-        data-search={[product.name, product.producer, product.description, ...product.categories, ...product.subcategories, ...product.countries].filter(Boolean).join(' ').toLowerCase()}
-        data-id={product.id}
-        data-price={product.priceNumber}
-        data-popularity={product.popularity ?? product.order ?? 9999}
-        data-country={product.countries[0] || ''}
-        data-stock={product.availableStock}
-        data-out-of-stock={product.outOfStock ? 'true' : 'false'}
-      >
-        <img src={product.image || '/images/placeholder.svg'} alt="" loading="lazy" />
-        <div class="product-copy">
-          <h3>{product.link ? <a href={product.link}>{product.name}</a> : product.name}</h3>
+    <article
+      class:list={["product-card", {"product-card-out-of-stock":product.outOfStock,"product-card-low-stock":product.lowStock}]}
+      data-product-card
+      data-categories={product.categories.join('|')}
+      data-subcategories={product.subcategories.join('|')}
+      data-name={String(product.name || '').toLowerCase()}
+      data-search={[product.name, product.description, product.expandedDescription, ...product.categories, ...product.subcategories, ...product.countries].filter(Boolean).join(' ').toLowerCase()}
+      data-id={product.id}
+      data-price={product.priceNumber}
+      data-popularity={product.popularity ?? product.order ?? 9999}
+      data-country={product.countries[0] || ''}
+      data-stock={product.availableStock}
+      data-out-of-stock={product.outOfStock ? 'true' : 'false'}
+    >
+      {product.hasDetails
+        ? <button class="product-image-button" type="button" data-open-product aria-label={`More information about ${product.name}`}><img src={product.image || '/images/placeholder.svg'} alt="" loading="lazy" /></button>
+        : <img src={product.image || '/images/placeholder.svg'} alt="" loading="lazy" />}
+      <div class="product-copy">
+        <h3>{product.hasDetails ? <button type="button" class="product-title-button" data-open-product>{product.name}</button> : product.name}</h3>
+        {product.description && <p class="product-description">{product.description}</p>}
+        {product.countries.length > 0 && <p class="product-origin">Grown in {product.countries.join(', ')}</p>}
+        {product.certifications.length > 0 && <div class="product-certifications" aria-label="Certifications">
+          {product.certifications.map((certification) => {
+            const logo = certificationLogos[String(certification).toLowerCase()];
+            return logo
+              ? <img class="certification-logo" src={logo} alt={certification} title={certification} loading="lazy" />
+              : <span class="certification-text" title={certification}>{certification}</span>;
+          })}
+        </div>}
+        <p class="stock-warning stock-warning-out" data-stock-out hidden={!product.outOfStock}>Out of stock</p>
+        <p class="stock-warning" data-stock-low hidden={!product.lowStock}>Low stock — <span data-stock-count>{product.availableStock}</span> left</p>
 
-          <div class="product-producer-row">
-            {product.producer ? <p class="product-producer">{product.producer}</p> : <span></span>}
-            <div class="product-origin-badges" aria-label="Origin and certification">
-              {product.certifications.map((certification) => {
-                const logo = certificationLogos[String(certification).toLowerCase()];
-                return logo
-                  ? <img class="certification-logo" src={logo} alt={certification} title={certification} loading="lazy" />
-                  : <span class="certification-text" title={certification}>{certification}</span>;
-              })}
-              {product.countries.map((country) => <span class="country-flag" title={country} aria-label={`Grown in ${country}`}>{flagFor(country)}</span>)}
-            </div>
-          </div>
-
-          {product.size && <p class="product-size">{product.size}</p>}
-          {product.description && <p class="product-description">{product.description}</p>}
-          <p class="stock-warning stock-warning-out" data-stock-out hidden={!product.outOfStock}>Out of stock</p>
-          <p class="stock-warning" data-stock-low hidden={!product.lowStock}>Low stock — <span data-stock-count>{product.availableStock}</span> left</p>
-
-          <div class="product-purchase-row">
+        <div class="product-transaction-row">
+          <span class="product-size">{product.size}</span>
+          <div class="product-buying">
             <strong class="product-price">{money.format(product.priceNumber || 0)}</strong>
             {showControls && <div class="quantity-control quantity-control-solid" data-quantity-control hidden={product.outOfStock} aria-label={`Quantity of ${product.name}`}>
               <button type="button" data-quantity-change="-1" aria-label="Remove one">−</button>
@@ -86,8 +72,25 @@ const displayProducts = filtered.map((product) => {
             </div>}
           </div>
         </div>
-      </article>
+      </div>
+      {product.hasDetails && <template data-product-detail>
+        <div class="product-detail-layout">
+          <img class="product-detail-image" src={product.image || '/images/placeholder.svg'} alt="" />
+          <div class="product-detail-copy">
+            <h2>{product.name}</h2>
+            {product.expandedDescription && <p class="product-detail-overview">{product.expandedDescription}</p>}
+            {product.countries.length > 0 && <p><strong>Grown in</strong><br />{product.countries.join(', ')}</p>}
+            {product.description && <p><strong>Made or prepared</strong><br />{product.description}</p>}
+            {product.ingredients && <section><h3>Ingredients</h3><p>{product.ingredients}</p></section>}
+            {product.allergens && <section><h3>Allergens</h3><p>{product.allergens}</p></section>}
+            {product.suggestedUses && <section><h3>How to use it</h3><p>{product.suggestedUses}</p></section>}
+            {product.storage && <section><h3>Storage</h3><p>{product.storage}</p></section>}
+            {product.whyWeStockIt && <section class="why-we-stock"><h3>Why we stock it</h3><p>{product.whyWeStockIt}</p></section>}
+            <p class="product-detail-note">Product information can change. Always check the pack before use, particularly for allergens.</p>
+          </div>
+        </div>
+      </template>}
+    </article>
   ))}
-
 </div>
 {displayProducts.length === 0 && <p>No products currently match this section.</p>}

@@ -1,0 +1,8 @@
+Field name,Baserow field type,Purpose
+Expanded description,Long text,Concise overview shown in the expanded product panel
+Ingredients,Long text,Customer-facing ingredient information copied or summarised from the current pack or supplier specification
+Allergens,Long text,Declared allergen information and a prompt to check the current pack
+Storage,Long text,Storage guidance shown only when populated
+Suggested uses,Long text,Preparation or usage ideas shown only when populated
+Why we stock it,Long text,One short Rooted Commons curation note
+Source URL,URL,Private traceability link for checking supplier information; not displayed publicly
