@@ -1,0 +1,17 @@
+﻿Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
+Xero Contact ID,Single line text,No,Xero/member matching,Xero contact identifier,,May also be used for linked transaction matching
+First name,Single line text,Yes,Dashboard/email,Member given name,,
+Last name,Single line text,No,Administration,Member family name,,
+Order token,Single line text,Yes,Authentication,Secure magic-link token,,Treat as secret
+Active,Boolean,Yes,Authentication,Whether member can sign in/order,,
+Email,Email,Yes,Authentication/email,Member email,,
+Current credit,Rollup/formula or Number,Yes,Dashboard/order response,Current account balance,Typically SUM included Account Transactions,
+Weekly commitment,Number,Yes,Dashboard,Standing-order commitment,Currency; 2 decimals,
+Collection point,Link to table,Yes,Checkout/dashboard,Default collection point,Collection Points; one link,Website can update
+Order token expiry,Date/time,No,Authentication,Expiry for secure token,,Blank means no expiry
+Account Transactions,Link to table,No,Credit/admin,Backlink to transactions,Account Transactions,
+Web Orders,Link to table,No,Order history/admin,Backlink to orders,Web Orders,
+Payment reference,Single line text,No,Dashboard/email,Unique BACS payment reference,,Falls back to RC-{row ID}
+Mollie payment URL,URL,No,Dashboard,Hosted top-up link,,Code also accepts Online payment URL
+Member since,Date,No,Dashboard perks,Membership start date,,Code also accepts Joined date or Join date
+Founder badge,Single select,No,Dashboard,Founder badge selection,10; 25; 50 or configured naming,Code also accepts Founder level / Membership badge

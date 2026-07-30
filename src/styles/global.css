@@ -246,3 +246,20 @@
 .member-summary-form{grid-column:1/-1;display:grid;grid-template-columns:auto minmax(180px,1fr) auto auto minmax(0,1fr);align-items:center;gap:.65rem;padding-top:.8rem;border-top:1px solid color-mix(in srgb,var(--border) 72%,transparent)}
 .member-summary-form[hidden]{display:none}.member-summary-form label{font-weight:700}.member-summary-form select{padding:.65rem;border:1px solid var(--border);border-radius:.55rem;background:var(--background);color:inherit}.text-button{border:0;background:none;color:inherit;text-decoration:underline;cursor:pointer}
 @media(max-width:700px){.product-detail-layout{grid-template-columns:1fr}.product-detail-image{position:static;max-height:42vh;object-fit:contain}.member-summary{grid-template-columns:1fr}.member-summary-change{justify-self:start}.member-summary-form{grid-template-columns:1fr}.member-summary-form .button,.member-summary-form .text-button{justify-self:start}}
+
+
+/* v2.5 product-card information hierarchy */
+.product-secondary-origin{font-size:.86rem;line-height:1.35;opacity:.72;margin-top:.05rem!important}
+.product-transaction-row{align-items:flex-end}
+.product-card-left{display:flex;flex-direction:column;align-items:flex-start;min-width:0;gap:.45rem}
+.product-card-left .product-size{padding-bottom:0;text-align:left}
+.product-card-left .product-certifications{justify-content:flex-start;margin:0;min-height:2.2rem}
+.product-buying{align-items:center;min-width:max-content}
+.product-buying .product-price{display:block;width:100%;text-align:center}
+.product-buying .quantity-control{align-self:center}
+.nutrition-section{margin-top:1.25rem}
+.nutrition-table{width:100%;border-collapse:collapse;font-size:.9rem}
+.nutrition-table th,.nutrition-table td{padding:.45rem .55rem;border-bottom:1px solid var(--border);text-align:left}
+.nutrition-table thead th{border-top:1px solid var(--border);font-weight:700}
+.nutrition-table th:last-child,.nutrition-table td:last-child{text-align:right}
+.nutrition-table tbody th{font-weight:500}

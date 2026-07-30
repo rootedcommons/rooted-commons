@@ -1,0 +1,71 @@
+﻿Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
+Site title,Single line text,Yes,Public site,Site name used in page metadata and header,,Primary content row is the first row with this or Header logo
+Header text,Long text,No,Header,Optional header copy,,
+Footer text,Long text,No,Footer,Footer copy,,
+Join button text,Single line text,No,Header,Legacy/default joining button label,,
+Join button URL,URL,No,Header,Legacy/default joining button destination,,
+Header button text,Single line text,No,Header,Primary header action label,,Code also accepts Header Button Text
+Header Button URL,URL,No,Header,Primary header action destination,,Code also accepts Header button URL
+Background colour,Single line text,No,Theme,Site background CSS colour,,Hex recommended
+Primary colour,Single line text,No,Theme,Primary CSS colour,,Hex recommended
+Highlight colour,Single line text,No,Theme,Card and panel highlight colour,,Hex recommended
+Border colour,Single line text,No,Theme,Border CSS colour,,Hex recommended
+Header logo,File,No,Header,Header logo image,,One image
+Footer logo,File,No,Footer,Footer logo image,,One image
+Contact email,Email,No,Footer,Public contact email,,
+Tagline,Single line text,No,Header/footer,Site tagline,,
+Header logo size,Single select,No,Header,Header logo scale,small; medium; large,
+Footer logo size,Single select,No,Footer,Footer logo scale,small; medium; large,
+Header height,Single select,No,Header,Header vertical spacing,compact; medium; large,
+Footer height,Single select,No,Footer,Footer vertical spacing,compact; medium; large,
+Navigation text size,Single select,No,Header,Navigation typography,small; medium; large,
+Button text size,Single select,No,Global UI,Button typography,small; medium; large,
+Basket heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Basket empty text,Long text,No,Basket / checkout,Editable customer-facing interface copy,,
+Basket total label,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Basket checkout button,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Basket notice,Long text,No,Basket / checkout,Editable customer-facing interface copy,,
+Basket floating label,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout basket heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout empty heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout empty text,Long text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout verify heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout verify body,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout email label,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout email button,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout confirm heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout confirm button,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout return text,Long text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout success heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Navigation label 1,Single line text,No,Header,Navigation link label,,
+Navigation URL 1,URL,No,Header,Navigation link destination,,
+Navigation label 2,Single line text,No,Header,Navigation link label,,
+Navigation URL 2,URL,No,Header,Navigation link destination,,
+Navigation label 3,Single line text,No,Header,Navigation link label,,
+Navigation URL 3,URL,No,Header,Navigation link destination,,
+Navigation label 4,Single line text,No,Header,Navigation link label,,
+Navigation URL 4,URL,No,Header,Navigation link destination,,
+Navigation label 5,Single line text,No,Header,Navigation link label,,
+Navigation URL 5,URL,No,Header,Navigation link destination,,
+Soil Association logo,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
+EU Organic logo,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
+Wildfarmed logo,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
+Organic Food Federation logo,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
+Founder 10 badge,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
+Founder 25 badge,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
+Founder 50 badge,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
+Perk 1 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,
+Perk 1 text,Single line text,No,Dashboard,Membership perk wording,,
+Perk 2 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,
+Perk 2 text,Single line text,No,Dashboard,Membership perk wording,,
+Perk 3 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,
+Perk 3 text,Single line text,No,Dashboard,Membership perk wording,,
+Perk 4 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,
+Perk 4 text,Single line text,No,Dashboard,Membership perk wording,,
+Perk 5 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,
+Perk 5 text,Single line text,No,Dashboard,Membership perk wording,,
+Increase commitment button text,Single line text,No,Dashboard,BACS increase button label,,
+Increase commitment button URL,URL,No,Dashboard,BACS increase button destination,,
+Bank account name,Single line text,No,Dashboard/email,Standing-order account name,,
+Bank sort code,Single line text,No,Dashboard/email,Standing-order sort code,,Keep as text
+Bank account number,Single line text,No,Dashboard/email,Standing-order account number,,Keep as text

@@ -1,0 +1,45 @@
+﻿Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
+Code,Single line text,Yes,Catalogue/order payload,Stable product/SKU code,,Primary or unique recommended
+Size,Single line text,No,Product card,Pack amount shown above logos,,Code also accepts lowercase size
+Product,Single line text,Yes,Catalogue/order payload,Product name,,Primary field recommended
+Producer,Single line text,No,Data/legacy,Producer name,,Not currently displayed
+Member price,Number,Yes,Catalogue/order validation,Selling price,Currency; 2 decimals,Runtime source of truth
+Description,Long text,No,Product popup,Main description fallback when Expanded description is blank,,No longer shown on card
+Expanded description,Long text,No,Product popup,Preferred single main popup description,,
+Origin,Long text,No,Product card,Primary provenance line,,Falls back to Grown in
+Secondary origin,Long text,No,Product card,Second provenance/processing line,,
+Crop info,Long text,No,Product popup,General crop or ingredient context,,
+Packaging and disposal,Long text,No,Product popup,Packaging material and disposal guidance,,
+Ingredients,Long text,No,Product popup,Current ingredient declaration/summary,,
+Allergens,Long text,No,Product popup,Allergen information,,
+Storage,Long text,No,Product popup,Storage guidance,,
+Suggested uses,Long text,No,Product popup,Preparation/use ideas,,
+Why we stock it,Long text,No,Legacy data only,Former curation note,,No longer displayed
+Source URL,URL,No,Administration,Private traceability source,,Not displayed
+Image,File,No,Product card/popup,Product image,,One image
+Product Link,URL,No,Legacy/data,External product link,,Code also accepts Link
+Popularity,Number,No,Catalogue sorting,Primary sort order,,Falls back to Display order then Order
+Display order,Number,No,Catalogue sorting,Fallback sort order,,
+Order,Number,No,Catalogue sorting,Legacy fallback sort order,,
+Available,Boolean,Yes,Catalogue/order validation,Whether product may be ordered,,Defaults true
+Available stock,Rollup,Yes,Catalogue/order validation,Current sellable units,"SUM of linked Stock Movement Quantity change, filtered Active if configured",Sole stock source
+Low stock threshold,Number,No,Catalogue,Threshold for low-stock warning,,Defaults 5
+Category,Link to table or Multiple select,Yes,Catalogue/filtering,Top-level categories,Use existing Category table or controlled values,May hold multiple values
+Subcategory,Link to table or Multiple select,No,Catalogue/filtering,Secondary categories,Controlled values,May hold multiple values
+Available collection points,Link to table,No,Order validation,Restricts product to collection points,Collection Points; allow multiple,Blank means all compatible points
+Stock Movement,Link to table,No,Stock rollup,Backlink used for stock rollup,Stock Movement,
+Sections,Link to table,No,Baserow administration,Optional backlink to sections,Sections,Not read directly
+Items per pack,Number,No,Administration,Wholesale pack quantity,,Not currently used by website
+Current stock,Number/formula,No,Legacy,Legacy stock value,,Website uses Available stock
+Grown in,Link to table or Multiple select,No,Card fallback/search,Origin countries/regions,Controlled origin values,Used only when Origin blank
+Certification,Multiple select,No,Product card,Certification logos/text,Soil Association; EU Organic; Wildfarmed; Organic Food Federation,Exact labels map to Site Settings logos
+Nutrition basis,Single select,No,Product popup,Nutrition column heading,Per 100 g; Per 100 ml; Per serving,Defaults to Per 100 g
+Energy kJ,Number,No,Product popup,Energy in kilojoules,0 decimal places,Blank row is hidden
+Energy kcal,Number,No,Product popup,Energy in kilocalories,0 decimal places,Blank row is hidden
+Fat,Number,No,Product popup,Fat in grams,2 decimal places,Blank row is hidden
+Saturates,Number,No,Product popup,Saturated fat in grams,2 decimal places,Blank row is hidden
+Carbohydrate,Number,No,Product popup,Carbohydrate in grams,2 decimal places,Blank row is hidden
+Sugars,Number,No,Product popup,Sugars in grams,2 decimal places,Blank row is hidden
+Fibre,Number,No,Product popup,Fibre in grams,2 decimal places,Blank row is hidden
+Protein,Number,No,Product popup,Protein in grams,2 decimal places,Blank row is hidden
+Salt,Number,No,Product popup,Salt in grams,2 decimal places,Blank row is hidden

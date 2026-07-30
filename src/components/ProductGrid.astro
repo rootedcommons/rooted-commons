@@ -13,6 +13,20 @@ const certificationLogos = {
   'organic food federation': settings.organicFoodFederationLogo
 };
 const cleanValues = (values = []) => values.map((value) => String(value || '').trim()).filter(Boolean);
+const hasValue = (value) => value !== null && value !== undefined && String(value).trim() !== '';
+const nutritionRowsFor = (product) => [
+  ['Energy', [
+    hasValue(product.energyKj) ? `${product.energyKj} kJ` : '',
+    hasValue(product.energyKcal) ? `${product.energyKcal} kcal` : ''
+  ].filter(Boolean).join(' / ')],
+  ['Fat', hasValue(product.fat) ? `${product.fat} g` : ''],
+  ['of which saturates', hasValue(product.saturates) ? `${product.saturates} g` : ''],
+  ['Carbohydrate', hasValue(product.carbohydrate) ? `${product.carbohydrate} g` : ''],
+  ['of which sugars', hasValue(product.sugars) ? `${product.sugars} g` : ''],
+  ['Fibre', hasValue(product.fibre) ? `${product.fibre} g` : ''],
+  ['Protein', hasValue(product.protein) ? `${product.protein} g` : ''],
+  ['Salt', hasValue(product.salt) ? `${product.salt} g` : '']
+].filter(([, value]) => value);
 
 const displayProducts = filtered.map((product) => {
   const categories = cleanValues(product.categories || [product.category]);
@@ -23,8 +37,10 @@ const displayProducts = filtered.map((product) => {
   const lowStockThreshold = Math.max(0, Number(product.lowStockThreshold ?? 5));
   const outOfStock = product.available === false || availableStock < 1;
   const lowStock = !outOfStock && availableStock <= lowStockThreshold;
-  const hasDetails = Boolean(product.expandedDescription || product.ingredients || product.allergens || product.storage || product.suggestedUses || product.whyWeStockIt);
-  return { ...product, categories, subcategories, countries, certifications, availableStock, outOfStock, lowStock, hasDetails };
+  const nutritionRows = nutritionRowsFor(product);
+  const origin = String(product.origin || '').trim() || (countries.length ? `Grown in ${countries.join(', ')}` : '');
+  const hasDetails = Boolean(product.expandedDescription || product.description || product.cropInfo || product.packagingAndDisposal || product.ingredients || product.allergens || product.storage || product.suggestedUses || nutritionRows.length);
+  return { ...product, categories, subcategories, countries, certifications, availableStock, outOfStock, lowStock, nutritionRows, origin, hasDetails };
 });
 ---
 <div class="product-grid" style={`--columns:${columns}`}>
@@ -48,21 +64,23 @@ const displayProducts = filtered.map((product) => {
         : <img src={product.image || '/images/placeholder.svg'} alt="" loading="lazy" />}
       <div class="product-copy">
         <h3>{product.hasDetails ? <button type="button" class="product-title-button" data-open-product>{product.name}</button> : product.name}</h3>
-        {product.description && <p class="product-description">{product.description}</p>}
-        {product.countries.length > 0 && <p class="product-origin">Grown in {product.countries.join(', ')}</p>}
-        {product.certifications.length > 0 && <div class="product-certifications" aria-label="Certifications">
-          {product.certifications.map((certification) => {
-            const logo = certificationLogos[String(certification).toLowerCase()];
-            return logo
-              ? <img class="certification-logo" src={logo} alt={certification} title={certification} loading="lazy" />
-              : <span class="certification-text" title={certification}>{certification}</span>;
-          })}
-        </div>}
+        {product.origin && <p class="product-origin">{product.origin}</p>}
+        {product.secondaryOrigin && <p class="product-secondary-origin">{product.secondaryOrigin}</p>}
         <p class="stock-warning stock-warning-out" data-stock-out hidden={!product.outOfStock}>Out of stock</p>
         <p class="stock-warning" data-stock-low hidden={!product.lowStock}>Low stock — <span data-stock-count>{product.availableStock}</span> left</p>
 
         <div class="product-transaction-row">
-          <span class="product-size">{product.size}</span>
+          <div class="product-card-left">
+            <span class="product-size">{product.size}</span>
+            {product.certifications.length > 0 && <div class="product-certifications" aria-label="Certifications">
+              {product.certifications.map((certification) => {
+                const logo = certificationLogos[String(certification).toLowerCase()];
+                return logo
+                  ? <img class="certification-logo" src={logo} alt={certification} title={certification} loading="lazy" />
+                  : <span class="certification-text" title={certification}>{certification}</span>;
+              })}
+            </div>}
+          </div>
           <div class="product-buying">
             <strong class="product-price">{money.format(product.priceNumber || 0)}</strong>
             {showControls && <div class="quantity-control quantity-control-solid" data-quantity-control hidden={product.outOfStock} aria-label={`Quantity of ${product.name}`}>
@@ -78,14 +96,20 @@ const displayProducts = filtered.map((product) => {
           <img class="product-detail-image" src={product.image || '/images/placeholder.svg'} alt="" />
           <div class="product-detail-copy">
             <h2>{product.name}</h2>
-            {product.expandedDescription && <p class="product-detail-overview">{product.expandedDescription}</p>}
-            {product.countries.length > 0 && <p><strong>Grown in</strong><br />{product.countries.join(', ')}</p>}
-            {product.description && <p><strong>Made or prepared</strong><br />{product.description}</p>}
+            {(product.expandedDescription || product.description) && <p class="product-detail-overview">{product.expandedDescription || product.description}</p>}
+            {product.cropInfo && <section><h3>Crop information</h3><p>{product.cropInfo}</p></section>}
             {product.ingredients && <section><h3>Ingredients</h3><p>{product.ingredients}</p></section>}
             {product.allergens && <section><h3>Allergens</h3><p>{product.allergens}</p></section>}
             {product.suggestedUses && <section><h3>How to use it</h3><p>{product.suggestedUses}</p></section>}
             {product.storage && <section><h3>Storage</h3><p>{product.storage}</p></section>}
-            {product.whyWeStockIt && <section class="why-we-stock"><h3>Why we stock it</h3><p>{product.whyWeStockIt}</p></section>}
+            {product.packagingAndDisposal && <section><h3>Packaging and disposal</h3><p>{product.packagingAndDisposal}</p></section>}
+            {product.nutritionRows.length > 0 && <section class="nutrition-section">
+              <h3>Nutrition</h3>
+              <table class="nutrition-table">
+                <thead><tr><th scope="col">Typical values</th><th scope="col">{product.nutritionBasis || 'Per 100 g'}</th></tr></thead>
+                <tbody>{product.nutritionRows.map(([label, value]) => <tr><th scope="row">{label}</th><td>{value}</td></tr>)}</tbody>
+              </table>
+            </section>}
             <p class="product-detail-note">Product information can change. Always check the pack before use, particularly for allergens.</p>
           </div>
         </div>

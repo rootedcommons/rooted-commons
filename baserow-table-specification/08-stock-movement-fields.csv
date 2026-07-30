@@ -1,0 +1,12 @@
+﻿Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
+Date,Date/time,Yes,Stock ledger,Movement date/time,,
+Quantity change,Number,Yes,Stock ledger,Signed stock change,,Orders are negative
+Unit price,Number,No,Stock ledger,Unit price at movement,Currency; 2 decimals,
+Movement type,Single select,Yes,Stock ledger,Movement classification,Opening; Delivery; Adjustment; Wastage; Order,
+Product code,Link to table,Yes,Stock ledger/order automation,Affected product,Products,Writable link
+Reference,Single line text,No,Stock ledger,External or manual reference,,
+Order,Link to table,No,Stock ledger,Related web order,Web Orders,Automation may resolve order number
+Notes,Long text,No,Stock ledger,Administrative notes,,
+Product name,Lookup,No,Stock ledger,Product name lookup,Lookup Product code → Product,Do not write
+Idempotency key,Single line text,No,Automation,Prevents duplicate movement creation,,Strongly recommended unique
+Active,Boolean,No,Stock rollup,Whether movement counts in stock,,Defaults true

@@ -1,0 +1,22 @@
+﻿Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
+Slug,Single line text,Yes,Routing,Page URL slug,,Primary field recommended
+Title,Single line text,Yes,Page hero,Main page title,,
+Intro,Long text,No,Page hero,Introductory copy,,
+Button text,Single line text,No,Page hero,Hero action label,,
+Button URL,URL,No,Page hero,Hero action destination,,
+Hero image,File,No,Page hero,Hero image,,One image
+Subtitle,Single line text,No,Page hero,Hero subtitle,,
+Visible,Boolean,Yes,Routing,Whether page is published,,Defaults true
+SEO title,Single line text,No,Metadata,Browser/search title,,
+SEO description,Long text,No,Metadata,Search description,,
+Hero layout,Single select,No,Page hero,Hero layout,text-left; text-right; text-only; banner; none,
+Title size,Single select,No,Page hero,Title scale,small; medium; large,
+Subtitle size,Single select,No,Page hero,Subtitle scale,small; medium; large,
+Intro size,Single select,No,Page hero,Intro scale,small; medium; large,
+Hero image height,Single select,No,Page hero,Image height,small; medium; large; full-width,
+Hero image fit,Single select,No,Page hero,Image crop behaviour,cover; contain,
+Hero image alignment,Single select,No,Page hero,Image focal alignment,left; center; right,
+Sections,Link to table,No,Baserow administration,Backlink to Sections,Sections,Not read directly
+Hero alignment,Single select,No,Page hero,Text alignment,left; center; right,
+Hero padding,Single select,No,Page hero,Hero spacing,small; medium; large,
+Hero width,Single select,No,Page hero,Hero content width,narrow; medium; wide; full,

@@ -1,0 +1,19 @@
+﻿Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
+Submitted at,Date/time,Yes,Order API/dashboard,Submission timestamp,,
+Order source,Single select,Yes,Order API,Origin of order,Website,
+Order week,Single line text,Yes,Order API,ISO ordering week,YYYY-Www,Used to prevent duplicate weekly orders
+Collection point,Link to table,Yes,Order API/dashboard,Chosen collection point,Collection Points,
+Item JSON,Long text,Yes,Automation,Server-generated order lines JSON,,
+Stock Movement JSON,Long text,Yes,Automation,Server-generated movement rows JSON,,
+Order total,Number,Yes,Order API/dashboard,Total charged,Currency; 2 decimals,
+Status,Single select,Yes,Order workflow,Processing state,Processing; Confirmed; Rejected; Cancelled; Ledger error,
+Order number,Single line text,Yes,Order workflow,Unique order reference,,Last three digits are customer-facing suffix
+Stock Movement,Link to table,No,Administration,Backlink to movements,Stock Movement,
+Account Transactions,Link to table,No,Administration,Backlink to ledger transaction,Account Transactions,
+Member,Link to table,Yes,Order API,Ordering member,Members,
+Email,Email,No,Automation/email,Snapshot of member email,,
+Client request ID,Single line text,Yes,Idempotency,Browser request identifier,,Combined with Member
+Confirmed at,Date/time,No,Automation,Processing completion time,,
+Processing error,Long text,No,Automation/admin,Error details,,
+Confirmation email sent,Boolean,No,Automation,Email completion flag,,
+Confirmation email sent at,Date/time,No,Automation,Email timestamp,,

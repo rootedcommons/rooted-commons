@@ -1,0 +1,12 @@
+﻿Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
+Name,Single line text,Yes,Catalogue/checkout,Collection point name,,Primary field
+Address,Long text,No,Checkout/dashboard,Collection address,,
+Active,Boolean,Yes,Checkout validation,Whether point can be selected,,Defaults true
+Available to collect here,Multiple select,No,Order validation,Allowed product categories,Values must match Product Category,Blank permits all categories
+Image,File,No,Collection point cards,Location image,,One image
+Link,URL,No,Collection point cards,External location link,,Code also accepts Website or URL
+Description,Long text,No,Collection point cards,Location description,,
+Collection time,Single line text,No,Collection point cards/dashboard,Collection window,,Code also accepts Collection slot or Collection day/time
+Orders close,Single line text or Date/time,No,Collection point cards,Local order deadline,,Rendered as entered; no timezone conversion
+Cupboard Staples,Link to table,No,Legacy/admin,Legacy product relationship,Products,Not read by code
+Members,Link to table,No,Admin,Backlink to members,Members,

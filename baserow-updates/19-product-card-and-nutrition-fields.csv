@@ -1,0 +1,15 @@
+﻿Field name,Baserow field type,Purpose,Recommended settings
+Origin,Long text,Primary provenance line displayed directly below the product name,Plain text; leave blank to fall back to Grown in
+Secondary origin,Long text,Second provenance or processing line displayed below Origin,Plain text
+Crop info,Long text,"Second general paragraph in the popup about the crop, ingredient or agricultural context",Long text
+Packaging and disposal,Long text,Customer-facing packaging material and disposal guidance in the popup,Long text
+Nutrition basis,Single select,Heading for the nutrition values,Per 100 g; Per 100 ml; Per serving
+Energy kJ,Number,Energy in kilojoules,0 decimal places
+Energy kcal,Number,Energy in kilocalories,0 decimal places
+Fat,Number,Fat in grams,2 decimal places
+Saturates,Number,Saturated fat in grams,2 decimal places
+Carbohydrate,Number,Carbohydrate in grams,2 decimal places
+Sugars,Number,Sugars in grams,2 decimal places
+Fibre,Number,Fibre in grams,2 decimal places
+Protein,Number,Protein in grams,2 decimal places
+Salt,Number,Salt in grams,2 decimal places

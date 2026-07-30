@@ -1,0 +1,32 @@
+﻿Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
+Key,Single line text,Yes,Section rendering,Stable internal section identifier,,Primary field recommended
+Page,Link to table,Yes,Section rendering,Page containing the section,Pages,
+Body,Long text,No,Section rendering,Main section copy,,
+Heading,Single line text,No,Section rendering,Section heading,,
+Image,File,No,Section rendering,Section image,,One image
+Order,Number,Yes,Section ordering,Display order,,Integer
+Visible,Boolean,Yes,Section filtering,Whether section is displayed,,Defaults true
+Section type,Single select,No,Section rendering,Renderer/layout type,text; split; cards; grid; gallery; cta; banner; spacer,Use types configured in SectionRenderer
+Eyebrow,Single line text,No,Section rendering,Small heading above title,,
+Subheading,Single line text,No,Section rendering,Secondary heading,,
+Image alt text,Single line text,No,Accessibility,Alternative image text,,
+Button text,Single line text,No,Section rendering,Action label,,
+Button URL,URL,No,Section rendering,Action destination,,
+Heading size,Single select,No,Styling,Heading scale,small; medium; large,
+Subheading size,Single select,No,Styling,Subheading scale,small; medium; large,
+Body size,Single select,No,Styling,Body text scale,small; medium; large,
+Alignment,Single select,No,Styling,Text alignment,left; center; right,
+Background style,Single select,No,Styling,Section background,default; highlight; primary,
+Columns,Number,No,Grid styling,Grid column count,1 to 4,Code clamps to 1–4
+Image size,Single select,No,Styling,Image scale,small; medium; large; full-width,
+Image fit,Single select,No,Styling,Image crop,cover; contain,
+Button size,Single select,No,Styling,Button scale,small; medium; large,
+Space above,Single select,No,Styling,Top spacing,none; small; medium; large,
+Space below,Single select,No,Styling,Bottom spacing,none; small; medium; large,
+Grid source,Single select,No,Grid rendering,Content source,products; collection-points,
+Grid category,Single select,No,Grid rendering,Legacy product category filter,,
+Catalogue category,Single select,No,Orders catalogue,Product category filter,,Values should match Products Category
+Image position,Single select,No,Split layout,Image side,left; right,
+Button visible,Boolean,No,Section rendering,Explicit button visibility,,Defaults from Button text
+Group key,Single line text,No,Grouped sections,Groups related cards/content,,
+Image caption,Long text,No,Section rendering,Caption below image,,

@@ -1,0 +1,8 @@
+﻿Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
+Name,Single line text,Yes,Xero sync,State record name,,Primary field
+Last successful sync,Date/time,No,Xero sync,Most recent completed sync,,
+Last attempted sync,Date/time,No,Xero sync,Most recent attempt,,
+Last error,Long text,No,Xero sync,Latest error details,,
+Tenant ID,Single line text,No,Xero sync,Connected Xero tenant ID,,
+Consecutive failures,Number,No,Xero sync,Failure counter,,Integer
+Connection status,Single select,No,Xero sync,Connection health,Connected; Warning; Error; Disconnected,

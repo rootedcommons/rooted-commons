@@ -1,3 +1,12 @@
+# Changelog
+
+## 2.5.0
+
+- Reworked product-card metadata and purchasing layout.
+- Added Origin, Secondary origin, Crop info, Packaging and disposal, and nutrition support.
+- Simplified the expanded product popup to one description and removed Why we stock it.
+- Added a comprehensive Baserow table field specification.
+
 # v2.4.0
 
 - Calm, provenance-led product cards and expanded product information dialog.

@@ -1,0 +1,20 @@
+﻿Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
+Date,Date/time,Yes,Ledger/dashboard,Transaction date,,Code also reads Transaction date/Created on
+Type,Single select,Yes,Ledger/dashboard,Transaction classification,Order charge; Payment; Refund; Adjustment; Xero payment,Order charge required for website
+Amount,Number,Yes,Ledger/dashboard,Signed account amount,Currency; 2 decimals,Order charges negative; payments positive
+Order,Link to table,No,Ledger,Related order,Web Orders,
+Member,Link to table,Yes,Ledger/dashboard,Related member,Members,
+Notes,Long text,No,Dashboard/admin,Transaction description,,Code also reads Description/Reference
+Email,Email,No,Automation/admin,Member email snapshot,,
+Transaction reference,Single line text,No,Dashboard/idempotency,External/internal reference,,
+Included in credit,Boolean,Yes,Credit/dashboard,Whether transaction affects displayed credit,,Defaults true
+Xero Transaction ID,Single line text,No,Xero sync,Xero transaction identifier,,
+Xero Payment ID,Single line text,No,Xero sync,Xero payment identifier,,
+Xero Contact ID,Single line text or Link,No,Xero/member matching,Xero contact identifier,,
+Contact name,Single line text,No,Xero sync,Xero contact display name,,
+Bank account,Single line text,No,Xero sync,Matched bank account,,
+Match status,Single select,No,Xero sync,Matching result,Matched; Unmatched; Review,
+Reconciled,Boolean,No,Xero sync,Xero reconciliation state,,
+Status,Single select,No,Xero sync,Transaction status,Authorised; Paid; Voided; Deleted,Use values returned by integration
+Imported at,Date/time,No,Xero sync,First import timestamp,,
+Last updated from Xero,Date/time,No,Xero sync,Latest refresh timestamp,,
