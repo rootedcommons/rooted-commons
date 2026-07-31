@@ -1,4 +1,5 @@
 ---
+import FormattedText from '../components/FormattedText.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
 import SectionRenderer from '../components/SectionRenderer.astro';
@@ -9,6 +10,7 @@ const data=await getSiteData();
 const page=data.pages.find((item)=>item.slug==='dashboard') || {title:'Your Rooted Commons',intro:'Your weekly market, membership and local food network in one place.',titleSize:'large',introSize:'medium',heroLayout:'none'};
 const blocks=buildSectionBlocks(data.sections.filter((section)=>section.page==='dashboard'));
 const s=data.settings;
+const c=(key, fallback='')=>data.interfaceContent[key] || fallback;
 const badgeLogos={
   'Founder 10':s.founder10Badge,
   'Founder 25':s.founder25Badge,
@@ -20,31 +22,31 @@ const membershipPerks=s.membershipPerks || [];
   <PageHero page={page} />
 
   <main class="dashboard-shell">
-    <section id="dashboard-loading" class="dashboard-card"><p>Loading your membership…</p></section>
+    <section id="dashboard-loading" class="dashboard-card"><p>{c('dashboard.loading')}</p></section>
     <section id="dashboard-content" hidden>
       <div class="dashboard-overview">
         <article class="dashboard-card dashboard-welcome">
-          <p class="eyebrow">Your weekly market</p>
+          <p class="eyebrow">{c('dashboard.market_eyebrow')}</p>
           <h1 id="dashboard-greeting">Welcome</h1>
-          <p class="dashboard-credit"><span>Member credit</span><strong id="dashboard-credit-value">£0.00</strong></p>
-          <div id="dashboard-order-status" class="dashboard-status">Orders are open</div>
-          <a id="dashboard-shop-link" class="button" href="/orders/">Browse this week’s market</a>
+          <p class="dashboard-credit"><span>{c('dashboard.credit_label')}</span><strong id="dashboard-credit-value">£0.00</strong></p>
+          <div id="dashboard-order-status" class="dashboard-status">{c('dashboard.orders_open')}</div>
+          <a id="dashboard-shop-link" class="button" href="/orders/">{c('dashboard.shop_button')}</a>
         </article>
 
         <article class="dashboard-card dashboard-collection">
-          <p class="eyebrow">Your collection point</p>
+          <p class="eyebrow">{c('dashboard.collection_eyebrow')}</p>
           <h2 id="dashboard-point-name">Not selected</h2>
           <p id="dashboard-point-time"></p>
           <p id="dashboard-point-address"></p>
           <p id="dashboard-point-deadline" class="collection-deadline-readable"></p>
           <a id="dashboard-point-link" class="text-link" hidden>View collection point →</a>
-          <button id="dashboard-change-point" class="button button-secondary dashboard-change-point" type="button">Change collection point</button>
+          <button id="dashboard-change-point" class="button button-secondary dashboard-change-point" type="button">{c('dashboard.change_collection')}</button>
           <form id="dashboard-point-form" class="dashboard-point-form" hidden>
-            <label for="dashboard-point-select">Choose your collection point</label>
+            <label for="dashboard-point-select">{c('dashboard.choose_collection')}</label>
             <select id="dashboard-point-select" required></select>
             <div class="dashboard-point-actions">
-              <button class="button" type="submit">Save collection point</button>
-              <button id="dashboard-cancel-point" class="button button-secondary" type="button">Cancel</button>
+              <button class="button" type="submit">{c('dashboard.save_collection')}</button>
+              <button id="dashboard-cancel-point" class="button button-secondary" type="button">{c('dashboard.cancel')}</button>
             </div>
             <p id="dashboard-point-message" class="small-print" aria-live="polite"></p>
           </form>
@@ -54,8 +56,8 @@ const membershipPerks=s.membershipPerks || [];
       <div class="dashboard-detail-grid">
         <article class="dashboard-card dashboard-membership-card">
           <div class="dashboard-membership-copy">
-            <p class="eyebrow">Your membership</p>
-            <h2 id="dashboard-founder-level">Rooted Commons member</h2>
+            <p class="eyebrow">{c('dashboard.membership_eyebrow')}</p>
+            <h2 id="dashboard-founder-level">{c('dashboard.default_member_level')}</h2>
             <p id="dashboard-member-since"></p>
             <p id="dashboard-last-order"></p>
             <div id="dashboard-perks" class="dashboard-perks"></div>
@@ -64,54 +66,54 @@ const membershipPerks=s.membershipPerks || [];
         </article>
 
         <article class="dashboard-card dashboard-commitment-card">
-          <p class="eyebrow">Your weekly commitment</p>
+          <p class="eyebrow">{c('dashboard.commitment_eyebrow')}</p>
           <p class="commitment-amount"><strong id="dashboard-commitment">£0</strong><span>/week</span></p>
-          <p>Your regular contribution creates predictable demand that local producers can plan around.</p>
+          <FormattedText text={c('dashboard.commitment_body')} class="rich-body" />
           <p id="dashboard-monthly-equivalent" class="small-print"></p>
           <section class="regular-payment-details">
-            <h3>Your regular payment</h3>
-            <p>Please use a weekly standing order for your core commitment. BACS is the only payment method offered for this regular payment.</p>
+            <h3>{c('dashboard.regular_payment_heading')}</h3>
+            <FormattedText text={c('dashboard.regular_payment_body')} class="rich-body" />
             <dl class="bank-details">
               <div><dt>Account name</dt><dd id="dashboard-regular-bank-name"></dd></div>
               <div><dt>Sort code</dt><dd id="dashboard-regular-sort-code"></dd></div>
               <div><dt>Account number</dt><dd id="dashboard-regular-account-number"></dd></div>
               <div><dt>Reference</dt><dd id="dashboard-regular-payment-reference"></dd></div>
             </dl>
-            <p class="small-print">Regular BACS payments have no processing charge and help us keep member prices low.</p>
+            <FormattedText text={c('dashboard.regular_payment_note')} class="small-print rich-body" />
           </section>
           <div class="commitment-metrics">
-            <div><span>Average weekly orders</span><strong id="dashboard-average-spend">£0.00</strong></div>
-            <div id="dashboard-impact-row"><span>Redirected locally</span><strong id="dashboard-impact">£0.00</strong></div>
+            <div><span>{c('dashboard.average_orders')}</span><strong id="dashboard-average-spend">£0.00</strong></div>
+            <div id="dashboard-impact-row"><span>{c('dashboard.local_impact')}</span><strong id="dashboard-impact">£0.00</strong></div>
           </div>
           <section class="commitment-topup-section" aria-labelledby="extra-topups-heading">
-            <h3 id="extra-topups-heading">Extra top-ups</h3>
-            <p>Your regular standing order is intended to cover your normal weekly spending. If you spend more than your available credit, you can make a one-off bank transfer (recommended) or pay online for convenience.</p>
+            <h3 id="extra-topups-heading">{c('dashboard.topups_heading')}</h3>
+            <FormattedText text={c('dashboard.topups_body')} class="rich-body" />
             <div id="dashboard-topup-status" class="topup-status"></div>
             <div id="dashboard-payment-options" hidden>
               <div class="payment-method payment-method-preferred">
-                <p class="payment-label">Recommended</p>
-                <h4>Top up by bank transfer</h4>
+                <p class="payment-label">{c('dashboard.recommended')}</p>
+                <h4>{c('dashboard.bank_topup_heading')}</h4>
                 <dl class="bank-details">
                   <div><dt>Account name</dt><dd id="dashboard-bank-name"></dd></div>
                   <div><dt>Sort code</dt><dd id="dashboard-sort-code"></dd></div>
                   <div><dt>Account number</dt><dd id="dashboard-account-number"></dd></div>
                   <div><dt>Reference</dt><dd id="dashboard-payment-reference"></dd></div>
                 </dl>
-                <p class="small-print">Bank transfers have no processing charge and help us keep member prices low.</p>
+                <FormattedText text={c('dashboard.bank_topup_note')} class="small-print rich-body" />
               </div>
               <div class="payment-method payment-method-online">
-                <h4>Pay securely online</h4>
-                <p>Online payment is available for convenience when you need to top up immediately.</p>
-                <a id="dashboard-mollie-link" class="button button-secondary" hidden>Pay securely online</a>
-                <p id="dashboard-mollie-unavailable" class="small-print">Online payment is temporarily unavailable. You can still top up by bank transfer.</p>
+                <h4>{c('dashboard.online_heading')}</h4>
+                <FormattedText text={c('dashboard.online_body')} class="rich-body" />
+                <a id="dashboard-mollie-link" class="button button-secondary" hidden>{c('dashboard.online_button')}</a>
+                <FormattedText text={c('dashboard.online_unavailable')} class="small-print rich-body" />
               </div>
             </div>
           </section>
           <div class="recent-topups">
-            <h3>Recent payments</h3>
-            <div id="dashboard-topups"><p class="small-print">No recent payments found.</p></div>
+            <h3>{c('dashboard.recent_payments')}</h3>
+            <div id="dashboard-topups"><p class="small-print">{c('dashboard.no_payments')}</p></div>
             <details id="dashboard-account-activity" class="account-activity">
-              <summary>View full account activity</summary>
+              <summary>{c('dashboard.account_activity')}</summary>
               <div id="dashboard-activity"></div>
             </details>
           </div>

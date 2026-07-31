@@ -1,4 +1,5 @@
 ---
+import FormattedText from './FormattedText.astro';
 const { settings } = Astro.props;
 ---
 <footer class={`site-footer height-${settings.footerHeight}`}>
@@ -7,7 +8,7 @@ const { settings } = Astro.props;
       ? <img class={`footer-logo logo-${settings.footerLogoSize}`} src={settings.footerLogo} alt="Roots to Fruits" />
       : <strong class="footer-wordmark">Roots to Fruits</strong>}
     {settings.tagline && <p class="footer-tagline">{settings.tagline}</p>}
-    {settings.footerText && <p>{settings.footerText}</p>}
+    {settings.footerText && <FormattedText text={settings.footerText} class="footer-text" />}
     {settings.contactEmail && <p><a href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a></p>}
     <p class="footer-legal"><a href="/privacy/">Privacy notice</a></p>
   </div>

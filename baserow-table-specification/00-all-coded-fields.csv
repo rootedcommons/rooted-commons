@@ -1,249 +1,253 @@
-﻿Table,Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
-Site Settings,Site title,Single line text,Yes,Public site,Site name used in page metadata and header,,Primary content row is the first row with this or Header logo
-Site Settings,Header text,Long text,No,Header,Optional header copy,,
-Site Settings,Footer text,Long text,No,Footer,Footer copy,,
-Site Settings,Join button text,Single line text,No,Header,Legacy/default joining button label,,
-Site Settings,Join button URL,URL,No,Header,Legacy/default joining button destination,,
-Site Settings,Header button text,Single line text,No,Header,Primary header action label,,Code also accepts Header Button Text
-Site Settings,Header Button URL,URL,No,Header,Primary header action destination,,Code also accepts Header button URL
-Site Settings,Background colour,Single line text,No,Theme,Site background CSS colour,,Hex recommended
-Site Settings,Primary colour,Single line text,No,Theme,Primary CSS colour,,Hex recommended
-Site Settings,Highlight colour,Single line text,No,Theme,Card and panel highlight colour,,Hex recommended
-Site Settings,Border colour,Single line text,No,Theme,Border CSS colour,,Hex recommended
-Site Settings,Header logo,File,No,Header,Header logo image,,One image
-Site Settings,Footer logo,File,No,Footer,Footer logo image,,One image
-Site Settings,Contact email,Email,No,Footer,Public contact email,,
-Site Settings,Tagline,Single line text,No,Header/footer,Site tagline,,
-Site Settings,Header logo size,Single select,No,Header,Header logo scale,small; medium; large,
-Site Settings,Footer logo size,Single select,No,Footer,Footer logo scale,small; medium; large,
-Site Settings,Header height,Single select,No,Header,Header vertical spacing,compact; medium; large,
-Site Settings,Footer height,Single select,No,Footer,Footer vertical spacing,compact; medium; large,
-Site Settings,Navigation text size,Single select,No,Header,Navigation typography,small; medium; large,
-Site Settings,Button text size,Single select,No,Global UI,Button typography,small; medium; large,
-Site Settings,Basket heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Basket empty text,Long text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Basket total label,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Basket checkout button,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Basket notice,Long text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Basket floating label,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout basket heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout empty heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout empty text,Long text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout verify heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout verify body,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout email label,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout email button,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout confirm heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout confirm button,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout return text,Long text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout success heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Navigation label 1,Single line text,No,Header,Navigation link label,,
-Site Settings,Navigation URL 1,URL,No,Header,Navigation link destination,,
-Site Settings,Navigation label 2,Single line text,No,Header,Navigation link label,,
-Site Settings,Navigation URL 2,URL,No,Header,Navigation link destination,,
-Site Settings,Navigation label 3,Single line text,No,Header,Navigation link label,,
-Site Settings,Navigation URL 3,URL,No,Header,Navigation link destination,,
-Site Settings,Navigation label 4,Single line text,No,Header,Navigation link label,,
-Site Settings,Navigation URL 4,URL,No,Header,Navigation link destination,,
-Site Settings,Navigation label 5,Single line text,No,Header,Navigation link label,,
-Site Settings,Navigation URL 5,URL,No,Header,Navigation link destination,,
-Site Settings,Soil Association logo,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
-Site Settings,EU Organic logo,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
-Site Settings,Wildfarmed logo,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
-Site Settings,Organic Food Federation logo,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
-Site Settings,Founder 10 badge,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
-Site Settings,Founder 25 badge,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
-Site Settings,Founder 50 badge,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
-Site Settings,Perk 1 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,
-Site Settings,Perk 1 text,Single line text,No,Dashboard,Membership perk wording,,
-Site Settings,Perk 2 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,
-Site Settings,Perk 2 text,Single line text,No,Dashboard,Membership perk wording,,
-Site Settings,Perk 3 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,
-Site Settings,Perk 3 text,Single line text,No,Dashboard,Membership perk wording,,
-Site Settings,Perk 4 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,
-Site Settings,Perk 4 text,Single line text,No,Dashboard,Membership perk wording,,
-Site Settings,Perk 5 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,
-Site Settings,Perk 5 text,Single line text,No,Dashboard,Membership perk wording,,
-Site Settings,Increase commitment button text,Single line text,No,Dashboard,BACS increase button label,,
-Site Settings,Increase commitment button URL,URL,No,Dashboard,BACS increase button destination,,
-Site Settings,Bank account name,Single line text,No,Dashboard/email,Standing-order account name,,
-Site Settings,Bank sort code,Single line text,No,Dashboard/email,Standing-order sort code,,Keep as text
-Site Settings,Bank account number,Single line text,No,Dashboard/email,Standing-order account number,,Keep as text
-Pages,Slug,Single line text,Yes,Routing,Page URL slug,,Primary field recommended
-Pages,Title,Single line text,Yes,Page hero,Main page title,,
-Pages,Intro,Long text,No,Page hero,Introductory copy,,
-Pages,Button text,Single line text,No,Page hero,Hero action label,,
-Pages,Button URL,URL,No,Page hero,Hero action destination,,
-Pages,Hero image,File,No,Page hero,Hero image,,One image
-Pages,Subtitle,Single line text,No,Page hero,Hero subtitle,,
-Pages,Visible,Boolean,Yes,Routing,Whether page is published,,Defaults true
-Pages,SEO title,Single line text,No,Metadata,Browser/search title,,
-Pages,SEO description,Long text,No,Metadata,Search description,,
-Pages,Hero layout,Single select,No,Page hero,Hero layout,text-left; text-right; text-only; banner; none,
-Pages,Title size,Single select,No,Page hero,Title scale,small; medium; large,
-Pages,Subtitle size,Single select,No,Page hero,Subtitle scale,small; medium; large,
-Pages,Intro size,Single select,No,Page hero,Intro scale,small; medium; large,
-Pages,Hero image height,Single select,No,Page hero,Image height,small; medium; large; full-width,
-Pages,Hero image fit,Single select,No,Page hero,Image crop behaviour,cover; contain,
-Pages,Hero image alignment,Single select,No,Page hero,Image focal alignment,left; center; right,
-Pages,Sections,Link to table,No,Baserow administration,Backlink to Sections,Sections,Not read directly
-Pages,Hero alignment,Single select,No,Page hero,Text alignment,left; center; right,
-Pages,Hero padding,Single select,No,Page hero,Hero spacing,small; medium; large,
-Pages,Hero width,Single select,No,Page hero,Hero content width,narrow; medium; wide; full,
-Sections,Key,Single line text,Yes,Section rendering,Stable internal section identifier,,Primary field recommended
-Sections,Page,Link to table,Yes,Section rendering,Page containing the section,Pages,
-Sections,Body,Long text,No,Section rendering,Main section copy,,
-Sections,Heading,Single line text,No,Section rendering,Section heading,,
-Sections,Image,File,No,Section rendering,Section image,,One image
-Sections,Order,Number,Yes,Section ordering,Display order,,Integer
-Sections,Visible,Boolean,Yes,Section filtering,Whether section is displayed,,Defaults true
-Sections,Section type,Single select,No,Section rendering,Renderer/layout type,text; split; cards; grid; gallery; cta; banner; spacer,Use types configured in SectionRenderer
-Sections,Eyebrow,Single line text,No,Section rendering,Small heading above title,,
-Sections,Subheading,Single line text,No,Section rendering,Secondary heading,,
-Sections,Image alt text,Single line text,No,Accessibility,Alternative image text,,
-Sections,Button text,Single line text,No,Section rendering,Action label,,
-Sections,Button URL,URL,No,Section rendering,Action destination,,
-Sections,Heading size,Single select,No,Styling,Heading scale,small; medium; large,
-Sections,Subheading size,Single select,No,Styling,Subheading scale,small; medium; large,
-Sections,Body size,Single select,No,Styling,Body text scale,small; medium; large,
-Sections,Alignment,Single select,No,Styling,Text alignment,left; center; right,
-Sections,Background style,Single select,No,Styling,Section background,default; highlight; primary,
-Sections,Columns,Number,No,Grid styling,Grid column count,1 to 4,Code clamps to 1–4
-Sections,Image size,Single select,No,Styling,Image scale,small; medium; large; full-width,
-Sections,Image fit,Single select,No,Styling,Image crop,cover; contain,
-Sections,Button size,Single select,No,Styling,Button scale,small; medium; large,
-Sections,Space above,Single select,No,Styling,Top spacing,none; small; medium; large,
-Sections,Space below,Single select,No,Styling,Bottom spacing,none; small; medium; large,
-Sections,Grid source,Single select,No,Grid rendering,Content source,products; collection-points,
-Sections,Grid category,Single select,No,Grid rendering,Legacy product category filter,,
-Sections,Catalogue category,Single select,No,Orders catalogue,Product category filter,,Values should match Products Category
-Sections,Image position,Single select,No,Split layout,Image side,left; right,
-Sections,Button visible,Boolean,No,Section rendering,Explicit button visibility,,Defaults from Button text
-Sections,Group key,Single line text,No,Grouped sections,Groups related cards/content,,
-Sections,Image caption,Long text,No,Section rendering,Caption below image,,
-Products,Code,Single line text,Yes,Catalogue/order payload,Stable product/SKU code,,Primary or unique recommended
-Products,Size,Single line text,No,Product card,Pack amount shown above logos,,Code also accepts lowercase size
-Products,Product,Single line text,Yes,Catalogue/order payload,Product name,,Primary field recommended
-Products,Producer,Single line text,No,Data/legacy,Producer name,,Not currently displayed
-Products,Member price,Number,Yes,Catalogue/order validation,Selling price,Currency; 2 decimals,Runtime source of truth
-Products,Description,Long text,No,Product popup,Main description fallback when Expanded description is blank,,No longer shown on card
-Products,Expanded description,Long text,No,Product popup,Preferred single main popup description,,
-Products,Origin,Long text,No,Product card,Primary provenance line,,Falls back to Grown in
-Products,Secondary origin,Long text,No,Product card,Second provenance/processing line,,
-Products,Crop info,Long text,No,Product popup,General crop or ingredient context,,
-Products,Packaging and disposal,Long text,No,Product popup,Packaging material and disposal guidance,,
-Products,Ingredients,Long text,No,Product popup,Current ingredient declaration/summary,,
-Products,Allergens,Long text,No,Product popup,Allergen information,,
-Products,Storage,Long text,No,Product popup,Storage guidance,,
-Products,Suggested uses,Long text,No,Product popup,Preparation/use ideas,,
-Products,Why we stock it,Long text,No,Legacy data only,Former curation note,,No longer displayed
-Products,Source URL,URL,No,Administration,Private traceability source,,Not displayed
-Products,Image,File,No,Product card/popup,Product image,,One image
-Products,Product Link,URL,No,Legacy/data,External product link,,Code also accepts Link
-Products,Popularity,Number,No,Catalogue sorting,Primary sort order,,Falls back to Display order then Order
-Products,Display order,Number,No,Catalogue sorting,Fallback sort order,,
-Products,Order,Number,No,Catalogue sorting,Legacy fallback sort order,,
-Products,Available,Boolean,Yes,Catalogue/order validation,Whether product may be ordered,,Defaults true
-Products,Available stock,Rollup,Yes,Catalogue/order validation,Current sellable units,"SUM of linked Stock Movement Quantity change, filtered Active if configured",Sole stock source
-Products,Low stock threshold,Number,No,Catalogue,Threshold for low-stock warning,,Defaults 5
-Products,Category,Link to table or Multiple select,Yes,Catalogue/filtering,Top-level categories,Use existing Category table or controlled values,May hold multiple values
-Products,Subcategory,Link to table or Multiple select,No,Catalogue/filtering,Secondary categories,Controlled values,May hold multiple values
-Products,Available collection points,Link to table,No,Order validation,Restricts product to collection points,Collection Points; allow multiple,Blank means all compatible points
-Products,Stock Movement,Link to table,No,Stock rollup,Backlink used for stock rollup,Stock Movement,
-Products,Sections,Link to table,No,Baserow administration,Optional backlink to sections,Sections,Not read directly
-Products,Items per pack,Number,No,Administration,Wholesale pack quantity,,Not currently used by website
-Products,Current stock,Number/formula,No,Legacy,Legacy stock value,,Website uses Available stock
-Products,Grown in,Link to table or Multiple select,No,Card fallback/search,Origin countries/regions,Controlled origin values,Used only when Origin blank
-Products,Certification,Multiple select,No,Product card,Certification logos/text,Soil Association; EU Organic; Wildfarmed; Organic Food Federation,Exact labels map to Site Settings logos
-Products,Nutrition basis,Single select,No,Product popup,Nutrition column heading,Per 100 g; Per 100 ml; Per serving,Defaults to Per 100 g
-Products,Energy kJ,Number,No,Product popup,Energy in kilojoules,0 decimal places,Blank row is hidden
-Products,Energy kcal,Number,No,Product popup,Energy in kilocalories,0 decimal places,Blank row is hidden
-Products,Fat,Number,No,Product popup,Fat in grams,2 decimal places,Blank row is hidden
-Products,Saturates,Number,No,Product popup,Saturated fat in grams,2 decimal places,Blank row is hidden
-Products,Carbohydrate,Number,No,Product popup,Carbohydrate in grams,2 decimal places,Blank row is hidden
-Products,Sugars,Number,No,Product popup,Sugars in grams,2 decimal places,Blank row is hidden
-Products,Fibre,Number,No,Product popup,Fibre in grams,2 decimal places,Blank row is hidden
-Products,Protein,Number,No,Product popup,Protein in grams,2 decimal places,Blank row is hidden
-Products,Salt,Number,No,Product popup,Salt in grams,2 decimal places,Blank row is hidden
-Collection Points,Name,Single line text,Yes,Catalogue/checkout,Collection point name,,Primary field
-Collection Points,Address,Long text,No,Checkout/dashboard,Collection address,,
-Collection Points,Active,Boolean,Yes,Checkout validation,Whether point can be selected,,Defaults true
-Collection Points,Available to collect here,Multiple select,No,Order validation,Allowed product categories,Values must match Product Category,Blank permits all categories
-Collection Points,Image,File,No,Collection point cards,Location image,,One image
-Collection Points,Link,URL,No,Collection point cards,External location link,,Code also accepts Website or URL
-Collection Points,Description,Long text,No,Collection point cards,Location description,,
-Collection Points,Collection time,Single line text,No,Collection point cards/dashboard,Collection window,,Code also accepts Collection slot or Collection day/time
-Collection Points,Orders close,Single line text or Date/time,No,Collection point cards,Local order deadline,,Rendered as entered; no timezone conversion
-Collection Points,Cupboard Staples,Link to table,No,Legacy/admin,Legacy product relationship,Products,Not read by code
-Collection Points,Members,Link to table,No,Admin,Backlink to members,Members,
-Members,Xero Contact ID,Single line text,No,Xero/member matching,Xero contact identifier,,May also be used for linked transaction matching
-Members,First name,Single line text,Yes,Dashboard/email,Member given name,,
-Members,Last name,Single line text,No,Administration,Member family name,,
-Members,Order token,Single line text,Yes,Authentication,Secure magic-link token,,Treat as secret
-Members,Active,Boolean,Yes,Authentication,Whether member can sign in/order,,
-Members,Email,Email,Yes,Authentication/email,Member email,,
-Members,Current credit,Rollup/formula or Number,Yes,Dashboard/order response,Current account balance,Typically SUM included Account Transactions,
-Members,Weekly commitment,Number,Yes,Dashboard,Standing-order commitment,Currency; 2 decimals,
-Members,Collection point,Link to table,Yes,Checkout/dashboard,Default collection point,Collection Points; one link,Website can update
-Members,Order token expiry,Date/time,No,Authentication,Expiry for secure token,,Blank means no expiry
-Members,Account Transactions,Link to table,No,Credit/admin,Backlink to transactions,Account Transactions,
-Members,Web Orders,Link to table,No,Order history/admin,Backlink to orders,Web Orders,
-Members,Payment reference,Single line text,No,Dashboard/email,Unique BACS payment reference,,Falls back to RC-{row ID}
-Members,Mollie payment URL,URL,No,Dashboard,Hosted top-up link,,Code also accepts Online payment URL
-Members,Member since,Date,No,Dashboard perks,Membership start date,,Code also accepts Joined date or Join date
-Members,Founder badge,Single select,No,Dashboard,Founder badge selection,10; 25; 50 or configured naming,Code also accepts Founder level / Membership badge
-Web Orders,Submitted at,Date/time,Yes,Order API/dashboard,Submission timestamp,,
-Web Orders,Order source,Single select,Yes,Order API,Origin of order,Website,
-Web Orders,Order week,Single line text,Yes,Order API,ISO ordering week,YYYY-Www,Used to prevent duplicate weekly orders
-Web Orders,Collection point,Link to table,Yes,Order API/dashboard,Chosen collection point,Collection Points,
-Web Orders,Item JSON,Long text,Yes,Automation,Server-generated order lines JSON,,
-Web Orders,Stock Movement JSON,Long text,Yes,Automation,Server-generated movement rows JSON,,
-Web Orders,Order total,Number,Yes,Order API/dashboard,Total charged,Currency; 2 decimals,
-Web Orders,Status,Single select,Yes,Order workflow,Processing state,Processing; Confirmed; Rejected; Cancelled; Ledger error,
-Web Orders,Order number,Single line text,Yes,Order workflow,Unique order reference,,Last three digits are customer-facing suffix
-Web Orders,Stock Movement,Link to table,No,Administration,Backlink to movements,Stock Movement,
-Web Orders,Account Transactions,Link to table,No,Administration,Backlink to ledger transaction,Account Transactions,
-Web Orders,Member,Link to table,Yes,Order API,Ordering member,Members,
-Web Orders,Email,Email,No,Automation/email,Snapshot of member email,,
-Web Orders,Client request ID,Single line text,Yes,Idempotency,Browser request identifier,,Combined with Member
-Web Orders,Confirmed at,Date/time,No,Automation,Processing completion time,,
-Web Orders,Processing error,Long text,No,Automation/admin,Error details,,
-Web Orders,Confirmation email sent,Boolean,No,Automation,Email completion flag,,
-Web Orders,Confirmation email sent at,Date/time,No,Automation,Email timestamp,,
-Stock Movement,Date,Date/time,Yes,Stock ledger,Movement date/time,,
-Stock Movement,Quantity change,Number,Yes,Stock ledger,Signed stock change,,Orders are negative
-Stock Movement,Unit price,Number,No,Stock ledger,Unit price at movement,Currency; 2 decimals,
-Stock Movement,Movement type,Single select,Yes,Stock ledger,Movement classification,Opening; Delivery; Adjustment; Wastage; Order,
-Stock Movement,Product code,Link to table,Yes,Stock ledger/order automation,Affected product,Products,Writable link
-Stock Movement,Reference,Single line text,No,Stock ledger,External or manual reference,,
-Stock Movement,Order,Link to table,No,Stock ledger,Related web order,Web Orders,Automation may resolve order number
-Stock Movement,Notes,Long text,No,Stock ledger,Administrative notes,,
-Stock Movement,Product name,Lookup,No,Stock ledger,Product name lookup,Lookup Product code → Product,Do not write
-Stock Movement,Idempotency key,Single line text,No,Automation,Prevents duplicate movement creation,,Strongly recommended unique
-Stock Movement,Active,Boolean,No,Stock rollup,Whether movement counts in stock,,Defaults true
-Account Transactions,Date,Date/time,Yes,Ledger/dashboard,Transaction date,,Code also reads Transaction date/Created on
-Account Transactions,Type,Single select,Yes,Ledger/dashboard,Transaction classification,Order charge; Payment; Refund; Adjustment; Xero payment,Order charge required for website
-Account Transactions,Amount,Number,Yes,Ledger/dashboard,Signed account amount,Currency; 2 decimals,Order charges negative; payments positive
-Account Transactions,Order,Link to table,No,Ledger,Related order,Web Orders,
-Account Transactions,Member,Link to table,Yes,Ledger/dashboard,Related member,Members,
-Account Transactions,Notes,Long text,No,Dashboard/admin,Transaction description,,Code also reads Description/Reference
-Account Transactions,Email,Email,No,Automation/admin,Member email snapshot,,
-Account Transactions,Transaction reference,Single line text,No,Dashboard/idempotency,External/internal reference,,
-Account Transactions,Included in credit,Boolean,Yes,Credit/dashboard,Whether transaction affects displayed credit,,Defaults true
-Account Transactions,Xero Transaction ID,Single line text,No,Xero sync,Xero transaction identifier,,
-Account Transactions,Xero Payment ID,Single line text,No,Xero sync,Xero payment identifier,,
-Account Transactions,Xero Contact ID,Single line text or Link,No,Xero/member matching,Xero contact identifier,,
-Account Transactions,Contact name,Single line text,No,Xero sync,Xero contact display name,,
-Account Transactions,Bank account,Single line text,No,Xero sync,Matched bank account,,
-Account Transactions,Match status,Single select,No,Xero sync,Matching result,Matched; Unmatched; Review,
-Account Transactions,Reconciled,Boolean,No,Xero sync,Xero reconciliation state,,
-Account Transactions,Status,Single select,No,Xero sync,Transaction status,Authorised; Paid; Voided; Deleted,Use values returned by integration
-Account Transactions,Imported at,Date/time,No,Xero sync,First import timestamp,,
-Account Transactions,Last updated from Xero,Date/time,No,Xero sync,Latest refresh timestamp,,
-Xero Sync State,Name,Single line text,Yes,Xero sync,State record name,,Primary field
-Xero Sync State,Last successful sync,Date/time,No,Xero sync,Most recent completed sync,,
-Xero Sync State,Last attempted sync,Date/time,No,Xero sync,Most recent attempt,,
-Xero Sync State,Last error,Long text,No,Xero sync,Latest error details,,
-Xero Sync State,Tenant ID,Single line text,No,Xero sync,Connected Xero tenant ID,,
-Xero Sync State,Consecutive failures,Number,No,Xero sync,Failure counter,,Integer
-Xero Sync State,Connection status,Single select,No,Xero sync,Connection health,Connected; Warning; Error; Disconnected,
+Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
+Site title,Single line text,Yes,Public site,Site name used in page metadata and header,,Primary content row is the first row with this or Header logo
+Header text,Long text,No,Header,Optional header copy,,
+Footer text,Long text,No,Footer,Footer copy,,
+Join button text,Single line text,No,Header,Legacy/default joining button label,,
+Join button URL,URL,No,Header,Legacy/default joining button destination,,
+Header button text,Single line text,No,Header,Primary header action label,,Code also accepts Header Button Text
+Header Button URL,URL,No,Header,Primary header action destination,,Code also accepts Header button URL
+Background colour,Single line text,No,Theme,Site background CSS colour,,Hex recommended
+Primary colour,Single line text,No,Theme,Primary CSS colour,,Hex recommended
+Highlight colour,Single line text,No,Theme,Card and panel highlight colour,,Hex recommended
+Border colour,Single line text,No,Theme,Border CSS colour,,Hex recommended
+Header logo,File,No,Header,Header logo image,,One image
+Footer logo,File,No,Footer,Footer logo image,,One image
+Contact email,Email,No,Footer,Public contact email,,
+Tagline,Single line text,No,Header/footer,Site tagline,,
+Header logo size,Single select,No,Header,Header logo scale,small; medium; large,
+Footer logo size,Single select,No,Footer,Footer logo scale,small; medium; large,
+Header height,Single select,No,Header,Header vertical spacing,compact; medium; large,
+Footer height,Single select,No,Footer,Footer vertical spacing,compact; medium; large,
+Navigation text size,Single select,No,Header,Navigation typography,small; medium; large,
+Button text size,Single select,No,Global UI,Button typography,small; medium; large,
+Basket heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Basket empty text,Long text,No,Basket / checkout,Editable customer-facing interface copy,,
+Basket total label,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Basket checkout button,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Basket notice,Long text,No,Basket / checkout,Editable customer-facing interface copy,,
+Basket floating label,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout basket heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout empty heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout empty text,Long text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout verify heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout verify body,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout email label,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout email button,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout confirm heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout confirm button,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout return text,Long text,No,Basket / checkout,Editable customer-facing interface copy,,
+Checkout success heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
+Navigation label 1,Single line text,No,Header,Navigation link label,,
+Navigation URL 1,URL,No,Header,Navigation link destination,,
+Navigation label 2,Single line text,No,Header,Navigation link label,,
+Navigation URL 2,URL,No,Header,Navigation link destination,,
+Navigation label 3,Single line text,No,Header,Navigation link label,,
+Navigation URL 3,URL,No,Header,Navigation link destination,,
+Navigation label 4,Single line text,No,Header,Navigation link label,,
+Navigation URL 4,URL,No,Header,Navigation link destination,,
+Navigation label 5,Single line text,No,Header,Navigation link label,,
+Navigation URL 5,URL,No,Header,Navigation link destination,,
+Soil Association logo,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
+EU Organic logo,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
+Wildfarmed logo,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
+Organic Food Federation logo,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
+Founder 10 badge,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
+Founder 25 badge,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
+Founder 50 badge,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
+Perk 1 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,
+Perk 1 text,Single line text,No,Dashboard,Membership perk wording,,
+Perk 2 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,
+Perk 2 text,Single line text,No,Dashboard,Membership perk wording,,
+Perk 3 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,
+Perk 3 text,Single line text,No,Dashboard,Membership perk wording,,
+Perk 4 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,
+Perk 4 text,Single line text,No,Dashboard,Membership perk wording,,
+Perk 5 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,
+Perk 5 text,Single line text,No,Dashboard,Membership perk wording,,
+Increase commitment button text,Single line text,No,Dashboard,BACS increase button label,,
+Increase commitment button URL,URL,No,Dashboard,BACS increase button destination,,
+Bank account name,Single line text,No,Dashboard/email,Standing-order account name,,
+Bank sort code,Single line text,No,Dashboard/email,Standing-order sort code,,Keep as text
+Bank account number,Single line text,No,Dashboard/email,Standing-order account number,,Keep as text
+Slug,Single line text,Yes,Routing,Page URL slug,,Primary field recommended
+Title,Single line text,Yes,Page hero,Main page title,,
+Intro,Long text,No,Page hero,Introductory copy,,
+Button text,Single line text,No,Page hero,Hero action label,,
+Button URL,URL,No,Page hero,Hero action destination,,
+Hero image,File,No,Page hero,Hero image,,One image
+Subtitle,Single line text,No,Page hero,Hero subtitle,,
+Visible,Boolean,Yes,Routing,Whether page is published,,Defaults true
+SEO title,Single line text,No,Metadata,Browser/search title,,
+SEO description,Long text,No,Metadata,Search description,,
+Hero layout,Single select,No,Page hero,Hero layout,text-left; text-right; text-only; banner; none,
+Title size,Single select,No,Page hero,Title scale,small; medium; large,
+Subtitle size,Single select,No,Page hero,Subtitle scale,small; medium; large,
+Intro size,Single select,No,Page hero,Intro scale,small; medium; large,
+Hero image height,Single select,No,Page hero,Image height,small; medium; large; full-width,
+Hero image fit,Single select,No,Page hero,Image crop behaviour,cover; contain,
+Hero image alignment,Single select,No,Page hero,Image focal alignment,left; center; right,
+Sections,Link to table,No,Baserow administration,Backlink to Sections,Sections,Not read directly
+Hero alignment,Single select,No,Page hero,Text alignment,left; center; right,
+Hero padding,Single select,No,Page hero,Hero spacing,small; medium; large,
+Hero width,Single select,No,Page hero,Hero content width,narrow; medium; wide; full,
+Key,Single line text,Yes,Section rendering,Stable internal section identifier,,Primary field recommended
+Page,Link to table,Yes,Section rendering,Page containing the section,Pages,
+Body,Long text,No,Section rendering,Main section copy,,
+Heading,Single line text,No,Section rendering,Section heading,,
+Image,File,No,Section rendering,Section image,,One image
+Order,Number,Yes,Section ordering,Display order,,Integer
+Visible,Boolean,Yes,Section filtering,Whether section is displayed,,Defaults true
+Section type,Single select,No,Section rendering,Renderer/layout type,text; split; cards; grid; gallery; cta; banner; spacer,Use types configured in SectionRenderer
+Eyebrow,Single line text,No,Section rendering,Small heading above title,,
+Subheading,Single line text,No,Section rendering,Secondary heading,,
+Image alt text,Single line text,No,Accessibility,Alternative image text,,
+Button text,Single line text,No,Section rendering,Action label,,
+Button URL,URL,No,Section rendering,Action destination,,
+Heading size,Single select,No,Styling,Heading scale,small; medium; large,
+Subheading size,Single select,No,Styling,Subheading scale,small; medium; large,
+Body size,Single select,No,Styling,Body text scale,small; medium; large,
+Alignment,Single select,No,Styling,Text alignment,left; center; right,
+Background style,Single select,No,Styling,Section background,default; highlight; primary,
+Columns,Number,No,Grid styling,Grid column count,1 to 4,Code clamps to 1–4
+Image size,Single select,No,Styling,Image scale,small; medium; large; full-width,
+Image fit,Single select,No,Styling,Image crop,cover; contain,
+Button size,Single select,No,Styling,Button scale,small; medium; large,
+Space above,Single select,No,Styling,Top spacing,none; small; medium; large,
+Space below,Single select,No,Styling,Bottom spacing,none; small; medium; large,
+Grid source,Single select,No,Grid rendering,Content source,products; collection-points,
+Grid category,Single select,No,Grid rendering,Legacy product category filter,,
+Catalogue category,Single select,No,Orders catalogue,Product category filter,,Values should match Products Category
+Image position,Single select,No,Split layout,Image side,left; right,
+Button visible,Boolean,No,Section rendering,Explicit button visibility,,Defaults from Button text
+Group key,Single line text,No,Grouped sections,Groups related cards/content,,
+Image caption,Long text,No,Section rendering,Caption below image,,
+Code,Single line text,Yes,Catalogue/order payload,Stable product/SKU code,,Primary or unique recommended
+Size,Single line text,No,Product card,Pack amount shown above logos,,Code also accepts lowercase size
+Product,Single line text,Yes,Catalogue/order payload,Product name,,Primary field recommended
+Producer,Single line text,No,Data/legacy,Producer name,,Not currently displayed
+Member price,Number,Yes,Catalogue/order validation,Selling price,Currency; 2 decimals,Runtime source of truth
+Description,Long text,No,Product popup,Main description fallback when Expanded description is blank,,No longer shown on card
+Expanded description,Long text,No,Product popup,Preferred single main popup description,,
+Origin,Long text,No,Product card,Primary provenance line,,Falls back to Grown in
+Secondary origin,Long text,No,Product card,Second provenance/processing line,,
+Crop info,Long text,No,Product popup,General crop or ingredient context,,
+Packaging and disposal,Long text,No,Product popup,Packaging material and disposal guidance,,
+Ingredients,Long text,No,Product popup,Current ingredient declaration/summary,,
+Allergens,Long text,No,Product popup,Allergen information,,
+Storage,Long text,No,Product popup,Storage guidance,,
+Suggested uses,Long text,No,Product popup,Preparation/use ideas,,
+Why we stock it,Long text,No,Legacy data only,Former curation note,,No longer displayed
+Source URL,URL,No,Administration,Private traceability source,,Not displayed
+Image,File,No,Product card/popup,Product image,,One image
+Product Link,URL,No,Legacy/data,External product link,,Code also accepts Link
+Popularity,Number,No,Catalogue sorting,Primary sort order,,Falls back to Display order then Order
+Display order,Number,No,Catalogue sorting,Fallback sort order,,
+Order,Number,No,Catalogue sorting,Legacy fallback sort order,,
+Available,Boolean,Yes,Catalogue/order validation,Whether product may be ordered,,Defaults true
+Available stock,Rollup,Yes,Catalogue/order validation,Current sellable units,"SUM of linked Stock Movement Quantity change, filtered Active if configured",Sole stock source
+Low stock threshold,Number,No,Catalogue,Threshold for low-stock warning,,Defaults 5
+Category,Link to table or Multiple select,Yes,Catalogue/filtering,Top-level categories,Use existing Category table or controlled values,May hold multiple values
+Subcategory,Link to table or Multiple select,No,Catalogue/filtering,Secondary categories,Controlled values,May hold multiple values
+Available collection points,Link to table,No,Order validation,Restricts product to collection points,Collection Points; allow multiple,Blank means all compatible points
+Stock Movement,Link to table,No,Stock rollup,Backlink used for stock rollup,Stock Movement,
+Sections,Link to table,No,Baserow administration,Optional backlink to sections,Sections,Not read directly
+Items per pack,Number,No,Administration,Wholesale pack quantity,,Not currently used by website
+Current stock,Number/formula,No,Legacy,Legacy stock value,,Website uses Available stock
+Grown in,Link to table or Multiple select,No,Card fallback/search,Origin countries/regions,Controlled origin values,Used only when Origin blank
+Certification,Multiple select,No,Product card,Certification logos/text,Soil Association; EU Organic; Wildfarmed; Organic Food Federation,Exact labels map to Site Settings logos
+Nutrition basis,Single select,No,Product popup,Nutrition column heading,Per 100 g; Per 100 ml; Per serving,Defaults to Per 100 g
+Energy kJ,Number,No,Product popup,Energy in kilojoules,0 decimal places,Blank row is hidden
+Energy kcal,Number,No,Product popup,Energy in kilocalories,0 decimal places,Blank row is hidden
+Fat,Number,No,Product popup,Fat in grams,2 decimal places,Blank row is hidden
+Saturates,Number,No,Product popup,Saturated fat in grams,2 decimal places,Blank row is hidden
+Carbohydrate,Number,No,Product popup,Carbohydrate in grams,2 decimal places,Blank row is hidden
+Sugars,Number,No,Product popup,Sugars in grams,2 decimal places,Blank row is hidden
+Fibre,Number,No,Product popup,Fibre in grams,2 decimal places,Blank row is hidden
+Protein,Number,No,Product popup,Protein in grams,2 decimal places,Blank row is hidden
+Salt,Number,No,Product popup,Salt in grams,2 decimal places,Blank row is hidden
+Name,Single line text,Yes,Catalogue/checkout,Collection point name,,Primary field
+Address,Long text,No,Checkout/dashboard,Collection address,,
+Active,Boolean,Yes,Checkout validation,Whether point can be selected,,Defaults true
+Available to collect here,Multiple select,No,Order validation,Allowed product categories,Values must match Product Category,Blank permits all categories
+Image,File,No,Collection point cards,Location image,,One image
+Link,URL,No,Collection point cards,External location link,,Code also accepts Website or URL
+Description,Long text,No,Collection point cards,Location description,,
+Collection time,Single line text,No,Collection point cards/dashboard,Collection window,,Code also accepts Collection slot or Collection day/time
+Orders close,Single line text or Date/time,No,Collection point cards,Local order deadline,,Rendered as entered; no timezone conversion
+Cupboard Staples,Link to table,No,Legacy/admin,Legacy product relationship,Products,Not read by code
+Members,Link to table,No,Admin,Backlink to members,Members,
+Xero Contact ID,Single line text,No,Xero/member matching,Xero contact identifier,,May also be used for linked transaction matching
+First name,Single line text,Yes,Dashboard/email,Member given name,,
+Last name,Single line text,No,Administration,Member family name,,
+Order token,Single line text,Yes,Authentication,Secure magic-link token,,Treat as secret
+Active,Boolean,Yes,Authentication,Whether member can sign in/order,,
+Email,Email,Yes,Authentication/email,Member email,,
+Current credit,Rollup/formula or Number,Yes,Dashboard/order response,Current account balance,Typically SUM included Account Transactions,
+Weekly commitment,Number,Yes,Dashboard,Standing-order commitment,Currency; 2 decimals,
+Collection point,Link to table,Yes,Checkout/dashboard,Default collection point,Collection Points; one link,Website can update
+Order token expiry,Date/time,No,Authentication,Expiry for secure token,,Blank means no expiry
+Account Transactions,Link to table,No,Credit/admin,Backlink to transactions,Account Transactions,
+Web Orders,Link to table,No,Order history/admin,Backlink to orders,Web Orders,
+Payment reference,Single line text,No,Dashboard/email,Unique BACS payment reference,,Falls back to RC-{row ID}
+Mollie payment URL,URL,No,Dashboard,Hosted top-up link,,Code also accepts Online payment URL
+Member since,Date,No,Dashboard perks,Membership start date,,Code also accepts Joined date or Join date
+Founder badge,Single select,No,Dashboard,Founder badge selection,10; 25; 50 or configured naming,Code also accepts Founder level / Membership badge
+Submitted at,Date/time,Yes,Order API/dashboard,Submission timestamp,,
+Order source,Single select,Yes,Order API,Origin of order,Website,
+Order week,Single line text,Yes,Order API,ISO ordering week,YYYY-Www,Used to prevent duplicate weekly orders
+Collection point,Link to table,Yes,Order API/dashboard,Chosen collection point,Collection Points,
+Item JSON,Long text,Yes,Automation,Server-generated order lines JSON,,
+Stock Movement JSON,Long text,Yes,Automation,Server-generated movement rows JSON,,
+Order total,Number,Yes,Order API/dashboard,Total charged,Currency; 2 decimals,
+Status,Single select,Yes,Order workflow,Processing state,Processing; Confirmed; Rejected; Cancelled; Ledger error,
+Order number,Single line text,Yes,Order workflow,Unique order reference,,Last three digits are customer-facing suffix
+Stock Movement,Link to table,No,Administration,Backlink to movements,Stock Movement,
+Account Transactions,Link to table,No,Administration,Backlink to ledger transaction,Account Transactions,
+Member,Link to table,Yes,Order API,Ordering member,Members,
+Email,Email,No,Automation/email,Snapshot of member email,,
+Client request ID,Single line text,Yes,Idempotency,Browser request identifier,,Combined with Member
+Confirmed at,Date/time,No,Automation,Processing completion time,,
+Processing error,Long text,No,Automation/admin,Error details,,
+Confirmation email sent,Boolean,No,Automation,Email completion flag,,
+Confirmation email sent at,Date/time,No,Automation,Email timestamp,,
+Date,Date/time,Yes,Stock ledger,Movement date/time,,
+Quantity change,Number,Yes,Stock ledger,Signed stock change,,Orders are negative
+Unit price,Number,No,Stock ledger,Unit price at movement,Currency; 2 decimals,
+Movement type,Single select,Yes,Stock ledger,Movement classification,Opening; Delivery; Adjustment; Wastage; Order,
+Product code,Link to table,Yes,Stock ledger/order automation,Affected product,Products,Writable link
+Reference,Single line text,No,Stock ledger,External or manual reference,,
+Order,Link to table,No,Stock ledger,Related web order,Web Orders,Automation may resolve order number
+Notes,Long text,No,Stock ledger,Administrative notes,,
+Product name,Lookup,No,Stock ledger,Product name lookup,Lookup Product code → Product,Do not write
+Idempotency key,Single line text,No,Automation,Prevents duplicate movement creation,,Strongly recommended unique
+Active,Boolean,No,Stock rollup,Whether movement counts in stock,,Defaults true
+Date,Date/time,Yes,Ledger/dashboard,Transaction date,,Code also reads Transaction date/Created on
+Type,Single select,Yes,Ledger/dashboard,Transaction classification,Order charge; Payment; Refund; Adjustment; Xero payment,Order charge required for website
+Amount,Number,Yes,Ledger/dashboard,Signed account amount,Currency; 2 decimals,Order charges negative; payments positive
+Order,Link to table,No,Ledger,Related order,Web Orders,
+Member,Link to table,Yes,Ledger/dashboard,Related member,Members,
+Notes,Long text,No,Dashboard/admin,Transaction description,,Code also reads Description/Reference
+Email,Email,No,Automation/admin,Member email snapshot,,
+Transaction reference,Single line text,No,Dashboard/idempotency,External/internal reference,,
+Included in credit,Boolean,Yes,Credit/dashboard,Whether transaction affects displayed credit,,Defaults true
+Xero Transaction ID,Single line text,No,Xero sync,Xero transaction identifier,,
+Xero Payment ID,Single line text,No,Xero sync,Xero payment identifier,,
+Xero Contact ID,Single line text or Link,No,Xero/member matching,Xero contact identifier,,
+Contact name,Single line text,No,Xero sync,Xero contact display name,,
+Bank account,Single line text,No,Xero sync,Matched bank account,,
+Match status,Single select,No,Xero sync,Matching result,Matched; Unmatched; Review,
+Reconciled,Boolean,No,Xero sync,Xero reconciliation state,,
+Status,Single select,No,Xero sync,Transaction status,Authorised; Paid; Voided; Deleted,Use values returned by integration
+Imported at,Date/time,No,Xero sync,First import timestamp,,
+Last updated from Xero,Date/time,No,Xero sync,Latest refresh timestamp,,
+Name,Single line text,Yes,Xero sync,State record name,,Primary field
+Last successful sync,Date/time,No,Xero sync,Most recent completed sync,,
+Last attempted sync,Date/time,No,Xero sync,Most recent attempt,,
+Last error,Long text,No,Xero sync,Latest error details,,
+Tenant ID,Single line text,No,Xero sync,Connected Xero tenant ID,,
+Consecutive failures,Number,No,Xero sync,Failure counter,,Integer
+Connection status,Single select,No,Xero sync,Connection health,Connected; Warning; Error; Disconnected,
+Interface Content,Key,Single line text,Yes,Stable unique key used by the website.
+Interface Content,Area,Single select,No,"Editorial grouping: Basket, Checkout or Dashboard."
+Interface Content,Label,Single line text,No,Human-readable description for editors.
+Interface Content,Content,Long text,Yes,Editable interface wording. Layout remains controlled by code.

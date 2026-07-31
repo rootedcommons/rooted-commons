@@ -1,4 +1,5 @@
 ---
+import FormattedText from './FormattedText.astro';
 const { products, category = '', columns = 3, showControls = false, settings = {} } = Astro.props;
 const wanted = String(category || '').trim().toLowerCase();
 const money = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' });
@@ -96,13 +97,13 @@ const displayProducts = filtered.map((product) => {
           <img class="product-detail-image" src={product.image || '/images/placeholder.svg'} alt="" />
           <div class="product-detail-copy">
             <h2>{product.name}</h2>
-            {(product.expandedDescription || product.description) && <p class="product-detail-overview">{product.expandedDescription || product.description}</p>}
-            {product.cropInfo && <section><h3>Crop information</h3><p>{product.cropInfo}</p></section>}
-            {product.ingredients && <section><h3>Ingredients</h3><p>{product.ingredients}</p></section>}
-            {product.allergens && <section><h3>Allergens</h3><p>{product.allergens}</p></section>}
-            {product.suggestedUses && <section><h3>How to use it</h3><p>{product.suggestedUses}</p></section>}
-            {product.storage && <section><h3>Storage</h3><p>{product.storage}</p></section>}
-            {product.packagingAndDisposal && <section><h3>Packaging and disposal</h3><p>{product.packagingAndDisposal}</p></section>}
+            {(product.expandedDescription || product.description) && <FormattedText text={product.expandedDescription || product.description} class="product-detail-overview rich-body" />}
+            {product.cropInfo && <section><h3>Crop information</h3><FormattedText text={product.cropInfo} class="rich-body" /></section>}
+            {product.ingredients && <section><h3>Ingredients</h3><FormattedText text={product.ingredients} class="rich-body" /></section>}
+            {product.allergens && <section><h3>Allergens</h3><FormattedText text={product.allergens} class="rich-body" /></section>}
+            {product.suggestedUses && <section><h3>How to use it</h3><FormattedText text={product.suggestedUses} class="rich-body" /></section>}
+            {product.storage && <section><h3>Storage</h3><FormattedText text={product.storage} class="rich-body" /></section>}
+            {product.packagingAndDisposal && <section><h3>Packaging and disposal</h3><FormattedText text={product.packagingAndDisposal} class="rich-body" /></section>}
             {product.nutritionRows.length > 0 && <section class="nutrition-section">
               <h3>Nutrition</h3>
               <table class="nutrition-table">

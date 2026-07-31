@@ -1,4 +1,4 @@
-﻿Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
+Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
 Site title,Single line text,Yes,Public site,Site name used in page metadata and header,,Primary content row is the first row with this or Header logo
 Header text,Long text,No,Header,Optional header copy,,
 Footer text,Long text,No,Footer,Footer copy,,

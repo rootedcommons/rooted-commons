@@ -1,0 +1,58 @@
+id,Key,Area,Label,Content
+1,basket.heading,Basket,Basket heading,Your basket
+2,basket.empty,Basket,Empty basket message,Your basket is empty.
+3,basket.total_label,Basket,Total label,Estimated total
+4,basket.checkout_button,Basket,Checkout button,Continue to checkout
+5,basket.notice,Basket,Basket notice,"Final prices, stock and collection-point availability are checked at confirmation."
+6,basket.floating_label,Basket,Floating basket label,Basket
+7,checkout.basket_heading,Checkout,Basket heading,Your basket
+8,checkout.empty_heading,Checkout,Empty basket heading,Your basket is empty
+9,checkout.empty_text,Checkout,Empty basket text,Return to the shop to add products.
+10,checkout.collection_heading,Checkout,Collection heading,Choose where to collect
+11,checkout.collection_body,Checkout,Collection introduction,Select a collection point that can fulfil everything in your basket.
+12,checkout.member_heading,Checkout,Member verification heading,Already a member?
+13,checkout.member_body,Checkout,Member verification introduction,Enter your email and we will send your secure ordering link.
+14,checkout.email_label,Checkout,Email field label,Email address
+15,checkout.email_button,Checkout,Email form button,Send me the next step
+16,checkout.member_order_heading,Checkout,Verified member heading,Your member order
+17,checkout.payment_heading,Checkout,Payment explanation heading,Paying for this order
+18,checkout.payment_body,Checkout,Payment explanation,"Your regular commitment is paid by BACS standing order. If this order takes your balance below zero, you can make an extra bank transfer (recommended) or use the secure online payment option shown on your dashboard and in your confirmation email."
+19,checkout.payment_requirement,Checkout,Balance requirement,"Your balance must be £0.00 or above before collection for the order to be fulfilled. If payment has not been received before orders are prepared, your order will be refunded and the produce returned to available stock."
+20,checkout.payment_note,Checkout,Bank transfer note,Bank transfers avoid payment-processing costs and help us keep member prices low.
+21,checkout.confirm_button,Checkout,Confirm order button,Confirm order
+22,checkout.join_heading,Checkout,Non-member heading,Not a member yet?
+23,checkout.join_body,Checkout,Non-member introduction,Join Rooted Commons to order from the weekly market and help strengthen the local food network.
+24,checkout.join_button,Checkout,Join button,Become a member
+25,checkout.return_text,Checkout,Return link,Return to the shop
+26,checkout.success_heading,Checkout,Success heading,Order confirmed
+27,dashboard.loading,Dashboard,Loading message,Loading your membership…
+28,dashboard.market_eyebrow,Dashboard,Market card label,Your weekly market
+29,dashboard.credit_label,Dashboard,Credit label,Member credit
+30,dashboard.orders_open,Dashboard,Order status,Orders are open
+31,dashboard.shop_button,Dashboard,Shop button,Browse this week’s market
+32,dashboard.collection_eyebrow,Dashboard,Collection card label,Your collection point
+33,dashboard.change_collection,Dashboard,Change collection button,Change collection point
+34,dashboard.choose_collection,Dashboard,Collection field label,Choose your collection point
+35,dashboard.save_collection,Dashboard,Save collection button,Save collection point
+36,dashboard.cancel,Dashboard,Cancel button,Cancel
+37,dashboard.membership_eyebrow,Dashboard,Membership card label,Your membership
+38,dashboard.default_member_level,Dashboard,Default membership label,Rooted Commons member
+39,dashboard.commitment_eyebrow,Dashboard,Commitment card label,Your weekly commitment
+40,dashboard.commitment_body,Dashboard,Commitment explanation,Your regular contribution creates predictable demand that local producers can plan around.
+41,dashboard.regular_payment_heading,Dashboard,Regular payment heading,Your regular payment
+42,dashboard.regular_payment_body,Dashboard,Regular payment explanation,Please use a weekly standing order for your core commitment. BACS is the only payment method offered for this regular payment.
+43,dashboard.regular_payment_note,Dashboard,Regular payment note,Regular BACS payments have no processing charge and help us keep member prices low.
+44,dashboard.average_orders,Dashboard,Average orders label,Average weekly orders
+45,dashboard.local_impact,Dashboard,Local impact label,Redirected locally
+46,dashboard.topups_heading,Dashboard,Top-ups heading,Extra top-ups
+47,dashboard.topups_body,Dashboard,Top-ups explanation,"Your regular standing order is intended to cover your normal weekly spending. If you spend more than your available credit, you can make a one-off bank transfer (recommended) or pay online for convenience."
+48,dashboard.recommended,Dashboard,Recommended label,Recommended
+49,dashboard.bank_topup_heading,Dashboard,Bank top-up heading,Top up by bank transfer
+50,dashboard.bank_topup_note,Dashboard,Bank top-up note,Bank transfers have no processing charge and help us keep member prices low.
+51,dashboard.online_heading,Dashboard,Online payment heading,Pay securely online
+52,dashboard.online_body,Dashboard,Online payment explanation,Online payment is available for convenience when you need to top up immediately.
+53,dashboard.online_button,Dashboard,Online payment button,Pay securely online
+54,dashboard.online_unavailable,Dashboard,Online unavailable message,Online payment is temporarily unavailable. You can still top up by bank transfer.
+55,dashboard.recent_payments,Dashboard,Recent payments heading,Recent payments
+56,dashboard.no_payments,Dashboard,No payments message,No recent payments found.
+57,dashboard.account_activity,Dashboard,Account activity summary,View full account activity

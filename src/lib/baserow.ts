@@ -1,4 +1,4 @@
-import { fallbackCollectionPoints, fallbackPages, fallbackProducts, fallbackSections, fallbackSettings } from '../data/fallback';
+import { fallbackCollectionPoints, fallbackInterfaceContent, fallbackPages, fallbackProducts, fallbackSections, fallbackSettings } from '../data/fallback';
 
 const API_URL = import.meta.env.BASEROW_API_URL || 'https://api.baserow.io';
 const TOKEN = import.meta.env.BASEROW_TOKEN;
@@ -8,7 +8,8 @@ const TABLES = {
   pages: import.meta.env.BASEROW_PAGES_TABLE_ID,
   sections: import.meta.env.BASEROW_SECTIONS_TABLE_ID,
   products: import.meta.env.BASEROW_PRODUCTS_TABLE_ID,
-  collectionPoints: import.meta.env.BASEROW_COLLECTION_POINTS_TABLE_ID
+  collectionPoints: import.meta.env.BASEROW_COLLECTION_POINTS_TABLE_ID,
+  interfaceContent: import.meta.env.BASEROW_INTERFACE_CONTENT_TABLE_ID
 };
 
 type Row = Record<string, any>;
@@ -85,12 +86,13 @@ function normalized(value: string, fallback: string) {
 
 
 export async function getSiteData() {
-  const [settingsRows, pageRows, sectionRows, productRows, collectionRows] = await Promise.all([
+  const [settingsRows, pageRows, sectionRows, productRows, collectionRows, interfaceRows] = await Promise.all([
     listRows(TABLES.settings),
     listRows(TABLES.pages),
     listRows(TABLES.sections),
     listRows(TABLES.products),
-    listRows(TABLES.collectionPoints)
+    listRows(TABLES.collectionPoints),
+    listRows(TABLES.interfaceContent)
   ]);
 
   const validSettingsRow = settingsRows?.find((row) => text(row, 'Site title') || fileUrl(row, 'Header logo'));
@@ -116,23 +118,6 @@ export async function getSiteData() {
     footerHeight: normalized(choice(validSettingsRow, 'Footer height'), fallbackSettings.footerHeight),
     navigationTextSize: normalized(choice(validSettingsRow, 'Navigation text size'), fallbackSettings.navigationTextSize),
     buttonTextSize: normalized(choice(validSettingsRow, 'Button text size'), fallbackSettings.buttonTextSize),
-    basketHeading: text(validSettingsRow, 'Basket heading', fallbackSettings.basketHeading),
-    basketEmptyText: text(validSettingsRow, 'Basket empty text', fallbackSettings.basketEmptyText),
-    basketTotalLabel: text(validSettingsRow, 'Basket total label', fallbackSettings.basketTotalLabel),
-    basketCheckoutButton: text(validSettingsRow, 'Basket checkout button', fallbackSettings.basketCheckoutButton),
-    basketNotice: text(validSettingsRow, 'Basket notice', fallbackSettings.basketNotice),
-    basketFloatingLabel: text(validSettingsRow, 'Basket floating label', fallbackSettings.basketFloatingLabel),
-    checkoutBasketHeading: text(validSettingsRow, 'Checkout basket heading', fallbackSettings.checkoutBasketHeading),
-    checkoutEmptyHeading: text(validSettingsRow, 'Checkout empty heading', fallbackSettings.checkoutEmptyHeading),
-    checkoutEmptyText: text(validSettingsRow, 'Checkout empty text', fallbackSettings.checkoutEmptyText),
-    checkoutVerifyHeading: text(validSettingsRow, 'Checkout verify heading', fallbackSettings.checkoutVerifyHeading),
-    checkoutVerifyBody: text(validSettingsRow, 'Checkout verify body', fallbackSettings.checkoutVerifyBody),
-    checkoutEmailLabel: text(validSettingsRow, 'Checkout email label', fallbackSettings.checkoutEmailLabel),
-    checkoutEmailButton: text(validSettingsRow, 'Checkout email button', fallbackSettings.checkoutEmailButton),
-    checkoutConfirmHeading: text(validSettingsRow, 'Checkout confirm heading', fallbackSettings.checkoutConfirmHeading),
-    checkoutConfirmButton: text(validSettingsRow, 'Checkout confirm button', fallbackSettings.checkoutConfirmButton),
-    checkoutReturnText: text(validSettingsRow, 'Checkout return text', fallbackSettings.checkoutReturnText),
-    checkoutSuccessHeading: text(validSettingsRow, 'Checkout success heading', fallbackSettings.checkoutSuccessHeading),
     soilAssociationLogo: fileUrl(validSettingsRow, 'Soil Association logo'),
     euOrganicLogo: fileUrl(validSettingsRow, 'EU Organic logo'),
     wildfarmedLogo: fileUrl(validSettingsRow, 'Wildfarmed logo'),
@@ -305,5 +290,12 @@ export async function getSiteData() {
     availableCategories: linkedValues(raw(row, 'Available to collect here'))
   })).filter((point: any) => point.name && point.active);
 
-  return { settings, pages, sections, products, collectionPoints };
+  const interfaceContent = { ...fallbackInterfaceContent };
+  for (const row of interfaceRows || []) {
+    const key = text(row, 'Key');
+    const content = text(row, 'Content');
+    if (key && content) interfaceContent[key] = content;
+  }
+
+  return { settings, interfaceContent, pages, sections, products, collectionPoints };
 }

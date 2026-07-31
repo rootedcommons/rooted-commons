@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.6.1 — Natural paragraph breaks
+
+- Added a shared safe text formatter for CMS long-text fields.
+- A blank line in Baserow now starts a new paragraph.
+- A single newline now creates a visible line break.
+- Applied the formatter to page introductions, section bodies, interface explanatory copy, product information, and header/footer long text.
+
+## 2.6.0 — Interface content
+
+- Added a dedicated Baserow **Interface Content** table for editable basket, checkout and dashboard wording.
+- Kept application layout and behaviour in code while allowing text to be edited by stable keys.
+- Removed migrated basket and checkout copy fields from Site Settings.
+- Removed reserved checkout content rows from Sections.
+- Recreated the complete `baserow-imports` folder as the current import source and added table 13.
+- Removed release-note files and retained this changelog as the release history.
+
+
 ## 2.5.0
 
 - Reworked product-card metadata and purchasing layout.

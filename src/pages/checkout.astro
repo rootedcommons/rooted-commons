@@ -1,4 +1,5 @@
 ---
+import FormattedText from '../components/FormattedText.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
 import SectionRenderer from '../components/SectionRenderer.astro';
@@ -9,14 +10,9 @@ const data = await getSiteData();
 const page = data.pages.find((item) => item.slug === 'checkout') || {
   title:'Checkout', intro:'Review your order, choose a collection point and continue as a member.', titleSize:'large', introSize:'medium', heroLayout:'text-only'
 };
-const pageSections = data.sections.filter((section) => section.page === 'checkout');
-const specialKeys = new Set(['checkout-collection','checkout-member','checkout-join']);
-const ordinaryBlocks = buildSectionBlocks(pageSections.filter((section) => !specialKeys.has(section.key)));
-const sectionByKey = (key) => pageSections.find((section) => section.key === key);
-const collectionCopy = sectionByKey('checkout-collection') || { heading:'Choose where to collect', body:'Select a collection point that can fulfil everything in your basket.' };
-const memberCopy = sectionByKey('checkout-member') || { heading:'Already a member?', body:'Enter your email and we will send your secure ordering link.' };
-const joinCopy = sectionByKey('checkout-join') || { heading:'Not a member yet?', body:'Join Rooted Commons to order from the weekly market and help strengthen the local food network.', buttonText:'Become a member', buttonUrl:'/become-a-member/' };
+const ordinaryBlocks = buildSectionBlocks(data.sections.filter((section) => section.page === 'checkout'));
 const s = data.settings;
+const c = (key, fallback = '') => data.interfaceContent[key] || fallback;
 const checkoutProducts = data.products.map((product) => ({
   id: product.id,
   name: product.name,
@@ -39,15 +35,15 @@ const formatCollectionDeadline = (value) => {
 
   <main class="checkout-shell checkout-shell-wide">
     <section class="checkout-card checkout-review" aria-labelledby="checkout-order-heading">
-      <h2 id="checkout-order-heading">{s.checkoutBasketHeading}</h2>
+      <h2 id="checkout-order-heading">{c('checkout.basket_heading')}</h2>
       <div id="checkout-basket-lines"></div>
-      <div class="checkout-total-row"><span>{s.basketTotalLabel}</span><strong id="checkout-total">£0.00</strong></div>
+      <div class="checkout-total-row"><span>{c('basket.total_label')}</span><strong id="checkout-total">£0.00</strong></div>
     </section>
 
     <section class="checkout-stage" aria-labelledby="collection-heading">
       <div class="checkout-stage-heading">
-        <h2 id="collection-heading">{collectionCopy.heading}</h2>
-        {collectionCopy.body && <div class="rich-body">{collectionCopy.body.split(/\n\s*\n/).map((paragraph) => <p>{paragraph}</p>)}</div>}
+        <h2 id="collection-heading">{c('checkout.collection_heading')}</h2>
+        <FormattedText text={c('checkout.collection_body')} class="rich-body" />
       </div>
       <div id="collection-point-grid" class="collection-point-grid">
         {checkoutPoints.map((point) => (
@@ -77,37 +73,37 @@ const formatCollectionDeadline = (value) => {
     <div class="checkout-paths">
       <section id="member-path" class="checkout-card checkout-path-card">
         <div id="unverified-member-panel">
-          <h2>{memberCopy.heading}</h2>
-          {memberCopy.body && <div class="rich-body">{memberCopy.body.split(/\n\s*\n/).map((paragraph) => <p>{paragraph}</p>)}</div>}
+          <h2>{c('checkout.member_heading')}</h2>
+          <FormattedText text={c('checkout.member_body')} class="rich-body" />
           <form id="email-form">
-            <label>{s.checkoutEmailLabel}<input name="email" type="email" required autocomplete="email" /></label>
-            <button class="button" type="submit">{s.checkoutEmailButton}</button>
+            <label>{c('checkout.email_label')}<input name="email" type="email" required autocomplete="email" /></label>
+            <button class="button" type="submit">{c('checkout.email_button')}</button>
           </form>
           <p id="email-message" class="small-print" aria-live="polite"></p>
         </div>
 
         <div id="verified-member-panel" hidden>
-          <h2>Your member order</h2>
+          <h2>{c('checkout.member_order_heading')}</h2>
           <div id="verified-member"></div>
           <aside id="checkout-payment-explainer" class="checkout-payment-explainer">
-            <h3>Paying for this order</h3>
-            <p>Your regular commitment is paid by BACS standing order. If this order takes your balance below zero, you can make an extra bank transfer (recommended) or use the secure online payment option shown on your dashboard and in your confirmation email.</p>
-            <p><strong>Your balance must be £0.00 or above before collection for the order to be fulfilled.</strong> If payment has not been received before orders are prepared, your order will be refunded and the produce returned to available stock.</p>
-            <p class="small-print">Bank transfers avoid payment-processing costs and help us keep member prices low.</p>
+            <h3>{c('checkout.payment_heading')}</h3>
+            <FormattedText text={c('checkout.payment_body')} class="rich-body" />
+            <p><strong>{c('checkout.payment_requirement')}</strong></p>
+            <FormattedText text={c('checkout.payment_note')} class="small-print rich-body" />
           </aside>
-          <button id="submit-order" class="button" type="button" disabled>{s.checkoutConfirmButton}</button>
+          <button id="submit-order" class="button" type="button" disabled>{c('checkout.confirm_button')}</button>
           <p id="submit-message" class="small-print" aria-live="polite"></p>
         </div>
       </section>
 
       <section id="checkout-join-card" class="checkout-card checkout-path-card checkout-join-card">
-        <h2>{joinCopy.heading}</h2>
-        {joinCopy.body && <div class="rich-body">{joinCopy.body.split(/\n\s*\n/).map((paragraph) => <p>{paragraph}</p>)}</div>}
-        {joinCopy.buttonText && joinCopy.buttonUrl && <a class="button" href={joinCopy.buttonUrl}>{joinCopy.buttonText}</a>}
+        <h2>{c('checkout.join_heading')}</h2>
+        <FormattedText text={c('checkout.join_body')} class="rich-body" />
+        <a class="button" href={s.joinButtonUrl || '/become-a-member/'}>{c('checkout.join_button')}</a>
       </section>
     </div>
 
-    <p class="checkout-return"><a href="/orders/">← {s.checkoutReturnText}</a></p>
+    <p class="checkout-return"><a href="/orders/">← {c('checkout.return_text')}</a></p>
   </main>
 
   {ordinaryBlocks.map((block) => <SectionRenderer block={block} products={data.products} settings={data.settings} />)}
@@ -115,10 +111,10 @@ const formatCollectionDeadline = (value) => {
   <script is:inline define:vars={{
     products: checkoutProducts,
     points: checkoutPoints,
-    checkoutEmptyHeading: s.checkoutEmptyHeading,
-    checkoutEmptyText: s.checkoutEmptyText,
-    checkoutConfirmButton: s.checkoutConfirmButton,
-    checkoutSuccessHeading: s.checkoutSuccessHeading
+    checkoutEmptyHeading: c('checkout.empty_heading'),
+    checkoutEmptyText: c('checkout.empty_text'),
+    checkoutConfirmButton: c('checkout.confirm_button'),
+    checkoutSuccessHeading: c('checkout.success_heading')
   }}>
     const STORAGE_KEY='rooted-commons-basket-v1';
     const TOKEN_KEY='rooted-commons-order-token-v1';

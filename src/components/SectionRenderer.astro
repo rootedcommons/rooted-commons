@@ -1,5 +1,6 @@
 ---
 import ProductGrid from './ProductGrid.astro';
+import FormattedText from './FormattedText.astro';
 const { block, products, settings } = Astro.props;
 const section = block.section;
 const type = block.type;
@@ -16,7 +17,7 @@ const inferredGridCategory = section.gridCategory || (section.page === 'cupboard
       {section.eyebrow && <p class="eyebrow">{section.eyebrow}</p>}
       {section.heading && <h2 class={`size-${section.headingSize}`}>{section.heading}</h2>}
       {section.subheading && <p class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
-      {section.body && <div class={`rich-body size-${section.bodySize}`}>{section.body.split(/\n\s*\n/).map((p) => <p>{p}</p>)}</div>}
+      {section.body && <FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} />}
       {button && <a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
     </div>
   </section>
@@ -33,7 +34,7 @@ const inferredGridCategory = section.gridCategory || (section.page === 'cupboard
         {section.eyebrow && <p class="eyebrow">{section.eyebrow}</p>}
         {section.heading && <h2 class={`size-${section.headingSize}`}>{section.heading}</h2>}
         {section.subheading && <p class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
-        {section.body && <div class={`rich-body size-${section.bodySize}`}>{section.body.split(/\n\s*\n/).map((p) => <p>{p}</p>)}</div>}
+        {section.body && <FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} />}
         {button && <a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
       </div>
     </div>
@@ -46,7 +47,7 @@ const inferredGridCategory = section.gridCategory || (section.page === 'cupboard
       {section.eyebrow && <p class="eyebrow">{section.eyebrow}</p>}
       {section.heading && <h2 class={`size-${section.headingSize}`}>{section.heading}</h2>}
       {section.subheading && <p class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
-      {section.body && <div class={`rich-body size-${section.bodySize}`}>{section.body.split(/\n\s*\n/).map((p) => <p>{p}</p>)}</div>}
+      {section.body && <FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} />}
       {button && <a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
     </div>
   </section>
@@ -67,7 +68,7 @@ const inferredGridCategory = section.gridCategory || (section.page === 'cupboard
             {item.eyebrow && <p class="eyebrow">{item.eyebrow}</p>}
             {item.heading && <h3 class={`size-${item.headingSize}`}>{item.heading}</h3>}
             {item.subheading && <p class={`section-subheading size-${item.subheadingSize}`}>{item.subheading}</p>}
-            {item.body && <div class={`rich-body size-${item.bodySize}`}>{item.body.split(/\n\s*\n/).map((p) => <p>{p}</p>)}</div>}
+            {item.body && <FormattedText text={item.body} class={`rich-body size-${item.bodySize}`} />}
             {item.buttonVisible && item.buttonText && item.buttonUrl && <a class={`text-link button-${item.buttonSize}`} href={item.buttonUrl}>{item.buttonText}</a>}
           </article>
         ))}
@@ -82,7 +83,7 @@ const inferredGridCategory = section.gridCategory || (section.page === 'cupboard
       {section.eyebrow && <p class={`eyebrow ${alignment}`}>{section.eyebrow}</p>}
       {section.heading && <h2 class={`${alignment} size-${section.headingSize}`}>{section.heading}</h2>}
       {section.subheading && <p class={`section-subheading ${alignment} size-${section.subheadingSize}`}>{section.subheading}</p>}
-      {section.body && <div class={`rich-body ${alignment} size-${section.bodySize}`}>{section.body.split(/\n\s*\n/).map((p) => <p>{p}</p>)}</div>}
+      {section.body && <FormattedText text={section.body} class={`rich-body ${alignment} size-${section.bodySize}`} />}
       <ProductGrid products={products} category={inferredGridCategory} columns={section.columns} settings={settings} />
       {button && <p class={alignment}><a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a></p>}
     </div>
@@ -95,7 +96,7 @@ const inferredGridCategory = section.gridCategory || (section.page === 'cupboard
       {section.eyebrow && <p class="eyebrow">{section.eyebrow}</p>}
       {section.heading && <h2 class={`size-${section.headingSize}`}>{section.heading}</h2>}
       {section.subheading && <p class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
-      {section.body && <div class={`rich-body size-${section.bodySize}`}>{section.body.split(/\n\s*\n/).map((p) => <p>{p}</p>)}</div>}
+      {section.body && <FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} />}
       {button && <a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
     </div>
   </section>

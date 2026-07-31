@@ -26,6 +26,7 @@ const categoryBlocks = Object.fromEntries(broadCategories.map((category) => [
 ]));
 const columns = gridSection?.columns || 3;
 const s = data.settings;
+const c = (key, fallback = '') => data.interfaceContent[key] || fallback;
 const collectionPointsForMemberBar = data.collectionPoints.map((point) => ({ id: point.id, name: point.name }));
 ---
 <BaseLayout settings={s} pages={data.pages} title={page.seoTitle || page.title} description={page.seoDescription || page.intro}>
@@ -89,7 +90,7 @@ const collectionPointsForMemberBar = data.collectionPoints.map((point) => ({ id:
   {sharedBlocks.map((block) => <SectionRenderer block={block} products={data.products} settings={s} />)}
 
   <button id="floating-basket" class="floating-basket" type="button" aria-controls="basket-drawer" aria-expanded="false">
-    <span>{s.basketFloatingLabel}</span><strong><span data-basket-count>0</span> · <span data-basket-total>£0.00</span></strong>
+    <span>{c('basket.floating_label')}</span><strong><span data-basket-count>0</span> · <span data-basket-total>£0.00</span></strong>
   </button>
   <dialog id="product-detail-dialog" class="product-detail-dialog">
     <button id="close-product-detail" class="product-detail-close" type="button" aria-label="Close product information">×</button>
@@ -97,14 +98,14 @@ const collectionPointsForMemberBar = data.collectionPoints.map((point) => ({ id:
   </dialog>
   <div id="basket-backdrop" class="basket-backdrop" hidden></div>
   <aside id="basket-drawer" class="basket-drawer" aria-hidden="true" aria-live="polite">
-    <div class="basket-drawer-header"><h2>{s.basketHeading}</h2><button id="close-basket" type="button" aria-label="Close basket">×</button></div>
-    <div data-basket-lines><p>{s.basketEmptyText}</p></div>
-    <div class="basket-total"><span>{s.basketTotalLabel}</span><strong data-basket-total>£0.00</strong></div>
-    <p data-credit-line class="small-print">{s.basketNotice}</p>
-    <a data-checkout-link class="button" href="/checkout/">{s.basketCheckoutButton}</a>
+    <div class="basket-drawer-header"><h2>{c('basket.heading')}</h2><button id="close-basket" type="button" aria-label="Close basket">×</button></div>
+    <div data-basket-lines><p>{c('basket.empty')}</p></div>
+    <div class="basket-total"><span>{c('basket.total_label')}</span><strong data-basket-total>£0.00</strong></div>
+    <p data-credit-line class="small-print">{c('basket.notice')}</p>
+    <a data-checkout-link class="button" href="/checkout/">{c('basket.checkout_button')}</a>
   </aside>
 
-  <script is:inline define:vars={{ basketEmptyText: s.basketEmptyText, basketNotice: s.basketNotice, broadCategories, collectionPointsForMemberBar }}>
+  <script is:inline define:vars={{ basketEmptyText: c('basket.empty'), basketNotice: c('basket.notice'), broadCategories, collectionPointsForMemberBar }}>
     const STORAGE_KEY = 'rooted-commons-basket-v1';
     const TOKEN_KEY = 'rooted-commons-order-token-v1';
     const money = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' });

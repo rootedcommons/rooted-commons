@@ -1,0 +1,27 @@
+---
+const {
+  text = '',
+  class: className = '',
+  as = 'div'
+} = Astro.props;
+
+const value = String(text ?? '').replace(/\r\n?/g, '\n').trim();
+const paragraphs = value
+  ? value.split(/\n\s*\n+/).map((paragraph) => paragraph.trim()).filter(Boolean)
+  : [];
+const Tag = as;
+---
+{paragraphs.length > 0 && (
+  <Tag class={className || undefined}>
+    {paragraphs.map((paragraph) => {
+      const lines = paragraph.split('\n');
+      return (
+        <p>
+          {lines.map((line, index) => (
+            <>{index > 0 && <br />}{line}</>
+          ))}
+        </p>
+      );
+    })}
+  </Tag>
+)}

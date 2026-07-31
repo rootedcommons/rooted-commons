@@ -149,3 +149,8 @@ V2.1 does not use:
 
 - Order Submissions
 - Order Lines
+
+
+## Interface Content (build-time CMS)
+
+Set `BASEROW_INTERFACE_CONTENT_TABLE_ID` to a table containing `Key`, `Area`, `Label` and `Content`. The site reads `Key` and `Content`; the other fields are editorial aids. Missing rows use code fallbacks.

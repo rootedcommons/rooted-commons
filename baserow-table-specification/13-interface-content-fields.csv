@@ -1,0 +1,5 @@
+Table,Field,Suggested field type,Required by code,Purpose / notes
+Interface Content,Key,Single line text,Yes,Stable unique key used by the website.
+Interface Content,Area,Single select,No,"Editorial grouping: Basket, Checkout or Dashboard."
+Interface Content,Label,Single line text,No,Human-readable description for editors.
+Interface Content,Content,Long text,Yes,Editable interface wording. Layout remains controlled by code.
