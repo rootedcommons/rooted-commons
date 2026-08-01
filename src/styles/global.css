@@ -263,3 +263,67 @@
 .nutrition-table thead th{border-top:1px solid var(--border);font-weight:700}
 .nutrition-table th:last-child,.nutrition-table td:last-child{text-align:right}
 .nutrition-table tbody th{font-weight:500}
+
+
+/* v2.6.2 responsive hero controls and visible content cards */
+.page-hero.hero-width-narrow{max-width:760px}
+.page-hero.hero-width-standard{max-width:1040px}
+.page-hero.hero-width-wide{max-width:var(--max)}
+.page-hero.hero-width-full{max-width:none;width:100%}
+.page-hero.hero-gap-compact{gap:clamp(1.25rem,2.5vw,2.5rem)}
+.page-hero.hero-gap-normal{gap:clamp(1.75rem,4vw,4rem)}
+.page-hero.hero-gap-wide{gap:clamp(2.5rem,6vw,6rem)}
+.hero-media{height:auto;overflow:hidden}
+.hero-media.hero-image-shape-landscape{aspect-ratio:4/3}
+.hero-media.hero-image-shape-square{aspect-ratio:1/1}
+.hero-media.hero-image-shape-portrait{aspect-ratio:4/5}
+.hero-media.hero-image-shape-natural{aspect-ratio:auto;overflow:visible}
+.hero-media.hero-image-shape-natural img{height:auto}
+.position-top-left img{object-position:left top}
+.position-top-center img{object-position:center top}
+.position-top-right img{object-position:right top}
+.position-center-left img{object-position:left center}
+.position-center img{object-position:center center}
+.position-center-right img{object-position:right center}
+.position-bottom-left img{object-position:left bottom}
+.position-bottom-center img{object-position:center bottom}
+.position-bottom-right img{object-position:right bottom}
+.page-hero.layout-banner .hero-media{height:100%;aspect-ratio:auto;overflow:hidden}
+.page-hero.layout-banner .hero-media img{height:100%}
+.size-very-small{font-size:clamp(.8rem,.75rem + .2vw,.95rem)}
+.size-small{font-size:clamp(.92rem,.86rem + .25vw,1.1rem)}
+.size-medium{font-size:clamp(1.08rem,1rem + .4vw,1.35rem)}
+.size-large{font-size:clamp(1.22rem,1.1rem + .55vw,1.6rem)}
+.size-very-large{font-size:clamp(1.4rem,1.2rem + .8vw,1.9rem)}
+h1.size-very-small,h2.size-very-small{font-size:clamp(1.65rem,3vw,2.35rem)}
+h1.size-small,h2.size-small{font-size:clamp(1.9rem,3.5vw,2.8rem)}
+h1.size-medium,h2.size-medium{font-size:clamp(2.2rem,4vw,3.35rem)}
+h1.size-large{font-size:clamp(2.75rem,5.3vw,4.45rem)}
+h2.size-large{font-size:clamp(2.35rem,4.7vw,3.7rem)}
+h1.size-very-large{font-size:clamp(3rem,7vw,6rem)}
+h2.size-very-large{font-size:clamp(2.6rem,5.5vw,4.4rem)}
+h3.size-very-small{font-size:clamp(1rem,1.4vw,1.18rem)}
+h3.size-small{font-size:clamp(1.12rem,1.7vw,1.4rem)}
+h3.size-medium{font-size:clamp(1.25rem,2vw,1.65rem)}
+h3.size-large{font-size:clamp(1.42rem,2.35vw,1.9rem)}
+h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
+.cards-section .cards-grid{align-items:stretch}
+.cards-section .content-card{min-width:0;height:100%;padding:clamp(1.25rem,2vw,1.75rem);background:var(--highlight);border:1px solid var(--line);border-radius:.8rem}
+.cards-section .content-card h3{margin-top:.85rem;margin-bottom:.75rem}
+.cards-section .content-card .rich-body>:last-child{margin-bottom:0}
+@media(max-width:900px){.page-hero.hero-gap-compact,.page-hero.hero-gap-normal,.page-hero.hero-gap-wide{row-gap:2rem}}
+
+/* v2.6.3 FAQ accordion */
+.faq-section{max-width:var(--max);margin:0 auto;padding:0 2rem clamp(4rem,8vw,7rem)}
+.faq-list{border-top:1px solid var(--line)}
+.faq-item{border-bottom:1px solid var(--line)}
+.faq-item summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;padding:1.15rem 0;cursor:pointer;font-weight:700;font-size:clamp(1rem,1.2vw,1.15rem)}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary:focus-visible{outline:2px solid var(--primary);outline-offset:.35rem}
+.faq-icon{position:relative;flex:0 0 1rem;width:1rem;height:1rem}
+.faq-icon::before,.faq-icon::after{content:"";position:absolute;left:0;top:50%;width:100%;height:1px;background:currentColor;transition:transform .18s ease}
+.faq-icon::after{transform:rotate(90deg)}
+.faq-item[open] .faq-icon::after{transform:rotate(0deg)}
+.faq-answer{max-width:840px;padding:0 3rem 1.35rem 0}
+.faq-answer p:last-child{margin-bottom:0}
+@media(max-width:640px){.faq-section{padding-inline:1rem}.faq-item summary{padding:1rem 0}.faq-answer{padding-right:1.5rem}}

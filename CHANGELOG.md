@@ -1,5 +1,24 @@
 # Changelog
 
+## 2.6.3 — Editable FAQ accordion
+
+- Added an accessible FAQ accordion for the `/faqs/` page.
+- Opening one question automatically closes any other open question.
+- Added ten editable question-and-answer pairs to the Interface Content import.
+- Added the FAQs page to the Pages import and fallback content.
+- Kept FAQ structure and behaviour in code while all wording remains editable in Baserow.
+
+## 2.6.2 — Responsive hero controls and clearer cards
+
+- Replaced fixed hero image heights with responsive Landscape, Square, Portrait and Natural image shapes.
+- Added Compact, Normal and Wide responsive hero gaps.
+- Added nine-position hero image focal alignment.
+- Renamed image-fit choices to Fill frame and Show whole image while retaining legacy value support.
+- Expanded title, subtitle and intro sizing to five responsive choices.
+- Made Wide heroes align exactly with the standard Section width.
+- Added visible highlighted containers to grouped content cards.
+- Added a guide explaining how Baserow select labels are translated into CSS.
+
 ## 2.6.1 — Natural paragraph breaks
 
 - Added a shared safe text formatter for CMS long-text fields.

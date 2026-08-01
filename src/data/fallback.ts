@@ -70,7 +70,8 @@ export const fallbackPages = [
   { slug: 'volunteering', title: 'Get Involved', intro: 'Learn, spend time outdoors and support the people building a stronger local food system.', visible: true },
   { slug: 'orders', title: 'Weekly Shop', intro: 'Browse the current range and build your basket. You can explore before becoming a member.', visible: true },
   { slug: 'checkout', title: 'Checkout', intro: 'Review your order, choose a collection point and continue as a member.', visible: true },
-  { slug: 'dashboard', title: 'Your Rooted Commons', intro: 'Your weekly market, membership and local food network in one place.', visible: true }
+  { slug: 'dashboard', title: 'Your Rooted Commons', intro: 'Your weekly market, membership and local food network in one place.', visible: true },
+  { slug: 'faqs', title: 'Frequently asked questions', intro: 'Clear answers about membership, ordering, payments and collection.', visible: true }
 ];
 
 export const fallbackSections = [
@@ -139,5 +140,25 @@ export const fallbackInterfaceContent: Record<string, string> = {
   "dashboard.online_unavailable": "Online payment is temporarily unavailable. You can still top up by bank transfer.",
   "dashboard.recent_payments": "Recent payments",
   "dashboard.no_payments": "No recent payments found.",
-  "dashboard.account_activity": "View full account activity"
+  "dashboard.account_activity": "View full account activity",
+  "faq.01.question": "What is Rooted Commons?",
+  "faq.01.answer": "Rooted Commons is a weekly online market that brings together local produce, organic cupboard staples, household refills and other local essentials in one place. Members place one order and collect everything together from a local pick-up point.",
+  "faq.02.question": "How does membership work?",
+  "faq.02.answer": "Members make a small, regular commitment to shift part of their weekly spending from supermarkets to Rooted Commons. That creates reliable demand for local producers while giving members access to the weekly market.",
+  "faq.03.question": "What is Member Credit?",
+  "faq.03.answer": "Your regular bank payments are added to your Member Credit. Orders are charged against that balance, and any unspent credit remains available for future weeks.",
+  "faq.04.question": "Why is there a regular weekly commitment?",
+  "faq.04.answer": "Reliable demand helps local growers and makers plan ahead, invest and expand production. It also funds the shared system that brings products from several producers together into one order.",
+  "faq.05.question": "What can I buy?",
+  "faq.05.answer": "The range can include fresh seasonal produce, organic cooking staples, household refills and locally produced goods such as flowers, beeswax products or charcoal. Availability changes from week to week.",
+  "faq.06.question": "How do I place an order?",
+  "faq.06.answer": "Sign in using your secure member link, browse the weekly market, add products to your basket and confirm your order before the weekly deadline shown on the site.",
+  "faq.07.question": "Where do I collect my order?",
+  "faq.07.answer": "Choose one of the available local collection points. Products from across the network are brought together into one order ready for collection at the advertised time.",
+  "faq.08.question": "What happens if I do not spend all my credit?",
+  "faq.08.answer": "Unspent Member Credit rolls over and remains available for future orders.",
+  "faq.09.question": "Can I pause or change my regular payment?",
+  "faq.09.answer": "Your standing order is controlled through your bank, so you can amend or pause it when needed. Keep enough credit available for any orders you place.",
+  "faq.10.question": "How do local producers benefit?",
+  "faq.10.answer": "Rooted Commons gives producers a shared, lower-cost route to customers and more predictable weekly demand. Local producers are not charged fees to sell through the market, so they retain the value they create."
 };

@@ -1,0 +1,48 @@
+---
+import FormattedText from './FormattedText.astro';
+
+const { content = {} } = Astro.props;
+
+const items = Object.entries(content)
+  .map(([key, value]) => {
+    const match = key.match(/^faq\.(\d+)\.question$/i);
+    if (!match) return null;
+    const number = match[1];
+    const question = String(value || '').trim();
+    const answer = String(content[`faq.${number}.answer`] || '').trim();
+    const order = Number(number);
+    return question && answer ? { number, order, question, answer } : null;
+  })
+  .filter(Boolean)
+  .sort((a, b) => a.order - b.order);
+---
+
+{items.length > 0 && (
+  <section class="faq-section" aria-label="Frequently asked questions">
+    <div class="faq-list" data-faq-accordion>
+      {items.map((item) => (
+        <details class="faq-item">
+          <summary>
+            <span>{item.question}</span>
+            <span class="faq-icon" aria-hidden="true"></span>
+          </summary>
+          <FormattedText text={item.answer} class="faq-answer" />
+        </details>
+      ))}
+    </div>
+  </section>
+)}
+
+<script>
+  document.querySelectorAll('[data-faq-accordion]').forEach((accordion) => {
+    const items = Array.from(accordion.querySelectorAll('details'));
+    items.forEach((item) => {
+      item.addEventListener('toggle', () => {
+        if (!item.open) return;
+        items.forEach((other) => {
+          if (other !== item) other.open = false;
+        });
+      });
+    });
+  });
+</script>

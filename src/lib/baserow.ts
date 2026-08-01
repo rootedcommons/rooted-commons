@@ -84,6 +84,34 @@ function normalized(value: string, fallback: string) {
   return result === 'centre' ? 'center' : result;
 }
 
+function heroImageFit(value: string) {
+  const normalizedValue = normalized(value, 'fill-frame');
+  if (normalizedValue === 'show-whole-image' || normalizedValue === 'contain') return 'contain';
+  return 'cover';
+}
+
+function heroImageAlignment(value: string) {
+  const normalizedValue = normalized(value, 'centre');
+  const aliases: Record<string, string> = {
+    center: 'center',
+    centre: 'center',
+    left: 'center-left',
+    right: 'center-right',
+    top: 'top-center',
+    bottom: 'bottom-center',
+    'top-centre': 'top-center',
+    'centre-left': 'center-left',
+    'centre-right': 'center-right',
+    'bottom-centre': 'bottom-center'
+  };
+  return aliases[normalizedValue] || normalizedValue;
+}
+
+function heroWidth(value: string) {
+  const normalizedValue = normalized(value, 'standard');
+  return normalizedValue === 'normal' || normalizedValue === 'medium' ? 'standard' : normalizedValue;
+}
+
 
 export async function getSiteData() {
   const [settingsRows, pageRows, sectionRows, productRows, collectionRows, interfaceRows] = await Promise.all([
@@ -176,13 +204,14 @@ export async function getSiteData() {
       heroLayout: normalized(choice(row, 'Hero layout'), heroImage ? 'text-left' : 'text-only'),
       heroAlignment: normalized(choice(row, 'Hero alignment'), 'left'),
       heroPadding: normalized(choice(row, 'Hero padding'), 'normal'),
-      heroWidth: normalized(choice(row, 'Hero width'), 'normal'),
+      heroWidth: heroWidth(choice(row, 'Hero width')),
+      heroGap: normalized(choice(row, 'Hero gap'), 'normal'),
       titleSize: normalized(choice(row, 'Title size'), 'large'),
       subtitleSize: normalized(choice(row, 'Subtitle size'), 'medium'),
       introSize: normalized(choice(row, 'Intro size'), 'medium'),
-      heroImageHeight: numeric(row, 'Hero image height', 0),
-      heroImageFit: normalized(choice(row, 'Hero image fit'), 'cover'),
-      heroImageAlignment: normalized(choice(row, 'Hero image alignment'), 'center')
+      heroImageShape: normalized(choice(row, 'Hero image shape'), 'landscape'),
+      heroImageFit: heroImageFit(choice(row, 'Hero image fit')),
+      heroImageAlignment: heroImageAlignment(choice(row, 'Hero image alignment'))
     };
   }).filter((page: any) => page.slug && page.visible);
 

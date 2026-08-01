@@ -119,3 +119,8 @@ Add these Baserow fields before deployment:
 - Members: `Payment reference`, optional `Mollie payment URL`
 
 The dashboard treats the regular commitment as BACS-only. If a member is below zero, it displays preferred one-off BACS details and, only when configured, a secondary Mollie payment link. Checkout and the confirmation screen state that the balance must be £0.00 or above before collection.
+
+
+## CMS style options
+
+See `docs/BASEROW_STYLE_OPTIONS.md` for the exact mapping between plain-language Baserow select options and responsive CSS behaviour.

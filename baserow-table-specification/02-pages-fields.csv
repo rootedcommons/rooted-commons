@@ -10,13 +10,14 @@ Visible,Boolean,Yes,Routing,Whether page is published,,Defaults true
 SEO title,Single line text,No,Metadata,Browser/search title,,
 SEO description,Long text,No,Metadata,Search description,,
 Hero layout,Single select,No,Page hero,Hero layout,text-left; text-right; text-only; banner; none,
-Title size,Single select,No,Page hero,Title scale,small; medium; large,
-Subtitle size,Single select,No,Page hero,Subtitle scale,small; medium; large,
-Intro size,Single select,No,Page hero,Intro scale,small; medium; large,
-Hero image height,Single select,No,Page hero,Image height,small; medium; large; full-width,
-Hero image fit,Single select,No,Page hero,Image crop behaviour,cover; contain,
-Hero image alignment,Single select,No,Page hero,Image focal alignment,left; center; right,
+Title size,Single select,No,Page hero,Title scale,Very small; Small; Medium; Large; Very large,
+Subtitle size,Single select,No,Page hero,Subtitle scale,Very small; Small; Medium; Large; Very large,
+Intro size,Single select,No,Page hero,Intro scale,Very small; Small; Medium; Large; Very large,
+Hero image shape,Single select,No,Page hero,Responsive image frame shape,Landscape; Square; Portrait; Natural,Uses aspect ratio rather than a fixed height
+Hero image fit,Single select,No,Page hero,Image crop behaviour,Fill frame; Show whole image,Translated to CSS object-fit: cover / contain
+Hero image alignment,Single select,No,Page hero,Image focal alignment,Top left; Top centre; Top right; Centre left; Centre; Centre right; Bottom left; Bottom centre; Bottom right,Controls the visible focal area when the frame crops the image
 Sections,Link to table,No,Baserow administration,Backlink to Sections,Sections,Not read directly
 Hero alignment,Single select,No,Page hero,Text alignment,left; center; right,
 Hero padding,Single select,No,Page hero,Hero spacing,small; medium; large,
-Hero width,Single select,No,Page hero,Hero content width,narrow; medium; wide; full,
+Hero width,Single select,No,Page hero,Hero content width,Narrow; Standard; Wide; Full,Wide uses the same maximum width as Sections
+Hero gap,Single select,No,Page hero,Responsive gap between hero text and image,Compact; Normal; Wide,On stacked mobile layouts this becomes a consistent vertical gap
