@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.7.3 — Xero granular OAuth scopes
+
+- Updated the Xero OAuth authorisation request for apps created after March 2026 to use Xero's granular Accounting API scopes.
+- Replaced deprecated `accounting.transactions` with `accounting.banktransactions.read`.
+- Replaced `accounting.contacts` with the least-privilege `accounting.contacts.read` scope.
+- Updated the Xero OAuth setup documentation accordingly.
+
 ## 2.7.2 — Xero OAuth connection
 
 - Added `/api/xero/connect` and `/api/xero/callback` for Xero's standard OAuth 2.0 authorization-code flow.

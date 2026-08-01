@@ -3,7 +3,7 @@ import { envConfig, listRows, updateRow } from '../../_baserow.js';
 const AUTHORIZE_URL = 'https://login.xero.com/identity/connect/authorize';
 const TOKEN_URL = 'https://identity.xero.com/connect/token';
 const CONNECTIONS_URL = 'https://api.xero.com/connections';
-const DEFAULT_SCOPES = 'openid profile email offline_access accounting.transactions accounting.contacts';
+const DEFAULT_SCOPES = 'openid profile email offline_access accounting.banktransactions.read accounting.contacts.read';
 const STATE_MAX_AGE_MS = 10 * 60 * 1000;
 
 function requireEnv(env, name) {

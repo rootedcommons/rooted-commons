@@ -12,7 +12,7 @@ Use:
 
 The code requests these scopes by default:
 
-`openid profile email offline_access accounting.transactions accounting.contacts`
+`openid profile email offline_access accounting.banktransactions.read accounting.contacts.read`
 
 `offline_access` is required so Xero returns a refresh token.
 
