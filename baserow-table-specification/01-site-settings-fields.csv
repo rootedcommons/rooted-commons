@@ -1,4 +1,4 @@
-Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
+﻿Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
 Site title,Single line text,Yes,Public site,Site name used in page metadata and header,,Primary content row is the first row with this or Header logo
 Header text,Long text,No,Header,Optional header copy,,
 Footer text,Long text,No,Footer,Footer copy,,
@@ -69,3 +69,4 @@ Increase commitment button URL,URL,No,Dashboard,BACS increase button destination
 Bank account name,Single line text,No,Dashboard/email,Standing-order account name,,
 Bank sort code,Single line text,No,Dashboard/email,Standing-order sort code,,Keep as text
 Bank account number,Single line text,No,Dashboard/email,Standing-order account number,,Keep as text
+Historic total member spending,Number,No,Stats,Historic member spending before Account Transactions tracking,Currency; 2 decimals,Added to absolute total of Order charge transactions

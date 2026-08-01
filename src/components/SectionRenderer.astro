@@ -84,6 +84,22 @@ const inferredGridCategory = section.gridCategory || (section.page === 'cupboard
   </section>
 )}
 
+{type === 'stats' && (
+  <section class={`content-section stats-section ${background} ${spaces}`}>
+    <div class="section-inner">
+      {groupTitle && <h2 class={`group-heading align-${section.alignment} size-${section.headingSize}`}>{groupTitle}</h2>}
+      <div class="stats-grid" style={`--columns:${section.columns}`}>
+        {block.items.map((item) => (
+          <div class={`stat-tile align-${item.alignment}`}>
+            <strong class="stat-number">{item.heading}</strong>
+            <span class="stat-label">{item.subheading}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
 {type === 'grid' && (
   <section class={`content-section grid-section ${background} ${spaces}`}>
     <div class="section-inner">

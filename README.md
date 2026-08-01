@@ -1,4 +1,4 @@
-# Rooted Commons website v2.7.3
+# Rooted Commons website v2.7.4
 
 Astro website and restricted server functions for Rooted Commons. Baserow is the operational data source; Xero is the payment source; the web host stores no authoritative business state.
 

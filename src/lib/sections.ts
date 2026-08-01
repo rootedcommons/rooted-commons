@@ -16,7 +16,7 @@ export function buildSectionBlocks(sections: any[]): SectionBlock[] {
     const key = String(section.key || '').trim();
     const inferredHowItWorks = section.page === 'home' && /^how-[1-9]\d*$/i.test(key);
     const type = inferredHowItWorks ? 'cards' : normalizedType(section.type);
-    const groupable = type === 'cards' || type === 'gallery';
+    const groupable = type === 'cards' || type === 'gallery' || type === 'stats';
     const groupKey = section.groupKey || (inferredHowItWorks ? 'how-it-works' : (groupable ? `${section.page}-${type}` : ''));
 
     if (groupable && groupKey) {

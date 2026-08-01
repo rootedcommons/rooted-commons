@@ -10,7 +10,7 @@ Image 3,File,No,Card mini-gallery,Optional third image for a grouped content car
 Image 3 alt text,Single line text,No,Accessibility,Alternative text for the third card image,,Describe the image briefly; leave blank only if decorative
 Order,Number,Yes,Section ordering,Display order,,Integer
 Visible,Boolean,Yes,Section filtering,Whether section is displayed,,Defaults true
-Section type,Single select,No,Section rendering,Renderer/layout type,text; split; cards; grid; gallery; cta; banner; spacer,Use types configured in SectionRenderer
+Section type,Single select,No,Section rendering,Renderer/layout type,Text; Image and text; Banner; Cards; Grid; Call to action; Gallery; Stats,Use types configured in SectionRenderer
 Eyebrow,Single line text,No,Section rendering,Small heading above title,,
 Subheading,Single line text,No,Section rendering,Secondary heading,,
 Image alt text,Single line text,No,Accessibility,Alternative image text,,

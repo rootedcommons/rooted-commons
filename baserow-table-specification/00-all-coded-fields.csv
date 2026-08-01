@@ -103,7 +103,7 @@
 03-sections-fields.csv,Image 3 alt text,Single line text,No,Accessibility,Alternative text for the third card image,,Describe the image briefly; leave blank only if decorative,,,,
 03-sections-fields.csv,Order,Number,Yes,Section ordering,Display order,,Integer,,,,
 03-sections-fields.csv,Visible,Boolean,Yes,Section filtering,Whether section is displayed,,Defaults true,,,,
-03-sections-fields.csv,Section type,Single select,No,Section rendering,Renderer/layout type,text; split; cards; grid; gallery; cta; banner; spacer,Use types configured in SectionRenderer,,,,
+03-sections-fields.csv,Section type,Single select,No,Section rendering,Renderer/layout type,Text; Image and text; Banner; Cards; Grid; Call to action; Gallery; Stats,Use types configured in SectionRenderer,,,,
 03-sections-fields.csv,Eyebrow,Single line text,No,Section rendering,Small heading above title,,,,,,
 03-sections-fields.csv,Subheading,Single line text,No,Section rendering,Secondary heading,,,,,,
 03-sections-fields.csv,Image alt text,Single line text,No,Accessibility,Alternative image text,,,,,,
@@ -279,3 +279,4 @@
 13-interface-content-fields.csv,,,No,,,,,Interface Content,Area,Single select,"Editorial grouping: Basket, Checkout, Dashboard or FAQs."
 13-interface-content-fields.csv,,,No,,,,,Interface Content,Label,Single line text,Human-readable description for editors.
 13-interface-content-fields.csv,,,Yes,,,,,Interface Content,Content,Long text,Editable interface wording. Layout remains controlled by code.
+01-site-settings-fields.csv,Historic total member spending,Number,No,Stats,Historic member spending before Account Transactions tracking,Currency; 2 decimals,Added to absolute total of Order charge transactions,,,,

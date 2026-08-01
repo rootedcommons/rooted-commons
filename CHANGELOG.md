@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.7.4 — Grouped Stats sections
+
+- Added `Stats` as a Sections-table renderer type without adding any new columns.
+- Stats rows sharing a Group key now collapse into a single responsive tile grid, using Heading as the number/value and Subheading as the label.
+- Added quiet divider-based Stats styling using the existing site colour tokens, with a two-column mobile layout.
+- Updated the Sections Baserow specification and added `docs/STATS_SECTIONS.md`.
+
 ## 2.7.3 — Xero granular OAuth scopes
 
 - Updated the Xero OAuth authorisation request for apps created after March 2026 to use Xero's granular Accounting API scopes.
