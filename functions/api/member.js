@@ -110,6 +110,14 @@ export async function onRequestPatch({ request, env }) {
     await updateRow(cfg, cfg.members, member.id, { 'Collection point':[collectionPointId], 'Preferred collection day':savedDay });
     return json({ ok:true, collectionPoint:publicPoint, preferredCollectionDay:savedDay });
   } catch (error) {
-    return json({ ok:false, message:'The collection point could not be updated.', detail:String(error.message||error) }, 500);
+    const detail = String(error.message || error);
+    const permissionError = /Baserow\s+(401|403)/i.test(detail);
+    return json({
+      ok:false,
+      message: permissionError
+        ? 'Collection preferences could not be saved because the website does not have Update permission for the Members table.'
+        : 'The collection point could not be updated.',
+      detail
+    }, permissionError ? 403 : 500);
   }
 }

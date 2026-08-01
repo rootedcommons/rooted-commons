@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.7.6 - Dashboard hierarchy and collection controls
+
+- Simplified the dashboard opening card to start with the member greeting and Member Credit; removed the redundant weekly-market eyebrow and “Orders are open” status.
+- Moved the secure top-up prompt/link directly below Member Credit and removed duplicate “Current credit / No extra top-up needed” messaging.
+- Swapped the membership and collection-point card positions so membership sits beside the greeting and collection details sit in the lower detail grid.
+- Added the collection-point image to the dashboard card and made Change collection preferences a primary purple action.
+- Moved member impact into the membership card with larger weeks-supported and amount-redirected figures; removed the smaller Redirected locally metric from Weekly Commitment.
+- Added a clearer diagnostic when collection preferences cannot be saved because the Baserow runtime token lacks Update permission on Members.
+
+
+## 2.7.5
+
+- Added live Stats tokens for total active members, total visible network partner cards, and total member spending.
+- Stats headings can use `{{members}}`, `{{network_partners}}`, and `{{member_spending}}`.
+- Added `Historic total member spending` to Site Settings; member spending combines this baseline with the absolute sum of Account Transactions of type `Order charge`.
+- Aggregate stats are calculated at build time; private member and transaction rows are not exposed to the browser.
+
 ## 2.7.4 — Grouped Stats sections
 
 - Added `Stats` as a Sections-table renderer type without adding any new columns.

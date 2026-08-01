@@ -26,22 +26,39 @@ const membershipPerks=s.membershipPerks || [];
     <section id="dashboard-content" hidden>
       <div class="dashboard-overview">
         <article class="dashboard-card dashboard-welcome">
-          <p class="eyebrow">{c('dashboard.market_eyebrow')}</p>
-          <h1 id="dashboard-greeting">Welcome</h1>
+          <h1 id="dashboard-greeting">Hi member</h1>
           <p class="dashboard-credit"><span>{c('dashboard.credit_label')}</span><strong id="dashboard-credit-value">£0.00</strong></p>
-          <div id="dashboard-order-status" class="dashboard-status">{c('dashboard.orders_open')}</div>
+          <div id="dashboard-payment-prompt" class="dashboard-payment-prompt" hidden></div>
+          <a id="dashboard-mollie-link" class="button dashboard-topup-link" hidden>{c('dashboard.online_button')}</a>
           <a id="dashboard-shop-link" class="button" href="/orders/">{c('dashboard.shop_button')}</a>
         </article>
 
+        <article class="dashboard-card dashboard-membership-card">
+          <div class="dashboard-membership-copy">
+            <p class="eyebrow">{c('dashboard.membership_eyebrow')}</p>
+            <h2 id="dashboard-founder-level">{c('dashboard.default_member_level')}</h2>
+            <div class="dashboard-impact-stats">
+              <p class="dashboard-impact-stat"><strong id="dashboard-member-weeks">0 weeks</strong><span>supporting local producers</span></p>
+              <p class="dashboard-impact-stat"><strong id="dashboard-impact">£0</strong><span>{c('dashboard.local_impact')}</span></p>
+            </div>
+            <p id="dashboard-last-order"></p>
+            <div id="dashboard-perks" class="dashboard-perks"></div>
+          </div>
+          <div id="dashboard-badge" class="dashboard-badge"></div>
+        </article>
+      </div>
+
+      <div class="dashboard-detail-grid">
         <article class="dashboard-card dashboard-collection">
           <p class="eyebrow">{c('dashboard.collection_eyebrow')}</p>
+          <img id="dashboard-point-image" class="dashboard-point-image" src="" alt="" hidden />
           <h2 id="dashboard-point-name">Not selected</h2>
           <p id="dashboard-point-time"></p>
           <p id="dashboard-point-preference" class="small-print"></p>
           <p id="dashboard-point-address"></p>
           <p id="dashboard-point-deadline" class="collection-deadline-readable"></p>
           <a id="dashboard-point-link" class="text-link" hidden>View collection point →</a>
-          <button id="dashboard-change-point" class="button button-secondary dashboard-change-point" type="button">{c('dashboard.change_collection')}</button>
+          <button id="dashboard-change-point" class="button dashboard-change-point" type="button">{c('dashboard.change_collection')}</button>
           <form id="dashboard-point-form" class="dashboard-point-form" hidden>
             <label for="dashboard-point-select">{c('dashboard.choose_collection')}</label>
             <select id="dashboard-point-select" required></select>
@@ -53,19 +70,6 @@ const membershipPerks=s.membershipPerks || [];
             </div>
             <p id="dashboard-point-message" class="small-print" aria-live="polite"></p>
           </form>
-        </article>
-      </div>
-
-      <div class="dashboard-detail-grid">
-        <article class="dashboard-card dashboard-membership-card">
-          <div class="dashboard-membership-copy">
-            <p class="eyebrow">{c('dashboard.membership_eyebrow')}</p>
-            <h2 id="dashboard-founder-level">{c('dashboard.default_member_level')}</h2>
-            <p id="dashboard-member-since"></p>
-            <p id="dashboard-last-order"></p>
-            <div id="dashboard-perks" class="dashboard-perks"></div>
-          </div>
-          <div id="dashboard-badge" class="dashboard-badge"></div>
         </article>
 
         <article class="dashboard-card dashboard-commitment-card">
@@ -86,32 +90,7 @@ const membershipPerks=s.membershipPerks || [];
           </section>
           <div class="commitment-metrics">
             <div><span>{c('dashboard.average_orders')}</span><strong id="dashboard-average-spend">£0.00</strong></div>
-            <div id="dashboard-impact-row"><span>{c('dashboard.local_impact')}</span><strong id="dashboard-impact">£0.00</strong></div>
           </div>
-          <section class="commitment-topup-section" aria-labelledby="extra-topups-heading">
-            <h3 id="extra-topups-heading">{c('dashboard.topups_heading')}</h3>
-            <FormattedText text={c('dashboard.topups_body')} class="rich-body" />
-            <div id="dashboard-topup-status" class="topup-status"></div>
-            <div id="dashboard-payment-options" hidden>
-              <div class="payment-method payment-method-preferred">
-                <p class="payment-label">{c('dashboard.recommended')}</p>
-                <h4>{c('dashboard.bank_topup_heading')}</h4>
-                <dl class="bank-details">
-                  <div><dt>Account name</dt><dd id="dashboard-bank-name"></dd></div>
-                  <div><dt>Sort code</dt><dd id="dashboard-sort-code"></dd></div>
-                  <div><dt>Account number</dt><dd id="dashboard-account-number"></dd></div>
-                  <div><dt>Reference</dt><dd id="dashboard-payment-reference"></dd></div>
-                </dl>
-                <FormattedText text={c('dashboard.bank_topup_note')} class="small-print rich-body" />
-              </div>
-              <div class="payment-method payment-method-online">
-                <h4>{c('dashboard.online_heading')}</h4>
-                <FormattedText text={c('dashboard.online_body')} class="rich-body" />
-                <a id="dashboard-mollie-link" class="button button-secondary" hidden>{c('dashboard.online_button')}</a>
-                <FormattedText text={c('dashboard.online_unavailable')} class="small-print rich-body" />
-              </div>
-            </div>
-          </section>
           <div class="recent-topups">
             <h3>{c('dashboard.recent_payments')}</h3>
             <div id="dashboard-topups"><p class="small-print">{c('dashboard.no_payments')}</p></div>
@@ -169,6 +148,8 @@ const membershipPerks=s.membershipPerks || [];
         document.querySelector('#dashboard-point-time').textContent=slot?`${slot.day} · ${slot.time}`:(point.collectionTime||'');
         document.querySelector('#dashboard-point-preference').textContent=slot?'Your preferred collection slot. Checkout will offer earlier options if your basket contains fresher items.':'';
         document.querySelector('#dashboard-point-address').textContent=point.address||'';
+        const pointImage=document.querySelector('#dashboard-point-image');
+        if(point.image){pointImage.src=point.image;pointImage.alt=point.name?`${point.name} collection point`:'';pointImage.hidden=false;}else{pointImage.hidden=true;pointImage.removeAttribute('src');}
         document.querySelector('#dashboard-point-deadline').textContent='Orders close Wednesday 18.00.';
         const pointLink=document.querySelector('#dashboard-point-link');
         pointLink.hidden=!point.link;
@@ -239,12 +220,14 @@ const membershipPerks=s.membershipPerks || [];
       document.querySelector('#dashboard-point-time').textContent=preferredSlot?`${preferredSlot.day} · ${preferredSlot.time}`:(point.collectionTime||'');
       document.querySelector('#dashboard-point-preference').textContent=preferredSlot?'Your preferred collection slot. Checkout confirms what is available for each basket.':'';
       document.querySelector('#dashboard-point-address').textContent=point.address||'';
+      const pointImage=document.querySelector('#dashboard-point-image');
+      if(point.image){pointImage.src=point.image;pointImage.alt=point.name?`${point.name} collection point`:'';pointImage.hidden=false;}else{pointImage.hidden=true;pointImage.removeAttribute('src');}
       document.querySelector('#dashboard-point-deadline').textContent='Orders close Wednesday 18.00.';
       const pointLink=document.querySelector('#dashboard-point-link');
       if(point.link){pointLink.href=point.link;pointLink.hidden=false;}
       document.querySelector('#dashboard-founder-level').textContent=member.founderBadge||'Rooted Commons member';
       const weeks=Number(member.membershipWeeks)||0;
-      document.querySelector('#dashboard-member-since').textContent=member.membershipWeeks!=null?`${weeks} weeks supporting local producers.`:(member.memberSince?`Member since ${new Date(member.memberSince).toLocaleDateString('en-GB',{month:'long',year:'numeric'})}.`:'');
+      document.querySelector('#dashboard-member-weeks').textContent=member.membershipWeeks!=null?`${weeks} week${weeks===1?'':'s'}`:(member.memberSince?'Member':'New member');
       document.querySelector('#dashboard-last-order').textContent=member.lastOrder?`${relativeDate(member.lastOrder.submittedAt)} (${money.format(member.lastOrder.total||0)}).`:relativeDate('');
       renderPerks(weeks);
       const logo=badgeLogos[member.founderBadge];
@@ -260,24 +243,20 @@ const membershipPerks=s.membershipPerks || [];
       document.querySelector('#dashboard-regular-account-number').textContent=bankAccountNumber||'—';
       document.querySelector('#dashboard-regular-payment-reference').textContent=member.paymentReference||`RC-${member.id}`;
       document.querySelector('#dashboard-average-spend').textContent=money.format(average);
-      document.querySelector('#dashboard-impact').textContent=money.format(totalImpact);
+      document.querySelector('#dashboard-impact').textContent=money.format(totalImpact).replace('.00','');
       renderTopups(member.account?.payments||[]);
       renderActivity(member.account?.activity||[]);
       const credit=Number(member.credit)||0;
-      const topupStatus=document.querySelector('#dashboard-topup-status');
-      const paymentOptions=document.querySelector('#dashboard-payment-options');
+      const paymentPrompt=document.querySelector('#dashboard-payment-prompt');
+      const mollie=document.querySelector('#dashboard-mollie-link');
       if(credit<0){
-        topupStatus.innerHTML=`<p class="balance-label">Balance to clear</p><strong class="balance-to-clear">${money.format(Math.abs(credit))}</strong><p class="payment-deadline">Your order will only be fulfilled if your account is back to £0.00 or above before collection. If it is not, the order will be refunded.</p>`;
-        paymentOptions.hidden=false;
-        document.querySelector('#dashboard-bank-name').textContent=bankAccountName||'Roots to Fruits CIC';
-        document.querySelector('#dashboard-sort-code').textContent=bankSortCode||'Contact us for bank details';
-        document.querySelector('#dashboard-account-number').textContent=bankAccountNumber||'—';
-        document.querySelector('#dashboard-payment-reference').textContent=member.paymentReference||`RC-${member.id}`;
-        const mollie=document.querySelector('#dashboard-mollie-link');
-        const unavailable=document.querySelector('#dashboard-mollie-unavailable');
-        if(member.molliePaymentUrl){mollie.href=member.molliePaymentUrl;mollie.textContent=`Pay ${money.format(Math.abs(credit))} securely`;mollie.hidden=false;unavailable.hidden=true;}
-      }else{
-        topupStatus.innerHTML=`<p class="balance-label">Current credit</p><strong class="current-credit">${money.format(credit)}</strong><p class="topup-ok">✓ No extra top-up needed</p>`;
+        paymentPrompt.innerHTML=`<strong>${money.format(Math.abs(credit))} top-up needed</strong><span>Your balance must be back to £0.00 or above before collection.</span>`;
+        paymentPrompt.hidden=false;
+      }
+      if(member.molliePaymentUrl){
+        mollie.href=member.molliePaymentUrl;
+        mollie.textContent=credit<0?`Pay ${money.format(Math.abs(credit))} securely`:'Top up member credit';
+        mollie.hidden=false;
       }
       const threshold=Math.max(2,commitment*.15);
       if(commitment>0&&average>=commitment+threshold){

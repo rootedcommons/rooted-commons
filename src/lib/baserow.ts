@@ -9,8 +9,12 @@ const TABLES = {
   sections: import.meta.env.BASEROW_SECTIONS_TABLE_ID,
   products: import.meta.env.BASEROW_PRODUCTS_TABLE_ID,
   collectionPoints: import.meta.env.BASEROW_COLLECTION_POINTS_TABLE_ID,
-  interfaceContent: import.meta.env.BASEROW_INTERFACE_CONTENT_TABLE_ID
+  interfaceContent: import.meta.env.BASEROW_INTERFACE_CONTENT_TABLE_ID,
+  members: import.meta.env.BASEROW_MEMBERS_TABLE_ID,
+  accountTransactions: import.meta.env.BASEROW_ACCOUNT_TRANSACTIONS_TABLE_ID
 };
+
+const RUNTIME_TOKEN = import.meta.env.BASEROW_RUNTIME_TOKEN;
 
 type Row = Record<string, any>;
 
@@ -57,14 +61,14 @@ const fileUrl = (row: Row | undefined, key: string, fallback = '') => {
   return fallback;
 };
 
-async function listRows(tableId?: string): Promise<Row[] | null> {
-  if (!TOKEN || !tableId) return null;
+async function listRows(tableId?: string, token = TOKEN): Promise<Row[] | null> {
+  if (!token || !tableId) return null;
   const rows: Row[] = [];
   let page = 1;
   try {
     while (true) {
       const response = await fetch(`${API_URL}/api/database/rows/table/${tableId}/?user_field_names=true&size=200&page=${page}`, {
-        headers: { Authorization: `Token ${TOKEN}` }
+        headers: { Authorization: `Token ${token}` }
       });
       if (!response.ok) throw new Error(`Baserow returned HTTP ${response.status}`);
       const payload = await response.json();
@@ -134,13 +138,15 @@ function heroWidth(value: string) {
 
 
 export async function getSiteData() {
-  const [settingsRows, pageRows, sectionRows, productRows, collectionRows, interfaceRows] = await Promise.all([
+  const [settingsRows, pageRows, sectionRows, productRows, collectionRows, interfaceRows, memberRows, accountTransactionRows] = await Promise.all([
     listRows(TABLES.settings),
     listRows(TABLES.pages),
     listRows(TABLES.sections),
     listRows(TABLES.products),
     listRows(TABLES.collectionPoints),
-    listRows(TABLES.interfaceContent)
+    listRows(TABLES.interfaceContent),
+    listRows(TABLES.members, RUNTIME_TOKEN),
+    listRows(TABLES.accountTransactions, RUNTIME_TOKEN)
   ]);
 
   const validSettingsRow = settingsRows?.find((row) => text(row, 'Site title') || fileUrl(row, 'Header logo'));
@@ -193,6 +199,7 @@ export async function getSiteData() {
     bankAccountName: text(validSettingsRow, 'Bank account name', fallbackSettings.bankAccountName),
     bankSortCode: text(validSettingsRow, 'Bank sort code', fallbackSettings.bankSortCode),
     bankAccountNumber: text(validSettingsRow, 'Bank account number', fallbackSettings.bankAccountNumber),
+    historicTotalMemberSpending: numeric(validSettingsRow, 'Historic total member spending', 0),
     navigationLinks: Object.keys(validSettingsRow)
       .map((key) => {
         const match = key.match(/^Navigation label\s*(\d+)$/i);
@@ -237,6 +244,27 @@ export async function getSiteData() {
   }).filter((page: any) => page.slug && page.visible);
 
   const sourceSections = sectionRows?.length ? sectionRows : fallbackSections;
+
+  // Public Stats tokens are resolved at build time from Baserow. Only aggregate
+  // values are exposed to the rendered site; member/transaction rows remain private.
+  const totalMembers = (memberRows || []).filter((row: any) => boolean(row, 'Active', true)).length;
+  const totalNetworkPartners = sourceSections.filter((row: any) => {
+    const page = linkedValues(raw(row, 'Page') ?? row.page)[0] || text(row, 'Page', row.page || '');
+    const type = normalized(choice(row, 'Section type', row.type || ''), '');
+    return page === 'our-partners' && boolean(row, 'Visible', row.visible ?? true) && type === 'cards';
+  }).length;
+  const orderChargeTotal = Math.abs((accountTransactionRows || [])
+    .filter((row: any) => ['order-charge', 'order-charges'].includes(normalized(choice(row, 'Type'), '')))
+    .reduce((sum: number, row: any) => sum + numeric(row, 'Amount', 0), 0));
+  const totalMemberSpending = numeric(validSettingsRow, 'Historic total member spending', 0) + orderChargeTotal;
+  const statTokens: Record<string, string> = {
+    '{{members}}': totalMembers.toLocaleString('en-GB'),
+    '{{network_partners}}': totalNetworkPartners.toLocaleString('en-GB'),
+    '{{member_spending}}': totalMemberSpending.toLocaleString('en-GB', { maximumFractionDigits: 0 })
+  };
+  const resolveStatTokens = (value: string) => Object.entries(statTokens)
+    .reduce((result, [token, replacement]) => result.replaceAll(token, replacement), value || '');
+
   const sections = sourceSections.map((row: any) => {
     const groupKey = text(row, 'Group key', row.groupKey || '');
     const explicitType = choice(row, 'Section type', row.type || '');
@@ -249,7 +277,7 @@ export async function getSiteData() {
       key: text(row, 'Key', row.key || ''),
       page: linkedValues(raw(row, 'Page') ?? row.page)[0] || text(row, 'Page', row.page || ''),
       body: text(row, 'Body', row.body || ''),
-      heading: text(row, 'Heading', row.heading || ''),
+      heading: resolveStatTokens(text(row, 'Heading', row.heading || '')),
       image,
       image2,
       image3,
