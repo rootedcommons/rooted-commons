@@ -327,3 +327,21 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .faq-answer{max-width:840px;padding:0 3rem 1.35rem 0}
 .faq-answer p:last-child{margin-bottom:0}
 @media(max-width:640px){.faq-section{padding-inline:1rem}.faq-item summary{padding:1rem 0}.faq-answer{padding-right:1.5rem}}
+
+/* Optional swipeable image gallery for grouped content cards. */
+.card-gallery-shell{position:relative;margin:0 0 1.2rem}
+.card-gallery-shell figcaption{font-size:.82rem;margin-top:.45rem}
+.card-gallery{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;border-radius:.45rem}
+.card-gallery::-webkit-scrollbar{display:none}
+.card-gallery.image-size-small{height:190px}
+.card-gallery.image-size-medium{height:300px}
+.card-gallery.image-size-large{height:430px}
+.card-gallery-slide{flex:0 0 100%;height:100%;scroll-snap-align:start;scroll-snap-stop:always}
+.card-gallery-slide img{width:100%;height:100%}
+.card-gallery-arrow{position:absolute;top:calc(50% - .9rem);z-index:2;width:2.2rem;height:2.2rem;border:1px solid color-mix(in srgb,var(--primary) 40%,transparent);border-radius:999px;background:color-mix(in srgb,var(--background) 88%,transparent);color:var(--primary);font:inherit;font-size:1.65rem;line-height:1;display:grid;place-items:center;cursor:pointer}
+.card-gallery-arrow-prev{left:.65rem}
+.card-gallery-arrow-next{right:.65rem}
+.card-gallery-dots{display:flex;justify-content:center;gap:.4rem;margin-top:.65rem}
+.card-gallery-dot{width:.42rem;height:.42rem;border-radius:999px;background:color-mix(in srgb,var(--primary) 28%,transparent)}
+.card-gallery-dot.active{background:var(--primary)}
+@media (hover:none){.card-gallery-arrow{display:none}}

@@ -1,6 +1,7 @@
 ---
 import ProductGrid from './ProductGrid.astro';
 import FormattedText from './FormattedText.astro';
+import CardGallery from './CardGallery.astro';
 const { block, products, settings } = Astro.props;
 const section = block.section;
 const type = block.type;
@@ -61,10 +62,16 @@ const inferredGridCategory = section.gridCategory || (section.page === 'cupboard
       <div class="cards-grid" style={`--columns:${section.columns}`}>
         {block.items.map((item) => (
           <article class={`content-card align-${item.alignment}`}>
-            {item.image && <figure class={`card-media image-size-${item.imageSize} fit-${item.imageFit}`}>
-              <img src={item.image} alt={item.imageAlt || ''} loading="lazy" />
-              {item.imageCaption && <figcaption>{item.imageCaption}</figcaption>}
-            </figure>}
+            {(item.image || item.image2 || item.image3) && <CardGallery
+              images={[
+                { src: item.image, alt: item.imageAlt },
+                { src: item.image2, alt: item.image2Alt },
+                { src: item.image3, alt: item.image3Alt }
+              ]}
+              imageSize={item.imageSize}
+              imageFit={item.imageFit}
+              caption={item.imageCaption}
+            />}
             {item.eyebrow && <p class="eyebrow">{item.eyebrow}</p>}
             {item.heading && <h3 class={`size-${item.headingSize}`}>{item.heading}</h3>}
             {item.subheading && <p class={`section-subheading size-${item.subheadingSize}`}>{item.subheading}</p>}

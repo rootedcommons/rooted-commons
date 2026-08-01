@@ -1,0 +1,70 @@
+---
+const { images = [], imageSize = 'medium', imageFit = 'cover', caption = '' } = Astro.props;
+const usableImages = images.filter((image) => image?.src);
+const hasGallery = usableImages.length > 1;
+const galleryId = `card-gallery-${Math.random().toString(36).slice(2, 10)}`;
+---
+
+{usableImages.length === 1 && (
+  <figure class={`card-media image-size-${imageSize} fit-${imageFit}`}>
+    <img src={usableImages[0].src} alt={usableImages[0].alt || ''} loading="lazy" />
+    {caption && <figcaption>{caption}</figcaption>}
+  </figure>
+)}
+
+{hasGallery && (
+  <figure class="card-gallery-shell" data-card-gallery id={galleryId}>
+    <div class={`card-gallery image-size-${imageSize} fit-${imageFit}`} data-card-gallery-track tabindex="0" aria-label="Image gallery">
+      {usableImages.map((image, index) => (
+        <div class="card-gallery-slide" data-card-gallery-slide>
+          <img src={image.src} alt={image.alt || ''} loading="lazy" />
+        </div>
+      ))}
+    </div>
+    <button class="card-gallery-arrow card-gallery-arrow-prev" type="button" data-card-gallery-prev aria-label="Previous image">‹</button>
+    <button class="card-gallery-arrow card-gallery-arrow-next" type="button" data-card-gallery-next aria-label="Next image">›</button>
+    <div class="card-gallery-dots" aria-hidden="true">
+      {usableImages.map((_, index) => <span class:list={['card-gallery-dot', { active: index === 0 }]} data-card-gallery-dot></span>)}
+    </div>
+    {caption && <figcaption>{caption}</figcaption>}
+  </figure>
+)}
+
+<script>
+  const initialiseCardGalleries = () => {
+    document.querySelectorAll('[data-card-gallery]').forEach((gallery) => {
+      if (gallery.dataset.galleryReady === 'true') return;
+      gallery.dataset.galleryReady = 'true';
+
+      const track = gallery.querySelector('[data-card-gallery-track]');
+      const slides = [...gallery.querySelectorAll('[data-card-gallery-slide]')];
+      const dots = [...gallery.querySelectorAll('[data-card-gallery-dot]')];
+      const previous = gallery.querySelector('[data-card-gallery-prev]');
+      const next = gallery.querySelector('[data-card-gallery-next]');
+      if (!track || slides.length < 2) return;
+
+      const activeIndex = () => {
+        const width = track.clientWidth || 1;
+        return Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / width)));
+      };
+
+      const updateDots = () => {
+        const index = activeIndex();
+        dots.forEach((dot, dotIndex) => dot.classList.toggle('active', dotIndex === index));
+      };
+
+      const move = (direction) => {
+        const target = Math.max(0, Math.min(slides.length - 1, activeIndex() + direction));
+        slides[target]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+      };
+
+      previous?.addEventListener('click', () => move(-1));
+      next?.addEventListener('click', () => move(1));
+      track.addEventListener('scroll', () => window.requestAnimationFrame(updateDots), { passive: true });
+      updateDots();
+    });
+  };
+
+  initialiseCardGalleries();
+  document.addEventListener('astro:page-load', initialiseCardGalleries);
+</script>

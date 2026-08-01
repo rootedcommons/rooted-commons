@@ -4,6 +4,10 @@ Page,Link to table,Yes,Section rendering,Page containing the section,Pages,
 Body,Long text,No,Section rendering,Main section copy,,
 Heading,Single line text,No,Section rendering,Section heading,,
 Image,File,No,Section rendering,Section image,,One image
+Image 2,File,No,Card mini-gallery,Optional second image for a grouped content card,,"When present with another image, the card becomes swipeable"
+Image 2 alt text,Single line text,No,Accessibility,Alternative text for the second card image,,Describe the image briefly; leave blank only if decorative
+Image 3,File,No,Card mini-gallery,Optional third image for a grouped content card,,"When present with another image, the card becomes swipeable"
+Image 3 alt text,Single line text,No,Accessibility,Alternative text for the third card image,,Describe the image briefly; leave blank only if decorative
 Order,Number,Yes,Section ordering,Display order,,Integer
 Visible,Boolean,Yes,Section filtering,Whether section is displayed,,Defaults true
 Section type,Single select,No,Section rendering,Renderer/layout type,text; split; cards; grid; gallery; cta; banner; spacer,Use types configured in SectionRenderer

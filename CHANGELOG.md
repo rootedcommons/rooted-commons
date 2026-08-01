@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.6.5 — Optional card image galleries
+
+- Added optional `Image 2` and `Image 3` fields for grouped content cards.
+- Cards with two or three images now become swipeable, scroll-snap mini-galleries with desktop arrows and position dots.
+- Cards with one image retain the existing static image layout.
+- Added separate alt-text fields for the second and third images.
+- Updated the complete Baserow imports and table specification files.
+
 ## 2.6.4 — Editable links and lists
 
 - Added safe Markdown-style links in formatted Baserow text using `[link text](/path/)`.

@@ -220,6 +220,8 @@ export async function getSiteData() {
     const groupKey = text(row, 'Group key', row.groupKey || '');
     const explicitType = choice(row, 'Section type', row.type || '');
     const image = fileUrl(row, 'Image', row.image || '');
+    const image2 = fileUrl(row, 'Image 2', row.image2 || '');
+    const image3 = fileUrl(row, 'Image 3', row.image3 || '');
     const inferredType = groupKey ? 'Cards' : image ? 'Image and text' : 'Text';
     return {
       id: row.id,
@@ -228,12 +230,16 @@ export async function getSiteData() {
       body: text(row, 'Body', row.body || ''),
       heading: text(row, 'Heading', row.heading || ''),
       image,
+      image2,
+      image3,
       order: numeric(row, 'Order', row.order || 0),
       visible: boolean(row, 'Visible', row.visible ?? true),
       type: explicitType || inferredType,
       eyebrow: text(row, 'Eyebrow'),
       subheading: text(row, 'Subheading'),
       imageAlt: text(row, 'Image alt text'),
+      image2Alt: text(row, 'Image 2 alt text'),
+      image3Alt: text(row, 'Image 3 alt text'),
       buttonText: text(row, 'Button text'),
       buttonUrl: text(row, 'Button URL'),
       headingSize: normalized(choice(row, 'Heading size'), 'large'),
