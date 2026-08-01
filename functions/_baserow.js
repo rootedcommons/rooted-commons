@@ -74,6 +74,13 @@ export function tokenValid(member, token) {
 
 export function publicCollectionPoint(point) {
   if (!point) return null;
+  const thursdayTime = unwrap(point['Thursday collection time'] || point['Collection time'] || point['Collection slot'] || point['Collection day/time']);
+  const collectionSlots = [
+    { day:'Thursday', time:thursdayTime },
+    { day:'Friday', time:unwrap(point['Friday collection time']) },
+    { day:'Saturday', time:unwrap(point['Saturday collection time']) },
+    { day:'Sunday', time:unwrap(point['Sunday collection time']) }
+  ].filter(slot => slot.time);
   return {
     id: Number(point.id),
     name: unwrap(point.Name),
@@ -81,8 +88,9 @@ export function publicCollectionPoint(point) {
     description: unwrap(point.Description),
     image: fileUrl(point.Image),
     link: unwrap(point.Link || point.Website || point.URL),
-    collectionTime: unwrap(point['Collection time'] || point['Collection slot'] || point['Collection day/time']),
-    ordersClose: unwrap(point['Orders close'] || point['Order deadline']),
+    collectionTime: thursdayTime,
+    collectionSlots,
+    ordersClose: 'Wednesday 6pm',
     availableCategories: linkedValues(point['Available to collect here'])
   };
 }
@@ -98,6 +106,7 @@ export function publicMember(member, { collectionPoint = null, lastOrder = null,
     credit: number(member['Current credit']),
     weeklyCommitment: number(member['Weekly commitment']),
     paymentReference: unwrap(member['Payment reference']) || `RC-${member.id}`,
+    preferredCollectionDay: unwrap(member['Preferred collection day']) || 'Thursday',
     molliePaymentUrl: unwrap(member['Mollie payment URL'] || member['Online payment URL']),
     collectionPoint: collectionPoint || {
       id: linkedIds(member['Collection point'])[0] || null,
@@ -117,10 +126,29 @@ export function publicMember(member, { collectionPoint = null, lastOrder = null,
 }
 
 export function orderWeek(date = new Date()) {
-  const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
-  const day = d.getUTCDay() || 7;
-  d.setUTCDate(d.getUTCDate() + 4 - day);
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  const week = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-  return `${d.getUTCFullYear()}-W${String(week).padStart(2,'0')}`;
+  const d = date instanceof Date ? new Date(date.getTime()) : new Date(`${date}T12:00:00Z`);
+  const utc = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  const day = utc.getUTCDay() || 7;
+  utc.setUTCDate(utc.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(utc.getUTCFullYear(), 0, 1));
+  const week = Math.ceil((((utc - yearStart) / 86400000) + 1) / 7);
+  return `${utc.getUTCFullYear()}-W${String(week).padStart(2,'0')}`;
+}
+
+export function ukMarketCycle(now = new Date()) {
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-GB', {
+    timeZone:'Europe/London', year:'numeric', month:'2-digit', day:'2-digit', weekday:'short', hour:'2-digit', minute:'2-digit', hourCycle:'h23'
+  }).formatToParts(now).filter(p=>p.type!=='literal').map(p=>[p.type,p.value]));
+  const weekdayMap={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
+  const weekday=weekdayMap[parts.weekday];
+  const hour=Number(parts.hour);
+  const minute=Number(parts.minute);
+  let daysToThursday=(4-weekday+7)%7;
+  if(weekday===4) daysToThursday=7;
+  if(weekday===3 && (hour>18 || (hour===18 && minute>=0))) daysToThursday+=7;
+  const base=new Date(Date.UTC(Number(parts.year),Number(parts.month)-1,Number(parts.day),12));
+  base.setUTCDate(base.getUTCDate()+daysToThursday);
+  const fulfilmentDate=base.toISOString().slice(0,10);
+  const rollover=(weekday===3 && (hour>18 || (hour===18 && minute>=0))) || weekday===4 || weekday===5 || weekday===6 || weekday===0;
+  return { fulfilmentDate, rollover, orderWeek:orderWeek(fulfilmentDate) };
 }

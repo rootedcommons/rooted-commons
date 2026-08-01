@@ -1,4 +1,4 @@
-﻿Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
+Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
 Code,Single line text,Yes,Catalogue/order payload,Stable product/SKU code,,Primary or unique recommended
 Size,Single line text,No,Product card,Pack amount shown above logos,,Code also accepts lowercase size
 Product,Single line text,Yes,Catalogue/order payload,Product name,,Primary field recommended
@@ -43,3 +43,4 @@ Sugars,Number,No,Product popup,Sugars in grams,2 decimal places,Blank row is hid
 Fibre,Number,No,Product popup,Fibre in grams,2 decimal places,Blank row is hidden
 Protein,Number,No,Product popup,Protein in grams,2 decimal places,Blank row is hidden
 Salt,Number,No,Product popup,Salt in grams,2 decimal places,Blank row is hidden
+Late collection,Single select,No,Checkout/order validation,Latest suitable collection timing,Thursday only; Friday okay; Weekend okay,Defaults Thursday only for safety

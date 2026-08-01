@@ -1,4 +1,4 @@
-﻿Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
+Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
 Xero Contact ID,Single line text,No,Xero/member matching,Xero contact identifier,,May also be used for linked transaction matching
 First name,Single line text,Yes,Dashboard/email,Member given name,,
 Last name,Single line text,No,Administration,Member family name,,
@@ -15,3 +15,4 @@ Payment reference,Single line text,No,Dashboard/email,Unique BACS payment refere
 Mollie payment URL,URL,No,Dashboard,Hosted top-up link,,Code also accepts Online payment URL
 Member since,Date,No,Dashboard perks,Membership start date,,Code also accepts Joined date or Join date
 Founder badge,Single select,No,Dashboard,Founder badge selection,10; 25; 50 or configured naming,Code also accepts Founder level / Membership badge
+Preferred collection day,Single select,No,Dashboard/checkout,Member preferred collection day,Thursday; Friday; Saturday; Sunday,Validated against selected point and basket

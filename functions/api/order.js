@@ -1,4 +1,4 @@
-import { envConfig, json, listRows, createRow, tokenValid, number, linkedIds, linkedValues, unwrap, orderWeek, truthy } from '../_baserow.js';
+import { envConfig, json, listRows, createRow, tokenValid, number, linkedIds, linkedValues, unwrap, ukMarketCycle, publicCollectionPoint, truthy } from '../_baserow.js';
 
 function productPayload(row) {
   return {
@@ -9,7 +9,8 @@ function productPayload(row) {
     stock: Math.max(0, number(row['Available stock'])),
     available: truthy(row.Available, true),
     categories: linkedValues(row.Category),
-    collectionPointIds: linkedIds(row['Available collection points'])
+    collectionPointIds: linkedIds(row['Available collection points']),
+    lateCollection: String(unwrap(row['Late collection']) || 'Thursday only').trim()
   };
 }
 
@@ -35,6 +36,7 @@ export async function onRequestPost({ request, env }) {
     const clientRequestId = String(body.clientRequestId || '').trim();
     const requested = Array.isArray(body.items) ? body.items : [];
     const selectedPointId = Number(body.collectionPointId || 0);
+    const requestedCollectionDay = String(body.collectionDay || '').trim();
 
     if (!token || !clientRequestId || !requested.length) {
       return json({ ok: false, message: 'Your basket or secure link is missing.' }, 400);
@@ -67,6 +69,10 @@ export async function onRequestPost({ request, env }) {
         total: duplicateTotal,
         closingCredit: Math.round((currentCredit - duplicateTotal) * 100) / 100,
         collectionPoint: linkedValues(duplicate['Collection point'])[0],
+        fulfilmentDate: unwrap(duplicate['Fulfilment date']),
+        collectionDate: unwrap(duplicate['Collection date']),
+        collectionDay: unwrap(duplicate['Collection day']),
+        collectionTime: unwrap(duplicate['Collection time']),
         status: unwrap(duplicate.Status) || 'Processing',
         duplicate: true,
         message: 'Your order has already been received.'
@@ -78,7 +84,8 @@ export async function onRequestPost({ request, env }) {
       return json({ ok: false, message: 'That collection point is not currently available.' }, 409);
     }
 
-    const week = orderWeek();
+    const cycle = ukMarketCycle();
+    const week = cycle.orderWeek;
     const existingOrder = orders.find(
       row => sameMember(row, member.id)
         && String(row['Order week'] || '') === week
@@ -91,8 +98,18 @@ export async function onRequestPost({ request, env }) {
       }, 409);
     }
 
+
+    const pointPublic = publicCollectionPoint(selectedPoint);
+    const dayRank = { Thursday:0, Friday:1, Saturday:2, Sunday:3 };
+    const restrictionRank = { 'thursday only':0, 'friday okay':1, 'weekend okay':3 };
+    const selectedSlot = (pointPublic.collectionSlots || []).find(slot => slot.day === requestedCollectionDay);
+    if (!selectedSlot) {
+      return json({ ok:false, message:'Choose an available collection day and time.' }, 409);
+    }
+
     const products = new Map(productRows.map(row => [Number(row.id), productPayload(row)]));
     const lines = [];
+    let latestAllowedRank = 3;
 
     for (const item of requested) {
       const id = Number(item.productId);
@@ -106,6 +123,8 @@ export async function onRequestPost({ request, env }) {
       if (!compatibleWithPoint(product, selectedPoint)) {
         throw Object.assign(new Error(`${product.name} is not available at ${unwrap(selectedPoint.Name)}.`), { status: 409 });
       }
+      const productRestriction = restrictionRank[String(product.lateCollection || 'Thursday only').toLowerCase()] ?? 3;
+      latestAllowedRank = Math.min(latestAllowedRank, productRestriction);
       if (product.stock < quantity) {
         throw Object.assign(
           new Error(`Only ${Math.max(0, product.stock)} of ${product.name} are currently available.`),
@@ -123,6 +142,11 @@ export async function onRequestPost({ request, env }) {
         unit_price: unitPrice,
         line_total: lineTotal
       });
+    }
+
+    if (dayRank[requestedCollectionDay] > latestAllowedRank) {
+      const label = latestAllowedRank === 0 ? 'Thursday' : latestAllowedRank === 1 ? 'Friday' : 'the weekend';
+      return json({ ok:false, message:`Some items in your basket need to be collected by ${label}. Please choose an earlier collection slot.` }, 409);
     }
 
     if (!lines.length) {
@@ -146,6 +170,10 @@ export async function onRequestPost({ request, env }) {
     }
     const orderNumber = `${prefix}${suffix}`;
     const submittedAt = new Date().toISOString();
+    const fulfilment = new Date(`${cycle.fulfilmentDate}T12:00:00Z`);
+    const offset = dayRank[requestedCollectionDay] ?? 0;
+    const collectionDateObj = new Date(fulfilment.getTime() + offset * 86400000);
+    const collectionDate = collectionDateObj.toISOString().slice(0,10);
     const movementDate = submittedAt.replace(/\.\d{3}Z$/, 'Z');
     const stockMovementRows = lines.map((line) => ({
       'Product code': [line.product_id],
@@ -163,6 +191,10 @@ export async function onRequestPost({ request, env }) {
       'Order source': 'Website',
       'Order week': week,
       'Collection point': [selectedPoint.id],
+      'Fulfilment date': cycle.fulfilmentDate,
+      'Collection date': collectionDate,
+      'Collection day': requestedCollectionDay,
+      'Collection time': selectedSlot.time,
       'Item JSON': JSON.stringify(lines),
       'Stock Movement JSON': JSON.stringify(stockMovementRows),
       'Order total': total,
@@ -180,6 +212,10 @@ export async function onRequestPost({ request, env }) {
       startingCredit,
       closingCredit: Math.round((startingCredit - total) * 100) / 100,
       collectionPoint: unwrap(selectedPoint.Name),
+      fulfilmentDate: cycle.fulfilmentDate,
+      collectionDate,
+      collectionDay: requestedCollectionDay,
+      collectionTime: selectedSlot.time,
       status: 'Processing',
       message: 'Your order has been received and is being processed.'
     });

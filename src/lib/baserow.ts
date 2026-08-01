@@ -206,6 +206,7 @@ export async function getSiteData() {
       heroPadding: normalized(choice(row, 'Hero padding'), 'normal'),
       heroWidth: heroWidth(choice(row, 'Hero width')),
       heroGap: normalized(choice(row, 'Hero gap'), 'normal'),
+      heroButtonSize: normalized(choice(row, 'Hero button size'), 'medium'),
       titleSize: normalized(choice(row, 'Title size'), 'large'),
       subtitleSize: normalized(choice(row, 'Subtitle size'), 'medium'),
       introSize: normalized(choice(row, 'Intro size'), 'medium'),
@@ -308,7 +309,8 @@ export async function getSiteData() {
     grownIn: linkedValues(raw(row, 'Grown in')),
     certifications: linkedValues(raw(row, 'Certification')),
     collectionPointIds: linkedIds(raw(row, 'Available collection points')),
-    collectionPointNames: linkedValues(raw(row, 'Available collection points'))
+    collectionPointNames: linkedValues(raw(row, 'Available collection points')),
+    lateCollection: normalized(choice(row, 'Late collection'), 'thursday-only')
   })).filter((product: any) => product.name && product.available).sort((a: any, b: any) => a.order - b.order || a.name.localeCompare(b.name));
 
   const sourceCollections = collectionRows?.length ? collectionRows : fallbackCollectionPoints;
@@ -320,8 +322,14 @@ export async function getSiteData() {
     image: fileUrl(row, 'Image'),
     link: text(row, 'Link', text(row, 'Website', text(row, 'URL'))),
     description: text(row, 'Description'),
-    collectionTime: text(row, 'Collection time', text(row, 'Collection slot', text(row, 'Collection day/time'))),
-    ordersClose: text(row, 'Orders close', text(row, 'Order deadline')),
+    collectionTime: text(row, 'Thursday collection time', text(row, 'Collection time', text(row, 'Collection slot', text(row, 'Collection day/time')))),
+    collectionSlots: [
+      { day: 'Thursday', time: text(row, 'Thursday collection time', text(row, 'Collection time', text(row, 'Collection slot', text(row, 'Collection day/time')))) },
+      { day: 'Friday', time: text(row, 'Friday collection time') },
+      { day: 'Saturday', time: text(row, 'Saturday collection time') },
+      { day: 'Sunday', time: text(row, 'Sunday collection time') }
+    ].filter((slot) => slot.time),
+    ordersClose: 'Wednesday 6pm',
     availableCategories: linkedValues(raw(row, 'Available to collect here'))
   })).filter((point: any) => point.name && point.active);
 

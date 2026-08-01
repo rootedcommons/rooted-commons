@@ -1,4 +1,4 @@
-﻿Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
+Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
 Submitted at,Date/time,Yes,Order API/dashboard,Submission timestamp,,
 Order source,Single select,Yes,Order API,Origin of order,Website,
 Order week,Single line text,Yes,Order API,ISO ordering week,YYYY-Www,Used to prevent duplicate weekly orders
@@ -17,3 +17,7 @@ Confirmed at,Date/time,No,Automation,Processing completion time,,
 Processing error,Long text,No,Automation/admin,Error details,,
 Confirmation email sent,Boolean,No,Automation,Email completion flag,,
 Confirmation email sent at,Date/time,No,Automation,Email timestamp,,
+Fulfilment date,Date,Yes,Order API,Thursday delivery/fulfilment date,,Immutable order snapshot
+Collection date,Date,Yes,Order API,Customer collection date,,Immutable order snapshot
+Collection day,Single line text,Yes,Order API,Selected collection weekday,,Immutable order snapshot
+Collection time,Single line text,Yes,Order API,Selected collection time/window,,Immutable order snapshot

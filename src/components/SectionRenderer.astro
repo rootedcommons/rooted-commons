@@ -98,13 +98,18 @@ const inferredGridCategory = section.gridCategory || (section.page === 'cupboard
 )}
 
 {type === 'call-to-action' && (
-  <section class={`content-section cta-section ${background} ${spaces} ${alignment}`}>
-    <div class="section-inner prose-width">
-      {section.eyebrow && <p class="eyebrow">{section.eyebrow}</p>}
-      {section.heading && <h2 class={`size-${section.headingSize}`}>{section.heading}</h2>}
-      {section.subheading && <p class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
-      {section.body && <FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} />}
-      {button && <a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
+  <section class={`content-section cta-section ${background} ${spaces} ${alignment} ${section.image ? `cta-with-image image-${section.imagePosition}` : ''}`}>
+    <div class={`section-inner ${section.image ? 'cta-inner' : 'prose-width'}`}>
+      {section.image && <figure class={`cta-media fit-${section.imageFit}`}>
+        <img src={section.image} alt={section.imageAlt || ''} loading="lazy" />
+      </figure>}
+      <div class="cta-copy">
+        {section.eyebrow && <p class="eyebrow">{section.eyebrow}</p>}
+        {section.heading && <h2 class={`size-${section.headingSize}`}>{section.heading}</h2>}
+        {section.subheading && <p class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
+        {section.body && <FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} />}
+        {button && <a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
+      </div>
     </div>
   </section>
 )}

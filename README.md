@@ -1,8 +1,8 @@
-# Rooted Commons website v2.1.2
+# Rooted Commons website v2.7.0
 
 Astro website and restricted server functions for Rooted Commons. Baserow is the operational data source; Xero is the payment source; the web host stores no authoritative business state.
 
-## V2.1 architecture
+## Architecture
 
 The browser sends only product row IDs and quantities. The order endpoint reloads the member, current prices, `Available stock`, and collection-point rules from Baserow. It calculates the authoritative order total and creates one `Web Orders` row with `Status = Processing`, a readable price snapshot in `Item JSON`, and a batch-ready payload in `Stock Movement JSON`.
 
@@ -26,7 +26,7 @@ The website does not create Stock Movement or Account Transactions rows. There a
 - Idempotent submission using `Client request ID`.
 - Historical unit prices copied into Stock Movement by Baserow automation.
 - Xero Receive Money design for 15-minute Baserow polling.
-- Local collection deadlines displayed exactly as entered.
+- Shared Wednesday 6pm weekly order deadline with Thursday fulfilment and optional later customer collection slots.
 
 ## Build from scratch
 
@@ -63,8 +63,8 @@ The runtime token needs no write access to Stock Movement or Account Transaction
 - Page titles and hero settings: `Pages`.
 - Page body blocks: `Sections`.
 - Products, prices, categories and availability: `Products`.
-- Addresses, slots and order-closing times: `Collection Points`.
-- Member commitment and identity: `Members`.
+- Addresses and Thursday–Sunday collection windows: `Collection Points`.
+- Member commitment, identity and preferred collection day: `Members`.
 - Member balance ledger: `Account Transactions`.
 
 ## Stock
@@ -107,6 +107,8 @@ One member may place one `Processing` or `Confirmed` order per ordering week. Co
 - [Order automation](docs/BASEROW_ORDER_AUTOMATION.md)
 - [Xero sync](docs/XERO_SYNC.md)
 - [Testing](docs/TESTING.md)
+- [Collection slots](docs/COLLECTION_SLOTS.md)
+- [v2.7 setup checklist](docs/V2.7_SETUP.md)
 
 
 ## V2.2 member payments

@@ -1,4 +1,4 @@
-﻿Table,Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
+Table,Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
 Site Settings,Site title,Single line text,Yes,Public site,Site name used in page metadata and header,,Primary content row is the first row with this or Header logo
 Site Settings,Header text,Long text,No,Header,Optional header copy,,
 Site Settings,Footer text,Long text,No,Footer,Footer copy,,
@@ -177,8 +177,8 @@ Collection Points,Available to collect here,Multiple select,No,Order validation,
 Collection Points,Image,File,No,Collection point cards,Location image,,One image
 Collection Points,Link,URL,No,Collection point cards,External location link,,Code also accepts Website or URL
 Collection Points,Description,Long text,No,Collection point cards,Location description,,
-Collection Points,Collection time,Single line text,No,Collection point cards/dashboard,Collection window,,Code also accepts Collection slot or Collection day/time
-Collection Points,Orders close,Single line text or Date/time,No,Collection point cards,Local order deadline,,Rendered as entered; no timezone conversion
+Collection Points,Collection time,Single line text,No,Migration fallback,Legacy Thursday collection window,,Prefer Thursday collection time for new setup
+Collection Points,Orders close,Single line text or Date/time,No,Legacy/admin,Legacy point-specific deadline,,Website now uses global Wednesday 6pm
 Collection Points,Cupboard Staples,Link to table,No,Legacy/admin,Legacy product relationship,Products,Not read by code
 Collection Points,Members,Link to table,No,Admin,Backlink to members,Members,
 Members,Xero Contact ID,Single line text,No,Xero/member matching,Xero contact identifier,,May also be used for linked transaction matching
@@ -256,3 +256,14 @@ Interface Content,,,Yes,,,,
 Interface Content,,,No,,,,
 Interface Content,,,No,,,,
 Interface Content,,,Yes,,,,
+Pages,Hero button size,Single select,No,Page hero,Hero CTA size,Small; Medium; Large,Defaults Medium
+Products,Late collection,Single select,No,Checkout/order validation,Latest suitable collection timing,Thursday only; Friday okay; Weekend okay,Defaults Thursday only for safety
+Collection Points,Thursday collection time,Single line text,No,Checkout/dashboard,Thursday collection window,,Falls back to legacy Collection time
+Collection Points,Friday collection time,Single line text,No,Checkout/dashboard,Friday collection window,,Blank means unavailable
+Collection Points,Saturday collection time,Single line text,No,Checkout/dashboard,Saturday collection window,,Blank means unavailable
+Collection Points,Sunday collection time,Single line text,No,Checkout/dashboard,Sunday collection window,,Blank means unavailable
+Members,Preferred collection day,Single select,No,Dashboard/checkout,Member preferred collection day,Thursday; Friday; Saturday; Sunday,Validated against point and basket
+Web Orders,Fulfilment date,Date,Yes,Order API,Thursday delivery/fulfilment date,,Immutable snapshot
+Web Orders,Collection date,Date,Yes,Order API,Customer collection date,,Immutable snapshot
+Web Orders,Collection day,Single line text,Yes,Order API,Selected collection weekday,,Immutable snapshot
+Web Orders,Collection time,Single line text,Yes,Order API,Selected collection time/window,,Immutable snapshot

@@ -1,4 +1,4 @@
-﻿id,Key,Area,Label,Content
+id,Key,Area,Label,Content
 1,basket.heading,Basket,Basket heading,Your basket
 2,basket.empty,Basket,Empty basket message,Your basket is empty.
 3,basket.total_label,Basket,Total label,Estimated total
@@ -9,7 +9,7 @@
 8,checkout.empty_heading,Checkout,Empty basket heading,Your basket is empty
 9,checkout.empty_text,Checkout,Empty basket text,Return to the shop to add products.
 10,checkout.collection_heading,Checkout,Collection heading,Choose where to collect
-11,checkout.collection_body,Checkout,Collection introduction,Select a collection point that can fulfil everything in your basket.
+11,checkout.collection_body,Checkout,Collection introduction,"Choose a collection point, then choose from the collection days available for everything in your basket."
 12,checkout.member_heading,Checkout,Member verification heading,Already a member?
 13,checkout.member_body,Checkout,Member verification introduction,Enter your email and we will send your secure ordering link.
 14,checkout.email_label,Checkout,Email field label,Email address
@@ -31,7 +31,7 @@
 30,dashboard.orders_open,Dashboard,Order status,Orders are open
 31,dashboard.shop_button,Dashboard,Shop button,Browse this week’s market
 32,dashboard.collection_eyebrow,Dashboard,Collection card label,Your collection point
-33,dashboard.change_collection,Dashboard,Change collection button,Change collection point
+33,dashboard.change_collection,Dashboard,Change collection button,Change collection preferences
 34,dashboard.choose_collection,Dashboard,Collection field label,Choose your collection point
 35,dashboard.save_collection,Dashboard,Save collection button,Save collection point
 36,dashboard.cancel,Dashboard,Cancel button,Cancel

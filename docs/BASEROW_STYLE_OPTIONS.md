@@ -13,6 +13,7 @@ Make these minimal schema changes in Baserow before using the new controls:
 5. Expand **Hero image alignment** to the nine positions listed below.
 6. Expand **Title size**, **Subtitle size** and **Intro size** to: Very small, Small, Medium, Large, Very large.
 7. Set **Hero width** options to: Narrow, Standard, Wide, Full. Legacy Normal and Medium are treated as Standard.
+8. Add **Hero button size** as a single-select field with: Small, Medium, Large.
 
 The current `baserow-imports/02-pages.csv` and `baserow-table-specification/02-pages-fields.csv` reflect this schema.
 
@@ -34,10 +35,20 @@ The current `baserow-imports/02-pages.csv` and `baserow-table-specification/02-p
 |---|---|
 | Narrow | `max-width: 760px` |
 | Standard | `max-width: 1040px` |
-| Wide | `max-width: var(--max)`; exactly matches Section width |
+| Wide | `max-width: var(--max)`; exactly matches the shared 1400px site content width |
 | Full | Full available width with no maximum |
 
-Legacy `Normal` and `Medium` values are treated as `Standard`.
+Legacy `Normal` and `Medium` values are treated as `Standard`. The shared site maximum is now `1400px`, matching the Orders product grid. Hero, Sections, navigation wrappers and the member summary use the same inner-wrapper alignment.
+
+### Hero button size
+
+| Baserow option | Result |
+|---|---|
+| Small | Compact hero CTA |
+| Medium | Standard hero CTA |
+| Large | Larger, more prominent hero CTA |
+
+The hero button is centred within the text column while the text itself keeps the selected hero text alignment.
 
 ### Hero gap
 

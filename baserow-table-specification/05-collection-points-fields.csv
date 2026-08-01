@@ -1,4 +1,4 @@
-﻿Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
+Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
 Name,Single line text,Yes,Catalogue/checkout,Collection point name,,Primary field
 Address,Long text,No,Checkout/dashboard,Collection address,,
 Active,Boolean,Yes,Checkout validation,Whether point can be selected,,Defaults true
@@ -6,7 +6,11 @@ Available to collect here,Multiple select,No,Order validation,Allowed product ca
 Image,File,No,Collection point cards,Location image,,One image
 Link,URL,No,Collection point cards,External location link,,Code also accepts Website or URL
 Description,Long text,No,Collection point cards,Location description,,
-Collection time,Single line text,No,Collection point cards/dashboard,Collection window,,Code also accepts Collection slot or Collection day/time
-Orders close,Single line text or Date/time,No,Collection point cards,Local order deadline,,Rendered as entered; no timezone conversion
+Collection time,Single line text,No,Migration fallback,Legacy Thursday collection window,,Prefer Thursday collection time for new setup
+Orders close,Single line text or Date/time,No,Legacy/admin,Legacy point-specific deadline,,Website now uses the global Wednesday 6pm deadline
 Cupboard Staples,Link to table,No,Legacy/admin,Legacy product relationship,Products,Not read by code
 Members,Link to table,No,Admin,Backlink to members,Members,
+Thursday collection time,Single line text,No,Checkout/dashboard,Thursday collection window,,Falls back to legacy Collection time
+Friday collection time,Single line text,No,Checkout/dashboard,Friday collection window,,Blank means unavailable
+Saturday collection time,Single line text,No,Checkout/dashboard,Saturday collection window,,Blank means unavailable
+Sunday collection time,Single line text,No,Checkout/dashboard,Sunday collection window,,Blank means unavailable

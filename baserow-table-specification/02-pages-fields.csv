@@ -1,4 +1,4 @@
-﻿Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
+Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
 Slug,Single line text,Yes,Routing,Page URL slug,,Primary field recommended
 Title,Single line text,Yes,Page hero,Main page title,,
 Intro,Long text,No,Page hero,Introductory copy,,
@@ -21,3 +21,4 @@ Hero alignment,Single select,No,Page hero,Text alignment,left; center; right,
 Hero padding,Single select,No,Page hero,Hero spacing,small; medium; large,
 Hero width,Single select,No,Page hero,Hero content width,Narrow; Standard; Wide; Full,Wide uses the same maximum width as Sections
 Hero gap,Single select,No,Page hero,Responsive gap between hero text and image,Compact; Normal; Wide,On stacked mobile layouts this becomes a consistent vertical gap
+Hero button size,Single select,No,Page hero,Hero CTA size,Small; Medium; Large,Defaults Medium

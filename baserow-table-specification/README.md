@@ -1,4 +1,4 @@
-# Baserow table specification — v2.6.0
+# Baserow table specification — v2.7.0
 
 This folder is the current field-level reference for the Rooted Commons codebase. Each CSV covers one Baserow table. `00-all-coded-fields.csv` combines all tables into one searchable file.
 

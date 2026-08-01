@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.7.0 — Shared layout and flexible collection slots
+
+- Standardised the site-wide content maximum to the Orders catalogue width and aligned hero, sections, category navigation, member summary and product grid through shared inner wrappers.
+- Added `Hero button size` and centred the hero CTA within its text column.
+- Added optional images to Call to Action sections using the existing image fields and responsive left/right layouts.
+- Moved product weight/size onto its own line below the title and tightened the certification-to-price spacing.
+- Expanded the Orders member bar with available credit, collection point/day/time and the fixed Wednesday 6pm order deadline.
+- Added collection-point day/time slots for Thursday through Sunday and a member preferred collection day.
+- Added product-level `Late collection` rules: Thursday only, Friday okay, or Weekend okay. Checkout only offers collection slots compatible with every item in the basket.
+- Web Orders now snapshot fulfilment date, selected collection date, day and time.
+- Added a prominent rollover notice from Wednesday 6pm through Sunday clarifying that new orders are for collection from the following Thursday.
+
 ## 2.6.6 — Product card layout refinement
 
 - Combined `Origin` and `Secondary origin` into one sentence on product cards, separated by a comma and ending with a full stop.

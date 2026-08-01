@@ -37,6 +37,7 @@ const membershipPerks=s.membershipPerks || [];
           <p class="eyebrow">{c('dashboard.collection_eyebrow')}</p>
           <h2 id="dashboard-point-name">Not selected</h2>
           <p id="dashboard-point-time"></p>
+          <p id="dashboard-point-preference" class="small-print"></p>
           <p id="dashboard-point-address"></p>
           <p id="dashboard-point-deadline" class="collection-deadline-readable"></p>
           <a id="dashboard-point-link" class="text-link" hidden>View collection point →</a>
@@ -44,6 +45,8 @@ const membershipPerks=s.membershipPerks || [];
           <form id="dashboard-point-form" class="dashboard-point-form" hidden>
             <label for="dashboard-point-select">{c('dashboard.choose_collection')}</label>
             <select id="dashboard-point-select" required></select>
+            <label for="dashboard-day-select">Preferred collection day</label>
+            <select id="dashboard-day-select" required></select>
             <div class="dashboard-point-actions">
               <button class="button" type="submit">{c('dashboard.save_collection')}</button>
               <button id="dashboard-cancel-point" class="button button-secondary" type="button">{c('dashboard.cancel')}</button>
@@ -138,10 +141,18 @@ const membershipPerks=s.membershipPerks || [];
     const formatDate=value=>value?new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',year:'numeric'}).format(new Date(value)):'';
     const pointSelect=document.querySelector('#dashboard-point-select');
     const pointForm=document.querySelector('#dashboard-point-form');
+    const daySelect=document.querySelector('#dashboard-day-select');
     const pointMessage=document.querySelector('#dashboard-point-message');
     const populatePointSelect=(selectedId)=>{
-      pointSelect.innerHTML=(collectionPoints||[]).map(point=>`<option value="${point.id}" ${Number(point.id)===Number(selectedId)?'selected':''}>${point.name}${point.collectionTime?` — ${point.collectionTime}`:''}</option>`).join('');
+      pointSelect.innerHTML=(collectionPoints||[]).map(point=>`<option value="${point.id}" ${Number(point.id)===Number(selectedId)?'selected':''}>${point.name}</option>`).join('');
     };
+    const populateDaySelect=(selectedDay='')=>{
+      const point=(collectionPoints||[]).find(item=>Number(item.id)===Number(pointSelect.value));
+      const slots=point?.collectionSlots||[];
+      daySelect.innerHTML=slots.map(slot=>`<option value="${slot.day}">${slot.day} — ${slot.time}</option>`).join('');
+      if(slots.some(slot=>slot.day===selectedDay))daySelect.value=selectedDay;
+    };
+    pointSelect.addEventListener('change',()=>populateDaySelect(''));
     document.querySelector('#dashboard-change-point').addEventListener('click',()=>{pointForm.hidden=false;pointMessage.textContent='';pointSelect.focus();});
     document.querySelector('#dashboard-cancel-point').addEventListener('click',()=>{pointForm.hidden=true;pointMessage.textContent='';});
     pointForm.addEventListener('submit',async event=>{
@@ -149,14 +160,16 @@ const membershipPerks=s.membershipPerks || [];
       const button=pointForm.querySelector('button[type="submit"]');
       button.disabled=true;
       pointMessage.textContent='Saving…';
-      const response=await fetch('/api/member',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({token,collectionPointId:Number(pointSelect.value)})});
+      const response=await fetch('/api/member',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({token,collectionPointId:Number(pointSelect.value),preferredCollectionDay:daySelect.value})});
       const payload=await response.json();
       if(response.ok&&payload.ok){
         const point=payload.collectionPoint||{};
         document.querySelector('#dashboard-point-name').textContent=point.name||'Not selected';
-        document.querySelector('#dashboard-point-time').textContent=point.collectionTime||'';
+        const slot=(point.collectionSlots||[]).find(item=>item.day===payload.preferredCollectionDay)||(point.collectionSlots||[])[0];
+        document.querySelector('#dashboard-point-time').textContent=slot?`${slot.day} · ${slot.time}`:(point.collectionTime||'');
+        document.querySelector('#dashboard-point-preference').textContent=slot?'Your preferred collection slot. Checkout will offer earlier options if your basket contains fresher items.':'';
         document.querySelector('#dashboard-point-address').textContent=point.address||'';
-        document.querySelector('#dashboard-point-deadline').textContent=point.ordersClose?`Orders close ${formatLocalDeadline(point.ordersClose)} for this slot.`:'';
+        document.querySelector('#dashboard-point-deadline').textContent='Orders close Wednesday 6pm.';
         const pointLink=document.querySelector('#dashboard-point-link');
         pointLink.hidden=!point.link;
         if(point.link)pointLink.href=point.link;
@@ -220,10 +233,13 @@ const membershipPerks=s.membershipPerks || [];
       document.querySelector('#dashboard-shop-link').href=`/orders/?token=${encodeURIComponent(token)}`;
       const point=member.collectionPoint||{};
       populatePointSelect(point.id);
+      populateDaySelect(member.preferredCollectionDay||'Thursday');
       document.querySelector('#dashboard-point-name').textContent=point.name||'Choose at checkout';
-      document.querySelector('#dashboard-point-time').textContent=point.collectionTime||'';
+      const preferredSlot=(point.collectionSlots||[]).find(item=>item.day===member.preferredCollectionDay)||(point.collectionSlots||[])[0];
+      document.querySelector('#dashboard-point-time').textContent=preferredSlot?`${preferredSlot.day} · ${preferredSlot.time}`:(point.collectionTime||'');
+      document.querySelector('#dashboard-point-preference').textContent=preferredSlot?'Your preferred collection slot. Checkout confirms what is available for each basket.':'';
       document.querySelector('#dashboard-point-address').textContent=point.address||'';
-      document.querySelector('#dashboard-point-deadline').textContent=point.ordersClose?`Orders close ${formatLocalDeadline(point.ordersClose)} for this slot.`:'';
+      document.querySelector('#dashboard-point-deadline').textContent='Orders close Wednesday 6pm.';
       const pointLink=document.querySelector('#dashboard-point-link');
       if(point.link){pointLink.href=point.link;pointLink.hidden=false;}
       document.querySelector('#dashboard-founder-level').textContent=member.founderBadge||'Rooted Commons member';

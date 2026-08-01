@@ -66,8 +66,8 @@ const displayProducts = filtered.map((product) => {
       <div class="product-copy">
         <div class="product-title-row">
           <h3>{product.hasDetails ? <button type="button" class="product-title-button" data-open-product>{product.name}</button> : product.name}</h3>
-          {product.size && <span class="product-size">{product.size}</span>}
         </div>
+        {product.size && <p class="product-size">{product.size}</p>}
         {(product.origin || product.secondaryOrigin) && <p class="product-origin">{[product.origin, product.secondaryOrigin].filter(Boolean).join(', ')}.</p>}
         <p class="stock-warning stock-warning-out" data-stock-out hidden={!product.outOfStock}>Out of stock</p>
         <p class="stock-warning" data-stock-low hidden={!product.lowStock}>Low stock — <span data-stock-count>{product.availableStock}</span> left</p>

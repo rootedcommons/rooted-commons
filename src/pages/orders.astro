@@ -27,7 +27,7 @@ const categoryBlocks = Object.fromEntries(broadCategories.map((category) => [
 const columns = gridSection?.columns || 3;
 const s = data.settings;
 const c = (key, fallback = '') => data.interfaceContent[key] || fallback;
-const collectionPointsForMemberBar = data.collectionPoints.map((point) => ({ id: point.id, name: point.name }));
+const collectionPointsForMemberBar = data.collectionPoints.map((point) => ({ id: point.id, name: point.name, collectionSlots: point.collectionSlots || [] }));
 ---
 <BaseLayout settings={s} pages={data.pages} title={page.seoTitle || page.title} description={page.seoDescription || page.intro}>
   <section class="orders-category-shell">
@@ -49,18 +49,22 @@ const collectionPointsForMemberBar = data.collectionPoints.map((point) => ({ id:
   </section>
 
   <section class={`shop-shell background-${gridSection?.backgroundStyle || 'default'} space-above-${gridSection?.spaceAbove || 'small'} space-below-${gridSection?.spaceBelow || 'large'}`}>
+    <div id="market-rollover-notice" class="market-rollover-notice" hidden></div>
     <section id="member-summary" class="member-summary" hidden aria-label="Member summary">
       <div class="member-summary-main">
         <p class="member-summary-greeting" id="member-summary-greeting"></p>
         <dl class="member-summary-facts">
-          <div><dt>Credit</dt><dd id="member-summary-credit"></dd></div>
+          <div><dt>Available credit</dt><dd id="member-summary-credit"></dd></div>
           <div><dt>Collection</dt><dd id="member-summary-point"></dd></div>
+          <div><dt>Orders close</dt><dd>Wednesday 6pm</dd></div>
         </dl>
       </div>
-      <button id="member-summary-change" class="button button-secondary member-summary-change" type="button">Change collection point</button>
+      <button id="member-summary-change" class="button button-secondary member-summary-change" type="button">Change collection preferences</button>
       <form id="member-summary-form" class="member-summary-form" hidden>
         <label for="member-summary-select">Collection point</label>
         <select id="member-summary-select" required></select>
+        <label for="member-summary-day">Preferred day</label>
+        <select id="member-summary-day" required></select>
         <button class="button" type="submit">Save</button>
         <button id="member-summary-cancel" class="text-button" type="button">Cancel</button>
         <span id="member-summary-message" class="small-print" aria-live="polite"></span>
@@ -117,6 +121,21 @@ const collectionPointsForMemberBar = data.collectionPoints.map((point) => ({ id:
     const urlToken = params.get('token');
     if (urlToken) localStorage.setItem(TOKEN_KEY, urlToken);
     const token = urlToken || localStorage.getItem(TOKEN_KEY) || '';
+    const dayRank={Thursday:0,Friday:1,Saturday:2,Sunday:3};
+    function marketCycle(){
+      const parts=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',weekday:'short',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).filter(part=>part.type!=='literal').map(part=>[part.type,part.value]));
+      const day={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6}[parts.weekday];
+      const hour=Number(parts.hour); const minute=Number(parts.minute);
+      let toThu=(4-day+7)%7; if(day===4)toThu=7; if(day===3&&(hour>18||(hour===18&&minute>=0)))toThu+=7;
+      const d=new Date(Date.UTC(Number(parts.year),Number(parts.month)-1,Number(parts.day)+toThu,12));
+      const rollover=(day===3&&(hour>18||(hour===18&&minute>=0)))||[4,5,6,0].includes(day);
+      return {fulfilment:d,rollover};
+    }
+    const ordinal=n=>`${n}${(n%100>=11&&n%100<=13)?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th')}`;
+    const shortDate=d=>`${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d.getDay()]} ${ordinal(d.getDate())} ${d.toLocaleDateString('en-GB',{month:'long'})}`;
+    const cycle=marketCycle();
+    const rolloverNotice=document.querySelector('#market-rollover-notice');
+    if(cycle.rollover&&rolloverNotice){rolloverNotice.innerHTML=`<strong>Orders for collection this week have closed. This order is for collection from ${shortDate(cycle.fulfilment)}.</strong>`;rolloverNotice.hidden=false;}
 
     let basket = {};
     try { basket = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {}; } catch { basket = {}; }
@@ -169,18 +188,37 @@ const collectionPointsForMemberBar = data.collectionPoints.map((point) => ({ id:
     memberSummaryForm?.addEventListener('submit',async event=>{
       event.preventDefault();
       const collectionPointId=Number(document.querySelector('#member-summary-select').value);
+      const preferredCollectionDay=document.querySelector('#member-summary-day').value;
       memberSummaryMessage.textContent='Saving…';
       try{
-        const response=await fetch('/api/member',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({token,collectionPointId})});
+        const response=await fetch('/api/member',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({token,collectionPointId,preferredCollectionDay})});
         const payload=await response.json();
         if(!response.ok||!payload.ok)throw new Error(payload.message||'Unable to update collection point.');
         member.collectionPoint=payload.collectionPoint;
-        const pointName=payload.collectionPoint?.name||'Not selected';
-        document.querySelector('#member-summary-point').textContent=pointName;
+        member.preferredCollectionDay=payload.preferredCollectionDay;
+        renderMemberCollection();
         memberSummaryMessage.textContent='Collection point updated.';
         setTimeout(()=>{memberSummaryForm.hidden=true;document.querySelector('#member-summary-change').hidden=false;memberSummaryMessage.textContent='';},900);
       }catch(error){memberSummaryMessage.textContent=error.message||'Unable to update collection point.';}
     });
+
+
+    const pointSelectEl=document.querySelector('#member-summary-select');
+    const daySelectEl=document.querySelector('#member-summary-day');
+    function selectedSummaryPoint(){return collectionPointsForMemberBar.find(point=>Number(point.id)===Number(pointSelectEl?.value||member?.collectionPoint?.id||0));}
+    function populateSummaryDays(selectedDay=''){
+      const point=selectedSummaryPoint();
+      const slots=point?.collectionSlots||[];
+      if(daySelectEl){daySelectEl.innerHTML=slots.map(slot=>`<option value="${slot.day}">${slot.day} — ${slot.time}</option>`).join(''); if(slots.some(slot=>slot.day===selectedDay))daySelectEl.value=selectedDay;}
+    }
+    function renderMemberCollection(){
+      const point=collectionPointsForMemberBar.find(item=>Number(item.id)===Number(member?.collectionPoint?.id||0));
+      const preferred=member?.preferredCollectionDay||'Thursday';
+      const slot=(point?.collectionSlots||[]).find(item=>item.day===preferred)||(point?.collectionSlots||[])[0];
+      document.querySelector('#member-summary-point').textContent=point?`${point.name}${slot?` · ${slot.day} · ${slot.time}`:''}`:'Not selected';
+      if(pointSelectEl&&point)pointSelectEl.value=String(point.id); populateSummaryDays(slot?.day||preferred);
+    }
+    pointSelectEl?.addEventListener('change',()=>populateSummaryDays(''));
 
     function categoriesFor(card){ return splitValues(card.dataset.categories); }
     function subcategoriesFor(card){ return splitValues(card.dataset.subcategories); }
@@ -271,16 +309,13 @@ const collectionPointsForMemberBar = data.collectionPoints.map((point) => ({ id:
       member=payload.member;
       const box=document.querySelector('#member-summary');
       box.hidden=false;
-      const pointName=typeof member.collectionPoint==='string'
-        ? member.collectionPoint
-        : (member.collectionPoint?.name||'Not selected');
       document.querySelector('#member-summary-greeting').textContent=`Hello ${member.firstName||'member'}`;
       document.querySelector('#member-summary-credit').textContent=money.format(member.credit||0);
-      document.querySelector('#member-summary-point').textContent=pointName;
       const pointSelect=document.querySelector('#member-summary-select');
       pointSelect.innerHTML=collectionPointsForMemberBar.map(point=>`<option value="${point.id}">${point.name}</option>`).join('');
       const currentId=Number(member.collectionPoint?.id||0);
       if(currentId) pointSelect.value=String(currentId);
+      renderMemberCollection();
       renderBasket();
     }
     function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(basket));}

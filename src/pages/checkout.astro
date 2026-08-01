@@ -17,7 +17,8 @@ const checkoutProducts = data.products.map((product) => ({
   id: product.id,
   name: product.name,
   price: product.priceNumber,
-  categories: product.categories || [product.category]
+  categories: product.categories || [product.category],
+  lateCollection: product.lateCollection || 'weekend-okay'
 }));
 const checkoutPoints = data.collectionPoints;
 
@@ -68,6 +69,12 @@ const formatCollectionDeadline = (value) => {
         ))}
       </div>
       <p id="collection-message" class="small-print"></p>
+      <div id="collection-slot-panel" class="collection-slot-panel" hidden>
+        <h3>When would you like to collect?</h3>
+        <div id="collection-slot-options" class="collection-slot-options"></div>
+        <p class="small-print">Thursday is recommended for the freshest produce. Later collection is only offered when everything in your basket can be held until then.</p>
+        <p id="collection-freshness-warning" class="collection-freshness-warning" hidden></p>
+      </div>
     </section>
 
     <div class="checkout-paths">
@@ -132,6 +139,7 @@ const formatCollectionDeadline = (value) => {
     let token=urlToken||localStorage.getItem(TOKEN_KEY)||'';
     let member=null;
     let selectedPointId=Number(localStorage.getItem(POINT_KEY)||0);
+    let selectedCollectionDay='';
     let basket={};
     try{basket=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')||{};}catch{basket={};}
 
@@ -141,6 +149,52 @@ const formatCollectionDeadline = (value) => {
     const collectionMessage=document.querySelector('#collection-message');
     const submitButton=document.querySelector('#submit-order');
     const submitMessage=document.querySelector('#submit-message');
+    const slotPanel=document.querySelector('#collection-slot-panel');
+    const slotOptions=document.querySelector('#collection-slot-options');
+    const freshnessWarning=document.querySelector('#collection-freshness-warning');
+
+
+    const dayRank={Thursday:0,Friday:1,Saturday:2,Sunday:3};
+    const restrictionRank={'thursday-only':0,'friday-okay':1,'weekend-okay':3};
+    function marketCycle(){
+      const parts=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',weekday:'short',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).filter(part=>part.type!=='literal').map(part=>[part.type,part.value]));
+      const day={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6}[parts.weekday];
+      const hour=Number(parts.hour); const minute=Number(parts.minute);
+      let toThu=(4-day+7)%7; if(day===4)toThu=7; if(day===3&&(hour>18||(hour===18&&minute>=0)))toThu+=7;
+      const d=new Date(Date.UTC(Number(parts.year),Number(parts.month)-1,Number(parts.day)+toThu,12));
+      const rollover=(day===3&&(hour>18||(hour===18&&minute>=0)))||[4,5,6,0].includes(day);
+      return {fulfilment:d,rollover};
+    }
+    const ordinal=n=>`${n}${(n%100>=11&&n%100<=13)?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th')}`;
+    const dateLabel=d=>`${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d.getDay()]} ${ordinal(d.getDate())} ${d.toLocaleDateString('en-GB',{month:'long'})}`;
+    function basketLatestRank(){return selectedItems().reduce((rank,item)=>Math.min(rank,restrictionRank[normalise(item.product.lateCollection).replace(/\s+/g,'-')]??3),3);}
+    function availableSlots(point){
+      const max=basketLatestRank();
+      return (point?.collectionSlots||[]).filter(slot=>(dayRank[slot.day]??99)<=max);
+    }
+    function renderSlots(){
+      const point=selectedPoint();
+      if(!point){slotPanel.hidden=true;selectedCollectionDay='';return;}
+      const slots=availableSlots(point);
+      if(!slots.some(slot=>slot.day===selectedCollectionDay)){
+        const preferred=member?.preferredCollectionDay;
+        selectedCollectionDay=slots.some(slot=>slot.day===preferred)?preferred:(slots[0]?.day||'');
+      }
+      const cycle=marketCycle();
+      slotOptions.innerHTML=slots.map(slot=>{
+        const d=new Date(cycle.fulfilment); d.setDate(d.getDate()+(dayRank[slot.day]||0));
+        const checked=slot.day===selectedCollectionDay?'checked':'';
+        const recommended=slot.day==='Thursday'?' <strong>— recommended</strong>':'';
+        return `<label class="collection-slot-option"><input type="radio" name="collection-slot" value="${slot.day}" ${checked}><span>${dateLabel(d)} · ${slot.time}${recommended}</span></label>`;
+      }).join('');
+      slotPanel.hidden=!slots.length;
+      const hasFridaySensitive=selectedItems().some(item=>normalise(item.product.lateCollection).replace(/\s+/g,'-')==='friday-okay');
+      if(freshnessWarning){
+        freshnessWarning.hidden=!(selectedCollectionDay==='Friday'&&hasFridaySensitive);
+        freshnessWarning.textContent=freshnessWarning.hidden?'':'Fresh produce is packed for Thursday collection and may not be at its best by Friday.';
+      }
+    }
+    slotOptions?.addEventListener('change',event=>{if(event.target.matches('input[name="collection-slot"]')){selectedCollectionDay=event.target.value;renderMemberSummary();updateSubmitState();}});
 
     function selectedItems(){
       return Object.entries(basket)
@@ -170,6 +224,7 @@ const formatCollectionDeadline = (value) => {
       }
       totalElement.textContent=money.format(basketTotal());
       renderCollectionPoints();
+      renderSlots();
       renderMemberSummary();
     }
 
@@ -177,7 +232,7 @@ const formatCollectionDeadline = (value) => {
       const categories=basketCategories();
       collectionCards.forEach(card=>{
         const point=pointMap.get(Number(card.dataset.pointId));
-        const compatible=point&&pointCompatible(point);
+        const compatible=point&&pointCompatible(point)&&availableSlots(point).length>0;
         card.disabled=!compatible;
         card.classList.toggle('incompatible',!compatible);
         card.classList.toggle('selected',compatible&&Number(point.id)===Number(selectedPointId));
@@ -190,6 +245,7 @@ const formatCollectionDeadline = (value) => {
         localStorage.removeItem(POINT_KEY);
       }
       collectionMessage.textContent=categories.length?`This basket includes: ${categories.join(', ')}.`:'';
+      renderSlots();
       updateSubmitState();
     }
 
@@ -198,13 +254,16 @@ const formatCollectionDeadline = (value) => {
       const total=basketTotal();
       const point=selectedPoint();
       const closing=(Number(member.credit)||0)-total;
-      document.querySelector('#verified-member').innerHTML=`<div class="verified-summary"><p><strong>Hi ${member.firstName||'member'}</strong></p><dl><div><dt>Member credit</dt><dd>${money.format(member.credit||0)}</dd></div><div><dt>This order</dt><dd>−${money.format(total)}</dd></div><div><dt>Estimated balance</dt><dd class="${closing<0?'amount-negative':''}">${money.format(closing)}</dd></div><div><dt>Collection</dt><dd>${point?point.name:'Choose a collection point'}</dd></div></dl>${closing<0?`<div class="checkout-balance-warning"><strong>Extra top-up needed: ${money.format(Math.abs(closing))}</strong><p>You can still reserve your order, but your account must be £0.00 or above before collection.</p></div>`:''}</div>`;
+      const slot=(point?.collectionSlots||[]).find(item=>item.day===selectedCollectionDay);
+      const cycle=marketCycle(); const d=new Date(cycle.fulfilment); d.setDate(d.getDate()+(dayRank[selectedCollectionDay]||0));
+      const collectionLabel=point&&slot?`${point.name} · ${dateLabel(d)} · ${slot.time}`:(point?point.name:'Choose a collection point');
+      document.querySelector('#verified-member').innerHTML=`<div class="verified-summary"><p><strong>Hi ${member.firstName||'member'}</strong></p><dl><div><dt>Member credit</dt><dd>${money.format(member.credit||0)}</dd></div><div><dt>This order</dt><dd>−${money.format(total)}</dd></div><div><dt>Estimated balance</dt><dd class="${closing<0?'amount-negative':''}">${money.format(closing)}</dd></div><div><dt>Collection</dt><dd>${collectionLabel}</dd></div></dl>${closing<0?`<div class="checkout-balance-warning"><strong>Extra top-up needed: ${money.format(Math.abs(closing))}</strong><p>You can still reserve your order, but your account must be £0.00 or above before collection.</p></div>`:''}</div>`;
       updateSubmitState();
     }
 
     function updateSubmitState(){
       const point=selectedPoint();
-      submitButton.disabled=!(member&&selectedItems().length&&point&&pointCompatible(point));
+      submitButton.disabled=!(member&&selectedItems().length&&point&&pointCompatible(point)&&selectedCollectionDay&&availableSlots(point).some(slot=>slot.day===selectedCollectionDay));
     }
 
     collectionCards.forEach(card=>card.addEventListener('click',()=>{
@@ -212,6 +271,7 @@ const formatCollectionDeadline = (value) => {
       selectedPointId=Number(card.dataset.pointId);
       localStorage.setItem(POINT_KEY,String(selectedPointId));
       renderCollectionPoints();
+      renderSlots();
       renderMemberSummary();
     }));
 
@@ -265,6 +325,7 @@ const formatCollectionDeadline = (value) => {
       document.querySelector('#verified-member-panel').hidden=false;
       const joinCard=document.querySelector('#checkout-join-card');
       if(joinCard)joinCard.hidden=true;
+      selectedCollectionDay=member.preferredCollectionDay||'';
       if(!selectedPointId&&member.collectionPoint?.id){
         const preferred=pointMap.get(Number(member.collectionPoint.id));
         if(preferred&&pointCompatible(preferred)){
@@ -294,7 +355,7 @@ const formatCollectionDeadline = (value) => {
       submitMessage.textContent='Checking prices, availability and your secure member link…';
       let clientRequestId=sessionStorage.getItem(REQUEST_KEY);
       if(!clientRequestId){clientRequestId=requestId();sessionStorage.setItem(REQUEST_KEY,clientRequestId);}
-      const response=await fetch('/api/order',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token,clientRequestId,collectionPointId:selectedPointId,items:selectedItems().map(item=>({productId:item.productId,quantity:item.quantity}))})});
+      const response=await fetch('/api/order',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token,clientRequestId,collectionPointId:selectedPointId,collectionDay:selectedCollectionDay,items:selectedItems().map(item=>({productId:item.productId,quantity:item.quantity}))})});
       const payload=await response.json();
       if(response.ok&&payload.ok){
         localStorage.removeItem(STORAGE_KEY);
@@ -306,7 +367,7 @@ const formatCollectionDeadline = (value) => {
           ? 'We’ve reserved your produce while you top up your account.'
           : 'Your order has been placed successfully.';
         const paymentNotice=needsTopup?`<div class="checkout-payment-required"><h3>Top up before collection</h3><p>Your estimated balance is <strong>${money.format(payload.closingCredit)}</strong>.</p><p>Please ensure your account is <strong>£0.00 or above</strong> before your collection time. If payment has not been received before orders are prepared, your order will be refunded and the produce returned to available stock.</p><p>Bank transfer is recommended. An optional secure online payment link will be available in your confirmation email and membership dashboard.</p></div>`:'';
-        document.querySelector('.checkout-shell').innerHTML=`<section class="checkout-card checkout-success"><h2>${confirmationHeading}</h2><p>${openingCopy}</p><p>Order: <strong>${payload.orderNumber}</strong><br>Total: <strong>${money.format(payload.total)}</strong><br>Collection: <strong>${payload.collectionPoint}</strong><br>Estimated closing credit: <strong>${money.format(payload.closingCredit)}</strong></p>${paymentNotice}<a class="button" href="/dashboard/?token=${encodeURIComponent(token)}">Return to your dashboard</a></section>`;
+        document.querySelector('.checkout-shell').innerHTML=`<section class="checkout-card checkout-success"><h2>${confirmationHeading}</h2><p>${openingCopy}</p><p>Order: <strong>${payload.orderNumber}</strong><br>Total: <strong>${money.format(payload.total)}</strong><br>Collection: <strong>${payload.collectionPoint} · ${payload.collectionDay} ${payload.collectionDate} · ${payload.collectionTime}</strong><br>Estimated closing credit: <strong>${money.format(payload.closingCredit)}</strong></p>${paymentNotice}<a class="button" href="/dashboard/?token=${encodeURIComponent(token)}">Return to your dashboard</a></section>`;
       }else{
         submitMessage.textContent=payload.message||'The order could not be submitted.';
         submitButton.disabled=false;

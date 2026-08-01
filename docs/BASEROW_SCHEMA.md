@@ -1,4 +1,4 @@
-# Baserow schema expected by v2.1
+# Baserow schema expected by v2.7
 
 Field names are case-sensitive in API and automation mappings. Use these exact names unless you also update the code.
 
@@ -14,6 +14,7 @@ Required by runtime ordering:
 - `Category` — link/multiple select as currently configured
 - `Available collection points` — optional link to Collection Points
 - `Low stock threshold` — optional number; defaults to 5
+- `Late collection` — single select: `Thursday only`, `Friday okay`, `Weekend okay`; blank/missing defaults to Thursday only
 
 `Available stock` is the sole stock source used by the order endpoint.
 
@@ -29,6 +30,7 @@ Required:
 - `Current credit`
 - `Weekly commitment`
 - `Collection point`
+- `Preferred collection day` — single select: Thursday / Friday / Saturday / Sunday
 - `Payment reference` — unique BACS reference; code falls back to `RC-{row ID}`
 - `Mollie payment URL` — optional hosted payment URL shown only when the member is below zero
 
@@ -49,8 +51,11 @@ Required:
 - `Name`
 - `Active`
 - `Available to collect here`
-- `Orders close`
+- `Thursday collection time` (legacy `Collection time` is accepted as a fallback)
+- optional `Friday collection time`, `Saturday collection time`, `Sunday collection time`
 - address/content fields already used by the site
+
+The website uses a single global deadline of Wednesday 6pm.
 
 ## Web Orders
 
@@ -60,6 +65,10 @@ Writable by the website:
 - `Member` — link to Members
 - `Order week` — text
 - `Collection point` — link to Collection Points
+- `Fulfilment date` — Thursday delivery date
+- `Collection date` — customer collection date
+- `Collection day` — selected weekday
+- `Collection time` — selected time/window
 - `Status` — single select
 - `Client request ID` — text
 - `Item JSON` — long text
