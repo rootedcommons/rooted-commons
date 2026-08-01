@@ -345,3 +345,15 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .card-gallery-dot{width:.42rem;height:.42rem;border-radius:999px;background:color-mix(in srgb,var(--primary) 28%,transparent)}
 .card-gallery-dot.active{background:var(--primary)}
 @media (hover:none){.card-gallery-arrow{display:none}}
+
+/* v2.6.6 product-card information layout */
+.product-title-row{display:flex;align-items:baseline;justify-content:space-between;gap:1rem}
+.product-title-row h3{margin:.05rem 0 .35rem;min-width:0}
+.product-title-row .product-size{flex:0 0 auto;font-size:1rem;font-weight:700;opacity:.8;padding:0;text-align:right;white-space:nowrap}
+.product-origin{font-size:.9rem;line-height:1.35;opacity:.82;margin:.05rem 0!important}
+.product-secondary-origin{display:none}
+.product-copy>.product-certifications{justify-content:flex-start;margin:auto 0 .55rem;min-height:2.2rem}
+.product-transaction-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:0;padding-top:.85rem;border-top:1px solid color-mix(in srgb,var(--border) 72%,transparent)}
+.product-transaction-row .product-price{font-size:1.3rem;line-height:1;font-weight:700;text-align:left;white-space:nowrap}
+.product-transaction-row .quantity-control{margin:0;align-self:auto}
+@media(max-width:650px){.product-title-row{gap:.55rem}.product-title-row .product-size{font-size:.92rem}.product-transaction-row .product-price{font-size:1.18rem}}

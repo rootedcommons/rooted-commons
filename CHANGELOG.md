@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.6.6 — Product card layout refinement
+
+- Combined `Origin` and `Secondary origin` into one sentence on product cards, separated by a comma and ending with a full stop.
+- Moved product weight/size to the top-right of the product name and increased its visual prominence slightly.
+- Moved the price to the bottom-left of the card, aligned on the same row as the quantity control.
+- Kept certification logos above the purchasing row.
+
 ## 2.6.5 — Optional card image galleries
 
 - Added optional `Image 2` and `Image 3` fields for grouped content cards.

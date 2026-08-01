@@ -64,32 +64,30 @@ const displayProducts = filtered.map((product) => {
         ? <button class="product-image-button" type="button" data-open-product aria-label={`More information about ${product.name}`}><img src={product.image || '/images/placeholder.svg'} alt="" loading="lazy" /></button>
         : <img src={product.image || '/images/placeholder.svg'} alt="" loading="lazy" />}
       <div class="product-copy">
-        <h3>{product.hasDetails ? <button type="button" class="product-title-button" data-open-product>{product.name}</button> : product.name}</h3>
-        {product.origin && <p class="product-origin">{product.origin}</p>}
-        {product.secondaryOrigin && <p class="product-secondary-origin">{product.secondaryOrigin}</p>}
+        <div class="product-title-row">
+          <h3>{product.hasDetails ? <button type="button" class="product-title-button" data-open-product>{product.name}</button> : product.name}</h3>
+          {product.size && <span class="product-size">{product.size}</span>}
+        </div>
+        {(product.origin || product.secondaryOrigin) && <p class="product-origin">{[product.origin, product.secondaryOrigin].filter(Boolean).join(', ')}.</p>}
         <p class="stock-warning stock-warning-out" data-stock-out hidden={!product.outOfStock}>Out of stock</p>
         <p class="stock-warning" data-stock-low hidden={!product.lowStock}>Low stock — <span data-stock-count>{product.availableStock}</span> left</p>
 
+        {product.certifications.length > 0 && <div class="product-certifications" aria-label="Certifications">
+          {product.certifications.map((certification) => {
+            const logo = certificationLogos[String(certification).toLowerCase()];
+            return logo
+              ? <img class="certification-logo" src={logo} alt={certification} title={certification} loading="lazy" />
+              : <span class="certification-text" title={certification}>{certification}</span>;
+          })}
+        </div>}
+
         <div class="product-transaction-row">
-          <div class="product-card-left">
-            <span class="product-size">{product.size}</span>
-            {product.certifications.length > 0 && <div class="product-certifications" aria-label="Certifications">
-              {product.certifications.map((certification) => {
-                const logo = certificationLogos[String(certification).toLowerCase()];
-                return logo
-                  ? <img class="certification-logo" src={logo} alt={certification} title={certification} loading="lazy" />
-                  : <span class="certification-text" title={certification}>{certification}</span>;
-              })}
-            </div>}
-          </div>
-          <div class="product-buying">
-            <strong class="product-price">{money.format(product.priceNumber || 0)}</strong>
-            {showControls && <div class="quantity-control quantity-control-solid" data-quantity-control hidden={product.outOfStock} aria-label={`Quantity of ${product.name}`}>
-              <button type="button" data-quantity-change="-1" aria-label="Remove one">−</button>
-              <output data-quantity>0</output>
-              <button type="button" data-quantity-change="1" aria-label="Add one">+</button>
-            </div>}
-          </div>
+          <strong class="product-price">{money.format(product.priceNumber || 0)}</strong>
+          {showControls && <div class="quantity-control quantity-control-solid" data-quantity-control hidden={product.outOfStock} aria-label={`Quantity of ${product.name}`}>
+            <button type="button" data-quantity-change="-1" aria-label="Remove one">−</button>
+            <output data-quantity>0</output>
+            <button type="button" data-quantity-change="1" aria-label="Add one">+</button>
+          </div>}
         </div>
       </div>
       {product.hasDetails && <template data-product-detail>
