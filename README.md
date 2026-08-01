@@ -1,4 +1,4 @@
-# Rooted Commons website v2.7.0
+# Rooted Commons website v2.7.1
 
 Astro website and restricted server functions for Rooted Commons. Baserow is the operational data source; Xero is the payment source; the web host stores no authoritative business state.
 
@@ -26,7 +26,7 @@ The website does not create Stock Movement or Account Transactions rows. There a
 - Idempotent submission using `Client request ID`.
 - Historical unit prices copied into Stock Movement by Baserow automation.
 - Xero Receive Money design for 15-minute Baserow polling.
-- Shared Wednesday 6pm weekly order deadline with Thursday fulfilment and optional later customer collection slots.
+- Shared Wednesday 18.00 weekly order deadline with Thursday delivery and optional later customer collection slots.
 
 ## Build from scratch
 

@@ -84,6 +84,26 @@ function normalized(value: string, fallback: string) {
   return result === 'centre' ? 'center' : result;
 }
 
+
+function cleanCollectionTime(value: string) {
+  const raw = String(value || '')
+    .trim()
+    .replace(/^(?:thursday|friday|saturday|sunday)\s*[-–—·:]?\s*/i, '')
+    .replace(/[–—]/g, '-');
+  const range = raw.match(/^(\d{1,2})(?:[:.](\d{2}))?\s*(am|pm)?\s*-\s*(\d{1,2})(?:[:.](\d{2}))?\s*(am|pm)?$/i);
+  if (!range) return raw.replace(/(\d{1,2}):(\d{2})/g, '$1.$2');
+  let [, h1, m1 = '00', ap1 = '', h2, m2 = '00', ap2 = ''] = range;
+  ap1 = ap1.toLowerCase(); ap2 = ap2.toLowerCase();
+  if (!ap1 && ap2) ap1 = ap2;
+  const to24 = (hour: string, suffix: string) => {
+    let h = Number(hour);
+    if (suffix === 'pm' && h < 12) h += 12;
+    if (suffix === 'am' && h === 12) h = 0;
+    return h;
+  };
+  return `${to24(h1, ap1)}.${m1}-${to24(h2, ap2)}.${m2}`;
+}
+
 function heroImageFit(value: string) {
   const normalizedValue = normalized(value, 'fill-frame');
   if (normalizedValue === 'show-whole-image' || normalizedValue === 'contain') return 'contain';
@@ -322,14 +342,14 @@ export async function getSiteData() {
     image: fileUrl(row, 'Image'),
     link: text(row, 'Link', text(row, 'Website', text(row, 'URL'))),
     description: text(row, 'Description'),
-    collectionTime: text(row, 'Thursday collection time', text(row, 'Collection time', text(row, 'Collection slot', text(row, 'Collection day/time')))),
+    collectionTime: cleanCollectionTime(text(row, 'Thursday collection time', text(row, 'Collection time', text(row, 'Collection slot', text(row, 'Collection day/time'))))),
     collectionSlots: [
-      { day: 'Thursday', time: text(row, 'Thursday collection time', text(row, 'Collection time', text(row, 'Collection slot', text(row, 'Collection day/time')))) },
-      { day: 'Friday', time: text(row, 'Friday collection time') },
-      { day: 'Saturday', time: text(row, 'Saturday collection time') },
-      { day: 'Sunday', time: text(row, 'Sunday collection time') }
+      { day: 'Thursday', time: cleanCollectionTime(text(row, 'Thursday collection time', text(row, 'Collection time', text(row, 'Collection slot', text(row, 'Collection day/time'))))) },
+      { day: 'Friday', time: cleanCollectionTime(text(row, 'Friday collection time')) },
+      { day: 'Saturday', time: cleanCollectionTime(text(row, 'Saturday collection time')) },
+      { day: 'Sunday', time: cleanCollectionTime(text(row, 'Sunday collection time')) }
     ].filter((slot) => slot.time),
-    ordersClose: 'Wednesday 6pm',
+    ordersClose: 'Wednesday 18.00',
     availableCategories: linkedValues(raw(row, 'Available to collect here'))
   })).filter((point: any) => point.name && point.active);
 

@@ -76,3 +76,4 @@ id,Key,Area,Label,Content
 75,faq.09.answer,FAQs,Answer 9,"Your standing order is controlled through your bank, so you can amend or pause it when needed. Keep enough credit available for any orders you place."
 76,faq.10.question,FAQs,Question 10,How do local producers benefit?
 77,faq.10.answer,FAQs,Answer 10,"Rooted Commons gives producers a shared, lower-cost route to customers and more predictable weekly demand. Local producers are not charged fees to sell through the market, so they retain the value they create."
+78,checkout.freshness_warning,Checkout,Friday freshness warning,Fresh produce is packed on Thursday and may not be at its best by Friday.

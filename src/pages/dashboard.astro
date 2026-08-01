@@ -169,7 +169,7 @@ const membershipPerks=s.membershipPerks || [];
         document.querySelector('#dashboard-point-time').textContent=slot?`${slot.day} · ${slot.time}`:(point.collectionTime||'');
         document.querySelector('#dashboard-point-preference').textContent=slot?'Your preferred collection slot. Checkout will offer earlier options if your basket contains fresher items.':'';
         document.querySelector('#dashboard-point-address').textContent=point.address||'';
-        document.querySelector('#dashboard-point-deadline').textContent='Orders close Wednesday 6pm.';
+        document.querySelector('#dashboard-point-deadline').textContent='Orders close Wednesday 18.00.';
         const pointLink=document.querySelector('#dashboard-point-link');
         pointLink.hidden=!point.link;
         if(point.link)pointLink.href=point.link;
@@ -239,7 +239,7 @@ const membershipPerks=s.membershipPerks || [];
       document.querySelector('#dashboard-point-time').textContent=preferredSlot?`${preferredSlot.day} · ${preferredSlot.time}`:(point.collectionTime||'');
       document.querySelector('#dashboard-point-preference').textContent=preferredSlot?'Your preferred collection slot. Checkout confirms what is available for each basket.':'';
       document.querySelector('#dashboard-point-address').textContent=point.address||'';
-      document.querySelector('#dashboard-point-deadline').textContent='Orders close Wednesday 6pm.';
+      document.querySelector('#dashboard-point-deadline').textContent='Orders close Wednesday 18.00.';
       const pointLink=document.querySelector('#dashboard-point-link');
       if(point.link){pointLink.href=point.link;pointLink.hidden=false;}
       document.querySelector('#dashboard-founder-level').textContent=member.founderBadge||'Rooted Commons member';

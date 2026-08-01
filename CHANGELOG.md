@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.7.1 — 2026-08-01
+
+- Removed the Web Orders fulfilment-date snapshot; Thursday delivery remains an operational constant.
+- Standardised collection windows on 24-hour dotted notation such as `9.00-16.00` and `10.00-16.30`; day names are now added by the interface rather than stored in time fields.
+- Fixed duplicated day labels such as `Thursday · Thursday 17.00-19.00`.
+- Replaced the horizontal product subcategory tabs with a `Filter` dropdown beside `Sort by`.
+- Added product amount/weight immediately after product names in the basket and checkout summaries.
+- Kept member preferred collection day as a preference while checkout validates the basket against Thursday/Friday/weekend suitability.
+
 ## 2.7.0 — Shared layout and flexible collection slots
 
 - Standardised the site-wide content maximum to the Orders catalogue width and aligned hero, sections, category navigation, member summary and product grid through shared inner wrappers.

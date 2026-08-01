@@ -389,7 +389,7 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 
 .product-size{display:block;margin:0 0 .2rem!important;padding:0!important;font-size:1rem;font-weight:650;opacity:.76}
 .product-copy:has(.product-certifications) .product-certifications{margin-top:auto;margin-bottom:0;min-height:0}
-.product-copy:has(.product-certifications) .product-transaction-row{margin-top:0;padding-top:.45rem}
+.product-copy:has(.product-certifications) .product-transaction-row{margin-top:0;padding-top:0}
 .product-transaction-row{gap:.75rem}
 
 .member-summary{width:100%;max-width:none;margin:0 0 1.25rem}
@@ -420,3 +420,10 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 @media(max-width:640px){.dashboard-shell,.checkout-shell-wide{padding-inline:1rem}}
 .collection-freshness-warning{margin:.8rem 0 0;padding:.7rem .8rem;border-left:3px solid var(--primary);background:rgba(255,255,255,.3);font-weight:650}
 :root{--border:var(--line)}
+
+/* v2.7.1: compact catalogue filtering */
+.filter-control{display:flex;align-items:center;gap:.55rem;white-space:nowrap}
+.filter-control select{font:inherit;color:inherit;background:white;border:1px solid var(--line);padding:.75rem 2.4rem .75rem .85rem}
+.shop-controls{display:grid;grid-template-columns:minmax(220px,1fr) auto auto;align-items:center;gap:1rem}
+.shop-controls input{width:100%;min-width:0}
+@media(max-width:760px){.shop-controls{grid-template-columns:1fr 1fr}.shop-controls input{grid-column:1/-1}.filter-control,.sort-control{justify-content:space-between}.filter-control select,.sort-control select{flex:1;min-width:0}}

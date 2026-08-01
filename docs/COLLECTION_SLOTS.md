@@ -1,37 +1,36 @@
 # Collection slots
 
-Rooted Commons has one weekly order deadline: **Wednesday at 6pm**. Deliveries to collection points are made on Thursday. Individual collection points can then offer later customer collection windows.
+Rooted Commons has one weekly order deadline: **Wednesday at 18.00**. Orders are delivered to collection points on Thursday, but customers may collect later where the collection point and basket allow it.
 
 ## Baserow setup
 
 ### Collection Points
-Add or use these text fields:
-- `Thursday collection time` — e.g. `5–7pm`
-- `Friday collection time` — leave blank if unavailable
-- `Saturday collection time` — leave blank if unavailable
-- `Sunday collection time` — leave blank if unavailable
+Use these single-line text fields:
+- `Thursday collection time` — e.g. `17.00-19.00`
+- `Friday collection time` — e.g. `9.00-16.00`; blank if unavailable
+- `Saturday collection time` — e.g. `10.00-16.30`; blank if unavailable
+- `Sunday collection time` — blank if unavailable
 
-The old `Collection time` field is still accepted as a fallback for Thursday during migration.
+Times are stored and displayed in **24-hour dotted notation**: `9.00-16.00`, `10.00-16.30`, `17.00-19.00`. Do not include the day name in these fields; the site adds it automatically. The legacy `Collection time` field is still accepted as a Thursday fallback during migration.
 
 ### Products
-Add `Late collection` as a single select with exactly:
+Use `Late collection` as a single select with exactly:
 - `Thursday only`
 - `Friday okay`
 - `Weekend okay`
 
-The code defaults to **Thursday only** if the field is blank or missing. This is deliberately conservative. Cupboard staples and refills can normally be set to `Weekend okay`; fresh or short-lived products should use the appropriate earlier limit.
+The code defaults to **Thursday only** if the field is blank or missing. Fresh produce that may be collected Friday should use `Friday okay`; it will never be offered for Saturday or Sunday collection. Cupboard staples/refills that can wait until the weekend can use `Weekend okay`.
 
 ### Members
-Add `Preferred collection day` as a single select: `Thursday`, `Friday`, `Saturday`, `Sunday`. The dashboard and Orders member bar use this as the member's default preference. Checkout still validates the basket and only offers suitable slots.
+Use `Preferred collection day` as a single select: `Thursday`, `Friday`, `Saturday`, `Sunday`. It is a preference only. Checkout validates it against the selected collection point and the most restrictive product in the basket.
 
 ### Web Orders
-Add:
-- `Fulfilment date` (Date)
-- `Collection date` (Date)
-- `Collection day` (Single line text)
-- `Collection time` (Single line text)
+Use these immutable snapshot fields:
+- `Collection date` — Date
+- `Collection day` — Single line text
+- `Collection time` — Single line text
 
-These are immutable order snapshots.
+There is no fulfilment-date field: operational delivery is always Thursday.
 
 ## Rollover notice
-From Wednesday 6pm until Monday, the Orders page displays a highlighted message explaining that this week's collection has closed and that the new order is for collection from the following Thursday. Dates are calculated dynamically.
+From Wednesday 18.00 until Monday, the Orders page displays a highlighted notice explaining that collection for the current week has closed and the order is for collection from the following Thursday.

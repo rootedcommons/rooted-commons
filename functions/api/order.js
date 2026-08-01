@@ -69,7 +69,6 @@ export async function onRequestPost({ request, env }) {
         total: duplicateTotal,
         closingCredit: Math.round((currentCredit - duplicateTotal) * 100) / 100,
         collectionPoint: linkedValues(duplicate['Collection point'])[0],
-        fulfilmentDate: unwrap(duplicate['Fulfilment date']),
         collectionDate: unwrap(duplicate['Collection date']),
         collectionDay: unwrap(duplicate['Collection day']),
         collectionTime: unwrap(duplicate['Collection time']),
@@ -170,9 +169,9 @@ export async function onRequestPost({ request, env }) {
     }
     const orderNumber = `${prefix}${suffix}`;
     const submittedAt = new Date().toISOString();
-    const fulfilment = new Date(`${cycle.fulfilmentDate}T12:00:00Z`);
+    const marketThursday = new Date(`${cycle.marketThursday}T12:00:00Z`);
     const offset = dayRank[requestedCollectionDay] ?? 0;
-    const collectionDateObj = new Date(fulfilment.getTime() + offset * 86400000);
+    const collectionDateObj = new Date(marketThursday.getTime() + offset * 86400000);
     const collectionDate = collectionDateObj.toISOString().slice(0,10);
     const movementDate = submittedAt.replace(/\.\d{3}Z$/, 'Z');
     const stockMovementRows = lines.map((line) => ({
@@ -191,7 +190,6 @@ export async function onRequestPost({ request, env }) {
       'Order source': 'Website',
       'Order week': week,
       'Collection point': [selectedPoint.id],
-      'Fulfilment date': cycle.fulfilmentDate,
       'Collection date': collectionDate,
       'Collection day': requestedCollectionDay,
       'Collection time': selectedSlot.time,
@@ -212,7 +210,6 @@ export async function onRequestPost({ request, env }) {
       startingCredit,
       closingCredit: Math.round((startingCredit - total) * 100) / 100,
       collectionPoint: unwrap(selectedPoint.Name),
-      fulfilmentDate: cycle.fulfilmentDate,
       collectionDate,
       collectionDay: requestedCollectionDay,
       collectionTime: selectedSlot.time,

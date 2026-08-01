@@ -72,14 +72,34 @@ export function tokenValid(member, token) {
   return !expiry || new Date(expiry).getTime() > Date.now();
 }
 
+
+function cleanCollectionTime(value = '') {
+  const raw = String(value || '')
+    .trim()
+    .replace(/^(?:thursday|friday|saturday|sunday)\s*[-–—·:]?\s*/i, '')
+    .replace(/[–—]/g, '-');
+  const range = raw.match(/^(\d{1,2})(?:[:.](\d{2}))?\s*(am|pm)?\s*-\s*(\d{1,2})(?:[:.](\d{2}))?\s*(am|pm)?$/i);
+  if (!range) return raw.replace(/(\d{1,2}):(\d{2})/g, '$1.$2');
+  let [, h1, m1 = '00', ap1 = '', h2, m2 = '00', ap2 = ''] = range;
+  ap1 = ap1.toLowerCase(); ap2 = ap2.toLowerCase();
+  if (!ap1 && ap2) ap1 = ap2;
+  const to24 = (hour, suffix) => {
+    let h = Number(hour);
+    if (suffix === 'pm' && h < 12) h += 12;
+    if (suffix === 'am' && h === 12) h = 0;
+    return h;
+  };
+  return `${to24(h1, ap1)}.${m1}-${to24(h2, ap2)}.${m2}`;
+}
+
 export function publicCollectionPoint(point) {
   if (!point) return null;
-  const thursdayTime = unwrap(point['Thursday collection time'] || point['Collection time'] || point['Collection slot'] || point['Collection day/time']);
+  const thursdayTime = cleanCollectionTime(unwrap(point['Thursday collection time'] || point['Collection time'] || point['Collection slot'] || point['Collection day/time']));
   const collectionSlots = [
     { day:'Thursday', time:thursdayTime },
-    { day:'Friday', time:unwrap(point['Friday collection time']) },
-    { day:'Saturday', time:unwrap(point['Saturday collection time']) },
-    { day:'Sunday', time:unwrap(point['Sunday collection time']) }
+    { day:'Friday', time:cleanCollectionTime(unwrap(point['Friday collection time'])) },
+    { day:'Saturday', time:cleanCollectionTime(unwrap(point['Saturday collection time'])) },
+    { day:'Sunday', time:cleanCollectionTime(unwrap(point['Sunday collection time'])) }
   ].filter(slot => slot.time);
   return {
     id: Number(point.id),
@@ -90,7 +110,7 @@ export function publicCollectionPoint(point) {
     link: unwrap(point.Link || point.Website || point.URL),
     collectionTime: thursdayTime,
     collectionSlots,
-    ordersClose: 'Wednesday 6pm',
+    ordersClose: 'Wednesday 18.00',
     availableCategories: linkedValues(point['Available to collect here'])
   };
 }
@@ -148,7 +168,7 @@ export function ukMarketCycle(now = new Date()) {
   if(weekday===3 && (hour>18 || (hour===18 && minute>=0))) daysToThursday+=7;
   const base=new Date(Date.UTC(Number(parts.year),Number(parts.month)-1,Number(parts.day),12));
   base.setUTCDate(base.getUTCDate()+daysToThursday);
-  const fulfilmentDate=base.toISOString().slice(0,10);
+  const marketThursday=base.toISOString().slice(0,10);
   const rollover=(weekday===3 && (hour>18 || (hour===18 && minute>=0))) || weekday===4 || weekday===5 || weekday===6 || weekday===0;
-  return { fulfilmentDate, rollover, orderWeek:orderWeek(fulfilmentDate) };
+  return { marketThursday, rollover, orderWeek:orderWeek(marketThursday) };
 }

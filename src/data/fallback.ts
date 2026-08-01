@@ -110,6 +110,7 @@ export const fallbackInterfaceContent: Record<string, string> = {
   "checkout.join_button": "Become a member",
   "checkout.return_text": "Return to the shop",
   "checkout.success_heading": "Order confirmed",
+  "checkout.freshness_warning": "Fresh produce is packed on Thursday and may not be at its best by Friday.",
   "dashboard.loading": "Loading your membership…",
   "dashboard.market_eyebrow": "Your weekly market",
   "dashboard.credit_label": "Member credit",

@@ -1,4 +1,4 @@
-# Baserow schema expected by v2.7
+# Baserow schema expected by v2.7.1
 
 Field names are case-sensitive in API and automation mappings. Use these exact names unless you also update the code.
 
@@ -51,11 +51,13 @@ Required:
 - `Name`
 - `Active`
 - `Available to collect here`
-- `Thursday collection time` (legacy `Collection time` is accepted as a fallback)
+- `Thursday collection time`
 - optional `Friday collection time`, `Saturday collection time`, `Sunday collection time`
+
+Collection time fields contain **times only**, using 24-hour dotted notation such as `9.00-16.00`, `10.00-16.30` or `17.00-19.00`. Do not include the weekday in the field.
 - address/content fields already used by the site
 
-The website uses a single global deadline of Wednesday 6pm.
+The website uses a single global deadline of Wednesday 18.00.
 
 ## Web Orders
 
@@ -65,10 +67,9 @@ Writable by the website:
 - `Member` — link to Members
 - `Order week` — text
 - `Collection point` — link to Collection Points
-- `Fulfilment date` — Thursday delivery date
 - `Collection date` — customer collection date
 - `Collection day` — selected weekday
-- `Collection time` — selected time/window
+- `Collection time` — selected time/window, stored as single-line text in 24-hour dotted notation
 - `Status` — single select
 - `Client request ID` — text
 - `Item JSON` — long text
