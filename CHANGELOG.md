@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.6.4 — Editable links and lists
+
+- Added safe Markdown-style links in formatted Baserow text using `[link text](/path/)`.
+- Added simple bullet-list rendering for lines beginning with `-`, `*` or `•`.
+- Product cards now display the `Origin` field exactly as entered, followed by `Secondary origin`, with no generated “Grown in” fallback.
+
 ## 2.6.3 — Editable FAQ accordion
 
 - Added an accessible FAQ accordion for the `/faqs/` page.

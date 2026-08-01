@@ -39,7 +39,7 @@ const displayProducts = filtered.map((product) => {
   const outOfStock = product.available === false || availableStock < 1;
   const lowStock = !outOfStock && availableStock <= lowStockThreshold;
   const nutritionRows = nutritionRowsFor(product);
-  const origin = String(product.origin || '').trim() || (countries.length ? `Grown in ${countries.join(', ')}` : '');
+  const origin = String(product.origin || '').trim();
   const hasDetails = Boolean(product.expandedDescription || product.description || product.cropInfo || product.packagingAndDisposal || product.ingredients || product.allergens || product.storage || product.suggestedUses || nutritionRows.length);
   return { ...product, categories, subcategories, countries, certifications, availableStock, outOfStock, lowStock, nutritionRows, origin, hasDetails };
 });

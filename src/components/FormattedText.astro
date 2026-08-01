@@ -6,22 +6,80 @@ const {
 } = Astro.props;
 
 const value = String(text ?? '').replace(/\r\n?/g, '\n').trim();
-const paragraphs = value
-  ? value.split(/\n\s*\n+/).map((paragraph) => paragraph.trim()).filter(Boolean)
+const rawBlocks = value
+  ? value.split(/\n\s*\n+/).map((block) => block.trim()).filter(Boolean)
   : [];
+
+const safeHref = (href) => {
+  const value = String(href || '').trim();
+  if (/^(?:\/|#|https?:\/\/|mailto:|tel:)/i.test(value)) return value;
+  return '#';
+};
+
+const parseInline = (line) => {
+  const source = String(line ?? '');
+  const parts = [];
+  const pattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+  let cursor = 0;
+  let match;
+
+  while ((match = pattern.exec(source)) !== null) {
+    if (match.index > cursor) parts.push(source.slice(cursor, match.index));
+    parts.push({
+      type: 'link',
+      label: match[1],
+      href: safeHref(match[2])
+    });
+    cursor = pattern.lastIndex;
+  }
+
+  if (cursor < source.length) parts.push(source.slice(cursor));
+  return parts;
+};
+
+const blocks = rawBlocks.map((block) => {
+  const lines = block.split('\n').map((line) => line.trimEnd());
+  const nonEmptyLines = lines.filter((line) => line.trim());
+  const isList = nonEmptyLines.length > 0 && nonEmptyLines.every((line) => /^\s*(?:[-*•])\s+/.test(line));
+
+  if (isList) {
+    return {
+      type: 'list',
+      items: nonEmptyLines.map((line) => parseInline(line.replace(/^\s*(?:[-*•])\s+/, '')))
+    };
+  }
+
+  return {
+    type: 'paragraph',
+    lines: lines.map((line) => parseInline(line))
+  };
+});
+
 const Tag = as;
 ---
-{paragraphs.length > 0 && (
+{blocks.length > 0 && (
   <Tag class={className || undefined}>
-    {paragraphs.map((paragraph) => {
-      const lines = paragraph.split('\n');
-      return (
-        <p>
-          {lines.map((line, index) => (
-            <>{index > 0 && <br />}{line}</>
-          ))}
-        </p>
-      );
-    })}
+    {blocks.map((block) => block.type === 'list' ? (
+      <ul>
+        {block.items.map((item) => (
+          <li>
+            {item.map((part) => typeof part === 'string'
+              ? part
+              : <a href={part.href}>{part.label}</a>)}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>
+        {block.lines.map((line, lineIndex) => (
+          <>
+            {lineIndex > 0 && <br />}
+            {line.map((part) => typeof part === 'string'
+              ? part
+              : <a href={part.href}>{part.label}</a>)}
+          </>
+        ))}
+      </p>
+    ))}
   </Tag>
 )}
