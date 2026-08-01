@@ -1,266 +1,281 @@
-Table,Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes
-Site Settings,Site title,Single line text,Yes,Public site,Site name used in page metadata and header,,Primary content row is the first row with this or Header logo
-Site Settings,Header text,Long text,No,Header,Optional header copy,,
-Site Settings,Footer text,Long text,No,Footer,Footer copy,,
-Site Settings,Join button text,Single line text,No,Header,Legacy/default joining button label,,
-Site Settings,Join button URL,URL,No,Header,Legacy/default joining button destination,,
-Site Settings,Header button text,Single line text,No,Header,Primary header action label,,Code also accepts Header Button Text
-Site Settings,Header Button URL,URL,No,Header,Primary header action destination,,Code also accepts Header button URL
-Site Settings,Background colour,Single line text,No,Theme,Site background CSS colour,,Hex recommended
-Site Settings,Primary colour,Single line text,No,Theme,Primary CSS colour,,Hex recommended
-Site Settings,Highlight colour,Single line text,No,Theme,Card and panel highlight colour,,Hex recommended
-Site Settings,Border colour,Single line text,No,Theme,Border CSS colour,,Hex recommended
-Site Settings,Header logo,File,No,Header,Header logo image,,One image
-Site Settings,Footer logo,File,No,Footer,Footer logo image,,One image
-Site Settings,Contact email,Email,No,Footer,Public contact email,,
-Site Settings,Tagline,Single line text,No,Header/footer,Site tagline,,
-Site Settings,Header logo size,Single select,No,Header,Header logo scale,small; medium; large,
-Site Settings,Footer logo size,Single select,No,Footer,Footer logo scale,small; medium; large,
-Site Settings,Header height,Single select,No,Header,Header vertical spacing,compact; medium; large,
-Site Settings,Footer height,Single select,No,Footer,Footer vertical spacing,compact; medium; large,
-Site Settings,Navigation text size,Single select,No,Header,Navigation typography,small; medium; large,
-Site Settings,Button text size,Single select,No,Global UI,Button typography,small; medium; large,
-Site Settings,Basket heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Basket empty text,Long text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Basket total label,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Basket checkout button,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Basket notice,Long text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Basket floating label,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout basket heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout empty heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout empty text,Long text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout verify heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout verify body,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout email label,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout email button,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout confirm heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout confirm button,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout return text,Long text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Checkout success heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,
-Site Settings,Navigation label 1,Single line text,No,Header,Navigation link label,,
-Site Settings,Navigation URL 1,URL,No,Header,Navigation link destination,,
-Site Settings,Navigation label 2,Single line text,No,Header,Navigation link label,,
-Site Settings,Navigation URL 2,URL,No,Header,Navigation link destination,,
-Site Settings,Navigation label 3,Single line text,No,Header,Navigation link label,,
-Site Settings,Navigation URL 3,URL,No,Header,Navigation link destination,,
-Site Settings,Navigation label 4,Single line text,No,Header,Navigation link label,,
-Site Settings,Navigation URL 4,URL,No,Header,Navigation link destination,,
-Site Settings,Navigation label 5,Single line text,No,Header,Navigation link label,,
-Site Settings,Navigation URL 5,URL,No,Header,Navigation link destination,,
-Site Settings,Soil Association logo,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
-Site Settings,EU Organic logo,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
-Site Settings,Wildfarmed logo,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
-Site Settings,Organic Food Federation logo,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
-Site Settings,Founder 10 badge,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
-Site Settings,Founder 25 badge,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
-Site Settings,Founder 50 badge,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option
-Site Settings,Perk 1 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,
-Site Settings,Perk 1 text,Single line text,No,Dashboard,Membership perk wording,,
-Site Settings,Perk 2 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,
-Site Settings,Perk 2 text,Single line text,No,Dashboard,Membership perk wording,,
-Site Settings,Perk 3 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,
-Site Settings,Perk 3 text,Single line text,No,Dashboard,Membership perk wording,,
-Site Settings,Perk 4 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,
-Site Settings,Perk 4 text,Single line text,No,Dashboard,Membership perk wording,,
-Site Settings,Perk 5 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,
-Site Settings,Perk 5 text,Single line text,No,Dashboard,Membership perk wording,,
-Site Settings,Increase commitment button text,Single line text,No,Dashboard,BACS increase button label,,
-Site Settings,Increase commitment button URL,URL,No,Dashboard,BACS increase button destination,,
-Site Settings,Bank account name,Single line text,No,Dashboard/email,Standing-order account name,,
-Site Settings,Bank sort code,Single line text,No,Dashboard/email,Standing-order sort code,,Keep as text
-Site Settings,Bank account number,Single line text,No,Dashboard/email,Standing-order account number,,Keep as text
-Pages,Slug,Single line text,Yes,Routing,Page URL slug,,Primary field recommended
-Pages,Title,Single line text,Yes,Page hero,Main page title,,
-Pages,Intro,Long text,No,Page hero,Introductory copy,,
-Pages,Button text,Single line text,No,Page hero,Hero action label,,
-Pages,Button URL,URL,No,Page hero,Hero action destination,,
-Pages,Hero image,File,No,Page hero,Hero image,,One image
-Pages,Subtitle,Single line text,No,Page hero,Hero subtitle,,
-Pages,Visible,Boolean,Yes,Routing,Whether page is published,,Defaults true
-Pages,SEO title,Single line text,No,Metadata,Browser/search title,,
-Pages,SEO description,Long text,No,Metadata,Search description,,
-Pages,Hero layout,Single select,No,Page hero,Hero layout,text-left; text-right; text-only; banner; none,
-Pages,Title size,Single select,No,Page hero,Title scale,Very small; Small; Medium; Large; Very large,
-Pages,Subtitle size,Single select,No,Page hero,Subtitle scale,Very small; Small; Medium; Large; Very large,
-Pages,Intro size,Single select,No,Page hero,Intro scale,Very small; Small; Medium; Large; Very large,
-Pages,Hero image shape,Single select,No,Page hero,Responsive image frame shape,Landscape; Square; Portrait; Natural,Uses aspect ratio rather than a fixed height
-Pages,Hero image fit,Single select,No,Page hero,Image crop behaviour,Fill frame; Show whole image,Translated to CSS object-fit: cover / contain
-Pages,Hero image alignment,Single select,No,Page hero,Image focal alignment,Top left; Top centre; Top right; Centre left; Centre; Centre right; Bottom left; Bottom centre; Bottom right,Controls the visible focal area when the frame crops the image
-Pages,Sections,Link to table,No,Baserow administration,Backlink to Sections,Sections,Not read directly
-Pages,Hero alignment,Single select,No,Page hero,Text alignment,left; center; right,
-Pages,Hero padding,Single select,No,Page hero,Hero spacing,small; medium; large,
-Pages,Hero width,Single select,No,Page hero,Hero content width,Narrow; Standard; Wide; Full,Wide uses the same maximum width as Sections
-Pages,Hero gap,Single select,No,Page hero,Responsive gap between hero text and image,Compact; Normal; Wide,On stacked mobile layouts this becomes a consistent vertical gap
-Sections,Key,Single line text,Yes,Section rendering,Stable internal section identifier,,Primary field recommended
-Sections,Page,Link to table,Yes,Section rendering,Page containing the section,Pages,
-Sections,Body,Long text,No,Section rendering,Main section copy,,
-Sections,Heading,Single line text,No,Section rendering,Section heading,,
-Sections,Image,File,No,Section rendering,Section image,,One image
-Sections,Image 2,File,No,Card mini-gallery,Optional second image for a grouped content card,,"When present with another image, the card becomes swipeable"
-Sections,Image 2 alt text,Single line text,No,Accessibility,Alternative text for the second card image,,Describe the image briefly; leave blank only if decorative
-Sections,Image 3,File,No,Card mini-gallery,Optional third image for a grouped content card,,"When present with another image, the card becomes swipeable"
-Sections,Image 3 alt text,Single line text,No,Accessibility,Alternative text for the third card image,,Describe the image briefly; leave blank only if decorative
-Sections,Order,Number,Yes,Section ordering,Display order,,Integer
-Sections,Visible,Boolean,Yes,Section filtering,Whether section is displayed,,Defaults true
-Sections,Section type,Single select,No,Section rendering,Renderer/layout type,text; split; cards; grid; gallery; cta; banner; spacer,Use types configured in SectionRenderer
-Sections,Eyebrow,Single line text,No,Section rendering,Small heading above title,,
-Sections,Subheading,Single line text,No,Section rendering,Secondary heading,,
-Sections,Image alt text,Single line text,No,Accessibility,Alternative image text,,
-Sections,Button text,Single line text,No,Section rendering,Action label,,
-Sections,Button URL,URL,No,Section rendering,Action destination,,
-Sections,Heading size,Single select,No,Styling,Heading scale,small; medium; large,
-Sections,Subheading size,Single select,No,Styling,Subheading scale,small; medium; large,
-Sections,Body size,Single select,No,Styling,Body text scale,small; medium; large,
-Sections,Alignment,Single select,No,Styling,Text alignment,left; center; right,
-Sections,Background style,Single select,No,Styling,Section background,default; highlight; primary,
-Sections,Columns,Number,No,Grid styling,Grid column count,1 to 4,Code clamps to 1–4
-Sections,Image size,Single select,No,Styling,Image scale,small; medium; large; full-width,
-Sections,Image fit,Single select,No,Styling,Image crop,cover; contain,
-Sections,Button size,Single select,No,Styling,Button scale,small; medium; large,
-Sections,Space above,Single select,No,Styling,Top spacing,none; small; medium; large,
-Sections,Space below,Single select,No,Styling,Bottom spacing,none; small; medium; large,
-Sections,Grid source,Single select,No,Grid rendering,Content source,products; collection-points,
-Sections,Grid category,Single select,No,Grid rendering,Legacy product category filter,,
-Sections,Catalogue category,Single select,No,Orders catalogue,Product category filter,,Values should match Products Category
-Sections,Image position,Single select,No,Split layout,Image side,left; right,
-Sections,Button visible,Boolean,No,Section rendering,Explicit button visibility,,Defaults from Button text
-Sections,Group key,Single line text,No,Grouped sections,Groups related cards/content,,
-Sections,Image caption,Long text,No,Section rendering,Caption below image,,
-Products,Code,Single line text,Yes,Catalogue/order payload,Stable product/SKU code,,Primary or unique recommended
-Products,Size,Single line text,No,Product card,Pack amount shown above logos,,Code also accepts lowercase size
-Products,Product,Single line text,Yes,Catalogue/order payload,Product name,,Primary field recommended
-Products,Producer,Single line text,No,Data/legacy,Producer name,,Not currently displayed
-Products,Member price,Number,Yes,Catalogue/order validation,Selling price,Currency; 2 decimals,Runtime source of truth
-Products,Description,Long text,No,Product popup,Main description fallback when Expanded description is blank,,No longer shown on card
-Products,Expanded description,Long text,No,Product popup,Preferred single main popup description,,
-Products,Origin,Long text,No,Product card,Primary provenance line,,Falls back to Grown in
-Products,Secondary origin,Long text,No,Product card,Second provenance/processing line,,
-Products,Crop info,Long text,No,Product popup,General crop or ingredient context,,
-Products,Packaging and disposal,Long text,No,Product popup,Packaging material and disposal guidance,,
-Products,Ingredients,Long text,No,Product popup,Current ingredient declaration/summary,,
-Products,Allergens,Long text,No,Product popup,Allergen information,,
-Products,Storage,Long text,No,Product popup,Storage guidance,,
-Products,Suggested uses,Long text,No,Product popup,Preparation/use ideas,,
-Products,Why we stock it,Long text,No,Legacy data only,Former curation note,,No longer displayed
-Products,Source URL,URL,No,Administration,Private traceability source,,Not displayed
-Products,Image,File,No,Product card/popup,Product image,,One image
-Products,Product Link,URL,No,Legacy/data,External product link,,Code also accepts Link
-Products,Popularity,Number,No,Catalogue sorting,Primary sort order,,Falls back to Display order then Order
-Products,Display order,Number,No,Catalogue sorting,Fallback sort order,,
-Products,Order,Number,No,Catalogue sorting,Legacy fallback sort order,,
-Products,Available,Boolean,Yes,Catalogue/order validation,Whether product may be ordered,,Defaults true
-Products,Available stock,Rollup,Yes,Catalogue/order validation,Current sellable units,"SUM of linked Stock Movement Quantity change, filtered Active if configured",Sole stock source
-Products,Low stock threshold,Number,No,Catalogue,Threshold for low-stock warning,,Defaults 5
-Products,Category,Link to table or Multiple select,Yes,Catalogue/filtering,Top-level categories,Use existing Category table or controlled values,May hold multiple values
-Products,Subcategory,Link to table or Multiple select,No,Catalogue/filtering,Secondary categories,Controlled values,May hold multiple values
-Products,Available collection points,Link to table,No,Order validation,Restricts product to collection points,Collection Points; allow multiple,Blank means all compatible points
-Products,Stock Movement,Link to table,No,Stock rollup,Backlink used for stock rollup,Stock Movement,
-Products,Sections,Link to table,No,Baserow administration,Optional backlink to sections,Sections,Not read directly
-Products,Items per pack,Number,No,Administration,Wholesale pack quantity,,Not currently used by website
-Products,Current stock,Number/formula,No,Legacy,Legacy stock value,,Website uses Available stock
-Products,Grown in,Link to table or Multiple select,No,Card fallback/search,Origin countries/regions,Controlled origin values,Used only when Origin blank
-Products,Certification,Multiple select,No,Product card,Certification logos/text,Soil Association; EU Organic; Wildfarmed; Organic Food Federation,Exact labels map to Site Settings logos
-Products,Nutrition basis,Single select,No,Product popup,Nutrition column heading,Per 100 g; Per 100 ml; Per serving,Defaults to Per 100 g
-Products,Energy kJ,Number,No,Product popup,Energy in kilojoules,0 decimal places,Blank row is hidden
-Products,Energy kcal,Number,No,Product popup,Energy in kilocalories,0 decimal places,Blank row is hidden
-Products,Fat,Number,No,Product popup,Fat in grams,2 decimal places,Blank row is hidden
-Products,Saturates,Number,No,Product popup,Saturated fat in grams,2 decimal places,Blank row is hidden
-Products,Carbohydrate,Number,No,Product popup,Carbohydrate in grams,2 decimal places,Blank row is hidden
-Products,Sugars,Number,No,Product popup,Sugars in grams,2 decimal places,Blank row is hidden
-Products,Fibre,Number,No,Product popup,Fibre in grams,2 decimal places,Blank row is hidden
-Products,Protein,Number,No,Product popup,Protein in grams,2 decimal places,Blank row is hidden
-Products,Salt,Number,No,Product popup,Salt in grams,2 decimal places,Blank row is hidden
-Collection Points,Name,Single line text,Yes,Catalogue/checkout,Collection point name,,Primary field
-Collection Points,Address,Long text,No,Checkout/dashboard,Collection address,,
-Collection Points,Active,Boolean,Yes,Checkout validation,Whether point can be selected,,Defaults true
-Collection Points,Available to collect here,Multiple select,No,Order validation,Allowed product categories,Values must match Product Category,Blank permits all categories
-Collection Points,Image,File,No,Collection point cards,Location image,,One image
-Collection Points,Link,URL,No,Collection point cards,External location link,,Code also accepts Website or URL
-Collection Points,Description,Long text,No,Collection point cards,Location description,,
-Collection Points,Cupboard Staples,Link to table,No,Legacy/admin,Legacy product relationship,Products,Not read by code
-Collection Points,Members,Link to table,No,Admin,Backlink to members,Members,
-Members,Xero Contact ID,Single line text,No,Xero/member matching,Xero contact identifier,,May also be used for linked transaction matching
-Members,First name,Single line text,Yes,Dashboard/email,Member given name,,
-Members,Last name,Single line text,No,Administration,Member family name,,
-Members,Order token,Single line text,Yes,Authentication,Secure magic-link token,,Treat as secret
-Members,Active,Boolean,Yes,Authentication,Whether member can sign in/order,,
-Members,Email,Email,Yes,Authentication/email,Member email,,
-Members,Current credit,Rollup/formula or Number,Yes,Dashboard/order response,Current account balance,Typically SUM included Account Transactions,
-Members,Weekly commitment,Number,Yes,Dashboard,Standing-order commitment,Currency; 2 decimals,
-Members,Collection point,Link to table,Yes,Checkout/dashboard,Default collection point,Collection Points; one link,Website can update
-Members,Order token expiry,Date/time,No,Authentication,Expiry for secure token,,Blank means no expiry
-Members,Account Transactions,Link to table,No,Credit/admin,Backlink to transactions,Account Transactions,
-Members,Web Orders,Link to table,No,Order history/admin,Backlink to orders,Web Orders,
-Members,Payment reference,Single line text,No,Dashboard/email,Unique BACS payment reference,,Falls back to RC-{row ID}
-Members,Mollie payment URL,URL,No,Dashboard,Hosted top-up link,,Code also accepts Online payment URL
-Members,Member since,Date,No,Dashboard perks,Membership start date,,Code also accepts Joined date or Join date
-Members,Founder badge,Single select,No,Dashboard,Founder badge selection,10; 25; 50 or configured naming,Code also accepts Founder level / Membership badge
-Web Orders,Submitted at,Date/time,Yes,Order API/dashboard,Submission timestamp,,
-Web Orders,Order source,Single select,Yes,Order API,Origin of order,Website,
-Web Orders,Order week,Single line text,Yes,Order API,ISO ordering week,YYYY-Www,Used to prevent duplicate weekly orders
-Web Orders,Collection point,Link to table,Yes,Order API/dashboard,Chosen collection point,Collection Points,
-Web Orders,Item JSON,Long text,Yes,Automation,Server-generated order lines JSON,,
-Web Orders,Stock Movement JSON,Long text,Yes,Automation,Server-generated movement rows JSON,,
-Web Orders,Order total,Number,Yes,Order API/dashboard,Total charged,Currency; 2 decimals,
-Web Orders,Status,Single select,Yes,Order workflow,Processing state,Processing; Confirmed; Rejected; Cancelled; Ledger error,
-Web Orders,Order number,Single line text,Yes,Order workflow,Unique order reference,,Last three digits are customer-facing suffix
-Web Orders,Stock Movement,Link to table,No,Administration,Backlink to movements,Stock Movement,
-Web Orders,Account Transactions,Link to table,No,Administration,Backlink to ledger transaction,Account Transactions,
-Web Orders,Member,Link to table,Yes,Order API,Ordering member,Members,
-Web Orders,Email,Email,No,Automation/email,Snapshot of member email,,
-Web Orders,Client request ID,Single line text,Yes,Idempotency,Browser request identifier,,Combined with Member
-Web Orders,Confirmed at,Date/time,No,Automation,Processing completion time,,
-Web Orders,Processing error,Long text,No,Automation/admin,Error details,,
-Web Orders,Confirmation email sent,Boolean,No,Automation,Email completion flag,,
-Web Orders,Confirmation email sent at,Date/time,No,Automation,Email timestamp,,
-Stock Movement,Date,Date/time,Yes,Stock ledger,Movement date/time,,
-Stock Movement,Quantity change,Number,Yes,Stock ledger,Signed stock change,,Orders are negative
-Stock Movement,Unit price,Number,No,Stock ledger,Unit price at movement,Currency; 2 decimals,
-Stock Movement,Movement type,Single select,Yes,Stock ledger,Movement classification,Opening; Delivery; Adjustment; Wastage; Order,
-Stock Movement,Product code,Link to table,Yes,Stock ledger/order automation,Affected product,Products,Writable link
-Stock Movement,Reference,Single line text,No,Stock ledger,External or manual reference,,
-Stock Movement,Order,Link to table,No,Stock ledger,Related web order,Web Orders,Automation may resolve order number
-Stock Movement,Notes,Long text,No,Stock ledger,Administrative notes,,
-Stock Movement,Product name,Lookup,No,Stock ledger,Product name lookup,Lookup Product code → Product,Do not write
-Stock Movement,Idempotency key,Single line text,No,Automation,Prevents duplicate movement creation,,Strongly recommended unique
-Stock Movement,Active,Boolean,No,Stock rollup,Whether movement counts in stock,,Defaults true
-Account Transactions,Date,Date/time,Yes,Ledger/dashboard,Transaction date,,Code also reads Transaction date/Created on
-Account Transactions,Type,Single select,Yes,Ledger/dashboard,Transaction classification,Order charge; Payment; Refund; Adjustment; Xero payment,Order charge required for website
-Account Transactions,Amount,Number,Yes,Ledger/dashboard,Signed account amount,Currency; 2 decimals,Order charges negative; payments positive
-Account Transactions,Order,Link to table,No,Ledger,Related order,Web Orders,
-Account Transactions,Member,Link to table,Yes,Ledger/dashboard,Related member,Members,
-Account Transactions,Notes,Long text,No,Dashboard/admin,Transaction description,,Code also reads Description/Reference
-Account Transactions,Email,Email,No,Automation/admin,Member email snapshot,,
-Account Transactions,Transaction reference,Single line text,No,Dashboard/idempotency,External/internal reference,,
-Account Transactions,Included in credit,Boolean,Yes,Credit/dashboard,Whether transaction affects displayed credit,,Defaults true
-Account Transactions,Xero Transaction ID,Single line text,No,Xero sync,Xero transaction identifier,,
-Account Transactions,Xero Payment ID,Single line text,No,Xero sync,Xero payment identifier,,
-Account Transactions,Xero Contact ID,Single line text or Link,No,Xero/member matching,Xero contact identifier,,
-Account Transactions,Contact name,Single line text,No,Xero sync,Xero contact display name,,
-Account Transactions,Bank account,Single line text,No,Xero sync,Matched bank account,,
-Account Transactions,Match status,Single select,No,Xero sync,Matching result,Matched; Unmatched; Review,
-Account Transactions,Reconciled,Boolean,No,Xero sync,Xero reconciliation state,,
-Account Transactions,Status,Single select,No,Xero sync,Transaction status,Authorised; Paid; Voided; Deleted,Use values returned by integration
-Account Transactions,Imported at,Date/time,No,Xero sync,First import timestamp,,
-Account Transactions,Last updated from Xero,Date/time,No,Xero sync,Latest refresh timestamp,,
-Xero Sync State,Name,Single line text,Yes,Xero sync,State record name,,Primary field
-Xero Sync State,Last successful sync,Date/time,No,Xero sync,Most recent completed sync,,
-Xero Sync State,Last attempted sync,Date/time,No,Xero sync,Most recent attempt,,
-Xero Sync State,Last error,Long text,No,Xero sync,Latest error details,,
-Xero Sync State,Tenant ID,Single line text,No,Xero sync,Connected Xero tenant ID,,
-Xero Sync State,Consecutive failures,Number,No,Xero sync,Failure counter,,Integer
-Xero Sync State,Connection status,Single select,No,Xero sync,Connection health,Connected; Warning; Error; Disconnected,
-Interface Content,,,Yes,,,,
-Interface Content,,,No,,,,
-Interface Content,,,No,,,,
-Interface Content,,,Yes,,,,
-Pages,Hero button size,Single select,No,Page hero,Hero CTA size,Small; Medium; Large,Defaults Medium
-Products,Late collection,Single select,No,Checkout/order validation,Latest suitable collection timing,Thursday only; Friday okay; Weekend okay,Defaults Thursday only for safety
-Collection Points,Thursday collection time,Single line text,No,Checkout/dashboard,Thursday collection window,,"Falls back to legacy Collection time Use 24-hour dotted format, e.g. 9.00-16.00 or 10.00-16.30."
-Collection Points,Friday collection time,Single line text,No,Checkout/dashboard,Friday collection window,,"Blank means unavailable Use 24-hour dotted format, e.g. 9.00-16.00 or 10.00-16.30."
-Collection Points,Saturday collection time,Single line text,No,Checkout/dashboard,Saturday collection window,,"Blank means unavailable Use 24-hour dotted format, e.g. 9.00-16.00 or 10.00-16.30."
-Collection Points,Sunday collection time,Single line text,No,Checkout/dashboard,Sunday collection window,,"Blank means unavailable Use 24-hour dotted format, e.g. 9.00-16.00 or 10.00-16.30."
-Members,Preferred collection day,Single select,No,Dashboard/checkout,Member preferred collection day,Thursday; Friday; Saturday; Sunday,Validated against point and basket
-Web Orders,Collection date,Date,Yes,Order API,Customer collection date,,Immutable snapshot
-Web Orders,Collection day,Single line text,Yes,Order API,Selected collection weekday,,Immutable snapshot
-Web Orders,Collection time,Single line text,Yes,Order API,Selected collection time/window,,Immutable snapshot
+﻿Table file,Field name,Recommended Baserow type,Required by code,Code usage,Purpose,Options / linked table / formula,Notes,Table,Field,Suggested field type,Purpose / notes
+01-site-settings-fields.csv,Site title,Single line text,Yes,Public site,Site name used in page metadata and header,,Primary content row is the first row with this or Header logo,,,,
+01-site-settings-fields.csv,Header text,Long text,No,Header,Optional header copy,,,,,,
+01-site-settings-fields.csv,Footer text,Long text,No,Footer,Footer copy,,,,,,
+01-site-settings-fields.csv,Join button text,Single line text,No,Header,Legacy/default joining button label,,,,,,
+01-site-settings-fields.csv,Join button URL,URL,No,Header,Legacy/default joining button destination,,,,,,
+01-site-settings-fields.csv,Header button text,Single line text,No,Header,Primary header action label,,Code also accepts Header Button Text,,,,
+01-site-settings-fields.csv,Header Button URL,URL,No,Header,Primary header action destination,,Code also accepts Header button URL,,,,
+01-site-settings-fields.csv,Background colour,Single line text,No,Theme,Site background CSS colour,,Hex recommended,,,,
+01-site-settings-fields.csv,Primary colour,Single line text,No,Theme,Primary CSS colour,,Hex recommended,,,,
+01-site-settings-fields.csv,Highlight colour,Single line text,No,Theme,Card and panel highlight colour,,Hex recommended,,,,
+01-site-settings-fields.csv,Border colour,Single line text,No,Theme,Border CSS colour,,Hex recommended,,,,
+01-site-settings-fields.csv,Header logo,File,No,Header,Header logo image,,One image,,,,
+01-site-settings-fields.csv,Footer logo,File,No,Footer,Footer logo image,,One image,,,,
+01-site-settings-fields.csv,Contact email,Email,No,Footer,Public contact email,,,,,,
+01-site-settings-fields.csv,Tagline,Single line text,No,Header/footer,Site tagline,,,,,,
+01-site-settings-fields.csv,Header logo size,Single select,No,Header,Header logo scale,small; medium; large,,,,,
+01-site-settings-fields.csv,Footer logo size,Single select,No,Footer,Footer logo scale,small; medium; large,,,,,
+01-site-settings-fields.csv,Header height,Single select,No,Header,Header vertical spacing,compact; medium; large,,,,,
+01-site-settings-fields.csv,Footer height,Single select,No,Footer,Footer vertical spacing,compact; medium; large,,,,,
+01-site-settings-fields.csv,Navigation text size,Single select,No,Header,Navigation typography,small; medium; large,,,,,
+01-site-settings-fields.csv,Button text size,Single select,No,Global UI,Button typography,small; medium; large,,,,,
+01-site-settings-fields.csv,Basket heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,,,,,
+01-site-settings-fields.csv,Basket empty text,Long text,No,Basket / checkout,Editable customer-facing interface copy,,,,,,
+01-site-settings-fields.csv,Basket total label,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,,,,,
+01-site-settings-fields.csv,Basket checkout button,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,,,,,
+01-site-settings-fields.csv,Basket notice,Long text,No,Basket / checkout,Editable customer-facing interface copy,,,,,,
+01-site-settings-fields.csv,Basket floating label,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,,,,,
+01-site-settings-fields.csv,Checkout basket heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,,,,,
+01-site-settings-fields.csv,Checkout empty heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,,,,,
+01-site-settings-fields.csv,Checkout empty text,Long text,No,Basket / checkout,Editable customer-facing interface copy,,,,,,
+01-site-settings-fields.csv,Checkout verify heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,,,,,
+01-site-settings-fields.csv,Checkout verify body,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,,,,,
+01-site-settings-fields.csv,Checkout email label,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,,,,,
+01-site-settings-fields.csv,Checkout email button,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,,,,,
+01-site-settings-fields.csv,Checkout confirm heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,,,,,
+01-site-settings-fields.csv,Checkout confirm button,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,,,,,
+01-site-settings-fields.csv,Checkout return text,Long text,No,Basket / checkout,Editable customer-facing interface copy,,,,,,
+01-site-settings-fields.csv,Checkout success heading,Single line text,No,Basket / checkout,Editable customer-facing interface copy,,,,,,
+01-site-settings-fields.csv,Navigation label 1,Single line text,No,Header,Navigation link label,,,,,,
+01-site-settings-fields.csv,Navigation URL 1,URL,No,Header,Navigation link destination,,,,,,
+01-site-settings-fields.csv,Navigation label 2,Single line text,No,Header,Navigation link label,,,,,,
+01-site-settings-fields.csv,Navigation URL 2,URL,No,Header,Navigation link destination,,,,,,
+01-site-settings-fields.csv,Navigation label 3,Single line text,No,Header,Navigation link label,,,,,,
+01-site-settings-fields.csv,Navigation URL 3,URL,No,Header,Navigation link destination,,,,,,
+01-site-settings-fields.csv,Navigation label 4,Single line text,No,Header,Navigation link label,,,,,,
+01-site-settings-fields.csv,Navigation URL 4,URL,No,Header,Navigation link destination,,,,,,
+01-site-settings-fields.csv,Navigation label 5,Single line text,No,Header,Navigation link label,,,,,,
+01-site-settings-fields.csv,Navigation URL 5,URL,No,Header,Navigation link destination,,,,,,
+01-site-settings-fields.csv,Soil Association logo,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option,,,,
+01-site-settings-fields.csv,EU Organic logo,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option,,,,
+01-site-settings-fields.csv,Wildfarmed logo,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option,,,,
+01-site-settings-fields.csv,Organic Food Federation logo,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option,,,,
+01-site-settings-fields.csv,Founder 10 badge,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option,,,,
+01-site-settings-fields.csv,Founder 25 badge,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option,,,,
+01-site-settings-fields.csv,Founder 50 badge,File,No,Cards / dashboard,Logo or badge image,,One image; certification logos shown when matching Certification option,,,,
+01-site-settings-fields.csv,Perk 1 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,,,,,
+01-site-settings-fields.csv,Perk 1 text,Single line text,No,Dashboard,Membership perk wording,,,,,,
+01-site-settings-fields.csv,Perk 2 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,,,,,
+01-site-settings-fields.csv,Perk 2 text,Single line text,No,Dashboard,Membership perk wording,,,,,,
+01-site-settings-fields.csv,Perk 3 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,,,,,
+01-site-settings-fields.csv,Perk 3 text,Single line text,No,Dashboard,Membership perk wording,,,,,,
+01-site-settings-fields.csv,Perk 4 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,,,,,
+01-site-settings-fields.csv,Perk 4 text,Single line text,No,Dashboard,Membership perk wording,,,,,,
+01-site-settings-fields.csv,Perk 5 unlock weeks,Number,No,Dashboard,Membership age needed to unlock perk,Integer weeks,,,,,
+01-site-settings-fields.csv,Perk 5 text,Single line text,No,Dashboard,Membership perk wording,,,,,,
+01-site-settings-fields.csv,Increase commitment button text,Single line text,No,Dashboard,BACS increase button label,,,,,,
+01-site-settings-fields.csv,Increase commitment button URL,URL,No,Dashboard,BACS increase button destination,,,,,,
+01-site-settings-fields.csv,Bank account name,Single line text,No,Dashboard/email,Standing-order account name,,,,,,
+01-site-settings-fields.csv,Bank sort code,Single line text,No,Dashboard/email,Standing-order sort code,,Keep as text,,,,
+01-site-settings-fields.csv,Bank account number,Single line text,No,Dashboard/email,Standing-order account number,,Keep as text,,,,
+02-pages-fields.csv,Slug,Single line text,Yes,Routing,Page URL slug,,Primary field recommended,,,,
+02-pages-fields.csv,Title,Single line text,Yes,Page hero,Main page title,,,,,,
+02-pages-fields.csv,Intro,Long text,No,Page hero,Introductory copy,,,,,,
+02-pages-fields.csv,Button text,Single line text,No,Page hero,Hero action label,,,,,,
+02-pages-fields.csv,Button URL,URL,No,Page hero,Hero action destination,,,,,,
+02-pages-fields.csv,Hero image,File,No,Page hero,Hero image,,One image,,,,
+02-pages-fields.csv,Subtitle,Single line text,No,Page hero,Hero subtitle,,,,,,
+02-pages-fields.csv,Visible,Boolean,Yes,Routing,Whether page is published,,Defaults true,,,,
+02-pages-fields.csv,SEO title,Single line text,No,Metadata,Browser/search title,,,,,,
+02-pages-fields.csv,SEO description,Long text,No,Metadata,Search description,,,,,,
+02-pages-fields.csv,Hero layout,Single select,No,Page hero,Hero layout,text-left; text-right; text-only; banner; none,,,,,
+02-pages-fields.csv,Title size,Single select,No,Page hero,Title scale,Very small; Small; Medium; Large; Very large,,,,,
+02-pages-fields.csv,Subtitle size,Single select,No,Page hero,Subtitle scale,Very small; Small; Medium; Large; Very large,,,,,
+02-pages-fields.csv,Intro size,Single select,No,Page hero,Intro scale,Very small; Small; Medium; Large; Very large,,,,,
+02-pages-fields.csv,Hero image shape,Single select,No,Page hero,Responsive image frame shape,Landscape; Square; Portrait; Natural,Uses aspect ratio rather than a fixed height,,,,
+02-pages-fields.csv,Hero image fit,Single select,No,Page hero,Image crop behaviour,Fill frame; Show whole image,Translated to CSS object-fit: cover / contain,,,,
+02-pages-fields.csv,Hero image alignment,Single select,No,Page hero,Image focal alignment,Top left; Top centre; Top right; Centre left; Centre; Centre right; Bottom left; Bottom centre; Bottom right,Controls the visible focal area when the frame crops the image,,,,
+02-pages-fields.csv,Sections,Link to table,No,Baserow administration,Backlink to Sections,Sections,Not read directly,,,,
+02-pages-fields.csv,Hero alignment,Single select,No,Page hero,Text alignment,left; center; right,,,,,
+02-pages-fields.csv,Hero padding,Single select,No,Page hero,Hero spacing,small; medium; large,,,,,
+02-pages-fields.csv,Hero width,Single select,No,Page hero,Hero content width,Narrow; Standard; Wide; Full,Wide uses the same maximum width as Sections,,,,
+02-pages-fields.csv,Hero gap,Single select,No,Page hero,Responsive gap between hero text and image,Compact; Normal; Wide,On stacked mobile layouts this becomes a consistent vertical gap,,,,
+02-pages-fields.csv,Hero button size,Single select,No,Page hero,Hero CTA size,Small; Medium; Large,Defaults Medium,,,,
+03-sections-fields.csv,Key,Single line text,Yes,Section rendering,Stable internal section identifier,,Primary field recommended,,,,
+03-sections-fields.csv,Page,Link to table,Yes,Section rendering,Page containing the section,Pages,,,,,
+03-sections-fields.csv,Body,Long text,No,Section rendering,Main section copy,,,,,,
+03-sections-fields.csv,Heading,Single line text,No,Section rendering,Section heading,,,,,,
+03-sections-fields.csv,Image,File,No,Section rendering,Section image,,One image,,,,
+03-sections-fields.csv,Image 2,File,No,Card mini-gallery,Optional second image for a grouped content card,,"When present with another image, the card becomes swipeable",,,,
+03-sections-fields.csv,Image 2 alt text,Single line text,No,Accessibility,Alternative text for the second card image,,Describe the image briefly; leave blank only if decorative,,,,
+03-sections-fields.csv,Image 3,File,No,Card mini-gallery,Optional third image for a grouped content card,,"When present with another image, the card becomes swipeable",,,,
+03-sections-fields.csv,Image 3 alt text,Single line text,No,Accessibility,Alternative text for the third card image,,Describe the image briefly; leave blank only if decorative,,,,
+03-sections-fields.csv,Order,Number,Yes,Section ordering,Display order,,Integer,,,,
+03-sections-fields.csv,Visible,Boolean,Yes,Section filtering,Whether section is displayed,,Defaults true,,,,
+03-sections-fields.csv,Section type,Single select,No,Section rendering,Renderer/layout type,text; split; cards; grid; gallery; cta; banner; spacer,Use types configured in SectionRenderer,,,,
+03-sections-fields.csv,Eyebrow,Single line text,No,Section rendering,Small heading above title,,,,,,
+03-sections-fields.csv,Subheading,Single line text,No,Section rendering,Secondary heading,,,,,,
+03-sections-fields.csv,Image alt text,Single line text,No,Accessibility,Alternative image text,,,,,,
+03-sections-fields.csv,Button text,Single line text,No,Section rendering,Action label,,,,,,
+03-sections-fields.csv,Button URL,URL,No,Section rendering,Action destination,,,,,,
+03-sections-fields.csv,Heading size,Single select,No,Styling,Heading scale,small; medium; large,,,,,
+03-sections-fields.csv,Subheading size,Single select,No,Styling,Subheading scale,small; medium; large,,,,,
+03-sections-fields.csv,Body size,Single select,No,Styling,Body text scale,small; medium; large,,,,,
+03-sections-fields.csv,Alignment,Single select,No,Styling,Text alignment,left; center; right,,,,,
+03-sections-fields.csv,Background style,Single select,No,Styling,Section background,default; highlight; primary,,,,,
+03-sections-fields.csv,Columns,Number,No,Grid styling,Grid column count,1 to 4,Code clamps to 1–4,,,,
+03-sections-fields.csv,Image size,Single select,No,Styling,Image scale,small; medium; large; full-width,,,,,
+03-sections-fields.csv,Image fit,Single select,No,Styling,Image crop,cover; contain,,,,,
+03-sections-fields.csv,Button size,Single select,No,Styling,Button scale,small; medium; large,,,,,
+03-sections-fields.csv,Space above,Single select,No,Styling,Top spacing,none; small; medium; large,,,,,
+03-sections-fields.csv,Space below,Single select,No,Styling,Bottom spacing,none; small; medium; large,,,,,
+03-sections-fields.csv,Grid source,Single select,No,Grid rendering,Content source,products; collection-points,,,,,
+03-sections-fields.csv,Grid category,Single select,No,Grid rendering,Legacy product category filter,,,,,,
+03-sections-fields.csv,Catalogue category,Single select,No,Orders catalogue,Product category filter,,Values should match Products Category,,,,
+03-sections-fields.csv,Image position,Single select,No,Split layout,Image side,left; right,,,,,
+03-sections-fields.csv,Button visible,Boolean,No,Section rendering,Explicit button visibility,,Defaults from Button text,,,,
+03-sections-fields.csv,Group key,Single line text,No,Grouped sections,Groups related cards/content,,,,,,
+03-sections-fields.csv,Image caption,Long text,No,Section rendering,Caption below image,,,,,,
+04-products-fields.csv,Code,Single line text,Yes,Catalogue/order payload,Stable product/SKU code,,Primary or unique recommended,,,,
+04-products-fields.csv,Size,Single line text,No,Product card,Pack amount shown above logos,,Code also accepts lowercase size,,,,
+04-products-fields.csv,Product,Single line text,Yes,Catalogue/order payload,Product name,,Primary field recommended,,,,
+04-products-fields.csv,Producer,Single line text,No,Data/legacy,Producer name,,Not currently displayed,,,,
+04-products-fields.csv,Member price,Number,Yes,Catalogue/order validation,Selling price,Currency; 2 decimals,Runtime source of truth,,,,
+04-products-fields.csv,Description,Long text,No,Product popup,Main description fallback when Expanded description is blank,,No longer shown on card,,,,
+04-products-fields.csv,Expanded description,Long text,No,Product popup,Preferred single main popup description,,,,,,
+04-products-fields.csv,Origin,Long text,No,Product card,Primary provenance line,,Falls back to Grown in,,,,
+04-products-fields.csv,Secondary origin,Long text,No,Product card,Second provenance/processing line,,,,,,
+04-products-fields.csv,Crop info,Long text,No,Product popup,General crop or ingredient context,,,,,,
+04-products-fields.csv,Packaging and disposal,Long text,No,Product popup,Packaging material and disposal guidance,,,,,,
+04-products-fields.csv,Ingredients,Long text,No,Product popup,Current ingredient declaration/summary,,,,,,
+04-products-fields.csv,Allergens,Long text,No,Product popup,Allergen information,,,,,,
+04-products-fields.csv,Storage,Long text,No,Product popup,Storage guidance,,,,,,
+04-products-fields.csv,Suggested uses,Long text,No,Product popup,Preparation/use ideas,,,,,,
+04-products-fields.csv,Why we stock it,Long text,No,Legacy data only,Former curation note,,No longer displayed,,,,
+04-products-fields.csv,Source URL,URL,No,Administration,Private traceability source,,Not displayed,,,,
+04-products-fields.csv,Image,File,No,Product card/popup,Product image,,One image,,,,
+04-products-fields.csv,Product Link,URL,No,Legacy/data,External product link,,Code also accepts Link,,,,
+04-products-fields.csv,Popularity,Number,No,Catalogue sorting,Primary sort order,,Falls back to Display order then Order,,,,
+04-products-fields.csv,Display order,Number,No,Catalogue sorting,Fallback sort order,,,,,,
+04-products-fields.csv,Order,Number,No,Catalogue sorting,Legacy fallback sort order,,,,,,
+04-products-fields.csv,Available,Boolean,Yes,Catalogue/order validation,Whether product may be ordered,,Defaults true,,,,
+04-products-fields.csv,Available stock,Rollup,Yes,Catalogue/order validation,Current sellable units,"SUM of linked Stock Movement Quantity change, filtered Active if configured",Sole stock source,,,,
+04-products-fields.csv,Low stock threshold,Number,No,Catalogue,Threshold for low-stock warning,,Defaults 5,,,,
+04-products-fields.csv,Category,Link to table or Multiple select,Yes,Catalogue/filtering,Top-level categories,Use existing Category table or controlled values,May hold multiple values,,,,
+04-products-fields.csv,Subcategory,Link to table or Multiple select,No,Catalogue/filtering,Secondary categories,Controlled values,May hold multiple values,,,,
+04-products-fields.csv,Available collection points,Link to table,No,Order validation,Restricts product to collection points,Collection Points; allow multiple,Blank means all compatible points,,,,
+04-products-fields.csv,Stock Movement,Link to table,No,Stock rollup,Backlink used for stock rollup,Stock Movement,,,,,
+04-products-fields.csv,Sections,Link to table,No,Baserow administration,Optional backlink to sections,Sections,Not read directly,,,,
+04-products-fields.csv,Items per pack,Number,No,Administration,Wholesale pack quantity,,Not currently used by website,,,,
+04-products-fields.csv,Current stock,Number/formula,No,Legacy,Legacy stock value,,Website uses Available stock,,,,
+04-products-fields.csv,Grown in,Link to table or Multiple select,No,Card fallback/search,Origin countries/regions,Controlled origin values,Used only when Origin blank,,,,
+04-products-fields.csv,Certification,Multiple select,No,Product card,Certification logos/text,Soil Association; EU Organic; Wildfarmed; Organic Food Federation,Exact labels map to Site Settings logos,,,,
+04-products-fields.csv,Nutrition basis,Single select,No,Product popup,Nutrition column heading,Per 100 g; Per 100 ml; Per serving,Defaults to Per 100 g,,,,
+04-products-fields.csv,Energy kJ,Number,No,Product popup,Energy in kilojoules,0 decimal places,Blank row is hidden,,,,
+04-products-fields.csv,Energy kcal,Number,No,Product popup,Energy in kilocalories,0 decimal places,Blank row is hidden,,,,
+04-products-fields.csv,Fat,Number,No,Product popup,Fat in grams,2 decimal places,Blank row is hidden,,,,
+04-products-fields.csv,Saturates,Number,No,Product popup,Saturated fat in grams,2 decimal places,Blank row is hidden,,,,
+04-products-fields.csv,Carbohydrate,Number,No,Product popup,Carbohydrate in grams,2 decimal places,Blank row is hidden,,,,
+04-products-fields.csv,Sugars,Number,No,Product popup,Sugars in grams,2 decimal places,Blank row is hidden,,,,
+04-products-fields.csv,Fibre,Number,No,Product popup,Fibre in grams,2 decimal places,Blank row is hidden,,,,
+04-products-fields.csv,Protein,Number,No,Product popup,Protein in grams,2 decimal places,Blank row is hidden,,,,
+04-products-fields.csv,Salt,Number,No,Product popup,Salt in grams,2 decimal places,Blank row is hidden,,,,
+04-products-fields.csv,Late collection,Single select,No,Checkout/order validation,Latest suitable collection timing,Thursday only; Friday okay; Weekend okay,Defaults Thursday only for safety,,,,
+05-collection-points-fields.csv,Name,Single line text,Yes,Catalogue/checkout,Collection point name,,Primary field,,,,
+05-collection-points-fields.csv,Address,Long text,No,Checkout/dashboard,Collection address,,,,,,
+05-collection-points-fields.csv,Active,Boolean,Yes,Checkout validation,Whether point can be selected,,Defaults true,,,,
+05-collection-points-fields.csv,Available to collect here,Multiple select,No,Order validation,Allowed product categories,Values must match Product Category,Blank permits all categories,,,,
+05-collection-points-fields.csv,Image,File,No,Collection point cards,Location image,,One image,,,,
+05-collection-points-fields.csv,Link,URL,No,Collection point cards,External location link,,Code also accepts Website or URL,,,,
+05-collection-points-fields.csv,Description,Long text,No,Collection point cards,Location description,,,,,,
+05-collection-points-fields.csv,Cupboard Staples,Link to table,No,Legacy/admin,Legacy product relationship,Products,Not read by code,,,,
+05-collection-points-fields.csv,Members,Link to table,No,Admin,Backlink to members,Members,,,,,
+05-collection-points-fields.csv,Thursday collection time,Single line text,No,Checkout/dashboard,Thursday collection window,,"Falls back to legacy Collection time Use 24-hour dotted format, e.g. 9.00-16.00 or 10.00-16.30.",,,,
+05-collection-points-fields.csv,Friday collection time,Single line text,No,Checkout/dashboard,Friday collection window,,"Blank means unavailable Use 24-hour dotted format, e.g. 9.00-16.00 or 10.00-16.30.",,,,
+05-collection-points-fields.csv,Saturday collection time,Single line text,No,Checkout/dashboard,Saturday collection window,,"Blank means unavailable Use 24-hour dotted format, e.g. 9.00-16.00 or 10.00-16.30.",,,,
+05-collection-points-fields.csv,Sunday collection time,Single line text,No,Checkout/dashboard,Sunday collection window,,"Blank means unavailable Use 24-hour dotted format, e.g. 9.00-16.00 or 10.00-16.30.",,,,
+06-members-fields.csv,Xero Contact ID,Single line text,No,Xero/member matching,Xero contact identifier,,May also be used for linked transaction matching,,,,
+06-members-fields.csv,First name,Single line text,Yes,Dashboard/email,Member given name,,,,,,
+06-members-fields.csv,Last name,Single line text,No,Administration,Member family name,,,,,,
+06-members-fields.csv,Order token,Single line text,Yes,Authentication,Secure magic-link token,,Treat as secret,,,,
+06-members-fields.csv,Active,Boolean,Yes,Authentication,Whether member can sign in/order,,,,,,
+06-members-fields.csv,Email,Email,Yes,Authentication/email,Member email,,,,,,
+06-members-fields.csv,Current credit,Rollup/formula or Number,Yes,Dashboard/order response,Current account balance,Typically SUM included Account Transactions,,,,,
+06-members-fields.csv,Weekly commitment,Number,Yes,Dashboard,Standing-order commitment,Currency; 2 decimals,,,,,
+06-members-fields.csv,Collection point,Link to table,Yes,Checkout/dashboard,Default collection point,Collection Points; one link,Website can update,,,,
+06-members-fields.csv,Order token expiry,Date/time,No,Authentication,Expiry for secure token,,Blank means no expiry,,,,
+06-members-fields.csv,Account Transactions,Link to table,No,Credit/admin,Backlink to transactions,Account Transactions,,,,,
+06-members-fields.csv,Web Orders,Link to table,No,Order history/admin,Backlink to orders,Web Orders,,,,,
+06-members-fields.csv,Payment reference,Single line text,No,Dashboard/email,Unique BACS payment reference,,Falls back to RC-{row ID},,,,
+06-members-fields.csv,Mollie payment URL,URL,No,Dashboard,Hosted top-up link,,Code also accepts Online payment URL,,,,
+06-members-fields.csv,Member since,Date,No,Dashboard perks,Membership start date,,Code also accepts Joined date or Join date,,,,
+06-members-fields.csv,Founder badge,Single select,No,Dashboard,Founder badge selection,10; 25; 50 or configured naming,Code also accepts Founder level / Membership badge,,,,
+06-members-fields.csv,Preferred collection day,Single select,No,Dashboard/checkout,Member preferred collection day,Thursday; Friday; Saturday; Sunday,Validated against selected point and basket,,,,
+07-web-orders-fields.csv,Submitted at,Date/time,Yes,Order API/dashboard,Submission timestamp,,,,,,
+07-web-orders-fields.csv,Order source,Single select,Yes,Order API,Origin of order,Website,,,,,
+07-web-orders-fields.csv,Order week,Single line text,Yes,Order API,ISO ordering week,YYYY-Www,Used to prevent duplicate weekly orders,,,,
+07-web-orders-fields.csv,Collection point,Link to table,Yes,Order API/dashboard,Chosen collection point,Collection Points,,,,,
+07-web-orders-fields.csv,Item JSON,Long text,Yes,Automation,Server-generated order lines JSON,,,,,,
+07-web-orders-fields.csv,Stock Movement JSON,Long text,Yes,Automation,Server-generated movement rows JSON,,,,,,
+07-web-orders-fields.csv,Order total,Number,Yes,Order API/dashboard,Total charged,Currency; 2 decimals,,,,,
+07-web-orders-fields.csv,Status,Single select,Yes,Order workflow,Processing state,Processing; Confirmed; Rejected; Cancelled; Ledger error,,,,,
+07-web-orders-fields.csv,Order number,Single line text,Yes,Order workflow,Unique order reference,,Last three digits are customer-facing suffix,,,,
+07-web-orders-fields.csv,Stock Movement,Link to table,No,Administration,Backlink to movements,Stock Movement,,,,,
+07-web-orders-fields.csv,Account Transactions,Link to table,No,Administration,Backlink to ledger transaction,Account Transactions,,,,,
+07-web-orders-fields.csv,Member,Link to table,Yes,Order API,Ordering member,Members,,,,,
+07-web-orders-fields.csv,Email,Email,No,Automation/email,Snapshot of member email,,,,,,
+07-web-orders-fields.csv,Client request ID,Single line text,Yes,Idempotency,Browser request identifier,,Combined with Member,,,,
+07-web-orders-fields.csv,Confirmed at,Date/time,No,Automation,Processing completion time,,,,,,
+07-web-orders-fields.csv,Processing error,Long text,No,Automation/admin,Error details,,,,,,
+07-web-orders-fields.csv,Confirmation email sent,Boolean,No,Automation,Email completion flag,,,,,,
+07-web-orders-fields.csv,Confirmation email sent at,Date/time,No,Automation,Email timestamp,,,,,,
+07-web-orders-fields.csv,Collection date,Date,Yes,Order API,Customer collection date,,Immutable order snapshot,,,,
+07-web-orders-fields.csv,Collection day,Single line text,Yes,Order API,Selected collection weekday,,Immutable order snapshot,,,,
+07-web-orders-fields.csv,Collection time,Single line text,Yes,Order API,Selected collection time/window,,Immutable order snapshot,,,,
+08-stock-movement-fields.csv,Date,Date/time,Yes,Stock ledger,Movement date/time,,,,,,
+08-stock-movement-fields.csv,Quantity change,Number,Yes,Stock ledger,Signed stock change,,Orders are negative,,,,
+08-stock-movement-fields.csv,Unit price,Number,No,Stock ledger,Unit price at movement,Currency; 2 decimals,,,,,
+08-stock-movement-fields.csv,Movement type,Single select,Yes,Stock ledger,Movement classification,Opening; Delivery; Adjustment; Wastage; Order,,,,,
+08-stock-movement-fields.csv,Product code,Link to table,Yes,Stock ledger/order automation,Affected product,Products,Writable link,,,,
+08-stock-movement-fields.csv,Reference,Single line text,No,Stock ledger,External or manual reference,,,,,,
+08-stock-movement-fields.csv,Order,Link to table,No,Stock ledger,Related web order,Web Orders,Automation may resolve order number,,,,
+08-stock-movement-fields.csv,Notes,Long text,No,Stock ledger,Administrative notes,,,,,,
+08-stock-movement-fields.csv,Product name,Lookup,No,Stock ledger,Product name lookup,Lookup Product code → Product,Do not write,,,,
+08-stock-movement-fields.csv,Idempotency key,Single line text,No,Automation,Prevents duplicate movement creation,,Strongly recommended unique,,,,
+08-stock-movement-fields.csv,Active,Boolean,No,Stock rollup,Whether movement counts in stock,,Defaults true,,,,
+09-account-transactions-fields.csv,Date,Date/time,Yes,Ledger/dashboard,Transaction date,,Code also reads Transaction date/Created on,,,,
+09-account-transactions-fields.csv,Type,Single select,Yes,Ledger/dashboard,Transaction classification,Order charge; Payment; Refund; Adjustment; Xero payment,Order charge required for website,,,,
+09-account-transactions-fields.csv,Amount,Number,Yes,Ledger/dashboard,Signed account amount,Currency; 2 decimals,Order charges negative; payments positive,,,,
+09-account-transactions-fields.csv,Order,Link to table,No,Ledger,Related order,Web Orders,,,,,
+09-account-transactions-fields.csv,Member,Link to table,Yes,Ledger/dashboard,Related member,Members,,,,,
+09-account-transactions-fields.csv,Notes,Long text,No,Dashboard/admin,Transaction description,,Code also reads Description/Reference,,,,
+09-account-transactions-fields.csv,Email,Email,No,Automation/admin,Member email snapshot,,,,,,
+09-account-transactions-fields.csv,Transaction reference,Single line text,No,Dashboard/idempotency,External/internal reference,,,,,,
+09-account-transactions-fields.csv,Included in credit,Boolean,Yes,Credit/dashboard,Whether transaction affects displayed credit,,Defaults true,,,,
+09-account-transactions-fields.csv,Xero Transaction ID,Single line text,No,Xero sync,Xero transaction identifier,,,,,,
+09-account-transactions-fields.csv,Xero Payment ID,Single line text,No,Xero sync,Xero payment identifier,,,,,,
+09-account-transactions-fields.csv,Xero Contact ID,Single line text or Link,No,Xero/member matching,Xero contact identifier,,,,,,
+09-account-transactions-fields.csv,Contact name,Single line text,No,Xero sync,Xero contact display name,,,,,,
+09-account-transactions-fields.csv,Bank account,Single line text,No,Xero sync,Matched bank account,,,,,,
+09-account-transactions-fields.csv,Match status,Single select,No,Xero sync,Matching result,Matched; Unmatched; Review,,,,,
+09-account-transactions-fields.csv,Reconciled,Boolean,No,Xero sync,Xero reconciliation state,,,,,,
+09-account-transactions-fields.csv,Status,Single select,No,Xero sync,Transaction status,Authorised; Paid; Voided; Deleted,Use values returned by integration,,,,
+09-account-transactions-fields.csv,Imported at,Date/time,No,Xero sync,First import timestamp,,,,,,
+09-account-transactions-fields.csv,Last updated from Xero,Date/time,No,Xero sync,Latest refresh timestamp,,,,,,
+12-xero-sync-state-fields.csv,Name,Single line text,Yes,Xero sync,State record name,,Primary field,,,,
+12-xero-sync-state-fields.csv,Last successful sync,Date/time,No,Xero sync,Most recent completed sync,,,,,,
+12-xero-sync-state-fields.csv,Last attempted sync,Date/time,No,Xero sync,Most recent attempt,,,,,,
+12-xero-sync-state-fields.csv,Last error,Long text,No,Xero sync,Latest error details,,,,,,
+12-xero-sync-state-fields.csv,Tenant ID,Single line text,No,Xero sync,Connected Xero tenant ID,,,,,,
+12-xero-sync-state-fields.csv,Consecutive failures,Number,No,Xero sync,Failure counter,,Integer,,,,
+12-xero-sync-state-fields.csv,Connection status,Single select,No,Xero sync,Connection health,Connected; Warning; Error; Disconnected,,,,,
+12-xero-sync-state-fields.csv,Tenant name,Single line text,No,Xero OAuth callback,Connected Xero organisation name,,Convenience only,,,,
+12-xero-sync-state-fields.csv,Refresh token,Long text,Yes,Xero OAuth and sync,Current rotating Xero OAuth refresh token,,"PRIVATE: never expose in public views, browser APIs or GitHub",,,,
+13-interface-content-fields.csv,,,Yes,,,,,Interface Content,Key,Single line text,Stable unique key used by the website.
+13-interface-content-fields.csv,,,No,,,,,Interface Content,Area,Single select,"Editorial grouping: Basket, Checkout, Dashboard or FAQs."
+13-interface-content-fields.csv,,,No,,,,,Interface Content,Label,Single line text,Human-readable description for editors.
+13-interface-content-fields.csv,,,Yes,,,,,Interface Content,Content,Long text,Editable interface wording. Layout remains controlled by code.
+12-xero-sync-state-fields.csv,Name,Single line text,Yes,Xero sync,State record name,,Primary field,,,,
+12-xero-sync-state-fields.csv,Last successful sync,Date/time,No,Xero sync,Most recent completed sync,,,,,,
+12-xero-sync-state-fields.csv,Last attempted sync,Date/time,No,Xero sync,Most recent attempt,,,,,,
+12-xero-sync-state-fields.csv,Last error,Long text,No,Xero sync,Latest error details,,,,,,
+12-xero-sync-state-fields.csv,Tenant ID,Single line text,No,Xero sync,Connected Xero tenant ID,,,,,,
+12-xero-sync-state-fields.csv,Consecutive failures,Number,No,Xero sync,Failure counter,,Integer,,,,
+12-xero-sync-state-fields.csv,Connection status,Single select,No,Xero sync,Connection health,Connected; Warning; Error; Disconnected,,,,,
+12-xero-sync-state-fields.csv,Tenant name,Single line text,No,Xero OAuth callback,Connected Xero organisation name,,Convenience only,,,,
+12-xero-sync-state-fields.csv,Refresh token,Long text,Yes,Xero OAuth and sync,Current rotating Xero OAuth refresh token,,"PRIVATE: never expose in public views, browser APIs or GitHub",,,,
+13-interface-content-fields.csv,,,Yes,,,,,Interface Content,Key,Single line text,Stable unique key used by the website.
+13-interface-content-fields.csv,,,No,,,,,Interface Content,Area,Single select,"Editorial grouping: Basket, Checkout, Dashboard or FAQs."
+13-interface-content-fields.csv,,,No,,,,,Interface Content,Label,Single line text,Human-readable description for editors.
+13-interface-content-fields.csv,,,Yes,,,,,Interface Content,Content,Long text,Editable interface wording. Layout remains controlled by code.

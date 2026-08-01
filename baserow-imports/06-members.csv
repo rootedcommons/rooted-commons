@@ -1,11 +1,11 @@
 id,Xero Contact ID,First name,Last name,Order token,Active,Email,Current credit,Weekly commitment,Collection point,Order token expiry,Account Transactions,Web Orders,Payment reference,Mollie payment URL,Preferred collection day
-1,,,,,,,,,,,,,RC-1,,Thursday
-2,,,,,,,,,,,,,RC-2,,Thursday
-3,,,,,,,,,,,,,RC-3,,Thursday
-4,,,,,,,,,,,,,RC-4,,Thursday
-5,,,,,,,,,,,,,RC-5,,Thursday
-6,,,,,,,,,,,,,RC-6,,Thursday
-7,,,,,,,,,,,,,RC-7,,Thursday
-8,,,,,,,,,,,,,RC-8,,Thursday
-9,,,,,,,,,,,,,RC-9,,Thursday
-10,,,,,,,,,,,,,RC-10,,Thursday
+1,,Tommy,Ware,6vqwjuoc34c1ecjf,True,tware@mailbox.org,£0.00,£10.00,,,,,RC-1,,Thursday
+2,,,,sbq9utr6ovypapwv,False,,£0.00,,,,,,RC-2,,Thursday
+3,,,,l7rvnujbgl9qz0gl,False,,£0.00,,,,,,RC-3,,Thursday
+4,,,,0ddw1zc058nndsz0,False,,£0.00,,,,,,RC-4,,Thursday
+5,,,,khhmahkqbopang2m,False,,£0.00,,,,,,RC-5,,Thursday
+6,,,,arfcf0hwly2tueyh,False,,£0.00,,,,,,RC-6,,Thursday
+7,,,,jo56eja733qupskz,False,,£0.00,,,,,,RC-7,,Thursday
+8,,,,4ys8tyksny2jktkh,False,,£0.00,,,,,,RC-8,,Thursday
+9,,,,o31ub3t73ugqtyug,False,,£0.00,,,,,,RC-9,,Thursday
+10,,,,7h40czcjkiiu47bt,False,,£0.00,,,,,,RC-10,,Thursday

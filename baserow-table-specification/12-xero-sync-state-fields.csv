@@ -6,3 +6,5 @@ Last error,Long text,No,Xero sync,Latest error details,,
 Tenant ID,Single line text,No,Xero sync,Connected Xero tenant ID,,
 Consecutive failures,Number,No,Xero sync,Failure counter,,Integer
 Connection status,Single select,No,Xero sync,Connection health,Connected; Warning; Error; Disconnected,
+Tenant name,Single line text,No,Xero OAuth callback,Connected Xero organisation name,,Convenience only
+Refresh token,Long text,Yes,Xero OAuth and sync,Current rotating Xero OAuth refresh token,,"PRIVATE: never expose in public views, browser APIs or GitHub"

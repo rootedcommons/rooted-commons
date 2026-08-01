@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.7.2 — Xero OAuth connection
+
+- Added `/api/xero/connect` and `/api/xero/callback` for Xero's standard OAuth 2.0 authorization-code flow.
+- Added signed, short-lived OAuth `state` validation.
+- The callback exchanges the one-time code server-side, reads the authorised Xero connection, and stores the tenant ID plus rotating refresh token in the private Xero Sync State table.
+- Added `Tenant name` and private `Refresh token` fields to the Xero Sync State schema/import.
+- Added `BASEROW_XERO_SYNC_STATE_TABLE_ID` to the runtime Baserow configuration.
+- Added `docs/XERO_OAUTH_SETUP.md` and updated the Xero sync documentation.
+
+
 ## 2.7.1 — 2026-08-01
 
 - Removed the Web Orders fulfilment-date snapshot; Thursday delivery remains an operational constant.
