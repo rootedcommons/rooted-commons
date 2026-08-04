@@ -1,3 +1,11 @@
+## 2.8.1
+
+- Fixed dashboard secure-payment button so it is only shown for a negative member balance.
+- Restored the Founder badge to its larger presentation and centred it above membership details.
+- Fixed checkout product amounts by passing product size into the checkout data model.
+- Moved collection-point information to the top of checkout beside the basket on wider screens.
+- Checkout now shows the existing collection choice first and reveals the full chooser only when Change collection point is selected.
+
 # Changelog
 
 ## 2.8.0 — Signup and product information

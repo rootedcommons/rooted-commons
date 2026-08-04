@@ -16,6 +16,7 @@ const c = (key, fallback = '') => data.interfaceContent[key] || fallback;
 const checkoutProducts = data.products.map((product) => ({
   id: product.id,
   name: product.name,
+  size: product.size,
   price: product.priceNumber,
   categories: product.categories || [product.category],
   lateCollection: product.lateCollection || 'thursday-only'
@@ -35,17 +36,21 @@ const formatCollectionDeadline = (value) => {
   <PageHero page={page} />
 
   <main class="checkout-shell checkout-shell-wide">
-    <section class="checkout-card checkout-review" aria-labelledby="checkout-order-heading">
-      <h2 id="checkout-order-heading">{c('checkout.basket_heading')}</h2>
-      <div id="checkout-basket-lines"></div>
-      <div class="checkout-total-row"><span>{c('basket.total_label')}</span><strong id="checkout-total">£0.00</strong></div>
-    </section>
+    <div class="checkout-top-grid">
+      <section class="checkout-card checkout-collection-summary" aria-labelledby="collection-heading">
+        <h2 id="collection-heading">Your collection point</h2>
+        <div id="checkout-current-collection"><p class="small-print">Loading your collection point…</p></div>
+        <button id="checkout-change-collection" class="button button-secondary" type="button">Change collection point</button>
+      </section>
 
-    <section class="checkout-stage" aria-labelledby="collection-heading">
-      <div class="checkout-stage-heading">
-        <h2 id="collection-heading">{c('checkout.collection_heading')}</h2>
-        <FormattedText text={c('checkout.collection_body')} class="rich-body" />
-      </div>
+      <section class="checkout-card checkout-review" aria-labelledby="checkout-order-heading">
+        <h2 id="checkout-order-heading">{c('checkout.basket_heading')}</h2>
+        <div id="checkout-basket-lines"></div>
+        <div class="checkout-total-row"><span>{c('basket.total_label')}</span><strong id="checkout-total">£0.00</strong></div>
+      </section>
+    </div>
+
+    <section id="checkout-collection-picker" class="checkout-stage" aria-label="Change collection point" hidden>
       <div id="collection-point-grid" class="collection-point-grid">
         {checkoutPoints.map((point) => (
           <button
@@ -153,6 +158,9 @@ const formatCollectionDeadline = (value) => {
     const slotPanel=document.querySelector('#collection-slot-panel');
     const slotOptions=document.querySelector('#collection-slot-options');
     const freshnessWarning=document.querySelector('#collection-freshness-warning');
+    const collectionPicker=document.querySelector('#checkout-collection-picker');
+    const changeCollectionButton=document.querySelector('#checkout-change-collection');
+    const currentCollection=document.querySelector('#checkout-current-collection');
 
 
     const dayRank={Thursday:0,Friday:1,Saturday:2,Sunday:3};
@@ -229,6 +237,23 @@ const formatCollectionDeadline = (value) => {
       renderMemberSummary();
     }
 
+    function renderCollectionSummary(){
+      const point=selectedPoint();
+      if(!point){
+        currentCollection.innerHTML='<p>No collection point selected.</p>';
+        changeCollectionButton.textContent='Choose collection point';
+        return;
+      }
+      const slot=availableSlots(point).find(item=>item.day===selectedCollectionDay)||(point.collectionSlots||[]).find(item=>item.day===member?.preferredCollectionDay)||(point.collectionSlots||[])[0];
+      currentCollection.innerHTML=`<h3>${point.name}</h3>${slot?`<p><strong>${slot.day} · ${slot.time}</strong></p>`:''}${point.address?`<p>${point.address}</p>`:''}`;
+      changeCollectionButton.textContent='Change collection point';
+    }
+
+    changeCollectionButton?.addEventListener('click',()=>{
+      collectionPicker.hidden=!collectionPicker.hidden;
+      if(!collectionPicker.hidden)collectionPicker.scrollIntoView({behavior:'smooth',block:'start'});
+    });
+
     function renderCollectionPoints(){
       const categories=basketCategories();
       collectionCards.forEach(card=>{
@@ -274,6 +299,8 @@ const formatCollectionDeadline = (value) => {
       renderCollectionPoints();
       renderSlots();
       renderMemberSummary();
+      renderCollectionSummary();
+      collectionPicker.hidden=true;
     }));
 
     document.addEventListener('click',event=>{

@@ -462,3 +462,16 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .dashboard-membership-card{display:block}.dashboard-badge{display:block;min-height:0;margin:0 0 .8rem}.dashboard-badge:empty{display:none}.dashboard-badge img{width:auto;max-width:min(100%,180px);max-height:86px;object-fit:contain;object-position:left center}
 .signup-shell{width:min(760px,calc(100% - 2rem));margin:clamp(2rem,6vw,5rem) auto}.signup-card{padding:clamp(1.25rem,4vw,2.5rem);border:1px solid var(--border);border-radius:1.2rem;background:color-mix(in srgb,var(--highlight) 50%,transparent)}.signup-card h1{margin-top:0}.signup-form{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.signup-form .full{grid-column:1/-1}.signup-form label{display:grid;gap:.4rem;font-weight:700}.signup-form input,.signup-form select{width:100%;box-sizing:border-box;padding:.8rem;border:1px solid var(--border);border-radius:.6rem;background:var(--background);color:inherit;font:inherit}.signup-check{display:grid!important;grid-template-columns:auto 1fr;align-items:start;gap:.65rem!important;font-weight:400!important}.signup-check input{width:auto;margin-top:.25rem}.signup-message{grid-column:1/-1;margin:0}.signup-success{padding:1rem;border-left:4px solid var(--primary);background:color-mix(in srgb,var(--highlight) 60%,white)}
 @media(max-width:700px){.product-detail-information-layout{grid-template-columns:1fr}.product-detail-nutrition{position:static}.product-detail-origin{grid-template-columns:1fr;gap:.15rem}.signup-form{grid-template-columns:1fr}.signup-form .full{grid-column:1}}
+
+
+/* v2.8.1 checkout hierarchy and dashboard fixes */
+.checkout-top-grid{display:grid;grid-template-columns:minmax(280px,.8fr) minmax(0,1.2fr);gap:1.25rem;align-items:start}
+.checkout-top-grid .checkout-card{margin:0;height:100%;box-sizing:border-box}
+.checkout-collection-summary h2,.checkout-review h2{margin-top:0}
+#checkout-current-collection h3{margin:.35rem 0;font-size:1.3rem}
+#checkout-current-collection p{margin:.35rem 0}
+.checkout-collection-summary .button{margin-top:1rem}
+#checkout-collection-picker[hidden]{display:none}
+.dashboard-badge{text-align:center;margin:0 auto 1rem}
+.dashboard-badge img{display:block;width:min(100%,280px);max-width:280px;max-height:none;height:auto;object-fit:contain;margin:0 auto;object-position:center}
+@media(max-width:820px){.checkout-top-grid{grid-template-columns:1fr}}

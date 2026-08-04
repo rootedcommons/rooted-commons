@@ -253,7 +253,7 @@ const membershipPerks=s.membershipPerks || [];
         paymentPrompt.innerHTML=`<strong>${money.format(Math.abs(credit))} top-up needed</strong><span>Your balance must be back to £0.00 or above before collection.</span>`;
         paymentPrompt.hidden=false;
       }
-      if(member.molliePaymentUrl && credit<=0){
+      if(member.molliePaymentUrl && credit<0){
         mollie.href=member.molliePaymentUrl;
         mollie.textContent=credit<0?`Pay ${money.format(Math.abs(credit))} securely`:'Top up member credit';
         mollie.hidden=false;
