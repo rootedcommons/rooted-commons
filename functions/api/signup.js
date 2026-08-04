@@ -2,6 +2,8 @@ import { createRow, envConfig, json, listRows, normaliseEmail, publicCollectionP
 
 const clean=value=>String(value||'').trim();
 const token=()=>Array.from(crypto.getRandomValues(new Uint8Array(24)),b=>b.toString(16).padStart(2,'0')).join('');
+const money=value=>Math.round((Number(value)+Number.EPSILON)*100)/100;
+const hasPennyPrecision=value=>Number.isFinite(Number(value)) && Math.abs(Number(value)*100-Math.round(Number(value)*100))<1e-6;
 const attempts=new Map();
 const RATE_WINDOW_MS=15*60*1000;
 const RATE_MAX=5;
@@ -43,13 +45,19 @@ export async function onRequestPost({request,env}){
     const firstName=clean(body.firstName);
     const lastName=clean(body.lastName);
     const phone=clean(body.phone);
-    const weeklyCommitment=Number(body.weeklyCommitment);
+    const contributionFrequency=clean(body.contributionFrequency);
+    const contributionAmount=Number(body.contributionAmount);
     const collectionPointId=Number(body.collectionPointId);
     const preferredCollectionDay=clean(body.preferredCollectionDay);
     const allowedDays=['Thursday','Friday','Saturday','Sunday'];
-    if(!firstName||!lastName||!phone||!email||!email.includes('@')||!Number.isFinite(collectionPointId)||collectionPointId<1||!Number.isInteger(weeklyCommitment)||weeklyCommitment<10||!allowedDays.includes(preferredCollectionDay)||body.membershipConsent!==true){
-      return json({ok:false,message:'Please complete all required fields. Weekly commitment must be at least £10 in whole pounds.'},400);
+    const allowedFrequencies=['Weekly','Monthly'];
+    const minimum=contributionFrequency==='Monthly'?43.34:10;
+    if(!firstName||!lastName||!phone||!email||!email.includes('@')||!Number.isFinite(collectionPointId)||collectionPointId<1||!allowedFrequencies.includes(contributionFrequency)||!hasPennyPrecision(contributionAmount)||contributionAmount<minimum||!allowedDays.includes(preferredCollectionDay)||body.membershipConsent!==true){
+      return json({ok:false,message:`Please complete all required fields. ${contributionFrequency==='Monthly'?'Monthly contributions must be at least £43.34':'Weekly contributions must be at least £10.00'} and may be entered to the penny.`},400);
     }
+
+    const weeklyCommitment=contributionFrequency==='Weekly'?money(contributionAmount):money(contributionAmount*12/52);
+    const monthlyEquivalent=contributionFrequency==='Monthly'?money(contributionAmount):money(contributionAmount*52/12);
 
     const cfg=envConfig(env);
     const [members,points]=await Promise.all([listRows(cfg,cfg.members),listRows(cfg,cfg.collectionPoints)]);
@@ -68,6 +76,8 @@ export async function onRequestPost({request,env}){
       'Active':true,
       'Order token':token(),
       'Weekly commitment':weeklyCommitment,
+      'Monthly equivalent':monthlyEquivalent,
+      'Contribution frequency':contributionFrequency,
       'Collection point':[collectionPointId],
       'Preferred collection day':preferredCollectionDay,
       'Member since':now.toISOString().slice(0,10),

@@ -1,3 +1,14 @@
+# Changelog
+
+## 2.9.1 — 2026-08-04
+
+- Reworked signup into clearer personal, collection, commitment and communications sections.
+- Moved phone help, collection help and map link onto their relevant label/section lines.
+- Added Weekly/Monthly contribution frequency with penny increments; monthly minimum is £43.34, equivalent to £10/week.
+- Signup writes Contribution frequency, Weekly commitment and Monthly equivalent while retaining Weekly commitment as the canonical weekly-equivalent value.
+- Added collection-point images to OpenStreetMap marker popups at full popup width with proportional height.
+- Updated editable Signup Interface Content and Baserow field specifications.
+
 # 2.9.0 — 2026-08-04
 
 - Reworked `/signup/` around preferred collection day first, followed by collection points filtered to locations available on that day and labelled with the relevant collection time.

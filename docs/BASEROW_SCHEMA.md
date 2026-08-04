@@ -1,4 +1,4 @@
-# Baserow schema expected by v2.7.1
+# Baserow schema expected by v2.9.0
 
 Field names are case-sensitive in API and automation mappings. Use these exact names unless you also update the code.
 
@@ -33,6 +33,10 @@ Required:
 - `Preferred collection day` — single select: Thursday / Friday / Saturday / Sunday
 - `Payment reference` — unique BACS reference; code falls back to `RC-{row ID}`
 - `Mollie payment URL` — optional hosted payment URL shown only when the member is below zero
+- `Phone` — required by signup for membership/order issues
+- `Membership consent` — boolean; must be true at signup
+- `Membership consent at` — date/time set by signup
+- `Weekly newsletter` — optional boolean consent for including news/updates in the weekly service email
 
 ## Site Settings payment fields
 
@@ -53,6 +57,7 @@ Required:
 - `Available to collect here`
 - `Thursday collection time`
 - optional `Friday collection time`, `Saturday collection time`, `Sunday collection time`
+- optional `Latitude` and `Longitude` — decimal coordinates used by the `/collection-points/` map
 
 Collection time fields contain **times only**, using 24-hour dotted notation such as `9.00-16.00`, `10.00-16.30` or `17.00-19.00`. Do not include the weekday in the field.
 - address/content fields already used by the site

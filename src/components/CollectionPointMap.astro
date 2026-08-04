@@ -8,7 +8,8 @@ const mapPoints = points
     address: point.address,
     latitude: Number(point.latitude),
     longitude: Number(point.longitude),
-    collectionSlots: point.collectionSlots || []
+    collectionSlots: point.collectionSlots || [],
+    image: point.image || ''
   }));
 ---
 <section class="collection-map-section" aria-label="Collection point map">
@@ -39,7 +40,8 @@ const mapPoints = points
           const coords=[Number(point.latitude),Number(point.longitude)];
           bounds.push(coords);
           const slots=(point.collectionSlots||[]).map(slot=>`<li><strong>${escapeHtml(slot.day)}</strong> · ${escapeHtml(slot.time)}</li>`).join('');
-          const popup=`<div class="map-popup"><strong>${escapeHtml(point.name)}</strong>${point.address?`<p>${escapeHtml(point.address).replace(/\n/g,'<br>')}</p>`:''}${slots?`<ul>${slots}</ul>`:''}</div>`;
+          const image=point.image?`<img class="map-popup-image" src="${escapeHtml(point.image)}" alt="" loading="lazy">`:'';
+          const popup=`<div class="map-popup">${image}<strong>${escapeHtml(point.name)}</strong>${point.address?`<p>${escapeHtml(point.address).replace(/\n/g,'<br>')}</p>`:''}${slots?`<ul>${slots}</ul>`:''}</div>`;
           L.marker(coords).addTo(map).bindPopup(popup);
         });
         if(bounds.length===1)map.setView(bounds[0],13);

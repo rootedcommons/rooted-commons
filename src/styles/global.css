@@ -501,3 +501,19 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .collection-map-empty{padding:1.25rem;border:1px solid var(--border);border-radius:1rem;background:var(--highlight)}
 .map-popup p{margin:.35rem 0}.map-popup ul{list-style:none;padding:0;margin:.45rem 0 0}.map-popup li{margin:.18rem 0}
 @media(max-width:700px){.signup-money-input{grid-template-columns:auto minmax(0,1fr) auto;width:100%}.collection-point-map{height:420px}}
+
+/* v2.9.1 signup structure and collection map popup */
+.signup-label-line{display:flex;align-items:baseline;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
+.signup-label-line small{font-weight:400;color:var(--muted);margin:0}
+.signup-label-line .signup-map-link{margin-left:auto;font-size:.92rem}
+.signup-section-heading{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding-top:1rem;margin-top:.2rem;border-top:1px solid var(--border)}
+.signup-section-heading h2{margin:0;font-size:1.2rem}
+.signup-section-heading p{margin:0;font-size:.92rem;color:var(--muted)}
+.signup-frequency{border:0;padding:0;margin:0;min-width:0}
+.signup-frequency legend{font-weight:700;margin-bottom:.5rem}
+.signup-frequency-options{display:flex;gap:.75rem;flex-wrap:wrap}
+.signup-frequency-options label{display:flex;grid-template-columns:none;align-items:center;gap:.4rem;padding:.65rem .85rem;border:1px solid var(--border);border-radius:.65rem;font-weight:600;background:var(--background);cursor:pointer}
+.signup-frequency-options input{width:auto;margin:0}
+.map-popup{min-width:190px;max-width:260px}
+.map-popup-image{display:block;width:100%;height:auto;margin:0 0 .65rem;border-radius:.55rem}
+@media(max-width:700px){.signup-section-heading{align-items:flex-start;flex-direction:column;gap:.2rem}.signup-label-line{align-items:flex-start}.signup-frequency-options{display:grid;grid-template-columns:1fr 1fr}.signup-frequency-options label{justify-content:center}}
