@@ -481,3 +481,23 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 #unverified-member-panel[hidden],
 #verified-member-panel[hidden] { display:none !important; }
 .checkout-collection-summary .dashboard-point-image { margin-top:.35rem; }
+
+/* v2.9.0 signup flow, Turnstile and collection-point map */
+.signup-section{padding-top:.35rem;border-top:1px solid var(--border)}
+.signup-section h2{margin:.35rem 0 .25rem;font-size:1.2rem}
+.signup-section p{margin:.2rem 0 .75rem}
+.signup-info{margin:0;padding:.8rem 1rem;border-left:3px solid var(--primary);background:color-mix(in srgb,var(--highlight) 68%,transparent);font-size:.94rem}
+.signup-map-link{width:max-content;font-weight:600;margin-top:.15rem}
+.signup-money-input{display:grid;grid-template-columns:auto minmax(0,8rem) auto;align-items:center;gap:.5rem;width:max-content;max-width:100%;font-weight:700}
+.signup-money-input input{min-width:0}
+.signup-turnstile-wrap{min-height:1px}
+.signup-config-warning{margin:0;padding:.75rem;border:1px solid var(--border);border-radius:.6rem;background:var(--highlight);font-weight:500}
+.signup-form button:disabled{opacity:.55;cursor:not-allowed}
+.collection-map-section{width:min(1180px,calc(100% - 2rem));margin:clamp(1.25rem,4vw,3rem) auto clamp(2rem,6vw,5rem)}
+.collection-map-copy{max-width:760px;margin-bottom:1rem}
+.collection-map-copy h2{margin-bottom:.35rem}
+.collection-map-copy p{margin-top:0}
+.collection-point-map{width:100%;height:clamp(360px,58vw,620px);border:1px solid var(--border);border-radius:1rem;overflow:hidden;background:var(--highlight)}
+.collection-map-empty{padding:1.25rem;border:1px solid var(--border);border-radius:1rem;background:var(--highlight)}
+.map-popup p{margin:.35rem 0}.map-popup ul{list-style:none;padding:0;margin:.45rem 0 0}.map-popup li{margin:.18rem 0}
+@media(max-width:700px){.signup-money-input{grid-template-columns:auto minmax(0,1fr) auto;width:100%}.collection-point-map{height:420px}}

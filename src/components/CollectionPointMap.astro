@@ -1,0 +1,57 @@
+---
+const { points = [] } = Astro.props;
+const mapPoints = points
+  .filter((point) => Number.isFinite(Number(point.latitude)) && Number.isFinite(Number(point.longitude)))
+  .map((point) => ({
+    id: point.id,
+    name: point.name,
+    address: point.address,
+    latitude: Number(point.latitude),
+    longitude: Number(point.longitude),
+    collectionSlots: point.collectionSlots || []
+  }));
+---
+<section class="collection-map-section" aria-label="Collection point map">
+  {mapPoints.length ? (
+    <div id="collection-point-map" class="collection-point-map" role="region" aria-label="Map of Rooted Commons collection points"></div>
+  ) : (
+    <div class="collection-map-empty">
+      <p>Collection-point locations will appear here once latitude and longitude have been added in Baserow.</p>
+    </div>
+  )}
+</section>
+
+{mapPoints.length > 0 && (
+  <script is:inline define:vars={{ mapPoints }}>
+    (()=>{
+      const mapEl=document.getElementById('collection-point-map');
+      if(!mapEl)return;
+      const initialise=()=>{
+        if(!window.L)return;
+        const map=L.map(mapEl,{scrollWheelZoom:false});
+        const bounds=[];
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+          maxZoom:19,
+          attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        const escapeHtml=(value)=>String(value||'').replace(/[&<>'"]/g,(char)=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+        mapPoints.forEach(point=>{
+          const coords=[Number(point.latitude),Number(point.longitude)];
+          bounds.push(coords);
+          const slots=(point.collectionSlots||[]).map(slot=>`<li><strong>${escapeHtml(slot.day)}</strong> · ${escapeHtml(slot.time)}</li>`).join('');
+          const popup=`<div class="map-popup"><strong>${escapeHtml(point.name)}</strong>${point.address?`<p>${escapeHtml(point.address).replace(/\n/g,'<br>')}</p>`:''}${slots?`<ul>${slots}</ul>`:''}</div>`;
+          L.marker(coords).addTo(map).bindPopup(popup);
+        });
+        if(bounds.length===1)map.setView(bounds[0],13);
+        else map.fitBounds(bounds,{padding:[32,32],maxZoom:13});
+      };
+      if(window.L){initialise();return;}
+      const script=document.createElement('script');
+      script.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      script.integrity='sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+      script.crossOrigin='';
+      script.onload=initialise;
+      document.head.appendChild(script);
+    })();
+  </script>
+)}

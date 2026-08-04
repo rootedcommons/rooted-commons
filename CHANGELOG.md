@@ -1,3 +1,16 @@
+# 2.9.0 — 2026-08-04
+
+- Reworked `/signup/` around preferred collection day first, followed by collection points filtered to locations available on that day and labelled with the relevant collection time.
+- Added the agreed Friday/weekend late-collection explanation and a link to `/collection-points/`.
+- Made phone required with operational-use help text.
+- Enforced a minimum weekly commitment of £10 in whole-pound values in both browser and server validation.
+- Reworked Keeping in touch around the Friday secure-link service email and a separate optional `Weekly newsletter` consent.
+- Added Cloudflare Turnstile verification and basic per-worker signup rate limiting.
+- Added an OpenStreetMap/Leaflet map to the Baserow-managed `/collection-points/` page using Collection Points latitude/longitude and day-specific opening times.
+- Added a working-draft `/membership-terms/` page and linked it from signup and the footer.
+- Updated the privacy notice for phone, collection-day, newsletter-preference and Turnstile processing.
+- Added v2.9 Baserow/environment setup documentation.
+
 # 2.8.2 — 2026-08-04
 
 - Reused the dashboard collection-point presentation for the checkout collection summary, including image, preferred slot, address and order deadline.

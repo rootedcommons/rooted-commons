@@ -12,6 +12,7 @@ const pageTitle = title ? `${title} | ${settings.siteTitle}` : settings.siteTitl
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description || settings.tagline} />
     <title>{pageTitle}</title>
+    <slot name="head" />
     <style define:vars={{
       primary: settings.primaryColour,
       background: settings.backgroundColour,

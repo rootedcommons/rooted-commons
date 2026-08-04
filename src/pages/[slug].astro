@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
 import SectionRenderer from '../components/SectionRenderer.astro';
 import FaqAccordion from '../components/FaqAccordion.astro';
+import CollectionPointMap from '../components/CollectionPointMap.astro';
 import { getSiteData } from '../lib/baserow';
 import { buildSectionBlocks } from '../lib/sections';
 
@@ -17,7 +18,9 @@ const { page, data } = Astro.props;
 const blocks = buildSectionBlocks(data.sections.filter((section) => section.page === page.slug));
 ---
 <BaseLayout settings={data.settings} pages={data.pages} title={page.seoTitle || page.title} description={page.seoDescription || page.intro}>
+  {page.slug === 'collection-points' && <Fragment slot="head"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" /></Fragment>}
   <PageHero page={page} />
   {page.slug === 'faqs' && <FaqAccordion content={data.interfaceContent} />}
+  {page.slug === 'collection-points' && <CollectionPointMap points={data.collectionPoints} />}
   {blocks.map((block) => <SectionRenderer block={block} products={data.products} settings={data.settings} />)}
 </BaseLayout>

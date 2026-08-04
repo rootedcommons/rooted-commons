@@ -71,7 +71,8 @@ export const fallbackPages = [
   { slug: 'orders', title: 'Weekly Shop', intro: 'Browse the current range and build your basket. You can explore before becoming a member.', visible: true },
   { slug: 'checkout', title: 'Checkout', intro: 'Review your order, choose a collection point and continue as a member.', visible: true },
   { slug: 'dashboard', title: 'Your Rooted Commons', intro: 'Your weekly market, membership and local food network in one place.', visible: true },
-  { slug: 'faqs', title: 'Frequently asked questions', intro: 'Clear answers about membership, ordering, payments and collection.', visible: true }
+  { slug: 'faqs', title: 'Frequently asked questions', intro: 'Clear answers about membership, ordering, payments and collection.', visible: true },
+  { slug: 'collection-points', title: 'Collection points', intro: 'Find your nearest Rooted Commons collection point and see the days and times available.', visible: true }
 ];
 
 export const fallbackSections = [
@@ -161,5 +162,29 @@ export const fallbackInterfaceContent: Record<string, string> = {
   "faq.09.question": "Can I pause or change my regular payment?",
   "faq.09.answer": "Your standing order is controlled through your bank, so you can amend or pause it when needed. Keep enough credit available for any orders you place.",
   "faq.10.question": "How do local producers benefit?",
-  "faq.10.answer": "Rooted Commons gives producers a shared, lower-cost route to customers and more predictable weekly demand. Local producers are not charged fees to sell through the market, so they retain the value they create."
+  "faq.10.answer": "Rooted Commons gives producers a shared, lower-cost route to customers and more predictable weekly demand. Local producers are not charged fees to sell through the market, so they retain the value they create.",
+  "signup.heading": "Join Rooted Commons",
+  "signup.intro": "Become a member and support a stronger local food network. Your regular weekly contribution becomes member credit to spend through the weekly market.",
+  "signup.first_name_label": "First name",
+  "signup.last_name_label": "Last name",
+  "signup.email_label": "Email address",
+  "signup.phone_label": "Phone number",
+  "signup.phone_help": "We'll only use this if we need to contact you about your membership or an order.",
+  "signup.collection_day_label": "Preferred collection day",
+  "signup.late_collection_note": "All orders are delivered on Thursday. Some locations support late collection of fresh produce on Friday, but only suitable items, such as cupboard staples and refills, can be held for collection over the weekend.",
+  "signup.collection_point_label": "Collection point",
+  "signup.collection_point_help": "This can be changed at checkout or from your membership dashboard.",
+  "signup.collection_points_map_link": "View collection points on a map →",
+  "signup.weekly_commitment_label": "Weekly commitment",
+  "signup.weekly_commitment_help": "Minimum £10/week. Your regular contribution becomes member credit to spend through the weekly market.",
+  "signup.keeping_in_touch_heading": "Keeping in touch",
+  "signup.keeping_in_touch_body": "Each Friday, we'll email you a unique link to the following week's market. This gives you secure access to your account and member credit without needing a password.",
+  "signup.weekly_newsletter_text": "I'm happy for occasional Rooted Commons news and updates to be included in this weekly email.",
+  "signup.membership_consent_prefix": "I agree to the",
+  "signup.membership_terms_link": "Rooted Commons Membership Terms",
+  "signup.privacy_prefix": "and have read the",
+  "signup.privacy_link": "Privacy Policy",
+  "signup.submit_button": "Join Rooted Commons",
+  "signup.success_heading": "Welcome to Rooted Commons",
+  "signup.success_message": "Your membership has been created. We’ll send you the information you need to get started."
 };

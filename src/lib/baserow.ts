@@ -372,6 +372,8 @@ export async function getSiteData() {
     image: fileUrl(row, 'Image'),
     link: text(row, 'Link', text(row, 'Website', text(row, 'URL'))),
     description: text(row, 'Description'),
+    latitude: numeric(row, 'Latitude', NaN),
+    longitude: numeric(row, 'Longitude', NaN),
     collectionTime: cleanCollectionTime(text(row, 'Thursday collection time', text(row, 'Collection time', text(row, 'Collection slot', text(row, 'Collection day/time'))))),
     collectionSlots: [
       { day: 'Thursday', time: cleanCollectionTime(text(row, 'Thursday collection time', text(row, 'Collection time', text(row, 'Collection slot', text(row, 'Collection day/time'))))) },
