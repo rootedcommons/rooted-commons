@@ -475,3 +475,9 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .dashboard-badge{text-align:center;margin:0 auto 1rem}
 .dashboard-badge img{display:block;width:min(100%,280px);max-width:280px;max-height:none;height:auto;object-fit:contain;margin:0 auto;object-position:center}
 @media(max-width:820px){.checkout-top-grid{grid-template-columns:1fr}}
+
+/* v2.8.2 authenticated checkout corrections */
+#checkout-join-card[hidden],
+#unverified-member-panel[hidden],
+#verified-member-panel[hidden] { display:none !important; }
+.checkout-collection-summary .dashboard-point-image { margin-top:.35rem; }

@@ -1,3 +1,10 @@
+# 2.8.2 — 2026-08-04
+
+- Reused the dashboard collection-point presentation for the checkout collection summary, including image, preferred slot, address and order deadline.
+- Made the saved member collection point the authenticated checkout default.
+- Forced the “Not a member yet?” card to hide after member verification.
+- Removed the “Paying for this order” explainer from the authenticated member checkout path.
+
 ## 2.8.1
 
 - Fixed dashboard secure-payment button so it is only shown for a negative member balance.

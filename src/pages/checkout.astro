@@ -37,10 +37,16 @@ const formatCollectionDeadline = (value) => {
 
   <main class="checkout-shell checkout-shell-wide">
     <div class="checkout-top-grid">
-      <section class="checkout-card checkout-collection-summary" aria-labelledby="collection-heading">
-        <h2 id="collection-heading">Your collection point</h2>
-        <div id="checkout-current-collection"><p class="small-print">Loading your collection point…</p></div>
-        <button id="checkout-change-collection" class="button button-secondary" type="button">Change collection point</button>
+      <section class="checkout-card checkout-collection-summary dashboard-collection" aria-labelledby="collection-heading">
+        <p class="eyebrow" id="collection-heading">Your collection point</p>
+        <img id="checkout-point-image" class="dashboard-point-image" src="" alt="" hidden />
+        <h2 id="checkout-point-name">Loading…</h2>
+        <p id="checkout-point-time"></p>
+        <p id="checkout-point-preference" class="small-print"></p>
+        <p id="checkout-point-address"></p>
+        <p id="checkout-point-deadline" class="collection-deadline-readable"></p>
+        <a id="checkout-point-link" class="text-link" hidden>View collection point →</a>
+        <button id="checkout-change-collection" class="button dashboard-change-point" type="button">Change collection point</button>
       </section>
 
       <section class="checkout-card checkout-review" aria-labelledby="checkout-order-heading">
@@ -97,12 +103,6 @@ const formatCollectionDeadline = (value) => {
         <div id="verified-member-panel" hidden>
           <h2>{c('checkout.member_order_heading')}</h2>
           <div id="verified-member"></div>
-          <aside id="checkout-payment-explainer" class="checkout-payment-explainer">
-            <h3>{c('checkout.payment_heading')}</h3>
-            <FormattedText text={c('checkout.payment_body')} class="rich-body" />
-            <p><strong>{c('checkout.payment_requirement')}</strong></p>
-            <FormattedText text={c('checkout.payment_note')} class="small-print rich-body" />
-          </aside>
           <button id="submit-order" class="button" type="button" disabled>{c('checkout.confirm_button')}</button>
           <p id="submit-message" class="small-print" aria-live="polite"></p>
         </div>
@@ -160,7 +160,13 @@ const formatCollectionDeadline = (value) => {
     const freshnessWarning=document.querySelector('#collection-freshness-warning');
     const collectionPicker=document.querySelector('#checkout-collection-picker');
     const changeCollectionButton=document.querySelector('#checkout-change-collection');
-    const currentCollection=document.querySelector('#checkout-current-collection');
+    const checkoutPointImage=document.querySelector('#checkout-point-image');
+    const checkoutPointName=document.querySelector('#checkout-point-name');
+    const checkoutPointTime=document.querySelector('#checkout-point-time');
+    const checkoutPointPreference=document.querySelector('#checkout-point-preference');
+    const checkoutPointAddress=document.querySelector('#checkout-point-address');
+    const checkoutPointDeadline=document.querySelector('#checkout-point-deadline');
+    const checkoutPointLink=document.querySelector('#checkout-point-link');
 
 
     const dayRank={Thursday:0,Friday:1,Saturday:2,Sunday:3};
@@ -235,17 +241,38 @@ const formatCollectionDeadline = (value) => {
       renderCollectionPoints();
       renderSlots();
       renderMemberSummary();
+      renderCollectionSummary();
     }
 
     function renderCollectionSummary(){
       const point=selectedPoint();
       if(!point){
-        currentCollection.innerHTML='<p>No collection point selected.</p>';
+        checkoutPointName.textContent='Not selected';
+        checkoutPointTime.textContent='';
+        checkoutPointPreference.textContent='';
+        checkoutPointAddress.textContent='';
+        checkoutPointDeadline.textContent='';
+        checkoutPointImage.hidden=true;
+        checkoutPointImage.removeAttribute('src');
+        checkoutPointLink.hidden=true;
         changeCollectionButton.textContent='Choose collection point';
         return;
       }
       const slot=availableSlots(point).find(item=>item.day===selectedCollectionDay)||(point.collectionSlots||[]).find(item=>item.day===member?.preferredCollectionDay)||(point.collectionSlots||[])[0];
-      currentCollection.innerHTML=`<h3>${point.name}</h3>${slot?`<p><strong>${slot.day} · ${slot.time}</strong></p>`:''}${point.address?`<p>${point.address}</p>`:''}`;
+      checkoutPointName.textContent=point.name||'Not selected';
+      checkoutPointTime.textContent=slot?`${slot.day} · ${slot.time}`:(point.collectionTime||'');
+      checkoutPointPreference.textContent=slot?'Your preferred collection slot. Checkout confirms what is available for each basket.':'';
+      checkoutPointAddress.textContent=point.address||'';
+      checkoutPointDeadline.textContent='Orders close Wednesday 18.00.';
+      if(point.image){
+        checkoutPointImage.src=point.image;
+        checkoutPointImage.alt=point.name?`${point.name} collection point`:'';
+        checkoutPointImage.hidden=false;
+      }else{
+        checkoutPointImage.hidden=true;
+        checkoutPointImage.removeAttribute('src');
+      }
+      if(point.link){checkoutPointLink.href=point.link;checkoutPointLink.hidden=false;}else{checkoutPointLink.hidden=true;checkoutPointLink.removeAttribute('href');}
       changeCollectionButton.textContent='Change collection point';
     }
 
@@ -354,7 +381,7 @@ const formatCollectionDeadline = (value) => {
       const joinCard=document.querySelector('#checkout-join-card');
       if(joinCard)joinCard.hidden=true;
       selectedCollectionDay=member.preferredCollectionDay||'';
-      if(!selectedPointId&&member.collectionPoint?.id){
+      if(member.collectionPoint?.id){
         const preferred=pointMap.get(Number(member.collectionPoint.id));
         if(preferred&&pointCompatible(preferred)){
           selectedPointId=Number(preferred.id);
