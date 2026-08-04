@@ -451,3 +451,14 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .dashboard-point-image{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:.8rem;margin:.35rem 0 1rem;background:#fff}
 .dashboard-change-point{background:var(--primary)!important;color:white!important;border-color:var(--primary)!important}
 @media(max-width:640px){.dashboard-impact-stats{grid-template-columns:1fr 1fr}.dashboard-point-image{aspect-ratio:4/3}}
+
+/* v2.8.0 signup, product information and responsive catalogue */
+@media(max-width:760px){.shop-controls{grid-template-columns:1fr}.shop-controls input,.filter-control,.sort-control{grid-column:1;width:100%}.filter-control,.sort-control{display:grid;grid-template-columns:auto minmax(0,1fr)}.filter-control select,.sort-control select{width:100%}}
+.product-detail-information-layout{grid-template-columns:minmax(0,1.25fr) minmax(260px,.75fr);align-items:start}
+.product-detail-origin{display:grid;grid-template-columns:8rem minmax(0,1fr);gap:.75rem;padding:.45rem 0;border-bottom:1px solid color-mix(in srgb,var(--border) 60%,transparent)}
+.product-detail-origin strong{color:var(--primary)}
+.product-detail-nutrition{margin:0;padding:1rem;border:1px solid var(--border);border-radius:.8rem;background:color-mix(in srgb,var(--highlight) 48%,white);position:sticky;top:1rem}
+.product-detail-nutrition h3{margin-top:0}.product-detail-nutrition .nutrition-table{width:100%}
+.dashboard-membership-card{display:block}.dashboard-badge{display:block;min-height:0;margin:0 0 .8rem}.dashboard-badge:empty{display:none}.dashboard-badge img{width:auto;max-width:min(100%,180px);max-height:86px;object-fit:contain;object-position:left center}
+.signup-shell{width:min(760px,calc(100% - 2rem));margin:clamp(2rem,6vw,5rem) auto}.signup-card{padding:clamp(1.25rem,4vw,2.5rem);border:1px solid var(--border);border-radius:1.2rem;background:color-mix(in srgb,var(--highlight) 50%,transparent)}.signup-card h1{margin-top:0}.signup-form{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.signup-form .full{grid-column:1/-1}.signup-form label{display:grid;gap:.4rem;font-weight:700}.signup-form input,.signup-form select{width:100%;box-sizing:border-box;padding:.8rem;border:1px solid var(--border);border-radius:.6rem;background:var(--background);color:inherit;font:inherit}.signup-check{display:grid!important;grid-template-columns:auto 1fr;align-items:start;gap:.65rem!important;font-weight:400!important}.signup-check input{width:auto;margin-top:.25rem}.signup-message{grid-column:1/-1;margin:0}.signup-success{padding:1rem;border-left:4px solid var(--primary);background:color-mix(in srgb,var(--highlight) 60%,white)}
+@media(max-width:700px){.product-detail-information-layout{grid-template-columns:1fr}.product-detail-nutrition{position:static}.product-detail-origin{grid-template-columns:1fr;gap:.15rem}.signup-form{grid-template-columns:1fr}.signup-form .full{grid-column:1}}

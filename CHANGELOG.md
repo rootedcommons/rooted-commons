@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.8.0 — Signup and product information
+- Added `/signup/` with editable Interface Content and secure Baserow member creation.
+- Made catalogue search, filter and sort controls stack vertically on narrow screens.
+- Reworked product detail popup around legally useful product information, with nutrition in a separate right-hand column.
+- Added `May contain` and `FBO / importer` product fields; allergen terms are bolded within Ingredients.
+- Checkout basket now uses `Product name – amount`.
+- Founder badge now sits at the top of the membership card rather than occupying its own column.
+- Secure payment/top-up button is hidden when member credit is positive.
+
 ## 2.7.6 - Dashboard hierarchy and collection controls
 
 - Simplified the dashboard opening card to start with the member greeting and Member Credit; removed the redundant weekly-market eyebrow and “Orders are open” status.

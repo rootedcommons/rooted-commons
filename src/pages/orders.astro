@@ -178,6 +178,15 @@ const collectionPointsForMemberBar = data.collectionPoints.map((point) => ({ id:
       const template=card?.querySelector('template[data-product-detail]');
       if(!template||!productDialog||!productDialogContent)return;
       productDialogContent.replaceChildren(template.content.cloneNode(true));
+      productDialogContent.querySelectorAll('[data-ingredients]').forEach((element)=>{
+        const allergens=(element.dataset.allergens||'').split(/[,;|]/).map(value=>value.trim()).filter(Boolean);
+        let html=element.textContent||'';
+        allergens.sort((a,b)=>b.length-a.length).forEach(allergen=>{
+          const escaped=allergen.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+          html=html.replace(new RegExp(`(${escaped})`,'gi'),'<strong>$1</strong>');
+        });
+        element.innerHTML=html;
+      });
       productDialog.showModal();
     });
     document.querySelector('#close-product-detail')?.addEventListener('click',()=>productDialog?.close());

@@ -16,3 +16,7 @@ Mollie payment URL,URL,No,Dashboard,Hosted top-up link,,Code also accepts Online
 Member since,Date,No,Dashboard perks,Membership start date,,Code also accepts Joined date or Join date
 Founder badge,Single select,No,Dashboard,Founder badge selection,10; 25; 50 or configured naming,Code also accepts Founder level / Membership badge
 Preferred collection day,Single select,No,Dashboard/checkout,Member preferred collection day,Thursday; Friday; Saturday; Sunday,Validated against selected point and basket
+Phone,Single line text,No,Signup/administration,Member phone number,,Optional at signup
+Membership consent,Boolean,Yes,Signup,Records acceptance of membership terms,,Must be true to submit signup
+Membership consent at,Date/time,Yes,Signup,Timestamp of membership consent,,Set automatically by signup endpoint
+Marketing consent,Boolean,No,Signup/email,Separate optional marketing consent,,Must remain separate from membership consent

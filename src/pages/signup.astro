@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FormattedText from '../components/FormattedText.astro';
+import { getSiteData } from '../lib/baserow';
+const data=await getSiteData();
+const s=data.settings;
+const c=(key,fallback='')=>data.interfaceContent[key]||fallback;
+const page=data.pages.find((item)=>item.slug==='signup')||{title:c('signup.heading','Join Rooted Commons'),intro:c('signup.intro','Become a member and support a stronger local food network.')};
+---
+<BaseLayout settings={s} pages={data.pages} title={page.seoTitle||page.title} description={page.seoDescription||page.intro}>
+  <main class="signup-shell">
+    <section class="signup-card">
+      <div id="signup-copy">
+        <h1>{c('signup.heading',page.title)}</h1>
+        <FormattedText text={c('signup.intro',page.intro)} class="rich-body" />
+      </div>
+      <form id="signup-form" class="signup-form">
+        <label>{c('signup.first_name_label','First name')}<input name="firstName" autocomplete="given-name" required /></label>
+        <label>{c('signup.last_name_label','Last name')}<input name="lastName" autocomplete="family-name" required /></label>
+        <label class="full">{c('signup.email_label','Email address')}<input name="email" type="email" autocomplete="email" required /></label>
+        <label class="full">{c('signup.phone_label','Phone number')}<input name="phone" type="tel" autocomplete="tel" /></label>
+        <label class="full">{c('signup.collection_point_label','Collection point')}<select name="collectionPointId" required><option value="">Choose a collection point</option>{data.collectionPoints.map(point=><option value={point.id}>{point.name}</option>)}</select></label>
+        <label class="full">{c('signup.weekly_commitment_label','Weekly commitment (£)')}<input name="weeklyCommitment" type="number" min="1" step="1" value="10" required /><small>{c('signup.weekly_commitment_help','This becomes member credit to spend through the weekly market.')}</small></label>
+        <label class="signup-check full"><input name="membershipConsent" type="checkbox" required /><span>{c('signup.membership_consent_text','I agree to the Rooted Commons membership terms.')}</span></label>
+        <label class="signup-check full"><input name="marketingConsent" type="checkbox" /><span>{c('signup.marketing_consent_text','I would like to receive occasional Rooted Commons news and updates.')}</span></label>
+        <button class="button full" type="submit">{c('signup.submit_button','Join Rooted Commons')}</button>
+        <p id="signup-message" class="signup-message" aria-live="polite"></p>
+      </form>
+      <div id="signup-success" class="signup-success" hidden><h2>{c('signup.success_heading','Welcome to Rooted Commons')}</h2><FormattedText text={c('signup.success_message','Your membership has been created. We’ll send you the information you need to get started.')} class="rich-body" /></div>
+    </section>
+  </main>
+  <script is:inline>
+    const form=document.querySelector('#signup-form'); const message=document.querySelector('#signup-message'); const success=document.querySelector('#signup-success');
+    form?.addEventListener('submit',async(event)=>{event.preventDefault();message.textContent='';const button=form.querySelector('button[type="submit"]');button.disabled=true;
+      try{const fd=new FormData(form);const response=await fetch('/api/signup',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({firstName:fd.get('firstName'),lastName:fd.get('lastName'),email:fd.get('email'),phone:fd.get('phone'),collectionPointId:Number(fd.get('collectionPointId')),weeklyCommitment:Number(fd.get('weeklyCommitment')),membershipConsent:fd.get('membershipConsent')==='on',marketingConsent:fd.get('marketingConsent')==='on'})});const payload=await response.json();if(!response.ok)throw new Error(payload.message||'Signup failed.');form.hidden=true;document.querySelector('#signup-copy').hidden=true;success.hidden=false;}catch(error){message.textContent=error.message||'We could not create your membership. Please try again.';button.disabled=false;}});
+  </script>
+</BaseLayout>

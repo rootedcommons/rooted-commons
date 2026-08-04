@@ -1,4 +1,4 @@
-id,Key,Area,Label,Content
+﻿id,Key,Area,Label,Content
 1,basket.heading,Basket,Basket heading,Your basket
 2,basket.empty,Basket,Empty basket message,Your basket is empty.
 3,basket.total_label,Basket,Total label,Estimated total
@@ -77,3 +77,17 @@ id,Key,Area,Label,Content
 76,faq.10.question,FAQs,Question 10,How do local producers benefit?
 77,faq.10.answer,FAQs,Answer 10,"Rooted Commons gives producers a shared, lower-cost route to customers and more predictable weekly demand. Local producers are not charged fees to sell through the market, so they retain the value they create."
 78,checkout.freshness_warning,Checkout,Friday freshness warning,Fresh produce is packed on Thursday and may not be at its best by Friday.
+79,signup.heading,Signup,Page heading,Join Rooted Commons
+80,signup.intro,Signup,Page introduction,Become a member and support a stronger local food network. Your regular weekly contribution becomes member credit to spend through the weekly market.
+81,signup.first_name_label,Signup,First name label,First name
+82,signup.last_name_label,Signup,Last name label,Last name
+83,signup.email_label,Signup,Email label,Email address
+84,signup.phone_label,Signup,Phone label,Phone number
+85,signup.collection_point_label,Signup,Collection point label,Collection point
+86,signup.weekly_commitment_label,Signup,Weekly commitment label,Weekly commitment (£)
+87,signup.weekly_commitment_help,Signup,Weekly commitment help,This becomes member credit to spend through the weekly market.
+88,signup.membership_consent_text,Signup,Membership consent,I agree to the Rooted Commons membership terms.
+89,signup.marketing_consent_text,Signup,Marketing consent,I would like to receive occasional Rooted Commons news and updates.
+90,signup.submit_button,Signup,Submit button,Join Rooted Commons
+91,signup.success_heading,Signup,Success heading,Welcome to Rooted Commons
+92,signup.success_message,Signup,Success message,Your membership has been created. We’ll send you the information you need to get started.

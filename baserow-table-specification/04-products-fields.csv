@@ -44,3 +44,5 @@ Fibre,Number,No,Product popup,Fibre in grams,2 decimal places,Blank row is hidde
 Protein,Number,No,Product popup,Protein in grams,2 decimal places,Blank row is hidden
 Salt,Number,No,Product popup,Salt in grams,2 decimal places,Blank row is hidden
 Late collection,Single select,No,Checkout/order validation,Latest suitable collection timing,Thursday only; Friday okay; Weekend okay,Defaults Thursday only for safety
+May contain,Long text,No,Product popup,Precautionary allergen statement,,Shown separately beneath Ingredients
+FBO / importer,Long text,No,Product popup,Responsible food business operator or importer name and postal address,,Required where applicable for prepacked food information

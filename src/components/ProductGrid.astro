@@ -40,7 +40,7 @@ const displayProducts = filtered.map((product) => {
   const lowStock = !outOfStock && availableStock <= lowStockThreshold;
   const nutritionRows = nutritionRowsFor(product);
   const origin = String(product.origin || '').trim();
-  const hasDetails = Boolean(product.expandedDescription || product.description || product.cropInfo || product.packagingAndDisposal || product.ingredients || product.allergens || product.storage || product.suggestedUses || nutritionRows.length);
+  const hasDetails = Boolean(product.expandedDescription || product.description || product.ingredients || product.allergens || product.mayContain || product.storage || product.fboImporter || product.origin || product.secondaryOrigin || nutritionRows.length);
   return { ...product, categories, subcategories, countries, certifications, availableStock, outOfStock, lowStock, nutritionRows, origin, hasDetails };
 });
 ---
@@ -91,26 +91,25 @@ const displayProducts = filtered.map((product) => {
         </div>
       </div>
       {product.hasDetails && <template data-product-detail>
-        <div class="product-detail-layout">
-          <img class="product-detail-image" src={product.image || '/images/placeholder.svg'} alt="" />
+        <div class="product-detail-layout product-detail-information-layout">
           <div class="product-detail-copy">
-            <h2>{product.name}</h2>
+            <h2>{product.name}{product.size ? ` – ${product.size}` : ''}</h2>
+            {product.origin && <p class="product-detail-origin"><strong>Origin</strong><span>{product.origin}</span></p>}
+            {product.secondaryOrigin && <p class="product-detail-origin"><strong>Secondary origin</strong><span>{product.secondaryOrigin}</span></p>}
             {(product.expandedDescription || product.description) && <FormattedText text={product.expandedDescription || product.description} class="product-detail-overview rich-body" />}
-            {product.cropInfo && <section><h3>Crop information</h3><FormattedText text={product.cropInfo} class="rich-body" /></section>}
-            {product.ingredients && <section><h3>Ingredients</h3><FormattedText text={product.ingredients} class="rich-body" /></section>}
-            {product.allergens && <section><h3>Allergens</h3><FormattedText text={product.allergens} class="rich-body" /></section>}
-            {product.suggestedUses && <section><h3>How to use it</h3><FormattedText text={product.suggestedUses} class="rich-body" /></section>}
-            {product.storage && <section><h3>Storage</h3><FormattedText text={product.storage} class="rich-body" /></section>}
-            {product.packagingAndDisposal && <section><h3>Packaging and disposal</h3><FormattedText text={product.packagingAndDisposal} class="rich-body" /></section>}
-            {product.nutritionRows.length > 0 && <section class="nutrition-section">
-              <h3>Nutrition</h3>
-              <table class="nutrition-table">
-                <thead><tr><th scope="col">Typical values</th><th scope="col">{product.nutritionBasis || 'Per 100 g'}</th></tr></thead>
-                <tbody>{product.nutritionRows.map(([label, value]) => <tr><th scope="row">{label}</th><td>{value}</td></tr>)}</tbody>
-              </table>
-            </section>}
+            {product.ingredients && <section><h3>Ingredients</h3><p class="rich-body" data-ingredients data-allergens={product.allergens}>{product.ingredients}</p></section>}
+            {product.mayContain && <section><h3>May contain</h3><FormattedText text={product.mayContain} class="rich-body" /></section>}
+            {product.storage && <section><h3>How to store / once opened</h3><FormattedText text={product.storage} class="rich-body" /></section>}
+            {product.fboImporter && <section><h3>FBO / importer</h3><FormattedText text={product.fboImporter} class="rich-body" /></section>}
             <p class="product-detail-note">Product information can change. Always check the pack before use, particularly for allergens.</p>
           </div>
+          {product.nutritionRows.length > 0 && <aside class="nutrition-section product-detail-nutrition">
+            <h3>Nutrition</h3>
+            <table class="nutrition-table">
+              <thead><tr><th scope="col">Typical values</th><th scope="col">{product.nutritionBasis || 'Per 100 g'}</th></tr></thead>
+              <tbody>{product.nutritionRows.map(([label, value]) => <tr><th scope="row">{label}</th><td>{value}</td></tr>)}</tbody>
+            </table>
+          </aside>}
         </div>
       </template>}
     </article>

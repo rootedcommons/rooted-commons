@@ -35,6 +35,7 @@ const membershipPerks=s.membershipPerks || [];
 
         <article class="dashboard-card dashboard-membership-card">
           <div class="dashboard-membership-copy">
+            <div id="dashboard-badge" class="dashboard-badge"></div>
             <p class="eyebrow">{c('dashboard.membership_eyebrow')}</p>
             <h2 id="dashboard-founder-level">{c('dashboard.default_member_level')}</h2>
             <div class="dashboard-impact-stats">
@@ -44,7 +45,6 @@ const membershipPerks=s.membershipPerks || [];
             <p id="dashboard-last-order"></p>
             <div id="dashboard-perks" class="dashboard-perks"></div>
           </div>
-          <div id="dashboard-badge" class="dashboard-badge"></div>
         </article>
       </div>
 
@@ -253,11 +253,11 @@ const membershipPerks=s.membershipPerks || [];
         paymentPrompt.innerHTML=`<strong>${money.format(Math.abs(credit))} top-up needed</strong><span>Your balance must be back to £0.00 or above before collection.</span>`;
         paymentPrompt.hidden=false;
       }
-      if(member.molliePaymentUrl){
+      if(member.molliePaymentUrl && credit<=0){
         mollie.href=member.molliePaymentUrl;
         mollie.textContent=credit<0?`Pay ${money.format(Math.abs(credit))} securely`:'Top up member credit';
         mollie.hidden=false;
-      }
+      } else { mollie.hidden=true; }
       const threshold=Math.max(2,commitment*.15);
       if(commitment>0&&average>=commitment+threshold){
         document.querySelector('#dashboard-increase-prompt').hidden=false;
