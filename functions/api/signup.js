@@ -68,13 +68,14 @@ export async function onRequestPost({request,env}){
     if(!validDays.includes(preferredCollectionDay))return json({ok:false,message:`That collection point is not available on ${preferredCollectionDay}. Please choose another location.`},409);
 
     const now=new Date();
+    const orderToken=token();
     const fields={
       'First name':firstName,
       'Last name':lastName,
       'Email':email,
       'Phone':phone,
       'Active':true,
-      'Order token':token(),
+      'Order token':orderToken,
       'Weekly commitment':weeklyCommitment,
       'Monthly equivalent':monthlyEquivalent,
       'Contribution frequency':contributionFrequency,
@@ -86,6 +87,6 @@ export async function onRequestPost({request,env}){
       'Weekly newsletter':body.weeklyNewsletter===true
     };
     const member=await createRow(cfg,cfg.members,fields);
-    return json({ok:true,memberId:member.id},201);
+    return json({ok:true,memberId:member.id,dashboardUrl:`/dashboard/?token=${encodeURIComponent(orderToken)}`},201);
   }catch(error){return json({ok:false,message:'We could not create your membership. Please try again.',detail:String(error.message||error)},500);}
 }

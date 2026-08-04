@@ -75,7 +75,12 @@ const collectionPoints=data.collectionPoints.map(point=>({id:point.id,name:point
         <button class="button full" type="submit" disabled={!turnstileSiteKey}>{c('signup.submit_button','Join Rooted Commons')}</button>
         <p id="signup-message" class="signup-message" aria-live="polite"></p>
       </form>
-      <div id="signup-success" class="signup-success" hidden><h2>{c('signup.success_heading','Welcome to Rooted Commons')}</h2><FormattedText text={c('signup.success_message','Your membership has been created. We’ll send you the information you need to get started.')} class="rich-body" /></div>
+      <div id="signup-success" class="signup-success" hidden>
+        <h2>{c('signup.success_heading','Welcome to Rooted Commons')}</h2>
+        <FormattedText text={c('signup.success_message','Your membership has been created successfully.')} class="rich-body" />
+        <p><a id="signup-dashboard-link" class="button" href="/dashboard/">{c('signup.dashboard_button','Your new member dashboard')}</a></p>
+        <FormattedText text={c('signup.dashboard_security','**Please keep this unique link secret.** It is a private key to your membership account and wallet, so don’t share it with anyone or log in on someone else’s device.\n\nTo keep your account and member credit secure, we’ll send you a new unique link every Sunday. Your previous link will stop working when the new one is issued.')} class="rich-body" />
+      </div>
     </section>
   </main>
   <script is:inline define:vars={{ collectionPoints }}>
@@ -137,7 +142,7 @@ const collectionPoints=data.collectionPoints.map(point=>({id:point.id,name:point
         const turnstileToken=fd.get('cf-turnstile-response')||document.querySelector('input[name="cf-turnstile-response"]')?.value||'';
         if(!turnstileToken)throw new Error('Please complete the security check and try again.');
         const response=await fetch('/api/signup',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({firstName:fd.get('firstName'),lastName:fd.get('lastName'),email:fd.get('email'),phone:fd.get('phone'),preferredCollectionDay:fd.get('preferredCollectionDay'),collectionPointId:Number(fd.get('collectionPointId')),contributionFrequency:fd.get('contributionFrequency'),contributionAmount:fd.get('contributionAmount'),membershipConsent:fd.get('membershipConsent')==='on',weeklyNewsletter:fd.get('weeklyNewsletter')==='on',turnstileToken})});
-        const payload=await response.json();if(!response.ok)throw new Error(payload.message||'Signup failed.');form.hidden=true;document.querySelector('#signup-copy').hidden=true;success.hidden=false;
+        const payload=await response.json();if(!response.ok)throw new Error(payload.message||'Signup failed.');const dashboardLink=document.querySelector('#signup-dashboard-link');if(dashboardLink&&payload.dashboardUrl)dashboardLink.href=payload.dashboardUrl;form.hidden=true;document.querySelector('#signup-copy').hidden=true;success.hidden=false;
       }catch(error){message.textContent=error.message||'We could not create your membership. Please try again.';button.disabled=false;if(window.turnstile)window.turnstile.reset();}
     });
   </script>

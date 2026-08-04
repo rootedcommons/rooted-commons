@@ -1,3 +1,7 @@
+# v2.9.2
+- Signup confirmation now links directly to the newly created member dashboard using the generated Order token.
+- Added editable dashboard-link label and security guidance to Interface Content.
+
 # Changelog
 
 ## 2.9.1 — 2026-08-04
