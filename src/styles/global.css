@@ -950,3 +950,46 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
     align-items:flex-start;
   }
 }
+
+/* v2.9.11 membership + involvement refinements */
+.dashboard-membership-actions{
+  justify-content:flex-end!important;
+}
+.dashboard-membership-actions .dashboard-membership-credit{
+  margin-bottom:.2rem;
+}
+.dashboard-membership-tenure{
+  margin-top:1rem;
+  padding-top:1rem;
+  border-top:1px solid var(--border);
+  display:grid;
+  gap:.2rem;
+}
+.dashboard-membership-tenure strong{
+  font-size:clamp(1.55rem,3.2vw,2.3rem);
+  line-height:1.05;
+}
+.dashboard-membership-tenure span{
+  font-size:.92rem;
+  line-height:1.3;
+}
+.dashboard-participation-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+.dashboard-bigger-picture{
+  margin-top:1rem;
+  padding-top:1rem;
+  border-top:1px solid var(--border);
+  display:grid;
+  gap:.35rem;
+}
+.dashboard-bigger-picture strong{
+  font-size:1.05rem;
+}
+.dashboard-regular-reference-help{
+  margin:.2rem 0 0;
+  padding-left:0!important;
+  font-size:.88rem;
+  font-style:italic;
+  opacity:.78;
+}

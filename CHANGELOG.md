@@ -1,3 +1,14 @@
+# v2.9.11
+- Anchored Member credit immediately above Browse this week's market at the bottom of the Membership card's right-hand 40% column.
+- Moved membership weeks back into Your Membership immediately above the perks section; removed the duplicate weeks counter from the lower participation card.
+- Renamed the lower-right card to `Your Involvement`.
+- Changed Your Involvement counters to a 50/50 two-column grid.
+- Added `Events attended` as the fourth involvement counter alongside redirected locally, volunteer days and workshops attended.
+- Added the collective-impact bridge: `You're part of something bigger` with an editable link to the network story.
+- Reused `dashboard.reference_help` directly below the RC-x reference in Your Weekly Commitment and removed the deprecated regular-payment note.
+- Removed the redundant `dashboard.collection_view` link without affecting Change collection point.
+- Updated Interface Content and Members schema/import files.
+
 # v2.9.10
 - Moved `Browse this week’s market` into the 40% Member Credit column so it uses the vertical space beside the badge; the 60/40 layout remains on mobile.
 - Removed the `workshops` unit after the Workshops attended number, leaving the explanatory label below.

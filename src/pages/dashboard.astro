@@ -45,7 +45,6 @@ const copy={
   perkInWeeks:c('dashboard.perk_in_weeks','in {weeks} week{plural}'),
   collectionEyebrow:c('dashboard.collection_eyebrow','Your collection point'),
   collectionNotSelected:c('dashboard.collection_not_selected','Not selected'),
-  collectionView:c('dashboard.collection_view','View collection point →'),
   changeCollection:c('dashboard.change_collection','Change collection preferences'),
   chooseCollection:c('dashboard.choose_collection','Choose your collection point'),
   collectionMapLink:c('dashboard.collection_map_link','see our map'),
@@ -61,7 +60,6 @@ const copy={
   regularPaymentHeading:c('dashboard.regular_payment_heading','Your regular payment'),
   setupRegularPaymentHeading:c('dashboard.setup_regular_payment_heading','Set up your regular payment'),
   regularPaymentBody:c('dashboard.regular_payment_body','Set up a BACS standing order using the details below.'),
-  regularPaymentNote:c('dashboard.regular_payment_note','Regular BACS payments have no processing charge and help us keep member prices low.'),
   averageOrders:c('dashboard.average_orders','Average weekly orders'),
   recentPayments:c('dashboard.recent_payments','Recent payments'),
   noPayments:c('dashboard.no_payments','No recent payments found.'),
@@ -77,13 +75,15 @@ const copy={
   perMonth:c('dashboard.per_month','per month'),
   collectionImageAlt:c('dashboard.collection_image_alt','{name} collection point'),
   referenceHelp:c('dashboard.reference_help',"This reference matters — it's how your payment reached your account."),
-  impactEyebrow:c('dashboard.impact_eyebrow','Your impact'),
+  involvementEyebrow:c('dashboard.involvement_eyebrow','Your involvement'),
   volunteerDays:c('dashboard.volunteer_days','volunteering in your local food network'),
   workshopsAttended:c('dashboard.workshops_attended','workshops attended'),
+  eventsAttended:c('dashboard.events_attended','events attended'),
   dayUnit:c('dashboard.day_unit','day'),
   daysUnit:c('dashboard.days_unit','days'),
-  workshopUnit:c('dashboard.workshop_unit','workshop'),
-  workshopsUnit:c('dashboard.workshops_unit','workshops')
+  biggerHeading:c('dashboard.bigger_heading',"You’re part of something bigger."),
+  biggerLink:c('dashboard.bigger_link','See what our network is growing, sharing and giving back →'),
+  biggerUrl:c('dashboard.bigger_url','/our-partners/')
 };
 ---
 <BaseLayout settings={s} pages={data.pages} title={page.seoTitle || page.title} description={page.seoDescription || page.intro}>
@@ -150,6 +150,10 @@ const copy={
           </div>
         </section>
 
+        <div class="dashboard-membership-tenure">
+          <strong id="dashboard-member-weeks">0 {copy.weeksUnit}</strong>
+          <span>{copy.weeksSupporting}</span>
+        </div>
         <div id="dashboard-perks" class="dashboard-perks"></div>
       </article>
 
@@ -167,7 +171,7 @@ const copy={
               <div><dt>{copy.bankAccountNumber}</dt><dd id="dashboard-regular-account-number"></dd></div>
               <div><dt>{copy.bankReference}</dt><dd id="dashboard-regular-payment-reference"></dd></div>
             </dl>
-            <FormattedText text={copy.regularPaymentNote} class="small-print rich-body" />
+            <p class="dashboard-reference-help dashboard-regular-reference-help">{copy.referenceHelp}</p>
           </section>
 
           <div id="dashboard-existing-commitment-detail">
@@ -198,7 +202,6 @@ const copy={
           <h2 id="dashboard-point-name">{copy.collectionNotSelected}</h2>
           <p id="dashboard-point-time"></p>
           <p id="dashboard-point-address"></p>
-          <a id="dashboard-point-link" class="text-link" hidden>{copy.collectionView}</a>
           <button id="dashboard-change-point" class="button dashboard-change-point" type="button">{copy.changeCollection}</button>
 
           <form id="dashboard-point-form" class="dashboard-point-form" hidden>
@@ -217,13 +220,9 @@ const copy={
           </form>
         </article>
 
-        <article class="dashboard-card dashboard-impact-card">
-          <p class="eyebrow">{copy.impactEyebrow}</p>
+        <article class="dashboard-card dashboard-impact-card dashboard-involvement-card">
+          <p class="eyebrow">{copy.involvementEyebrow}</p>
           <div class="dashboard-participation-grid">
-            <p class="dashboard-participation-stat">
-              <strong id="dashboard-member-weeks">0 {copy.weeksUnit}</strong>
-              <span>{copy.weeksSupporting}</span>
-            </p>
             <p class="dashboard-participation-stat">
               <strong id="dashboard-impact">£0</strong>
               <span>{copy.localImpact}</span>
@@ -236,6 +235,14 @@ const copy={
               <strong id="dashboard-workshops-attended">0</strong>
               <span>{copy.workshopsAttended}</span>
             </p>
+            <p class="dashboard-participation-stat">
+              <strong id="dashboard-events-attended">0</strong>
+              <span>{copy.eventsAttended}</span>
+            </p>
+          </div>
+          <div class="dashboard-bigger-picture">
+            <strong>{copy.biggerHeading}</strong>
+            <a class="text-link" href={copy.biggerUrl}>{copy.biggerLink}</a>
           </div>
         </article>
       </div>
@@ -290,9 +297,6 @@ const copy={
         document.querySelector('#dashboard-point-address').textContent=point.address||'';
         const pointImage=document.querySelector('#dashboard-point-image');
         if(point.image){pointImage.src=point.image;pointImage.alt=point.name?interpolate(copy.collectionImageAlt,{name:point.name}):'';pointImage.hidden=false;}else{pointImage.hidden=true;pointImage.removeAttribute('src');}
-        const pointLink=document.querySelector('#dashboard-point-link');
-        pointLink.hidden=!point.link;
-        if(point.link)pointLink.href=point.link;
         pointMessage.textContent=copy.collectionUpdated;
         setTimeout(()=>{pointForm.hidden=true;pointMessage.textContent='';},900);
       }else pointMessage.textContent=payload.message||copy.collectionFailed;
@@ -370,8 +374,6 @@ const copy={
       document.querySelector('#dashboard-point-address').textContent=point.address||'';
       const pointImage=document.querySelector('#dashboard-point-image');
       if(point.image){pointImage.src=point.image;pointImage.alt=point.name?interpolate(copy.collectionImageAlt,{name:point.name}):'';pointImage.hidden=false;}else{pointImage.hidden=true;pointImage.removeAttribute('src');}
-      const pointLink=document.querySelector('#dashboard-point-link');
-      if(point.link){pointLink.href=point.link;pointLink.hidden=false;}else pointLink.hidden=true;
 
       const logo=member.founderBadge?badgeLogos[member.founderBadge]:memberBadge;
       const badgeLabel=member.founderBadge||copy.defaultMemberLevel;
@@ -386,6 +388,8 @@ const copy={
       document.querySelector('#dashboard-volunteer-days').textContent=`${volunteerDays} ${volunteerDays===1?copy.dayUnit:copy.daysUnit}`;
       const workshops=Number(member.workshopsAttended)||0;
       document.querySelector('#dashboard-workshops-attended').textContent=String(workshops);
+      const events=Number(member.eventsAttended)||0;
+      document.querySelector('#dashboard-events-attended').textContent=String(events);
       renderPerks(weeks,isNew);
 
       const shop=document.querySelector('#dashboard-shop-link');

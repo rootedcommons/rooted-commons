@@ -149,6 +149,7 @@ export function publicMember(member, { collectionPoint = null, lastOrder = null,
     membershipWeeks,
     volunteerDays: number(member['Volunteer days']),
     workshopsAttended: number(member['Workshops attended']),
+    eventsAttended: number(member['Events attended']),
     account: account || { payments: [], averageWeeklySpend: 0, totalOrderSpend: 0, totalPaymentsReceived: 0 },
     lastOrder: orderSummary(lastOrder),
     currentOrder: orderSummary(currentOrder)
