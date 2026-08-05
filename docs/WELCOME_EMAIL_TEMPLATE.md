@@ -16,7 +16,7 @@ Suggested body:
 >
 > This is a unique private link to your membership account and member credit. Please do not share it with anyone or use it on someone else's device.
 >
-> We will send you a new unique link each Sunday. When a new link is issued, the previous one stops working.
+> We will send you a new unique link each Wednesday after orders close. When a new link is issued, the previous one stops working.
 >
 > Your member number and payment reference is **{{ member_number }}**.
 >

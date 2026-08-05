@@ -26,7 +26,8 @@ Required:
 - `Email`
 - `Active`
 - `Order token`
-- `Order token expiry`
+- `Token created` — date/time set whenever a new Order token is generated
+- `Order token expiry` — date/time; next Wednesday at 18:05 Europe/London
 - `Current credit`
 - `Weekly commitment`
 - `Collection point`
@@ -35,7 +36,6 @@ Required:
 - `Mollie payment URL` — optional hosted payment URL shown only when the member is below zero
 - `Phone` — required by signup for membership/order issues
 - `Membership consent` — boolean; must be true at signup
-- `Membership consent at` — date/time set by signup
 - `Weekly newsletter` — optional boolean consent for including news/updates in the weekly service email
 - `Monthly equivalent` — number/currency, 2 decimals
 - `Contribution frequency` — single select: Weekly / Monthly

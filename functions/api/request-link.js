@@ -1,12 +1,37 @@
 import { envConfig, json, listRows, normaliseEmail, updateRow } from '../_baserow.js';
 
 const token=()=>Array.from(crypto.getRandomValues(new Uint8Array(24)),b=>b.toString(16).padStart(2,'0')).join('');
-const nextSundayExpiry=(from=new Date())=>{
-  const d=new Date(from.getTime());
-  const days=(7-d.getUTCDay())%7 || 7;
-  d.setUTCDate(d.getUTCDate()+days);
-  d.setUTCHours(23,59,59,0);
-  return d.toISOString();
+const nextWednesdayExpiry=(from=new Date())=>{
+  const format=new Intl.DateTimeFormat('en-GB',{
+    timeZone:'Europe/London',
+    year:'numeric',month:'2-digit',day:'2-digit',weekday:'short',
+    hour:'2-digit',minute:'2-digit',hourCycle:'h23'
+  });
+  const parts=Object.fromEntries(format.formatToParts(from).filter(p=>p.type!=='literal').map(p=>[p.type,p.value]));
+  const weekday={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6}[parts.weekday];
+  const localMinutes=Number(parts.hour)*60+Number(parts.minute);
+  let days=(3-weekday+7)%7;
+  if(days===0 && localMinutes>=18*60+5)days=7;
+
+  const localDate=new Date(Date.UTC(Number(parts.year),Number(parts.month)-1,Number(parts.day)));
+  localDate.setUTCDate(localDate.getUTCDate()+days);
+  const y=localDate.getUTCFullYear();
+  const m=localDate.getUTCMonth()+1;
+  const d=localDate.getUTCDate();
+
+  // Convert the intended Europe/London wall-clock time (18:05) to UTC,
+  // including GMT/BST automatically.
+  const targetAsUtc=Date.UTC(y,m-1,d,18,5,0,0);
+  let guess=new Date(targetAsUtc);
+  for(let i=0;i<3;i+=1){
+    const seen=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{
+      timeZone:'Europe/London',year:'numeric',month:'2-digit',day:'2-digit',
+      hour:'2-digit',minute:'2-digit',hourCycle:'h23'
+    }).formatToParts(guess).filter(p=>p.type!=='literal').map(p=>[p.type,p.value]));
+    const seenAsUtc=Date.UTC(Number(seen.year),Number(seen.month)-1,Number(seen.day),Number(seen.hour),Number(seen.minute));
+    guess=new Date(guess.getTime()+(targetAsUtc-seenAsUtc));
+  }
+  return guess.toISOString();
 };
 
 export async function onRequestPost({ request, env }) {
@@ -21,9 +46,11 @@ export async function onRequestPost({ request, env }) {
 
     if (member && env.MAGIC_LINK_WEBHOOK_URL) {
       const freshToken=token();
+      const tokenCreated=new Date();
       await updateRow(cfg,cfg.members,member.id,{
         'Order token':freshToken,
-        'Order token expiry':nextSundayExpiry(new Date())
+        'Token created':tokenCreated.toISOString(),
+        'Order token expiry':nextWednesdayExpiry(tokenCreated)
       });
 
       const origin=new URL(request.url).origin;

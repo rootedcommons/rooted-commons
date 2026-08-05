@@ -1,3 +1,20 @@
+# v2.9.7
+- Restored the signup form to the plain-body layout with thin section dividers instead of highlighted internal boxes.
+- Kept the newsletter and Membership Terms/Privacy consent checkboxes together with no divider between them.
+- Removed all use of the deleted `Membership consent at` field.
+- Signup now writes the membership/consent timestamp to `Member since`, restoring the dashboard membership-weeks calculation.
+- Added `Token created` writes whenever signup or the login-link endpoint generates a token.
+- Order tokens now expire at the next Wednesday 18:05 Europe/London; tokens generated at or after Wednesday 18:05 expire the following Wednesday.
+- Updated signup/security copy from Sunday token renewal to Wednesday after orders close.
+- Updated Baserow member schema/import documentation for `Member since`, `Token created` and Wednesday token expiry.
+
+# v2.9.6
+- Stacked the negative-credit payment choices vertically.
+- Split secure online payment into three top-level choices: Bank transfer, Card, and Open Banking.
+- Changed the online labels to `Pay securely by card` and `Pay securely from your bank (Open Banking)`.
+- Restored the centred Founder badge to a larger maximum size.
+- Added editable Interface Content rows for the new Card/Open Banking labels and placeholders.
+
 # v2.9.5
 - Removed the separate dashboard welcome/credit card and consolidated greeting, founder badge, membership identity and Member Credit into the main Membership card.
 - New members with no positive account payments see `Welcome {name}` and do not see previous-order, perks, average-order, payment-history or account-activity sections.

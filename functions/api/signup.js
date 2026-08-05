@@ -4,15 +4,37 @@ const clean=value=>String(value||'').trim();
 const token=()=>Array.from(crypto.getRandomValues(new Uint8Array(24)),b=>b.toString(16).padStart(2,'0')).join('');
 const money=value=>Math.round((Number(value)+Number.EPSILON)*100)/100;
 const hasPennyPrecision=value=>Number.isFinite(Number(value)) && Math.abs(Number(value)*100-Math.round(Number(value)*100))<1e-6;
-const nextSundayExpiry=(from=new Date())=>{
-  // A newly issued Sunday token replaces the previous token immediately.
-  // This expiry is a fallback so a signup token cannot remain valid indefinitely
-  // if the weekly rotation fails.
-  const d=new Date(from.getTime());
-  const days=(7-d.getUTCDay())%7 || 7;
-  d.setUTCDate(d.getUTCDate()+days);
-  d.setUTCHours(23,59,59,0);
-  return d.toISOString();
+const nextWednesdayExpiry=(from=new Date())=>{
+  const format=new Intl.DateTimeFormat('en-GB',{
+    timeZone:'Europe/London',
+    year:'numeric',month:'2-digit',day:'2-digit',weekday:'short',
+    hour:'2-digit',minute:'2-digit',hourCycle:'h23'
+  });
+  const parts=Object.fromEntries(format.formatToParts(from).filter(p=>p.type!=='literal').map(p=>[p.type,p.value]));
+  const weekday={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6}[parts.weekday];
+  const localMinutes=Number(parts.hour)*60+Number(parts.minute);
+  let days=(3-weekday+7)%7;
+  if(days===0 && localMinutes>=18*60+5)days=7;
+
+  const localDate=new Date(Date.UTC(Number(parts.year),Number(parts.month)-1,Number(parts.day)));
+  localDate.setUTCDate(localDate.getUTCDate()+days);
+  const y=localDate.getUTCFullYear();
+  const m=localDate.getUTCMonth()+1;
+  const d=localDate.getUTCDate();
+
+  // Convert the intended Europe/London wall-clock time (18:05) to UTC,
+  // including GMT/BST automatically.
+  const targetAsUtc=Date.UTC(y,m-1,d,18,5,0,0);
+  let guess=new Date(targetAsUtc);
+  for(let i=0;i<3;i+=1){
+    const seen=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{
+      timeZone:'Europe/London',year:'numeric',month:'2-digit',day:'2-digit',
+      hour:'2-digit',minute:'2-digit',hourCycle:'h23'
+    }).formatToParts(guess).filter(p=>p.type!=='literal').map(p=>[p.type,p.value]));
+    const seenAsUtc=Date.UTC(Number(seen.year),Number(seen.month)-1,Number(seen.day),Number(seen.hour),Number(seen.minute));
+    guess=new Date(guess.getTime()+(targetAsUtc-seenAsUtc));
+  }
+  return guess.toISOString();
 };
 const attempts=new Map();
 const RATE_WINDOW_MS=15*60*1000;
@@ -88,15 +110,15 @@ export async function onRequestPost({request,env}){
       'Phone':phone,
       'Active':true,
       'Order token':orderToken,
-      'Order token expiry':nextSundayExpiry(now),
+      'Token created':now.toISOString(),
+      'Order token expiry':nextWednesdayExpiry(now),
       'Weekly commitment':weeklyCommitment,
       'Monthly equivalent':monthlyEquivalent,
       'Contribution frequency':contributionFrequency,
       'Collection point':[collectionPointId],
       'Preferred collection day':preferredCollectionDay,
-      'Member since':now.toISOString().slice(0,10),
+      'Member since':now.toISOString(),
       'Membership consent':true,
-      'Membership consent at':now.toISOString(),
       'Weekly newsletter':body.weeklyNewsletter===true,
       'Email verified':false,
       'Product requests':productRequests
@@ -128,7 +150,7 @@ export async function onRequestPost({request,env}){
               confirmationText:'Please confirm that this email address belongs to you by opening your secure member link.',
               buttonText:'Confirm my email and open my dashboard',
               securityText:'This is a unique private link to your membership account and member credit. Please do not share it with anyone or use it on someone else’s device.',
-              rotationText:'We will send you a new unique link each Sunday. When a new link is issued, the previous one stops working.'
+              rotationText:'We will send you a new unique link each Wednesday after orders close. When a new link is issued, the previous one stops working.'
             }
           })
         });

@@ -728,3 +728,43 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
   .dashboard-payment-options,.dashboard-online-options{grid-template-columns:1fr}
   .dashboard-detail-grid-v295{grid-template-columns:1fr}
 }
+
+/* v2.9.6 dashboard payment stack and badge sizing */
+.dashboard-payment-options{
+  grid-template-columns:1fr!important;
+}
+.dashboard-payment-options label{
+  width:100%;
+  box-sizing:border-box;
+}
+.dashboard-membership-v295 .dashboard-badge img{
+  max-width:min(100%,300px)!important;
+  max-height:180px!important;
+}
+.dashboard-membership-v295 .dashboard-badge{
+  margin:.35rem 0 1.35rem!important;
+}
+
+/* v2.9.7 signup: plain body with thin section dividers */
+.signup-request-field .signup-request-prompt{
+  font-family:inherit;
+  font-weight:400;
+  color:var(--primary);
+}
+.signup-request-field textarea{
+  width:100%;
+  resize:vertical;
+  box-sizing:border-box;
+  padding:.8rem;
+  border:1px solid var(--border);
+  border-radius:.6rem;
+  background:var(--background);
+  color:var(--primary);
+  font:inherit;
+}
+.signup-request-field textarea::placeholder{
+  color:color-mix(in srgb,var(--primary) 55%,transparent);
+  font-style:italic;
+  opacity:1;
+}
+.signup-keeping-copy{margin:.1rem 0 0}

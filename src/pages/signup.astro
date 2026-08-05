@@ -26,58 +26,53 @@ const collectionPoints=data.collectionPoints.map(point=>({id:point.id,name:point
         <label class="full">{c('signup.confirm_email_label','Confirm email address')}<input name="confirmEmail" type="email" autocomplete="email" required /></label>
         <label class="full"><span class="signup-label-line"><span>{c('signup.phone_label','Phone number')}</span><small class="signup-inline-help">{c('signup.phone_help',"We'll only need this if there's an issue with your membership or an order.")}</small></span><input name="phone" type="tel" autocomplete="tel" required /></label>
 
-        <section class="signup-box full">
-          <div class="signup-section-heading">
-            <h2>{c('signup.collection_details_heading','Collection details')}</h2>
-            <p class="signup-inline-help">{c('signup.collection_point_help','This can be changed at checkout or from your membership dashboard.')}</p>
+        <div class="signup-section-heading full">
+          <h2>{c('signup.collection_details_heading','Collection details')}</h2>
+          <p class="signup-inline-help">{c('signup.collection_point_help','This can be changed at checkout or from your membership dashboard.')}</p>
+        </div>
+
+        <label class="full"><span class="signup-label-line"><span>{c('signup.collection_point_label','Collection point')} <a class="signup-map-link" href="/collection-points/?return=/signup/&select=1">({c('signup.collection_points_map_link','see our map')})</a></span><small class="signup-inline-help">{c('signup.collection_point_late_help','Only some locations support late collection.')}</small></span>
+          <select name="collectionPointId" id="signup-collection-point" required><option value="">Choose a collection point</option></select>
+        </label>
+
+        <label class="full">{c('signup.collection_day_label','Preferred collection day')}
+          <select name="preferredCollectionDay" id="signup-collection-day" required><option value="">Choose a collection point first</option></select>
+        </label>
+        <p id="signup-late-collection-note" class="signup-info full" hidden>{c('signup.late_collection_note','All orders are delivered on Thursday. Some locations support late collection of fresh produce on Friday, but only suitable items, such as cupboard staples and refills, can be held for collection over the weekend.')}</p>
+
+        <div class="signup-section-heading full">
+          <h2>{c('signup.weekly_commitment_label','Weekly commitment')}</h2>
+        </div>
+
+        <fieldset class="signup-frequency full">
+          <legend>{c('signup.contribution_frequency_label','How often would you like to add to your member credit?')}</legend>
+          <div class="signup-frequency-options">
+            <label><input type="radio" name="contributionFrequency" value="Weekly" checked /><span>{c('signup.frequency_weekly_label','Weekly')}</span></label>
+            <label><input type="radio" name="contributionFrequency" value="Monthly" /><span>{c('signup.frequency_monthly_label','Monthly')}</span></label>
           </div>
+        </fieldset>
 
-          <label><span class="signup-label-line"><span>{c('signup.collection_point_label','Collection point')} <a class="signup-map-link" href="/collection-points/?return=/signup/&select=1">({c('signup.collection_points_map_link','see our map')})</a></span><small class="signup-inline-help">{c('signup.collection_point_late_help','Only some locations support late collection.')}</small></span>
-            <select name="collectionPointId" id="signup-collection-point" required><option value="">Choose a collection point</option></select>
-          </label>
+        <label class="full"><span id="signup-contribution-label" data-weekly={c('signup.weekly_amount_label','Weekly commitment')} data-monthly={c('signup.monthly_amount_label','Monthly commitment')}>{c('signup.weekly_amount_label','Weekly commitment')}</span>
+          <span class="signup-money-input">
+            <button class="signup-pound-step" type="button" data-contribution-step="-1" aria-label="Reduce commitment">−</button>
+            <span aria-hidden="true">£</span><input name="contributionAmount" id="signup-contribution-amount" type="number" min="10" step="0.01" value="10.00" inputmode="decimal" required /><span id="signup-contribution-suffix" aria-hidden="true">/ week</span>
+            <button class="signup-pound-step" type="button" data-contribution-step="1" aria-label="Increase commitment">+</button>
+          </span>
+          <small id="signup-contribution-help" data-weekly={c('signup.weekly_commitment_help','Minimum £10.00/week. Your regular contribution becomes member credit to spend through the weekly market.')} data-monthly={c('signup.monthly_commitment_help','Minimum £43.33/month (equivalent to £10/week). Your regular contribution becomes member credit to spend through the weekly market.')}>{c('signup.weekly_commitment_help','Minimum £10.00/week. Your regular contribution becomes member credit to spend through the weekly market.')}</small>
+        </label>
 
-          <label>{c('signup.collection_day_label','Preferred collection day')}
-            <select name="preferredCollectionDay" id="signup-collection-day" required><option value="">Choose a collection point first</option></select>
-          </label>
-          <p id="signup-late-collection-note" class="signup-info" hidden>{c('signup.late_collection_note','All orders are delivered on Thursday. Some locations support late collection of fresh produce on Friday, but only suitable items, such as cupboard staples and refills, can be held for collection over the weekend.')}</p>
-        </section>
-
-        <section class="signup-box full">
-          <div class="signup-section-heading">
-            <h2>{c('signup.weekly_commitment_label','Weekly commitment')}</h2>
-          </div>
-
-          <fieldset class="signup-frequency">
-            <legend>{c('signup.contribution_frequency_label','How often would you like to add to your member credit?')}</legend>
-            <div class="signup-frequency-options">
-              <label><input type="radio" name="contributionFrequency" value="Weekly" checked /><span>{c('signup.frequency_weekly_label','Weekly')}</span></label>
-              <label><input type="radio" name="contributionFrequency" value="Monthly" /><span>{c('signup.frequency_monthly_label','Monthly')}</span></label>
-            </div>
-          </fieldset>
-
-          <label><span id="signup-contribution-label" data-weekly={c('signup.weekly_amount_label','Weekly commitment')} data-monthly={c('signup.monthly_amount_label','Monthly commitment')}>{c('signup.weekly_amount_label','Weekly commitment')}</span>
-            <span class="signup-money-input">
-              <button class="signup-pound-step" type="button" data-contribution-step="-1" aria-label="Reduce commitment">−</button>
-              <span aria-hidden="true">£</span><input name="contributionAmount" id="signup-contribution-amount" type="number" min="10" step="0.01" value="10.00" inputmode="decimal" required /><span id="signup-contribution-suffix" aria-hidden="true">/ week</span>
-              <button class="signup-pound-step" type="button" data-contribution-step="1" aria-label="Increase commitment">+</button>
-            </span>
-            <small id="signup-contribution-help" data-weekly={c('signup.weekly_commitment_help','Minimum £10.00/week. Your regular contribution becomes member credit to spend through the weekly market.')} data-monthly={c('signup.monthly_commitment_help','Minimum £43.33/month (equivalent to £10/week). Your regular contribution becomes member credit to spend through the weekly market.')}>{c('signup.weekly_commitment_help','Minimum £10.00/week. Your regular contribution becomes member credit to spend through the weekly market.')}</small>
-          </label>
-        </section>
-
-        <section class="signup-box full signup-requests">
+        <div class="signup-section-heading full">
           <h2>{c('signup.requests_heading','Requests')}</h2>
-          <label><span class="signup-request-prompt">{c('signup.requests_prompt',"Are there any cupboard staples that you regularly purchase that you'd like us to stock, if we don't already?")}</span>
-            <textarea name="productRequests" rows="4" placeholder={c('signup.requests_placeholder','Optional')}></textarea>
-          </label>
-        </section>
+        </div>
+        <label class="full signup-request-field"><span class="signup-request-prompt">{c('signup.requests_prompt',"Are there any cupboard staples that you regularly purchase that you'd like us to stock, if we don't already?")}</span>
+          <textarea name="productRequests" rows="4" placeholder={c('signup.requests_placeholder','Optional')}></textarea>
+        </label>
 
-        <section class="signup-box full">
+        <div class="signup-section-heading full">
           <h2>{c('signup.keeping_in_touch_heading','Keeping in touch')}</h2>
-          <p>{c('signup.keeping_in_touch_body',"Each Sunday, we'll email you a unique link to the following week's market. This gives you secure access to your account and member credit without needing a password.")}</p>
-          <label class="signup-check"><input name="weeklyNewsletter" type="checkbox" /><span>{c('signup.weekly_newsletter_text',"I'm happy for occasional Rooted Commons news and updates to be included in this weekly email.")}</span></label>
-        </section>
-
+        </div>
+        <p class="full signup-keeping-copy">{c('signup.keeping_in_touch_body',"Each Wednesday after orders close, we'll email you a new unique link to the following week's market. This gives you secure access to your account and member credit without needing a password.")}</p>
+        <label class="signup-check full"><input name="weeklyNewsletter" type="checkbox" /><span>{c('signup.weekly_newsletter_text',"I'm happy for occasional Rooted Commons news and updates to be included in this weekly email.")}</span></label>
         <label class="signup-check full"><input name="membershipConsent" type="checkbox" required /><span>{c('signup.membership_consent_prefix','I agree to the')} <a href="/membership-terms/">{c('signup.membership_terms_link','Rooted Commons Membership Terms')}</a> {c('signup.privacy_prefix','and have read the')} <a href="/privacy/">{c('signup.privacy_link','Privacy Policy')}</a>.</span></label>
 
         <div class="full signup-turnstile-wrap">
@@ -96,7 +91,7 @@ const collectionPoints=data.collectionPoints.map(point=>({id:point.id,name:point
         <h2>{c('signup.success_heading','Welcome to Rooted Commons')}</h2>
         <FormattedText text={c('signup.success_message','Your membership has been created successfully.')} class="rich-body" />
         <p><a id="signup-dashboard-link" class="button" href="/dashboard/">{c('signup.dashboard_button','Your new member dashboard')}</a></p>
-        <FormattedText text={c('signup.dashboard_security','**Please keep this unique link secret.** It is a private key to your membership account and wallet, so don’t share it with anyone or log in on someone else’s device.\n\nTo keep your account and member credit secure, we’ll send you a new unique link every Sunday. Your previous link will stop working when the new one is issued.')} class="rich-body" />
+        <FormattedText text={c('signup.dashboard_security','**Please keep this unique link secret.** It is a private key to your membership account and wallet, so don’t share it with anyone or log in on someone else’s device.\n\nTo keep your account and member credit secure, we’ll send you a new unique link every Wednesday after orders close. Your previous link will stop working when the new one is issued.')} class="rich-body" />
       </div>
     </section>
   </main>

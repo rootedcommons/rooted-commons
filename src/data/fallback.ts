@@ -149,6 +149,10 @@ export const fallbackInterfaceContent: Record<string, string> = {
   "dashboard.topup_needed": "{amount} top-up needed",
   "dashboard.topup_requirement": "Your balance must be back to £0.00 or above before collection.",
   "dashboard.pay_bank": "Pay by bank transfer",
+  "dashboard.pay_card": "Pay securely by card",
+  "dashboard.pay_open_banking": "Pay securely from your bank (Open Banking)",
+  "dashboard.card_coming_soon": "Card payments will be available here soon.",
+  "dashboard.open_banking_coming_soon": "Open Banking payments will be available here soon.",
   "dashboard.pay_online": "Pay securely online",
   "dashboard.card_payment": "Card payment",
   "dashboard.open_banking": "Open banking",
@@ -227,7 +231,7 @@ export const fallbackInterfaceContent: Record<string, string> = {
   "signup.weekly_commitment_help": "Minimum £10.00/week. Your regular contribution becomes member credit to spend through the weekly market.",
   "signup.monthly_commitment_help": "Minimum £43.33/month (equivalent to £10/week). Your regular contribution becomes member credit to spend through the weekly market.",
   "signup.keeping_in_touch_heading": "Keeping in touch",
-  "signup.keeping_in_touch_body": "Each Sunday, we'll email you a unique link to the following week's market. This gives you secure access to your account and member credit without needing a password.",
+  "signup.keeping_in_touch_body": "Each Wednesday after orders close, we'll email you a new unique link to the following week's market. This gives you secure access to your account and member credit without needing a password.",
   "signup.weekly_newsletter_text": "I'm happy for occasional Rooted Commons news and updates to be included in this weekly email.",
   "signup.membership_consent_prefix": "I agree to the",
   "signup.membership_terms_link": "Rooted Commons Membership Terms",
@@ -244,5 +248,5 @@ export const fallbackInterfaceContent: Record<string, string> = {
   "signup.existing_member_body": "We can send a new secure login link to the email address above.",
   "signup.existing_member_button": "Send me a new login link",
   "dashboard.email_verified": "Email address confirmed.",
-  "signup.dashboard_security": "**Please keep this unique link secret.** It is a private key to your membership account and wallet, so don’t share it with anyone or log in on someone else’s device.\n\nTo keep your account and member credit secure, we’ll send you a new unique link every Sunday. Your previous link will stop working when the new one is issued."
+  "signup.dashboard_security": "**Please keep this unique link secret.** It is a private key to your membership account and wallet, so don’t share it with anyone or log in on someone else’s device.\n\nTo keep your account and member credit secure, we’ll send you a new unique link every Wednesday after orders close. Your previous link will stop working when the new one is issued."
 };
