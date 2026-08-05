@@ -180,6 +180,7 @@ export async function getSiteData() {
     founder10Badge: fileUrl(validSettingsRow, 'Founder 10 badge'),
     founder25Badge: fileUrl(validSettingsRow, 'Founder 25 badge'),
     founder50Badge: fileUrl(validSettingsRow, 'Founder 50 badge'),
+    memberBadge: fileUrl(validSettingsRow, 'Member badge'),
     membershipPerks: (() => {
       const configured = Object.keys(validSettingsRow)
         .map((key) => {

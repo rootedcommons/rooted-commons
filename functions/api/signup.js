@@ -101,6 +101,15 @@ export async function onRequestPost({request,env}){
     const validDays=(publicCollectionPoint(point).collectionSlots||[]).map(slot=>slot.day);
     if(!validDays.includes(preferredCollectionDay))return json({ok:false,message:`That collection point is not available on ${preferredCollectionDay}. Please choose another location.`},409);
 
+    const currentTotalMembers=members.filter(row=>truthy(row.Active,true)).length;
+    const founderBadge=currentTotalMembers<10
+      ? 'Founder 10'
+      : currentTotalMembers<25
+        ? 'Founder 25'
+        : currentTotalMembers<50
+          ? 'Founder 50'
+          : '';
+
     const now=new Date();
     const orderToken=token();
     const fields={
@@ -121,7 +130,8 @@ export async function onRequestPost({request,env}){
       'Membership consent':true,
       'Weekly newsletter':body.weeklyNewsletter===true,
       'Email verified':false,
-      'Product requests':productRequests
+      'Product requests':productRequests,
+      ...(founderBadge?{'Founder badge':founderBadge}:{})
     };
     const member=await createRow(cfg,cfg.members,fields);
     const memberNumber=String(member['Member number']||`RC-${member.id}`);

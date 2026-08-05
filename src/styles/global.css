@@ -768,3 +768,35 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
   opacity:1;
 }
 .signup-keeping-copy{margin:.1rem 0 0}
+
+/* v2.9.8 dashboard layout corrections */
+.dashboard-primary-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:1.25rem;
+  align-items:start;
+}
+.dashboard-primary-grid .dashboard-membership-v295{
+  margin:0;
+}
+.dashboard-secondary-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:1.25rem;
+  margin-top:1.25rem;
+  align-items:start;
+}
+.dashboard-reference-help{
+  margin:.2rem 0 0;
+  padding-left:calc(50% + .5rem);
+  font-size:.88rem;
+  font-style:italic;
+  opacity:.78;
+}
+.dashboard-impact-stat #dashboard-member-weeks{
+  font-size:clamp(1.45rem,3vw,2.25rem);
+}
+@media(max-width:900px){
+  .dashboard-primary-grid,.dashboard-secondary-grid{grid-template-columns:1fr}
+  .dashboard-reference-help{padding-left:0}
+}

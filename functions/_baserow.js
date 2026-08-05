@@ -119,9 +119,7 @@ export function publicCollectionPoint(point) {
 export function publicMember(member, { collectionPoint = null, lastOrder = null, currentOrder = null, account = null } = {}) {
   const memberSince = member['Member since'] || member['Joined date'] || member['Join date'] || '';
   const memberId = Number(member.id);
-  const storedFounderBadge = unwrap(member['Founder badge'] || member['Founder level'] || member['Membership badge']);
-  const automaticFounderBadge = memberId <= 10 ? 'Founder 10' : memberId <= 25 ? 'Founder 25' : memberId <= 50 ? 'Founder 50' : '';
-  const founderBadge = storedFounderBadge || automaticFounderBadge;
+  const founderBadge = unwrap(member['Founder badge'] || member['Founder level'] || member['Membership badge']);
   const sinceTime = memberSince ? new Date(memberSince).getTime() : NaN;
   const membershipWeeks = Number.isFinite(sinceTime) ? Math.max(0, Math.floor((Date.now() - sinceTime) / 604800000)) : null;
   const orderSummary = row => row ? {

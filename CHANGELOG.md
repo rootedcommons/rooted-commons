@@ -1,3 +1,14 @@
+# v2.9.8
+- Fixed founder badge assignment to use the current Active member count already loaded during signup, matching the public Total members statistic and requiring no extra Baserow read.
+- Removed the row-ID-based founder badge fallback from the dashboard/member API.
+- Added support for the Site Settings `Member badge` image for members outside Founder 10/25/50.
+- Changed the dashboard to a genuine two-column top row: Membership alongside Weekly commitment, with Collection point beneath at card width.
+- Restored `No orders made yet` for members with no previous website order instead of displaying `0 weeks`.
+- Restored `Browse this week’s market` for every member regardless of current weekly order state.
+- Added an editable italic payment-reference explanation beneath the BACS top-up reference.
+- Removed the redundant selected-regular-payment summary from the Weekly commitment card.
+- Updated Interface Content and Baserow Site Settings specifications.
+
 # v2.9.7
 - Restored the signup form to the plain-body layout with thin section dividers instead of highlighted internal boxes.
 - Kept the newsletter and Membership Terms/Privacy consent checkboxes together with no divider between them.

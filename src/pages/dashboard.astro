@@ -16,6 +16,7 @@ const badgeLogos={
   'Founder 25':s.founder25Badge,
   'Founder 50':s.founder50Badge
 };
+const memberBadge=s.memberBadge;
 const membershipPerks=s.membershipPerks || [];
 const copy={
   greeting:c('dashboard.greeting','Hi {name}'),
@@ -38,8 +39,7 @@ const copy={
   bankAccountNumber:c('dashboard.bank_account_number','Account number'),
   bankReference:c('dashboard.bank_reference','Reference'),
   browseMarket:c('dashboard.shop_button','Browse this week’s market'),
-  currentReserved:c('dashboard.current_order_reserved','Review this week’s reserved order'),
-  currentConfirmed:c('dashboard.current_order_confirmed','Review this week’s confirmed order'),
+
   lastOrderNone:c('dashboard.last_order_none','No previous website order'),
   lastOrderToday:c('dashboard.last_order_today','You last ordered today'),
   lastOrderYesterday:c('dashboard.last_order_yesterday','You last ordered yesterday'),
@@ -61,7 +61,7 @@ const copy={
   collectionFailed:c('dashboard.collection_failed','The collection point could not be updated.'),
   commitmentEyebrow:c('dashboard.commitment_eyebrow','Your weekly commitment'),
   commitmentBody:c('dashboard.commitment_body','Your regular contribution creates predictable demand that local producers can plan around.'),
-  weeklyEquivalent:c('dashboard.weekly_equivalent','Your selected regular payment is {amount} {frequency}.'),
+
   regularPaymentHeading:c('dashboard.regular_payment_heading','Your regular payment'),
   setupRegularPaymentHeading:c('dashboard.setup_regular_payment_heading','Set up your regular payment'),
   regularPaymentBody:c('dashboard.regular_payment_body','Set up a BACS standing order using the details below.'),
@@ -79,7 +79,9 @@ const copy={
   weeksUnit:c('dashboard.weeks_unit','weeks'),
   perWeek:c('dashboard.per_week','per week'),
   perMonth:c('dashboard.per_month','per month'),
-  collectionImageAlt:c('dashboard.collection_image_alt','{name} collection point')
+  collectionImageAlt:c('dashboard.collection_image_alt','{name} collection point'),
+  noOrdersYet:c('dashboard.no_orders_yet','No orders made yet'),
+  referenceHelp:c('dashboard.reference_help',"This reference matters — it's how your payment reached your account.")
 };
 ---
 <BaseLayout settings={s} pages={data.pages} title={page.seoTitle || page.title} description={page.seoDescription || page.intro}>
@@ -90,8 +92,9 @@ const copy={
     <p id="dashboard-email-verified" class="dashboard-verified-notice" hidden>{copy.emailVerified}</p>
 
     <section id="dashboard-content" hidden>
+      <div class="dashboard-primary-grid">
       <article class="dashboard-card dashboard-membership-card dashboard-membership-v295">
-        <h1 id="dashboard-greeting" class="dashboard-member-greeting">Hi member</h1>
+          <h1 id="dashboard-greeting" class="dashboard-member-greeting">Hi member</h1>
         <div id="dashboard-badge" class="dashboard-badge"></div>
 
         <div class="dashboard-membership-heading-grid">
@@ -133,6 +136,7 @@ const copy={
               <div><dt>{copy.bankAccountNumber}</dt><dd id="dashboard-topup-account-number"></dd></div>
               <div><dt>{copy.bankReference}</dt><dd id="dashboard-topup-reference"></dd></div>
             </dl>
+            <p class="dashboard-reference-help">{copy.referenceHelp}</p>
           </div>
 
           <div id="dashboard-payment-card" class="dashboard-payment-method-detail" hidden>
@@ -160,13 +164,11 @@ const copy={
         <div id="dashboard-perks" class="dashboard-perks"></div>
       </article>
 
-      <div class="dashboard-detail-grid dashboard-detail-grid-v295">
-        <article class="dashboard-card dashboard-commitment-card">
+
+      <article class="dashboard-card dashboard-commitment-card">
           <p class="eyebrow">{copy.commitmentEyebrow}</p>
           <p class="commitment-amount"><strong id="dashboard-commitment">£0</strong><span>/week</span></p>
           <FormattedText text={copy.commitmentBody} class="rich-body" />
-          <p id="dashboard-monthly-equivalent" class="small-print"></p>
-
           <section class="regular-payment-details">
             <h3 id="dashboard-regular-payment-heading">{copy.regularPaymentHeading}</h3>
             <FormattedText text={copy.regularPaymentBody} class="rich-body" />
@@ -196,9 +198,12 @@ const copy={
               {s.increaseCommitmentButtonUrl && <a class="button" href={s.increaseCommitmentButtonUrl}>{s.increaseCommitmentButtonText}</a>}
             </div>
           </div>
-        </article>
+      </article>
 
-        <article class="dashboard-card dashboard-collection">
+      </div>
+
+      <div class="dashboard-secondary-grid">
+      <article class="dashboard-card dashboard-collection">
           <p class="eyebrow">{copy.collectionEyebrow}</p>
           <img id="dashboard-point-image" class="dashboard-point-image" src="" alt="" hidden />
           <h2 id="dashboard-point-name">{copy.collectionNotSelected}</h2>
@@ -218,14 +223,14 @@ const copy={
             </div>
             <p id="dashboard-point-message" class="small-print" aria-live="polite"></p>
           </form>
-        </article>
+      </article>
       </div>
     </section>
   </main>
 
   {blocks.map((block)=><SectionRenderer block={block} products={data.products} settings={s} />)}
 
-  <script is:inline define:vars={{ badgeLogos, membershipPerks, collectionPoints:data.collectionPoints, bankAccountName:s.bankAccountName, bankSortCode:s.bankSortCode, bankAccountNumber:s.bankAccountNumber, copy }}>
+  <script is:inline define:vars={{ badgeLogos, memberBadge, membershipPerks, collectionPoints:data.collectionPoints, bankAccountName:s.bankAccountName, bankSortCode:s.bankSortCode, bankAccountNumber:s.bankAccountNumber, copy }}>
     const TOKEN_KEY='rooted-commons-order-token-v1';
     const params=new URLSearchParams(location.search);
     const urlToken=params.get('token');
@@ -365,12 +370,21 @@ const copy={
       if(point.link){pointLink.href=point.link;pointLink.hidden=false;}else pointLink.hidden=true;
 
       document.querySelector('#dashboard-founder-level').textContent=member.founderBadge||copy.defaultMemberLevel;
-      const logo=badgeLogos[member.founderBadge];
+      const logo=member.founderBadge?badgeLogos[member.founderBadge]:memberBadge;
+      const badgeLabel=member.founderBadge||copy.defaultMemberLevel;
       const badge=document.querySelector('#dashboard-badge');
-      if(logo){badge.innerHTML=`<img src="${logo}" alt="${member.founderBadge}">`;badge.hidden=false;}else{badge.innerHTML='';badge.hidden=true;}
+      if(logo){badge.innerHTML=`<img src="${logo}" alt="${badgeLabel}">`;badge.hidden=false;}else{badge.innerHTML='';badge.hidden=true;}
 
       const weeks=Number(member.membershipWeeks)||0;
-      document.querySelector('#dashboard-member-weeks').textContent=member.membershipWeeks!=null?`${weeks} ${weeks===1?copy.weekUnit:copy.weeksUnit}`:(member.memberSince?copy.weekUnit:copy.weeksUnit);
+      const weeksValue=document.querySelector('#dashboard-member-weeks');
+      const weeksSupporting=weeksValue?.nextElementSibling;
+      if(!member.lastOrder){
+        weeksValue.textContent=copy.noOrdersYet;
+        if(weeksSupporting)weeksSupporting.hidden=true;
+      }else{
+        weeksValue.textContent=member.membershipWeeks!=null?`${weeks} ${weeks===1?copy.weekUnit:copy.weeksUnit}`:(member.memberSince?copy.weekUnit:copy.weeksUnit);
+        if(weeksSupporting)weeksSupporting.hidden=false;
+      }
       const totalImpact=Number(member.account?.totalOrderSpend)||0;
       document.querySelector('#dashboard-impact').textContent=money.format(totalImpact).replace('.00','');
 
@@ -383,24 +397,10 @@ const copy={
 
       const shop=document.querySelector('#dashboard-shop-link');
       shop.href=`/orders/?token=${encodeURIComponent(token)}`;
-      if(member.currentOrder){
-        const status=String(member.currentOrder.status||'').toLowerCase();
-        shop.textContent=status==='processing'?copy.currentReserved:copy.currentConfirmed;
-        shop.dataset.currentOrderId=String(member.currentOrder.id||'');
-        shop.dataset.currentOrderStatus=status;
-      }else{
-        shop.textContent=copy.browseMarket;
-        shop.removeAttribute('data-current-order-id');
-        shop.removeAttribute('data-current-order-status');
-      }
+      shop.textContent=copy.browseMarket;
 
       const commitment=Number(member.weeklyCommitment)||0;
-      const monthly=Number(member.monthlyEquivalent)||0;
-      const frequency=String(member.contributionFrequency||'Weekly');
       document.querySelector('#dashboard-commitment').textContent=money.format(commitment).replace('.00','');
-      const actualAmount=frequency==='Monthly'?(monthly||commitment*52/12):commitment;
-      const frequencyLabel=frequency==='Monthly'?copy.perMonth:copy.perWeek;
-      document.querySelector('#dashboard-monthly-equivalent').textContent=actualAmount>0?interpolate(copy.weeklyEquivalent,{amount:money.format(actualAmount),frequency:frequencyLabel}):'';
 
       document.querySelector('#dashboard-regular-bank-name').textContent=bankAccountName||'—';
       document.querySelector('#dashboard-regular-sort-code').textContent=bankSortCode||'—';

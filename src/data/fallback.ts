@@ -187,6 +187,8 @@ export const fallbackInterfaceContent: Record<string, string> = {
   "dashboard.per_week": "per week",
   "dashboard.per_month": "per month",
   "dashboard.collection_image_alt": "{name} collection point",
+  "dashboard.no_orders_yet": "No orders made yet",
+  "dashboard.reference_help": "This reference matters — it\'s how your payment reached your account.",
   "faq.01.question": "What is Rooted Commons?",
   "faq.01.answer": "Rooted Commons is a weekly online market that brings together local produce, organic cupboard staples, household refills and other local essentials in one place. Members place one order and collect everything together from a local pick-up point.",
   "faq.02.question": "How does membership work?",
