@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getSiteData } from '../lib/baserow';
+
+const data=await getSiteData();
+const s=data.settings;
+const contactEmail=s.contactEmail || 'info@rootedcommons.uk';
+---
+<BaseLayout settings={s} pages={data.pages} title="Terms of Sale" description="Terms applying to goods sold by Roots to Fruits CIC through Rooted Commons and directly to local customers and businesses.">
+  <main class="legal-page">
+    <article class="legal-content">
+      <p class="eyebrow">Rooted Commons</p>
+      <h1>Terms of Sale</h1>
+      <p class="small-print">Last updated: 5 August 2026</p>
+
+      <p>These terms apply to goods sold by Roots to Fruits CIC through Rooted Commons and to goods we sell directly to other customers, including local businesses. They are separate from the Rooted Commons Membership Terms, which govern the ongoing membership relationship.</p>
+
+      <h2>1. Ordering and prices</h2>
+      <p>The products, quantities, prices and collection or delivery arrangements applying to an order are those shown or otherwise agreed when the order is placed.</p>
+      <p>When you submit an order, you are asking us to supply those goods. Orders are subject to availability and any final checks needed to confirm stock, price, payment and collection or delivery arrangements.</p>
+      <p>If we discover an obvious pricing or product-information error, we may contact you before supplying the affected item or remove it from the order and refund or credit the corresponding amount.</p>
+
+      <h2>2. Payment</h2>
+      <p>Rooted Commons members pay for weekly market orders using Member Credit. If an order would leave a member's balance below £0, we may reserve the order while the member tops up. If sufficient payment is not received by the relevant deadline, we may cancel the order.</p>
+      <p>Please use your individual RC-x payment reference for Rooted Commons bank payments so that we can allocate the payment to the correct member account.</p>
+      <p>Customers buying directly from us outside Rooted Commons must pay using the payment method and by the date shown on the invoice or otherwise agreed with us.</p>
+
+      <h2>3. Availability and substitutions</h2>
+      <p>Products are subject to availability. If something you ordered becomes unavailable, we will normally remove it from the order and refund it or restore its value to Member Credit, as appropriate.</p>
+      <p>We will not knowingly make a materially different substitution without your agreement, particularly where allergens, dietary requirements or other important product characteristics could be affected.</p>
+
+      <h2>4. Changing or cancelling an order</h2>
+      <p>Rooted Commons members can change or cancel a weekly order while the market remains open. After orders close, we begin purchasing, harvesting and allocating goods to fulfil members' orders, so we cannot guarantee that changes or cancellations can still be accepted.</p>
+      <p>This operational deadline does not remove any cancellation rights that apply by law.</p>
+
+      <h2>5. 14-day cancellation period for eligible non-perishable goods</h2>
+      <p>We offer all customers, including our small business customers, a 14-day cancellation period for eligible non-perishable goods bought at a distance. Tell us within 14 days of receiving the goods if you wish to cancel. You then have a further 14 days to return the goods to us.</p>
+      <p>This change-of-mind cancellation period does not apply to goods which are liable to deteriorate or expire rapidly, such as fresh and perishable food.</p>
+      <p>Where a cancellation right applies, please email <a href={`mailto:${contactEmail}`}>{contactEmail}</a> with enough information for us to identify the order. You may use the model cancellation form at the end of these terms, but you do not have to use it.</p>
+      <p>Unless the goods are faulty or we agree otherwise, you are responsible for returning cancelled goods to us. We may reduce a refund where goods have been handled beyond what is reasonably necessary to establish their nature, characteristics and functioning, where the law permits this.</p>
+      <p>Where the law requires a monetary refund, we will make it using the appropriate payment method rather than requiring you to accept Member Credit. Ordinary Rooted Commons order adjustments may be returned to Member Credit where that is not inconsistent with your legal rights.</p>
+
+      <h2>6. Collection and delivery</h2>
+      <p>We will make goods available at the collection point and time agreed at checkout, or deliver them according to any separate arrangement agreed with you.</p>
+      <p>Please contact us as soon as possible if you cannot collect an order. We cannot guarantee later storage of fresh, chilled or otherwise perishable goods. Goods which cannot safely be retained may have to be donated or disposed of.</p>
+
+      <h2>7. Problems with goods</h2>
+      <p>Please contact us as soon as reasonably possible if something is missing, damaged, spoiled or not as described so that we can put it right. Depending on the circumstances, we may replace the goods, refund the relevant amount or restore the value to Member Credit.</p>
+      <p>Nothing in these terms affects any statutory rights that apply to your purchase. Where consumer law applies, goods must be of satisfactory quality, fit for purpose and as described.</p>
+
+      <h2>8. Contact and governing law</h2>
+      <p>Questions, cancellations or problems with an order can be sent to <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.</p>
+      <p>Roots to Fruits CIC is registered in England and Wales under company number 14699477. Its registered office is 95 St. Michael's Road, Aldershot, GU12 4JJ.</p>
+      <p>These terms are governed by the law of England and Wales. This does not affect any mandatory rights that apply to you under consumer law.</p>
+
+      <h2>Model cancellation form</h2>
+      <p class="small-print">Complete and return this form only if you wish to cancel an eligible distance purchase. You can send the same information by email instead.</p>
+      <p>To: Roots to Fruits CIC / Rooted Commons, <a href={`mailto:${contactEmail}`}>{contactEmail}</a></p>
+      <p>I/We give notice that I/We cancel my/our contract of sale for the following goods:</p>
+      <p>Ordered on / received on:</p>
+      <p>Name:</p>
+      <p>Address:</p>
+      <p>Date:</p>
+    </article>
+  </main>
+</BaseLayout>

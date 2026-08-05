@@ -1,4 +1,4 @@
-# Rooted Commons website v2.7.4
+# Rooted Commons website v2.9.13
 
 Astro website and restricted server functions for Rooted Commons. Baserow is the operational data source; Xero is the payment source; the web host stores no authoritative business state.
 
@@ -110,6 +110,13 @@ One member may place one `Processing` or `Confirmed` order per ordering week. Co
 - [Testing](docs/TESTING.md)
 - [Collection slots](docs/COLLECTION_SLOTS.md)
 - [v2.7 setup checklist](docs/V2.7_SETUP.md)
+- [v2.9 signup/map setup](docs/V2.9_SETUP.md)
+- [v2.9.4 signup/email setup](docs/V2.9.4_SETUP.md)
+- [v2.9.5 dashboard setup](docs/V2.9.5_SETUP.md)
+- [v2.9.7 token/signup setup](docs/V2.9.7_SETUP.md)
+- [v2.9.8 dashboard/badge setup](docs/V2.9.8_SETUP.md)
+- [v2.9.9 participation dashboard setup](docs/V2.9.9_SETUP.md)
+- [v2.9.11 involvement dashboard setup](docs/V2.9.11_SETUP.md)
 
 
 ## V2.2 member payments
@@ -119,7 +126,7 @@ V2.2 expands the existing **Your weekly commitment** dashboard card. The origina
 Add these Baserow fields before deployment:
 
 - Site Settings: `Bank account name`, `Bank sort code`, `Bank account number`
-- Members: `Payment reference`, optional `Mollie payment URL`
+- Members: `Member number`, optional `Mollie payment URL`
 
 The dashboard treats the regular commitment as BACS-only. If a member is below zero, it displays preferred one-off BACS details and, only when configured, a secondary Mollie payment link. Checkout and the confirmation screen state that the balance must be £0.00 or above before collection.
 
@@ -127,3 +134,8 @@ The dashboard treats the regular commitment as BACS-only. If a member is below z
 ## CMS style options
 
 See `docs/BASEROW_STYLE_OPTIONS.md` for the exact mapping between plain-language Baserow select options and responsive CSS behaviour.
+
+
+## v3.0 design handoff
+
+- [v3.0 product and dashboard rationale](docs/V3.0_README.md)

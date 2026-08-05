@@ -1,3 +1,21 @@
+# v2.9.13
+- Revised the Privacy Notice for clearer UK GDPR transparency: controller identity, required data, lawful purposes, recipient categories, retention, local storage and rights.
+- Removed obsolete MailerLite references and the public named-provider list from the Privacy Notice.
+- Reworked Membership Terms from 11 sections to 7, separating the ongoing membership relationship from the Terms of Sale.
+- Replaced blanket non-withdrawable Member Credit wording with a fairer leaving arrangement, including partner vouchers only by agreement.
+- Tightened significant-change provisions and simplified liability wording.
+
+# v2.9.12
+- Made `/collection-points/` a dedicated coded route so it no longer depends on a Baserow Pages row.
+- Confirmed `/membership-terms/` and `/privacy/` are already dedicated coded routes.
+- Added dedicated `/terms-of-sale/` with concise consumer-friendly terms that also cover small direct B2B sales and a voluntary 14-day cancellation period for eligible non-perishable distance purchases.
+- Added a public but `noindex,follow` `/contact/` page with contact email and Roots to Fruits CIC legal information.
+- Added Contact and Terms of Sale to the footer legal links.
+- Excluded contact/legal/special routes from the generic Baserow `[slug]` page generator to prevent duplicate routes.
+- Removed dedicated-route slugs from the bundled Pages import.
+- Moved Collection points title/intro editing to Interface Content.
+- Added `docs/V3.0_README.md` explaining the dashboard as `I belong → I commit → I connect locally → I get involved → together, we create wider change`.
+
 # v2.9.11
 - Anchored Member credit immediately above Browse this week's market at the bottom of the Membership card's right-hand 40% column.
 - Moved membership weeks back into Your Membership immediately above the perks section; removed the duplicate weeks counter from the lower participation card.

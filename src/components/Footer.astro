@@ -10,6 +10,6 @@ const { settings } = Astro.props;
     {settings.tagline && <p class="footer-tagline">{settings.tagline}</p>}
     {settings.footerText && <FormattedText text={settings.footerText} class="footer-text" />}
     {settings.contactEmail && <p><a href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a></p>}
-    <p class="footer-legal"><a href="/privacy/">Privacy notice</a> · <a href="/membership-terms/">Membership terms</a></p>
+    <p class="footer-legal"><a href="/contact/">Contact</a> · <a href="/privacy/">Privacy notice</a> · <a href="/membership-terms/">Membership terms</a> · <a href="/terms-of-sale/">Terms of Sale</a></p>
   </div>
 </footer>

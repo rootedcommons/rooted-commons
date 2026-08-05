@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import CollectionPointMap from '../components/CollectionPointMap.astro';
+import { getSiteData } from '../lib/baserow';
+
+const data=await getSiteData();
+const page={
+  slug:'collection-points',
+  title:data.interfaceContent['collection_points.title'] || 'Collection points',
+  intro:data.interfaceContent['collection_points.intro'] || 'Find your nearest Rooted Commons collection point and see the days and times available.',
+  heroLayout:'text-only',
+  titleSize:'large',
+  introSize:'medium'
+};
+---
+<BaseLayout settings={data.settings} pages={data.pages} title={page.title} description={page.intro}>
+  <Fragment slot="head"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" /></Fragment>
+  <PageHero page={page} />
+  <CollectionPointMap points={data.collectionPoints} />
+</BaseLayout>

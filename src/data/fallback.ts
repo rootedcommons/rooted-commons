@@ -232,6 +232,8 @@ export const fallbackInterfaceContent: Record<string, string> = {
   "signup.collection_point_help": "This can be changed at checkout or from your membership dashboard.",
   "signup.collection_point_late_help": "Only some locations support late collection.",
   "signup.collection_points_map_link": "see our map",
+  "collection_points.title": "Collection points",
+  "collection_points.intro": "Find your nearest Rooted Commons collection point and see the days and times available.",
   "signup.weekly_commitment_label": "Weekly commitment",
   "signup.contribution_frequency_label": "How often would you like to add to your member credit?",
   "signup.frequency_weekly_label": "Weekly",

@@ -6,59 +6,44 @@ const data=await getSiteData();
 const s=data.settings;
 const contactEmail=s.contactEmail||'info@rootedcommons.uk';
 ---
-<BaseLayout settings={s} pages={data.pages} title="Membership terms" description="The terms that apply to Rooted Commons membership, member credit, weekly orders and collection.">
+<BaseLayout settings={s} pages={data.pages} title="Membership terms" description="The terms that apply to Rooted Commons membership, Member Credit and your regular commitment.">
   <main class="legal-page">
     <article class="legal-content">
       <p class="eyebrow">Rooted Commons</p>
       <h1>Membership terms</h1>
-      <p class="small-print">Working draft · Last updated: 5 August 2026</p>
+      <p class="small-print">Last updated: 5 August 2026</p>
 
-      <p>These terms explain how Rooted Commons membership works. Rooted Commons is operated by Roots to Fruits CIC. By joining, you agree to these terms. They are intended to sit alongside your statutory consumer rights, which are not reduced by these terms.</p>
+      <p>These terms explain the ongoing Rooted Commons membership relationship. By joining, you agree to these terms. Individual purchases are also subject to our <a href="/terms-of-sale/">Terms of Sale</a>. Nothing in these terms reduces your statutory rights.</p>
 
-      <h2>1. Your membership</h2>
-      <p>Rooted Commons is a membership-based weekly market connecting members with local produce, cupboard staples, refills and other goods supplied through our network. Rooted Commons is operated by Roots to Fruits CIC. Rooted Commons membership gives you access to the Rooted Commons buying network, your member account and the collection-point network.</p>
-      <p><strong>Rooted Commons membership is not membership of Roots to Fruits CIC.</strong> Joining Rooted Commons does not make you a statutory member, shareholder or company member of Roots to Fruits CIC and does not give you voting or governance rights in Roots to Fruits CIC.</p>
-      <p>You must provide accurate contact details and keep them reasonably up to date. You are responsible for keeping your unique access link private and for telling us promptly if you think it has been used by someone else.</p>
+      <h2>1. About your membership</h2>
+      <p>Rooted Commons is a membership-based buying network operated by Roots to Fruits CIC, connecting members with local produce, cupboard staples, refills and other goods supplied through our network. Membership gives you access to the weekly market, your member account and our collection-point network.</p>
+      <p><strong>Rooted Commons membership is not membership of Roots to Fruits CIC.</strong> Joining does not make you a statutory member, shareholder or company member of Roots to Fruits CIC and does not give you voting or governance rights in the CIC.</p>
+      <p>Please keep your contact details reasonably up to date and keep your unique account-access link private. Tell us promptly if you think somebody else has used it.</p>
 
-      <h2>2. Weekly commitment and Member Credit</h2>
-      <p>Members make a regular commitment equivalent to at least £10 per week while their membership is active. You may choose to contribute weekly (minimum £10.00) or monthly (minimum £43.33), by standing order or another payment method that we expressly make available. Your selected frequency and amount are shown in your member account.</p>
-      <p>Payments received are added to your Member Credit. Member Credit is intended for spending through Rooted Commons and is not a savings or deposit account. Unspent credit rolls over for use on future orders.</p>
-      <p>You control your standing order through your own bank. If you need to stop contributing, you should also consider whether you have enough Member Credit for any orders you have already placed.</p>
+      <h2>2. Your regular commitment</h2>
+      <p>Membership involves a regular commitment equivalent to at least £10 per week. You can choose to contribute weekly (minimum £10.00) or monthly (minimum £43.33), using a standing order or another payment method we expressly make available. Your chosen frequency and amount are shown in your member account.</p>
+      <p>This is a genuine commitment to spending through the Rooted Commons network. You control your standing order through your own bank and can stop future payments if you decide to leave.</p>
 
-      <h2>3. Weekly market and orders</h2>
-      <p>Each Wednesday after orders close we normally email members a new unique link to the following week's market. The link provides secure access to your account without a password. Market opening and closing times may occasionally change, and the current deadline shown on the website applies.</p>
-      <p>An order is subject to current availability and our final validation of stock, price, collection-point suitability and your membership. If an item is unavailable or an order cannot be fulfilled, we may remove the item, restore the relevant Member Credit, refund a payment where appropriate, or contact you to agree another reasonable solution.</p>
-      <p>When an order is fulfilled, its value is deducted from your Member Credit. You should maintain sufficient credit to cover the orders you place. Where your balance is insufficient, we may ask you to top up before collection and may cancel or reverse an order if payment has not been received in time for fulfilment.</p>
+      <h2>3. Member Credit</h2>
+      <p>Payments received are added to your Member Credit. Unspent credit rolls over for future Rooted Commons orders. Member Credit is not a bank or savings account.</p>
+      <p>You need sufficient Member Credit to pay for an order before it is fulfilled. If your balance is insufficient, we may reserve the order while you top up and may cancel it if sufficient payment is not received by the relevant deadline.</p>
 
-      <h2>4. Collection</h2>
-      <p>All orders are delivered to collection points on Thursday. Some locations support late collection of fresh produce on Friday, but only suitable items, such as cupboard staples and refills, can be held for collection over the weekend.</p>
-      <p>Your preferred collection day and collection point are defaults and can be changed at checkout or from your membership dashboard, subject to the availability of the products in your basket and the opening times of the collection point.</p>
-      <p>You are responsible for collecting your order during the available collection window. If you cannot collect it, please contact us as soon as possible. We cannot guarantee that fresh, chilled or otherwise perishable goods can be stored safely beyond their stated collection period.</p>
+      <h2>4. Ordering and collection</h2>
+      <p>Active members can order through the weekly market using Member Credit. We normally issue a new secure market/account link each Wednesday after orders close. Current opening and closing times shown on the website apply.</p>
+      <p>All orders are delivered to collection points on Thursday. Some locations support late collection of fresh produce on Friday, but only suitable items, such as cupboard staples and refills, can be held for collection over the weekend. Collection preferences can be changed at checkout or through your dashboard, subject to availability.</p>
+      <p>Our <a href="/terms-of-sale/">Terms of Sale</a> explain the rules applying to individual purchases, including availability, cancellations and returns, product information, collection and your rights if there is a problem with something you buy.</p>
 
-      <h2>5. Food information, allergens and substitutions</h2>
-      <p>We provide the product and allergen information available to us before purchase. Ingredients, allergens, pack sizes, origin and other product information can change, so please check the information supplied with the product when you collect it, particularly if you have an allergy or intolerance.</p>
-      <p>We will not knowingly substitute a materially different product without making that clear. Where a substitution is proposed, you may decline it and have the relevant value restored to your Member Credit or otherwise refunded where required.</p>
+      <h2>5. Ending your membership</h2>
+      <p>You can end your membership by contacting us and stopping future standing-order payments. We encourage members who are leaving to use any remaining Member Credit through the weekly market before their membership ends.</p>
+      <p>If you still have unused Member Credit when you leave, contact us and we will agree how the remaining balance should be returned or used. This may include spending it through the market, a partner voucher where you agree to this, or a refund where appropriate. Nothing in these terms limits any refund or other remedy you are entitled to by law.</p>
 
-      <h2>6. Cancelling your membership</h2>
-      <p>You can end your membership by contacting us. The regular contribution is intended as a genuine commitment to spending through the Rooted Commons network, so we encourage members who wish to leave to stop future contributions and spend down any remaining Member Credit through the weekly market before their membership ends.</p>
-      <p>Member Credit is not ordinarily withdrawable as cash on demand. If a balance remains after a reasonable spend-down period, we may offer an alternative such as a physical voucher or gift card redeemable with a participating partner, or another reasonable arrangement. Nothing in this paragraph limits any refund or other remedy that you are entitled to by law.</p>
+      <h2>6. Communications and changes</h2>
+      <p>We use your email address to send the secure links and service messages needed to operate your membership. We may use your phone number where reasonably necessary to resolve a time-sensitive issue. Optional Rooted Commons news is based on your separate choice and can be switched off without affecting your membership.</p>
+      <p>We may make reasonable changes to how Rooted Commons operates as the service develops, including collection arrangements and the ordering process. If we make a significant change to these terms, the minimum commitment or how Member Credit works, we will tell you before the change takes effect. If you do not wish to continue under a significant change, you can end your membership.</p>
 
-      <h2>7. Communications</h2>
-      <p>We use your email address to operate your membership, including sending your weekly secure market link and important information about your account, orders or collections. When you join, we send a confirmation link to help verify that the email address belongs to you. We may use your phone number where reasonably necessary to resolve a time-sensitive issue with your membership or an order.</p>
-      <p>If you separately choose to receive the weekly newsletter, occasional Rooted Commons news and updates may be included in your weekly email. You can withdraw that optional choice at any time without ending your membership.</p>
-
-      <h2>8. Prices and payments</h2>
-      <p>Prices shown in the weekly market are the prices that apply when the order is confirmed, subject to correction of an obvious error. Any compulsory taxes or charges that apply to the purchase will be reflected in the price information we provide.</p>
-      <p>Where a payment is made in error or a payment or order needs to be reversed, we will correct the Member Credit record and make any refund that is legally required.</p>
-
-      <h2>9. Our responsibility</h2>
-      <p>We will provide the membership service with reasonable care and skill. We are not responsible for losses caused by circumstances outside our reasonable control, but nothing in these terms excludes or restricts liability where it would be unlawful to do so, including liability for death or personal injury caused by negligence, fraud, or your statutory consumer rights.</p>
-
-      <h2>10. Changes to the service or these terms</h2>
-      <p>Rooted Commons is a developing community food service, so we may need to change collection arrangements, the ordering process, available products or these terms. If a change materially affects the membership commitment or how existing Member Credit can be used, we will give members reasonable notice where practicable.</p>
-
-      <h2>11. Contact and governing law</h2>
+      <h2>7. Contact and legal rights</h2>
       <p>Questions about membership or these terms can be sent to <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.</p>
+      <p>Nothing in these terms limits your statutory rights or any liability that cannot legally be limited.</p>
       <p>These terms are governed by the law of England and Wales. If you live elsewhere in the United Kingdom, you may also have mandatory rights under the law that applies where you live.</p>
     </article>
   </main>
