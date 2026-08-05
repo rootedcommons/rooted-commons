@@ -23,11 +23,12 @@ const collectionPoints=data.collectionPoints.map(point=>({id:point.id,name:point
         <label>{c('signup.first_name_label','First name')}<input name="firstName" autocomplete="given-name" required /></label>
         <label>{c('signup.last_name_label','Last name')}<input name="lastName" autocomplete="family-name" required /></label>
         <label class="full">{c('signup.email_label','Email address')}<input name="email" type="email" autocomplete="email" required /></label>
-        <label class="full"><span class="signup-label-line"><span>{c('signup.phone_label','Phone number')}</span><small>{c('signup.phone_help',"We'll only need this if there's an issue with your membership or an order.")}</small></span><input name="phone" type="tel" autocomplete="tel" required /></label>
+        <label class="full">{c('signup.confirm_email_label','Confirm email address')}<input name="confirmEmail" type="email" autocomplete="email" required /></label>
+        <label class="full"><span class="signup-label-line"><span>{c('signup.phone_label','Phone number')}</span><small class="signup-inline-help">{c('signup.phone_help',"We'll only need this if there's an issue with your membership or an order.")}</small></span><input name="phone" type="tel" autocomplete="tel" required /></label>
 
         <div class="signup-section-heading full">
           <h2>{c('signup.collection_details_heading','Collection details')}</h2>
-          <p>{c('signup.collection_point_help','This can be changed at checkout or from your membership dashboard.')}</p>
+          <p class="signup-inline-help">{c('signup.collection_point_help','This can be changed at checkout or from your membership dashboard.')}</p>
         </div>
 
         <label class="full">{c('signup.collection_day_label','Preferred collection day')}
@@ -40,7 +41,7 @@ const collectionPoints=data.collectionPoints.map(point=>({id:point.id,name:point
         </label>
         <p id="signup-late-collection-note" class="signup-info full" hidden>{c('signup.late_collection_note','All orders are delivered on Thursday. Some locations support late collection of fresh produce on Friday, but only suitable items, such as cupboard staples and refills, can be held for collection over the weekend.')}</p>
 
-        <label class="full"><span class="signup-label-line"><span>{c('signup.collection_point_label','Collection point')}</span><a class="signup-map-link" href="/collection-points/">{c('signup.collection_points_map_link','View options on a map →')}</a></span>
+        <label class="full"><span class="signup-label-line signup-label-map"><span>{c('signup.collection_point_label','Collection point')} <a class="signup-map-link" href="/collection-points/?return=/signup/&select=1">({c('signup.collection_points_map_link','see our map')})</a></span></span>
           <select name="collectionPointId" id="signup-collection-point" required><option value="">Choose a collection point</option></select>
         </label>
 
@@ -56,8 +57,12 @@ const collectionPoints=data.collectionPoints.map(point=>({id:point.id,name:point
           </div>
         </fieldset>
 
-        <label class="full"><span id="signup-contribution-label" data-weekly={c('signup.weekly_amount_label','Weekly contribution')} data-monthly={c('signup.monthly_amount_label','Monthly contribution')}>{c('signup.weekly_amount_label','Weekly contribution')}</span>
-          <span class="signup-money-input"><span aria-hidden="true">£</span><input name="contributionAmount" id="signup-contribution-amount" type="number" min="10" step="0.01" value="10.00" inputmode="decimal" required /><span id="signup-contribution-suffix" aria-hidden="true">/ week</span></span>
+        <label class="full"><span id="signup-contribution-label" data-weekly={c('signup.weekly_amount_label','Weekly commitment')} data-monthly={c('signup.monthly_amount_label','Monthly commitment')}>{c('signup.weekly_amount_label','Weekly commitment')}</span>
+          <span class="signup-money-input">
+            <button class="signup-pound-step" type="button" data-contribution-step="-1" aria-label="Reduce commitment by one pound">−</button>
+            <span aria-hidden="true">£</span><input name="contributionAmount" id="signup-contribution-amount" type="number" min="10" step="0.01" value="10.00" inputmode="decimal" required /><span id="signup-contribution-suffix" aria-hidden="true">/ week</span>
+            <button class="signup-pound-step" type="button" data-contribution-step="1" aria-label="Increase commitment by one pound">+</button>
+          </span>
           <small id="signup-contribution-help" data-weekly={c('signup.weekly_commitment_help','Minimum £10.00/week. Your regular contribution becomes member credit to spend through the weekly market.')} data-monthly={c('signup.monthly_commitment_help','Minimum £43.34/month (equivalent to £10/week). Your regular contribution becomes member credit to spend through the weekly market.')}>{c('signup.weekly_commitment_help','Minimum £10.00/week. Your regular contribution becomes member credit to spend through the weekly market.')}</small>
         </label>
 
@@ -68,6 +73,13 @@ const collectionPoints=data.collectionPoints.map(point=>({id:point.id,name:point
         </div>
 
         <label class="signup-check full"><input name="membershipConsent" type="checkbox" required /><span>{c('signup.membership_consent_prefix','I agree to the')} <a href="/membership-terms/">{c('signup.membership_terms_link','Rooted Commons Membership Terms')}</a> {c('signup.privacy_prefix','and have read the')} <a href="/privacy/">{c('signup.privacy_link','Privacy Policy')}</a>.</span></label>
+
+        <div class="signup-section full signup-requests">
+          <h2>{c('signup.requests_heading','Requests')}</h2>
+          <label>{c('signup.requests_prompt',"Are there any cupboard staples that you regularly purchase that you'd like us to stock, if we don't already?")}
+            <textarea name="productRequests" rows="4" placeholder={c('signup.requests_placeholder','Optional')}></textarea>
+          </label>
+        </div>
 
         <div class="full signup-turnstile-wrap">
           {turnstileSiteKey ? <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-appearance="interaction-only" data-response-field="true"></div> : <p class="signup-config-warning">Signup protection is not configured yet. Add the Turnstile site key before publishing this form.</p>}
@@ -95,6 +107,30 @@ const collectionPoints=data.collectionPoints.map(point=>({id:point.id,name:point
     const amountSuffix=document.querySelector('#signup-contribution-suffix');
     const amountHelp=document.querySelector('#signup-contribution-help');
     const frequencyInputs=[...document.querySelectorAll('input[name="contributionFrequency"]')];
+    const contributionStepButtons=[...document.querySelectorAll('[data-contribution-step]')];
+    const SIGNUP_DRAFT_KEY='rooted-commons-signup-draft-v1';
+    const savedMapPoint=Number(localStorage.getItem('rooted-commons-signup-collection-point')||0);
+    try{
+      const draft=JSON.parse(sessionStorage.getItem(SIGNUP_DRAFT_KEY)||'null');
+      if(draft){
+        Object.entries(draft).forEach(([name,value])=>{
+          const fields=[...form.querySelectorAll(`[name="${name}"]`)];
+          fields.forEach(field=>{
+            if(field.type==='radio')field.checked=field.value===value;
+            else if(field.type==='checkbox')field.checked=Boolean(value);
+            else field.value=value??'';
+          });
+        });
+      }
+    }catch{}
+    document.querySelector('.signup-map-link')?.addEventListener('click',()=>{
+      const draft={};
+      new FormData(form).forEach((value,key)=>{if(key!=='cf-turnstile-response')draft[key]=value;});
+      draft.membershipConsent=Boolean(form.querySelector('[name="membershipConsent"]')?.checked);
+      draft.weeklyNewsletter=Boolean(form.querySelector('[name="weeklyNewsletter"]')?.checked);
+      sessionStorage.setItem(SIGNUP_DRAFT_KEY,JSON.stringify(draft));
+    });
+
     const escapeHtml=(value)=>String(value??'').replace(/[&<>'\"]/g,(char)=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[char]));
     const roundMoney=(value)=>Math.round((Number(value)+Number.EPSILON)*100)/100;
     function refreshCollectionPoints(){
@@ -120,12 +156,12 @@ const collectionPoints=data.collectionPoints.map(point=>({id:point.id,name:point
       }
       if(frequency==='Monthly'){
         amountInput.min='43.34'; amountInput.step='0.01'; amountInput.value=(Number.isFinite(current)&&current>=43.34?current:43.34).toFixed(2);
-        if(amountLabel)amountLabel.textContent=amountLabel.dataset.monthly||'Monthly contribution';
+        if(amountLabel)amountLabel.textContent=amountLabel.dataset.monthly||'Monthly commitment';
         if(amountSuffix)amountSuffix.textContent='/ month';
         if(amountHelp)amountHelp.textContent=amountHelp.dataset.monthly||'';
       }else{
         amountInput.min='10'; amountInput.step='0.01'; amountInput.value=(Number.isFinite(current)&&current>=10?current:10).toFixed(2);
-        if(amountLabel)amountLabel.textContent=amountLabel.dataset.weekly||'Weekly contribution';
+        if(amountLabel)amountLabel.textContent=amountLabel.dataset.weekly||'Weekly commitment';
         if(amountSuffix)amountSuffix.textContent='/ week';
         if(amountHelp)amountHelp.textContent=amountHelp.dataset.weekly||'';
       }
@@ -134,15 +170,32 @@ const collectionPoints=data.collectionPoints.map(point=>({id:point.id,name:point
     let priorFrequency=selectedFrequency();
     frequencyInputs.forEach(input=>input.addEventListener('change',()=>{const old=priorFrequency;priorFrequency=selectedFrequency();refreshContribution(old);}));
     refreshCollectionPoints();
+    if(savedMapPoint){
+      const selectedMapPoint=(collectionPoints||[]).find(point=>Number(point.id)===savedMapPoint);
+      if(selectedMapPoint && !pointSelect?.querySelector(`option[value="${savedMapPoint}"]`)){
+        const firstDay=selectedMapPoint.collectionSlots?.[0]?.day;
+        if(firstDay && daySelect){daySelect.value=firstDay;refreshCollectionPoints();}
+      }
+      if(pointSelect?.querySelector(`option[value="${savedMapPoint}"]`))pointSelect.value=String(savedMapPoint);
+      localStorage.removeItem('rooted-commons-signup-collection-point');
+    }
     refreshContribution();
+    contributionStepButtons.forEach(button=>button.addEventListener('click',()=>{
+      const delta=Number(button.dataset.contributionStep||0);
+      const min=selectedFrequency()==='Monthly'?43.34:10;
+      const current=Number(amountInput?.value||min);
+      const next=Math.max(min,Math.round((current+delta)*100)/100);
+      if(amountInput)amountInput.value=next.toFixed(2);
+    }));
     form?.addEventListener('submit',async(event)=>{
       event.preventDefault();message.textContent='';const button=form.querySelector('button[type="submit"]');button.disabled=true;
       try{
         const fd=new FormData(form);
+        if(String(fd.get('email')||'').trim().toLowerCase()!==String(fd.get('confirmEmail')||'').trim().toLowerCase())throw new Error('Email addresses do not match.');
         const turnstileToken=fd.get('cf-turnstile-response')||document.querySelector('input[name="cf-turnstile-response"]')?.value||'';
         if(!turnstileToken)throw new Error('Please complete the security check and try again.');
-        const response=await fetch('/api/signup',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({firstName:fd.get('firstName'),lastName:fd.get('lastName'),email:fd.get('email'),phone:fd.get('phone'),preferredCollectionDay:fd.get('preferredCollectionDay'),collectionPointId:Number(fd.get('collectionPointId')),contributionFrequency:fd.get('contributionFrequency'),contributionAmount:fd.get('contributionAmount'),membershipConsent:fd.get('membershipConsent')==='on',weeklyNewsletter:fd.get('weeklyNewsletter')==='on',turnstileToken})});
-        const payload=await response.json();if(!response.ok)throw new Error(payload.message||'Signup failed.');const dashboardLink=document.querySelector('#signup-dashboard-link');if(dashboardLink&&payload.dashboardUrl)dashboardLink.href=payload.dashboardUrl;form.hidden=true;document.querySelector('#signup-copy').hidden=true;success.hidden=false;
+        const response=await fetch('/api/signup',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({firstName:fd.get('firstName'),lastName:fd.get('lastName'),email:fd.get('email'),confirmEmail:fd.get('confirmEmail'),phone:fd.get('phone'),preferredCollectionDay:fd.get('preferredCollectionDay'),collectionPointId:Number(fd.get('collectionPointId')),contributionFrequency:fd.get('contributionFrequency'),contributionAmount:fd.get('contributionAmount'),membershipConsent:fd.get('membershipConsent')==='on',weeklyNewsletter:fd.get('weeklyNewsletter')==='on',productRequests:fd.get('productRequests'),turnstileToken})});
+        const payload=await response.json();if(!response.ok)throw new Error(payload.message||'Signup failed.');const dashboardLink=document.querySelector('#signup-dashboard-link');if(dashboardLink&&payload.dashboardUrl)dashboardLink.href=payload.dashboardUrl;sessionStorage.removeItem(SIGNUP_DRAFT_KEY);form.hidden=true;document.querySelector('#signup-copy').hidden=true;success.hidden=false;
       }catch(error){message.textContent=error.message||'We could not create your membership. Please try again.';button.disabled=false;if(window.turnstile)window.turnstile.reset();}
     });
   </script>

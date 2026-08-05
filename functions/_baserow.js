@@ -126,7 +126,7 @@ export function publicMember(member, { collectionPoint = null, lastOrder = null,
     firstName: unwrap(member['First name']),
     credit: number(member['Current credit']),
     weeklyCommitment: number(member['Weekly commitment']),
-    paymentReference: unwrap(member['Payment reference']) || `RC-${member.id}`,
+    paymentReference: unwrap(member['Member number']) || `RC-${member.id}`,
     preferredCollectionDay: unwrap(member['Preferred collection day']) || 'Thursday',
     molliePaymentUrl: unwrap(member['Mollie payment URL'] || member['Online payment URL']),
     collectionPoint: collectionPoint || {

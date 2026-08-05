@@ -2,11 +2,7 @@ import { envConfig, json, listRows, updateRow, tokenValid, publicMember, publicC
 
 function belongsToMember(row, member) {
   const memberId = Number(member.id);
-  const linkedFields = ['Member', 'Members', 'Xero Contact ID'];
-  if (linkedFields.some(field => linkedIds(row[field]).includes(memberId))) return true;
-  const memberXero = unwrap(member['Xero Contact ID']);
-  if (!memberXero) return false;
-  return linkedFields.some(field => linkedValues(row[field]).includes(memberXero));
+  return ['Member', 'Members'].some(field => linkedIds(row[field]).includes(memberId));
 }
 
 function orderBelongsToMember(order, member) {

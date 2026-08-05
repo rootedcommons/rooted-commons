@@ -1,4 +1,4 @@
-# Baserow schema expected by v2.9.0
+# Baserow schema expected by v2.9.3
 
 Field names are case-sensitive in API and automation mappings. Use these exact names unless you also update the code.
 
@@ -31,12 +31,15 @@ Required:
 - `Weekly commitment`
 - `Collection point`
 - `Preferred collection day` — single select: Thursday / Friday / Saturday / Sunday
-- `Payment reference` — unique BACS reference; code falls back to `RC-{row ID}`
+- `Member number` — primary single-line text identifier; signup assigns `RC-{Baserow row ID}` and this is also the BACS/Xero payment reference
 - `Mollie payment URL` — optional hosted payment URL shown only when the member is below zero
 - `Phone` — required by signup for membership/order issues
 - `Membership consent` — boolean; must be true at signup
 - `Membership consent at` — date/time set by signup
 - `Weekly newsletter` — optional boolean consent for including news/updates in the weekly service email
+- `Monthly equivalent` — number/currency, 2 decimals
+- `Contribution frequency` — single select: Weekly / Monthly
+- `Product requests` — optional long text written from the signup Requests section
 
 ## Site Settings payment fields
 
@@ -156,7 +159,7 @@ Exact website type option:
 
 - `Order charge`
 
-`Amount` is negative for an order charge. There is no `Direction` field. Leave `Xero Contact ID` and other Xero-only fields blank for website orders.
+`Amount` is negative for an order charge. There is no `Direction` field. Xero payment imports now identify members by the `RC-x` reference rather than personal Xero contacts.
 
 ## Removed tables
 

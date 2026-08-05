@@ -1,3 +1,14 @@
+# v2.9.3
+- Signup now generates canonical `Member number` values as `RC-{Baserow row ID}` and no longer relies on a separate Payment reference or Xero ContactID.
+- Signup writes an `Order token expiry` for the following Sunday; rotating the token on Sunday invalidates the previous link immediately.
+- Added Confirm email address validation and an optional Product requests section.
+- Refined signup layout/help text and changed commitment controls to custom £1 +/- buttons while still accepting penny amounts by typing.
+- Collection point label now reads `Collection point (see our map)`.
+- Collection-point map supports returning to signup, selecting a collection point back into the signup form, and changing the saved point for authenticated members.
+- Signup form state is preserved while visiting the collection-point map.
+- Updated Interface Content rows and Baserow schema documentation.
+- Removed runtime dependence on Xero ContactID; member-payment matching is documented around generic Xero contact + `RC-x` reference.
+
 # v2.9.2
 - Signup confirmation now links directly to the newly created member dashboard using the generated Order token.
 - Added editable dashboard-link label and security guidance to Interface Content.

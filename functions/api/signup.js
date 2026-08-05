@@ -1,9 +1,19 @@
-import { createRow, envConfig, json, listRows, normaliseEmail, publicCollectionPoint, truthy } from '../_baserow.js';
+import { createRow, deleteRow, envConfig, json, listRows, normaliseEmail, publicCollectionPoint, truthy, updateRow } from '../_baserow.js';
 
 const clean=value=>String(value||'').trim();
 const token=()=>Array.from(crypto.getRandomValues(new Uint8Array(24)),b=>b.toString(16).padStart(2,'0')).join('');
 const money=value=>Math.round((Number(value)+Number.EPSILON)*100)/100;
 const hasPennyPrecision=value=>Number.isFinite(Number(value)) && Math.abs(Number(value)*100-Math.round(Number(value)*100))<1e-6;
+const nextSundayExpiry=(from=new Date())=>{
+  // A newly issued Sunday token replaces the previous token immediately.
+  // This expiry is a fallback so a signup token cannot remain valid indefinitely
+  // if the weekly rotation fails.
+  const d=new Date(from.getTime());
+  const days=(7-d.getUTCDay())%7 || 7;
+  d.setUTCDate(d.getUTCDate()+days);
+  d.setUTCHours(23,59,59,0);
+  return d.toISOString();
+};
 const attempts=new Map();
 const RATE_WINDOW_MS=15*60*1000;
 const RATE_MAX=5;
@@ -42,9 +52,11 @@ export async function onRequestPost({request,env}){
     if(!turnstile.success)return json({ok:false,message:'The security check could not be verified. Please try again.'},400);
 
     const email=normaliseEmail(body.email);
+    const confirmEmail=normaliseEmail(body.confirmEmail);
     const firstName=clean(body.firstName);
     const lastName=clean(body.lastName);
     const phone=clean(body.phone);
+    const productRequests=clean(body.productRequests);
     const contributionFrequency=clean(body.contributionFrequency);
     const contributionAmount=Number(body.contributionAmount);
     const collectionPointId=Number(body.collectionPointId);
@@ -52,7 +64,7 @@ export async function onRequestPost({request,env}){
     const allowedDays=['Thursday','Friday','Saturday','Sunday'];
     const allowedFrequencies=['Weekly','Monthly'];
     const minimum=contributionFrequency==='Monthly'?43.34:10;
-    if(!firstName||!lastName||!phone||!email||!email.includes('@')||!Number.isFinite(collectionPointId)||collectionPointId<1||!allowedFrequencies.includes(contributionFrequency)||!hasPennyPrecision(contributionAmount)||contributionAmount<minimum||!allowedDays.includes(preferredCollectionDay)||body.membershipConsent!==true){
+    if(!firstName||!lastName||!phone||!email||!email.includes('@')||email!==confirmEmail||!Number.isFinite(collectionPointId)||collectionPointId<1||!allowedFrequencies.includes(contributionFrequency)||!hasPennyPrecision(contributionAmount)||contributionAmount<minimum||!allowedDays.includes(preferredCollectionDay)||body.membershipConsent!==true){
       return json({ok:false,message:`Please complete all required fields. ${contributionFrequency==='Monthly'?'Monthly contributions must be at least £43.34':'Weekly contributions must be at least £10.00'} and may be entered to the penny.`},400);
     }
 
@@ -76,6 +88,7 @@ export async function onRequestPost({request,env}){
       'Phone':phone,
       'Active':true,
       'Order token':orderToken,
+      'Order token expiry':nextSundayExpiry(now),
       'Weekly commitment':weeklyCommitment,
       'Monthly equivalent':monthlyEquivalent,
       'Contribution frequency':contributionFrequency,
@@ -84,9 +97,17 @@ export async function onRequestPost({request,env}){
       'Member since':now.toISOString().slice(0,10),
       'Membership consent':true,
       'Membership consent at':now.toISOString(),
-      'Weekly newsletter':body.weeklyNewsletter===true
+      'Weekly newsletter':body.weeklyNewsletter===true,
+      'Product requests':productRequests
     };
     const member=await createRow(cfg,cfg.members,fields);
-    return json({ok:true,memberId:member.id,dashboardUrl:`/dashboard/?token=${encodeURIComponent(orderToken)}`},201);
+    const memberNumber=`RC-${member.id}`;
+    try{
+      await updateRow(cfg,cfg.members,member.id,{'Member number':memberNumber});
+    }catch(error){
+      try{await deleteRow(cfg,cfg.members,member.id);}catch{}
+      throw error;
+    }
+    return json({ok:true,memberId:member.id,memberNumber,dashboardUrl:`/dashboard/?token=${encodeURIComponent(orderToken)}`},201);
   }catch(error){return json({ok:false,message:'We could not create your membership. Please try again.',detail:String(error.message||error)},500);}
 }

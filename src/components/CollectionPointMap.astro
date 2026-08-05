@@ -27,6 +27,13 @@ const mapPoints = points
     (()=>{
       const mapEl=document.getElementById('collection-point-map');
       if(!mapEl)return;
+      const params=new URLSearchParams(window.location.search);
+      const returnPath=params.get('return')||'';
+      const selectionMode=params.get('select')==='1';
+      const TOKEN_KEY='rooted-commons-order-token-v1';
+      const memberToken=params.get('token')||localStorage.getItem(TOKEN_KEY)||'';
+      const canSelect=selectionMode||Boolean(memberToken);
+
       const initialise=()=>{
         if(!window.L)return;
         const map=L.map(mapEl,{scrollWheelZoom:false});
@@ -35,15 +42,63 @@ const mapPoints = points
           maxZoom:19,
           attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
+
+        if(returnPath){
+          const BackControl=L.Control.extend({
+            options:{position:'topleft'},
+            onAdd(){
+              const a=L.DomUtil.create('a','map-back-control');
+              a.href=returnPath;
+              a.textContent='Back to form';
+              L.DomEvent.disableClickPropagation(a);
+              return a;
+            }
+          });
+          map.addControl(new BackControl());
+        }
+
         const escapeHtml=(value)=>String(value||'').replace(/[&<>'"]/g,(char)=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
         mapPoints.forEach(point=>{
           const coords=[Number(point.latitude),Number(point.longitude)];
           bounds.push(coords);
           const slots=(point.collectionSlots||[]).map(slot=>`<li><strong>${escapeHtml(slot.day)}</strong> · ${escapeHtml(slot.time)}</li>`).join('');
           const image=point.image?`<img class="map-popup-image" src="${escapeHtml(point.image)}" alt="" loading="lazy">`:'';
-          const popup=`<div class="map-popup">${image}<strong>${escapeHtml(point.name)}</strong>${point.address?`<p>${escapeHtml(point.address).replace(/\n/g,'<br>')}</p>`:''}${slots?`<ul>${slots}</ul>`:''}</div>`;
+          const selectButton=canSelect?`<button class="map-select-button" type="button" data-map-select-point="${Number(point.id)}">Select collection point</button><p class="map-select-status" data-map-select-status="${Number(point.id)}" hidden></p>`:'';
+          const popup=`<div class="map-popup">${image}<strong>${escapeHtml(point.name)}</strong>${point.address?`<p>${escapeHtml(point.address).replace(/\n/g,'<br>')}</p>`:''}${slots?`<ul>${slots}</ul>`:''}${selectButton}</div>`;
           L.marker(coords).addTo(map).bindPopup(popup);
         });
+
+        map.on('popupopen',event=>{
+          const root=event.popup.getElement();
+          const button=root?.querySelector('[data-map-select-point]');
+          if(!button)return;
+          button.addEventListener('click',async()=>{
+            const pointId=Number(button.dataset.mapSelectPoint);
+            const status=root.querySelector(`[data-map-select-status="${pointId}"]`);
+            button.disabled=true;
+            try{
+              if(selectionMode){
+                localStorage.setItem('rooted-commons-signup-collection-point',String(pointId));
+                window.location.href=returnPath||'/signup/';
+                return;
+              }
+              if(memberToken){
+                const current=await fetch(`/api/member?token=${encodeURIComponent(memberToken)}`).then(r=>r.json());
+                const preferred=current?.member?.preferredCollectionDay||'Thursday';
+                const response=await fetch('/api/member',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({token:memberToken,collectionPointId:pointId,preferredCollectionDay:preferred})});
+                const payload=await response.json();
+                if(!response.ok)throw new Error(payload.message||'Could not update collection point.');
+                if(status){status.hidden=false;status.textContent='Collection point updated.';}
+                button.textContent='Selected';
+                return;
+              }
+            }catch(error){
+              if(status){status.hidden=false;status.textContent=error.message||'Could not update collection point.';}
+              button.disabled=false;
+            }
+          },{once:true});
+        });
+
         if(bounds.length===1)map.setView(bounds[0],13);
         else map.fitBounds(bounds,{padding:[32,32],maxZoom:13});
       };
