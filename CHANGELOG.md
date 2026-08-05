@@ -1,3 +1,9 @@
+# v2.9.14
+- Added statutory cancellation-refund timing to Terms of Sale.
+- Removed duplicated Member Credit/top-up mechanics from Terms of Sale and cross-referenced Membership Terms.
+- Added ICO website and telephone contact details to the Privacy Notice.
+- Added an internal Member Credit regulatory-perimeter note, distinguishing the current closed-loop retailer-credit model from e-money and documenting LNE review triggers.
+
 # v2.9.13
 - Revised the Privacy Notice for clearer UK GDPR transparency: controller identity, required data, lawful purposes, recipient categories, retention, local storage and rights.
 - Removed obsolete MailerLite references and the public named-provider list from the Privacy Notice.
