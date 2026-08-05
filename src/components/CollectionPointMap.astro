@@ -13,6 +13,7 @@ const mapPoints = points
   }));
 ---
 <section class="collection-map-section" aria-label="Collection point map">
+  <a id="collection-map-back" class="button collection-map-back" href="/signup/" hidden>← Back to form</a>
   {mapPoints.length ? (
     <div id="collection-point-map" class="collection-point-map" role="region" aria-label="Map of Rooted Commons collection points"></div>
   ) : (
@@ -33,6 +34,8 @@ const mapPoints = points
       const TOKEN_KEY='rooted-commons-order-token-v1';
       const memberToken=params.get('token')||localStorage.getItem(TOKEN_KEY)||'';
       const canSelect=selectionMode||Boolean(memberToken);
+      const backButton=document.getElementById('collection-map-back');
+      if(returnPath&&backButton){backButton.href=returnPath;backButton.hidden=false;}
 
       const initialise=()=>{
         if(!window.L)return;
@@ -43,19 +46,6 @@ const mapPoints = points
           attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        if(returnPath){
-          const BackControl=L.Control.extend({
-            options:{position:'topleft'},
-            onAdd(){
-              const a=L.DomUtil.create('a','map-back-control');
-              a.href=returnPath;
-              a.textContent='Back to form';
-              L.DomEvent.disableClickPropagation(a);
-              return a;
-            }
-          });
-          map.addControl(new BackControl());
-        }
 
         const escapeHtml=(value)=>String(value||'').replace(/[&<>'"]/g,(char)=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
         mapPoints.forEach(point=>{

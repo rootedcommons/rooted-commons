@@ -535,3 +535,66 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .map-select-button{display:block;width:100%;margin-top:.65rem;border:0;border-radius:.55rem;padding:.55rem .7rem;background:var(--purple,#5a2d4d);color:#fff;font:inherit;font-weight:700;cursor:pointer}
 .map-select-status{font-size:.85rem;margin:.45rem 0 0}
 @media(max-width:700px){.signup-money-input{grid-template-columns:auto auto minmax(0,1fr) auto auto;width:100%}}
+
+
+/* v2.9.4 signup polish */
+.signup-box{
+  display:grid;
+  gap:.9rem;
+  padding:1.1rem;
+  border:1px solid var(--border);
+  border-radius:.9rem;
+  background:var(--highlight);
+}
+.signup-box .signup-section-heading{
+  padding-top:0;
+  margin-top:0;
+  border-top:0;
+}
+.signup-box>h2{margin:0;font-size:1.2rem}
+.signup-box>p{margin:.1rem 0 .35rem}
+.signup-box .signup-label-line{width:100%}
+.signup-box .signup-label-line>small{margin-left:auto;text-align:right}
+.signup-requests .signup-request-prompt{
+  font-family:inherit;
+  font-weight:400;
+  color:var(--primary);
+}
+.signup-requests textarea{
+  width:100%;
+  resize:vertical;
+  box-sizing:border-box;
+  padding:.8rem;
+  border:1px solid var(--border);
+  border-radius:.6rem;
+  background:var(--background);
+  color:var(--primary);
+  font:inherit;
+}
+.signup-requests textarea::placeholder{
+  color:color-mix(in srgb,var(--primary) 55%,transparent);
+  font-style:italic;
+  opacity:1;
+}
+.signup-existing-member{
+  padding:1rem;
+  border:1px solid var(--border);
+  border-radius:.8rem;
+  background:var(--highlight);
+}
+.signup-existing-member p{margin:.35rem 0 .8rem}
+.collection-map-back{margin:0 0 1rem;align-self:flex-start}
+.map-back-control{display:none!important}
+@media(max-width:700px){
+  .signup-box .signup-label-line{align-items:flex-start}
+  .signup-box .signup-label-line>small{margin-left:0;text-align:left;width:100%}
+}
+
+.dashboard-verified-notice{
+  width:min(1180px,calc(100% - 2rem));
+  margin:0 auto 1rem;
+  padding:.75rem 1rem;
+  border-left:4px solid var(--primary);
+  background:var(--highlight);
+  font-weight:700;
+}

@@ -1,4 +1,4 @@
-import { createRow, deleteRow, envConfig, json, listRows, normaliseEmail, publicCollectionPoint, truthy, updateRow } from '../_baserow.js';
+import { createRow, envConfig, json, listRows, normaliseEmail, publicCollectionPoint, truthy } from '../_baserow.js';
 
 const clean=value=>String(value||'').trim();
 const token=()=>Array.from(crypto.getRandomValues(new Uint8Array(24)),b=>b.toString(16).padStart(2,'0')).join('');
@@ -63,9 +63,9 @@ export async function onRequestPost({request,env}){
     const preferredCollectionDay=clean(body.preferredCollectionDay);
     const allowedDays=['Thursday','Friday','Saturday','Sunday'];
     const allowedFrequencies=['Weekly','Monthly'];
-    const minimum=contributionFrequency==='Monthly'?43.34:10;
+    const minimum=contributionFrequency==='Monthly'?43.33:10;
     if(!firstName||!lastName||!phone||!email||!email.includes('@')||email!==confirmEmail||!Number.isFinite(collectionPointId)||collectionPointId<1||!allowedFrequencies.includes(contributionFrequency)||!hasPennyPrecision(contributionAmount)||contributionAmount<minimum||!allowedDays.includes(preferredCollectionDay)||body.membershipConsent!==true){
-      return json({ok:false,message:`Please complete all required fields. ${contributionFrequency==='Monthly'?'Monthly contributions must be at least £43.34':'Weekly contributions must be at least £10.00'} and may be entered to the penny.`},400);
+      return json({ok:false,message:`Please complete all required fields. ${contributionFrequency==='Monthly'?'Monthly contributions must be at least £43.33':'Weekly contributions must be at least £10.00'} and may be entered to the penny.`},400);
     }
 
     const weeklyCommitment=contributionFrequency==='Weekly'?money(contributionAmount):money(contributionAmount*12/52);
@@ -73,7 +73,7 @@ export async function onRequestPost({request,env}){
 
     const cfg=envConfig(env);
     const [members,points]=await Promise.all([listRows(cfg,cfg.members),listRows(cfg,cfg.collectionPoints)]);
-    if(members.some(row=>normaliseEmail(row.Email)===email))return json({ok:false,message:'There is already a membership using this email address.'},409);
+    if(members.some(row=>normaliseEmail(row.Email)===email))return json({ok:false,code:'existing_member',message:'It looks like you’re already a Rooted Commons member.'},409);
     const point=points.find(row=>Number(row.id)===collectionPointId && truthy(row.Active,true));
     if(!point)return json({ok:false,message:'That collection point is not currently available.'},409);
     const validDays=(publicCollectionPoint(point).collectionSlots||[]).map(slot=>slot.day);
@@ -98,16 +98,43 @@ export async function onRequestPost({request,env}){
       'Membership consent':true,
       'Membership consent at':now.toISOString(),
       'Weekly newsletter':body.weeklyNewsletter===true,
+      'Email verified':false,
       'Product requests':productRequests
     };
     const member=await createRow(cfg,cfg.members,fields);
-    const memberNumber=`RC-${member.id}`;
-    try{
-      await updateRow(cfg,cfg.members,member.id,{'Member number':memberNumber});
-    }catch(error){
-      try{await deleteRow(cfg,cfg.members,member.id);}catch{}
-      throw error;
+    const memberNumber=String(member['Member number']||`RC-${member.id}`);
+    const origin=new URL(request.url).origin;
+    const dashboardUrl=`/dashboard/?token=${encodeURIComponent(orderToken)}`;
+    const verificationUrl=`${origin}/api/verify-email?token=${encodeURIComponent(orderToken)}`;
+    let welcomeEmailSent=false;
+    const welcomeWebhook=env.WELCOME_EMAIL_WEBHOOK_URL||env.MAGIC_LINK_WEBHOOK_URL;
+    if(welcomeWebhook){
+      try{
+        const response=await fetch(welcomeWebhook,{
+          method:'POST',
+          headers:{'content-type':'application/json'},
+          body:JSON.stringify({
+            event:'member_signup_confirmation',
+            email,
+            link:verificationUrl,
+            verificationLink:verificationUrl,
+            dashboardLink:`${origin}${dashboardUrl}`,
+            member:{firstName,lastName,memberNumber},
+            contribution:{frequency:contributionFrequency,amount:money(contributionAmount)},
+            emailContent:{
+              subject:'Welcome to Rooted Commons – confirm your email',
+              heading:'Welcome to Rooted Commons',
+              intro:'Your membership has been created successfully.',
+              confirmationText:'Please confirm that this email address belongs to you by opening your secure member link.',
+              buttonText:'Confirm my email and open my dashboard',
+              securityText:'This is a unique private link to your membership account and member credit. Please do not share it with anyone or use it on someone else’s device.',
+              rotationText:'We will send you a new unique link each Sunday. When a new link is issued, the previous one stops working.'
+            }
+          })
+        });
+        welcomeEmailSent=response.ok;
+      }catch{}
     }
-    return json({ok:true,memberId:member.id,memberNumber,dashboardUrl:`/dashboard/?token=${encodeURIComponent(orderToken)}`},201);
+    return json({ok:true,memberId:member.id,memberNumber,dashboardUrl,welcomeEmailSent},201);
   }catch(error){return json({ok:false,message:'We could not create your membership. Please try again.',detail:String(error.message||error)},500);}
 }

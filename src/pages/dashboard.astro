@@ -23,6 +23,7 @@ const membershipPerks=s.membershipPerks || [];
 
   <main class="dashboard-shell">
     <section id="dashboard-loading" class="dashboard-card"><p>{c('dashboard.loading')}</p></section>
+    <p id="dashboard-email-verified" class="dashboard-verified-notice" hidden>{c('dashboard.email_verified','Email address confirmed.')}</p>
     <section id="dashboard-content" hidden>
       <div class="dashboard-overview">
         <article class="dashboard-card dashboard-welcome">
@@ -116,6 +117,8 @@ const membershipPerks=s.membershipPerks || [];
     const urlToken=params.get('token');
     if(urlToken)localStorage.setItem(TOKEN_KEY,urlToken);
     const token=urlToken||localStorage.getItem(TOKEN_KEY)||'';
+    const verifiedNotice=document.querySelector('#dashboard-email-verified');
+    if(params.get('verified')==='1'&&verifiedNotice)verifiedNotice.hidden=false;
     const money=new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'});
     const formatDate=value=>value?new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',year:'numeric'}).format(new Date(value)):'';
     const pointSelect=document.querySelector('#dashboard-point-select');

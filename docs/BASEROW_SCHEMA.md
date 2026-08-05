@@ -1,4 +1,4 @@
-# Baserow schema expected by v2.9.3
+# Baserow schema expected by v2.9.4
 
 Field names are case-sensitive in API and automation mappings. Use these exact names unless you also update the code.
 
@@ -31,7 +31,7 @@ Required:
 - `Weekly commitment`
 - `Collection point`
 - `Preferred collection day` — single select: Thursday / Friday / Saturday / Sunday
-- `Member number` — primary single-line text identifier; signup assigns `RC-{Baserow row ID}` and this is also the BACS/Xero payment reference
+- `Member number` — primary Formula field: `concat('RC-', row_id())`; this is also the BACS/Xero payment reference
 - `Mollie payment URL` — optional hosted payment URL shown only when the member is below zero
 - `Phone` — required by signup for membership/order issues
 - `Membership consent` — boolean; must be true at signup
@@ -40,6 +40,8 @@ Required:
 - `Monthly equivalent` — number/currency, 2 decimals
 - `Contribution frequency` — single select: Weekly / Monthly
 - `Product requests` — optional long text written from the signup Requests section
+- `Email verified` — boolean; false on signup and set true from the emailed confirmation link
+- `Email verified at` — date/time set when the confirmation link is opened
 
 ## Site Settings payment fields
 

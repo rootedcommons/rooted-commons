@@ -1,3 +1,17 @@
+# v2.9.4
+- Changed `Member number` to the Baserow formula `concat('RC-', row_id())`; signup no longer performs a second write or rollback.
+- Reordered signup collection controls so Collection point is chosen before Preferred collection day; days are then filtered to that point's actual collection slots.
+- Added right-aligned italic collection-point help: `Only some locations support late collection.`
+- Added highlight-colour section boxes while retaining the existing main form background.
+- Moved Requests above Keeping in touch and restyled the optional textarea.
+- Changed monthly minimum/default to £43.33. +/- controls move to whole-pound landmarks: £43.33 → £44.00 → £45.00 and back.
+- Added email confirmation fields and `/api/verify-email`; signup can send a welcome/verification webhook containing the secure verification link.
+- Existing-email signups now show a specific existing-member state with a button to send a fresh secure login link.
+- Login-link requests now rotate the member's Order token before sending the new link.
+- Replaced the hard-to-see Leaflet back control with a normal purple `Back to form` button above the collection-point map.
+- Revised Membership Terms to distinguish Rooted Commons membership from statutory/company membership of Roots to Fruits CIC and to cover weekly/monthly commitments.
+- Updated Interface Content rows, Baserow schema documentation, setup instructions and welcome-email template.
+
 # v2.9.3
 - Signup now generates canonical `Member number` values as `RC-{Baserow row ID}` and no longer relies on a separate Payment reference or Xero ContactID.
 - Signup writes an `Order token expiry` for the following Sunday; rotating the token on Sunday invalidates the previous link immediately.
