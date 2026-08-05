@@ -882,3 +882,71 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
   .dashboard-participation-stat strong{font-size:clamp(1.4rem,7vw,2rem)}
   .dashboard-participation-stat span{font-size:.85rem}
 }
+
+/* v2.9.10 dashboard refinements */
+.dashboard-membership-actions{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-self:stretch;
+  justify-content:space-between;
+  gap:1rem;
+}
+.dashboard-membership-actions .dashboard-market-button{
+  width:100%;
+  box-sizing:border-box;
+  text-align:center;
+  white-space:normal;
+  line-height:1.2;
+  margin:0;
+}
+.dashboard-collection #dashboard-point-name{
+  margin-bottom:.25rem;
+}
+.dashboard-collection #dashboard-point-time{
+  margin:.05rem 0;
+  line-height:1.25;
+}
+.dashboard-collection #dashboard-point-address{
+  margin:.05rem 0 .6rem;
+  line-height:1.25;
+}
+.dashboard-collection #dashboard-point-link{
+  display:inline-block;
+  margin:.15rem 0 .5rem;
+}
+.dashboard-collection .dashboard-change-point{
+  margin-top:.2rem;
+}
+.dashboard-point-form{
+  margin-top:.55rem;
+}
+.dashboard-point-label-row{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:.75rem;
+  margin-bottom:.3rem;
+}
+.dashboard-point-label-row label{
+  margin:0;
+}
+.dashboard-map-link{
+  font-size:.9rem;
+  font-style:italic;
+  white-space:nowrap;
+}
+.collection-map-back{
+  display:inline-flex;
+  margin:0 0 1rem;
+}
+@media(max-width:480px){
+  .dashboard-membership-actions{gap:.7rem}
+  .dashboard-membership-actions .dashboard-market-button{
+    padding:.75rem .7rem;
+    font-size:.95rem;
+  }
+  .dashboard-point-label-row{
+    align-items:flex-start;
+  }
+}

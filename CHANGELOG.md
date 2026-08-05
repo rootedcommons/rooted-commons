@@ -1,3 +1,10 @@
+# v2.9.10
+- Moved `Browse this week’s market` into the 40% Member Credit column so it uses the vertical space beside the badge; the 60/40 layout remains on mobile.
+- Removed the `workshops` unit after the Workshops attended number, leaving the explanatory label below.
+- Tightened Collection point typography and spacing between collection time, address, title and change button.
+- Added `(see our map)` beside `Choose your collection point` in the dashboard change form; the link text is editable through Interface Content.
+- Changed the collection-map top button to `Back`; it now returns to the browser’s previous page, with a safe fallback if no previous page exists.
+
 # v2.9.9
 - Simplified Your Membership: `Your membership` now sits immediately below the greeting, followed by a responsive 60/40 badge + Member Credit row.
 - Removed the repeated Founder text beneath the badge; the badge image itself communicates Founder/Member status.

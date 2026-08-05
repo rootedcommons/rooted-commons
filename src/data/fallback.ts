@@ -174,6 +174,7 @@ export const fallbackInterfaceContent: Record<string, string> = {
   "dashboard.collection_not_selected": "Not selected",
   "dashboard.collection_view": "View collection point →",
   "dashboard.preferred_collection_day": "Preferred collection day",
+  "dashboard.collection_map_link": "see our map",
   "dashboard.collection_saving": "Saving…",
   "dashboard.collection_updated": "Collection point updated.",
   "dashboard.collection_failed": "The collection point could not be updated.",

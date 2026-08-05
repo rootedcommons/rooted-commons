@@ -48,6 +48,7 @@ const copy={
   collectionView:c('dashboard.collection_view','View collection point →'),
   changeCollection:c('dashboard.change_collection','Change collection preferences'),
   chooseCollection:c('dashboard.choose_collection','Choose your collection point'),
+  collectionMapLink:c('dashboard.collection_map_link','see our map'),
   preferredCollectionDay:c('dashboard.preferred_collection_day','Preferred collection day'),
   saveCollection:c('dashboard.save_collection','Save collection point'),
   cancel:c('dashboard.cancel','Cancel'),
@@ -100,10 +101,13 @@ const copy={
 
         <div class="dashboard-membership-identity">
           <div id="dashboard-badge" class="dashboard-badge"></div>
-          <p class="dashboard-credit dashboard-membership-credit">
-            <span>{copy.creditLabel}</span>
-            <strong id="dashboard-credit-value">£0.00</strong>
-          </p>
+          <div class="dashboard-membership-actions">
+            <p class="dashboard-credit dashboard-membership-credit">
+              <span>{copy.creditLabel}</span>
+              <strong id="dashboard-credit-value">£0.00</strong>
+            </p>
+            <a id="dashboard-shop-link" class="button dashboard-market-button" href="/orders/">{copy.browseMarket}</a>
+          </div>
         </div>
 
         <section id="dashboard-payment-prompt" class="dashboard-payment-choice" hidden>
@@ -146,7 +150,6 @@ const copy={
           </div>
         </section>
 
-        <a id="dashboard-shop-link" class="button dashboard-market-button" href="/orders/">{copy.browseMarket}</a>
         <div id="dashboard-perks" class="dashboard-perks"></div>
       </article>
 
@@ -199,7 +202,10 @@ const copy={
           <button id="dashboard-change-point" class="button dashboard-change-point" type="button">{copy.changeCollection}</button>
 
           <form id="dashboard-point-form" class="dashboard-point-form" hidden>
-            <label for="dashboard-point-select">{copy.chooseCollection}</label>
+            <div class="dashboard-point-label-row">
+              <label for="dashboard-point-select">{copy.chooseCollection}</label>
+              <a class="dashboard-map-link" href="/collection-points/">({copy.collectionMapLink})</a>
+            </div>
             <select id="dashboard-point-select" required></select>
             <label for="dashboard-day-select">{copy.preferredCollectionDay}</label>
             <select id="dashboard-day-select" required></select>
@@ -227,7 +233,7 @@ const copy={
               <span>{copy.volunteerDays}</span>
             </p>
             <p class="dashboard-participation-stat">
-              <strong id="dashboard-workshops-attended">0 {copy.workshopsUnit}</strong>
+              <strong id="dashboard-workshops-attended">0</strong>
               <span>{copy.workshopsAttended}</span>
             </p>
           </div>
@@ -379,7 +385,7 @@ const copy={
       const volunteerDays=Number(member.volunteerDays)||0;
       document.querySelector('#dashboard-volunteer-days').textContent=`${volunteerDays} ${volunteerDays===1?copy.dayUnit:copy.daysUnit}`;
       const workshops=Number(member.workshopsAttended)||0;
-      document.querySelector('#dashboard-workshops-attended').textContent=`${workshops} ${workshops===1?copy.workshopUnit:copy.workshopsUnit}`;
+      document.querySelector('#dashboard-workshops-attended').textContent=String(workshops);
       renderPerks(weeks,isNew);
 
       const shop=document.querySelector('#dashboard-shop-link');

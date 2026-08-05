@@ -13,7 +13,7 @@ const mapPoints = points
   }));
 ---
 <section class="collection-map-section" aria-label="Collection point map">
-  <a id="collection-map-back" class="button collection-map-back" href="/signup/" hidden>← Back to form</a>
+  <button id="collection-map-back" class="button collection-map-back" type="button">Back</button>
   {mapPoints.length ? (
     <div id="collection-point-map" class="collection-point-map" role="region" aria-label="Map of Rooted Commons collection points"></div>
   ) : (
@@ -35,7 +35,10 @@ const mapPoints = points
       const memberToken=params.get('token')||localStorage.getItem(TOKEN_KEY)||'';
       const canSelect=selectionMode||Boolean(memberToken);
       const backButton=document.getElementById('collection-map-back');
-      if(returnPath&&backButton){backButton.href=returnPath;backButton.hidden=false;}
+      backButton?.addEventListener('click',()=>{
+        if(window.history.length>1)window.history.back();
+        else window.location.href=returnPath||'/';
+      });
 
       const initialise=()=>{
         if(!window.L)return;
