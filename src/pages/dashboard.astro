@@ -40,11 +40,6 @@ const copy={
   bankReference:c('dashboard.bank_reference','Reference'),
   browseMarket:c('dashboard.shop_button','Browse this week’s market'),
 
-  lastOrderNone:c('dashboard.last_order_none','No previous website order'),
-  lastOrderToday:c('dashboard.last_order_today','You last ordered today'),
-  lastOrderYesterday:c('dashboard.last_order_yesterday','You last ordered yesterday'),
-  lastOrderDays:c('dashboard.last_order_days','You last ordered {days} days ago'),
-  lastOrderWeeks:c('dashboard.last_order_weeks','You last ordered {weeks} week{plural} ago'),
   perksUnlocked:c('dashboard.perks_unlocked','You’ve unlocked…'),
   perksUpcoming:c('dashboard.perks_upcoming','Coming up…'),
   perkInWeeks:c('dashboard.perk_in_weeks','in {weeks} week{plural}'),
@@ -80,8 +75,14 @@ const copy={
   perWeek:c('dashboard.per_week','per week'),
   perMonth:c('dashboard.per_month','per month'),
   collectionImageAlt:c('dashboard.collection_image_alt','{name} collection point'),
-  noOrdersYet:c('dashboard.no_orders_yet','No orders made yet'),
-  referenceHelp:c('dashboard.reference_help',"This reference matters — it's how your payment reached your account.")
+  referenceHelp:c('dashboard.reference_help',"This reference matters — it's how your payment reached your account."),
+  impactEyebrow:c('dashboard.impact_eyebrow','Your impact'),
+  volunteerDays:c('dashboard.volunteer_days','volunteering in your local food network'),
+  workshopsAttended:c('dashboard.workshops_attended','workshops attended'),
+  dayUnit:c('dashboard.day_unit','day'),
+  daysUnit:c('dashboard.days_unit','days'),
+  workshopUnit:c('dashboard.workshop_unit','workshop'),
+  workshopsUnit:c('dashboard.workshops_unit','workshops')
 };
 ---
 <BaseLayout settings={s} pages={data.pages} title={page.seoTitle || page.title} description={page.seoDescription || page.intro}>
@@ -94,14 +95,11 @@ const copy={
     <section id="dashboard-content" hidden>
       <div class="dashboard-primary-grid">
       <article class="dashboard-card dashboard-membership-card dashboard-membership-v295">
-          <h1 id="dashboard-greeting" class="dashboard-member-greeting">Hi member</h1>
-        <div id="dashboard-badge" class="dashboard-badge"></div>
+        <h1 id="dashboard-greeting" class="dashboard-member-greeting">Hi member</h1>
+        <p class="eyebrow dashboard-membership-eyebrow">{copy.membershipEyebrow}</p>
 
-        <div class="dashboard-membership-heading-grid">
-          <div>
-            <p class="eyebrow">{copy.membershipEyebrow}</p>
-            <h2 id="dashboard-founder-level">{copy.defaultMemberLevel}</h2>
-          </div>
+        <div class="dashboard-membership-identity">
+          <div id="dashboard-badge" class="dashboard-badge"></div>
           <p class="dashboard-credit dashboard-membership-credit">
             <span>{copy.creditLabel}</span>
             <strong id="dashboard-credit-value">£0.00</strong>
@@ -148,19 +146,7 @@ const copy={
           </div>
         </section>
 
-        <div class="dashboard-impact-stats">
-          <p class="dashboard-impact-stat">
-            <strong id="dashboard-member-weeks">0 weeks</strong>
-            <span>{copy.weeksSupporting}</span>
-          </p>
-          <p class="dashboard-impact-stat">
-            <strong id="dashboard-impact">£0</strong>
-            <span>{copy.localImpact}</span>
-          </p>
-        </div>
-
         <a id="dashboard-shop-link" class="button dashboard-market-button" href="/orders/">{copy.browseMarket}</a>
-        <p id="dashboard-last-order" class="dashboard-last-order"></p>
         <div id="dashboard-perks" class="dashboard-perks"></div>
       </article>
 
@@ -203,7 +189,7 @@ const copy={
       </div>
 
       <div class="dashboard-secondary-grid">
-      <article class="dashboard-card dashboard-collection">
+        <article class="dashboard-card dashboard-collection">
           <p class="eyebrow">{copy.collectionEyebrow}</p>
           <img id="dashboard-point-image" class="dashboard-point-image" src="" alt="" hidden />
           <h2 id="dashboard-point-name">{copy.collectionNotSelected}</h2>
@@ -223,7 +209,29 @@ const copy={
             </div>
             <p id="dashboard-point-message" class="small-print" aria-live="polite"></p>
           </form>
-      </article>
+        </article>
+
+        <article class="dashboard-card dashboard-impact-card">
+          <p class="eyebrow">{copy.impactEyebrow}</p>
+          <div class="dashboard-participation-grid">
+            <p class="dashboard-participation-stat">
+              <strong id="dashboard-member-weeks">0 {copy.weeksUnit}</strong>
+              <span>{copy.weeksSupporting}</span>
+            </p>
+            <p class="dashboard-participation-stat">
+              <strong id="dashboard-impact">£0</strong>
+              <span>{copy.localImpact}</span>
+            </p>
+            <p class="dashboard-participation-stat">
+              <strong id="dashboard-volunteer-days">0 {copy.daysUnit}</strong>
+              <span>{copy.volunteerDays}</span>
+            </p>
+            <p class="dashboard-participation-stat">
+              <strong id="dashboard-workshops-attended">0 {copy.workshopsUnit}</strong>
+              <span>{copy.workshopsAttended}</span>
+            </p>
+          </div>
+        </article>
       </div>
     </section>
   </main>
@@ -284,16 +292,6 @@ const copy={
       }else pointMessage.textContent=payload.message||copy.collectionFailed;
       button.disabled=false;
     });
-
-    const relativeDate=value=>{
-      if(!value)return copy.lastOrderNone;
-      const days=Math.max(0,Math.floor((Date.now()-new Date(value).getTime())/86400000));
-      if(days===0)return copy.lastOrderToday;
-      if(days===1)return copy.lastOrderYesterday;
-      if(days<14)return interpolate(copy.lastOrderDays,{days});
-      const weeks=Math.floor(days/7);
-      return interpolate(copy.lastOrderWeeks,{weeks,plural:weeks===1?'':'s'});
-    };
 
     const renderPerks=(weeks,isNew)=>{
       const container=document.querySelector('#dashboard-perks');
@@ -369,30 +367,19 @@ const copy={
       const pointLink=document.querySelector('#dashboard-point-link');
       if(point.link){pointLink.href=point.link;pointLink.hidden=false;}else pointLink.hidden=true;
 
-      document.querySelector('#dashboard-founder-level').textContent=member.founderBadge||copy.defaultMemberLevel;
       const logo=member.founderBadge?badgeLogos[member.founderBadge]:memberBadge;
       const badgeLabel=member.founderBadge||copy.defaultMemberLevel;
       const badge=document.querySelector('#dashboard-badge');
       if(logo){badge.innerHTML=`<img src="${logo}" alt="${badgeLabel}">`;badge.hidden=false;}else{badge.innerHTML='';badge.hidden=true;}
 
       const weeks=Number(member.membershipWeeks)||0;
-      const weeksValue=document.querySelector('#dashboard-member-weeks');
-      const weeksSupporting=weeksValue?.nextElementSibling;
-      if(!member.lastOrder){
-        weeksValue.textContent=copy.noOrdersYet;
-        if(weeksSupporting)weeksSupporting.hidden=true;
-      }else{
-        weeksValue.textContent=member.membershipWeeks!=null?`${weeks} ${weeks===1?copy.weekUnit:copy.weeksUnit}`:(member.memberSince?copy.weekUnit:copy.weeksUnit);
-        if(weeksSupporting)weeksSupporting.hidden=false;
-      }
+      document.querySelector('#dashboard-member-weeks').textContent=`${weeks} ${weeks===1?copy.weekUnit:copy.weeksUnit}`;
       const totalImpact=Number(member.account?.totalOrderSpend)||0;
       document.querySelector('#dashboard-impact').textContent=money.format(totalImpact).replace('.00','');
-
-      const lastOrder=document.querySelector('#dashboard-last-order');
-      if(isNew){lastOrder.hidden=true;}else{
-        lastOrder.textContent=member.lastOrder?`${relativeDate(member.lastOrder.submittedAt)} (${money.format(member.lastOrder.total||0)}).`:relativeDate('');
-        lastOrder.hidden=false;
-      }
+      const volunteerDays=Number(member.volunteerDays)||0;
+      document.querySelector('#dashboard-volunteer-days').textContent=`${volunteerDays} ${volunteerDays===1?copy.dayUnit:copy.daysUnit}`;
+      const workshops=Number(member.workshopsAttended)||0;
+      document.querySelector('#dashboard-workshops-attended').textContent=`${workshops} ${workshops===1?copy.workshopUnit:copy.workshopsUnit}`;
       renderPerks(weeks,isNew);
 
       const shop=document.querySelector('#dashboard-shop-link');

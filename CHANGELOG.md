@@ -1,3 +1,15 @@
+# v2.9.9
+- Simplified Your Membership: `Your membership` now sits immediately below the greeting, followed by a responsive 60/40 badge + Member Credit row.
+- Removed the repeated Founder text beneath the badge; the badge image itself communicates Founder/Member status.
+- Member Credit remains left-aligned in its 40% column and does not stack beneath the badge on mobile.
+- Removed the previous/last-order line entirely.
+- Restored the membership-weeks counter (`0 weeks` is valid) and moved it with `£ redirected locally` into a new bottom-right `Your impact` card.
+- Added Volunteer days and Workshops attended participation counters to Your impact.
+- Kept `redirected locally` wording unchanged.
+- Added optional Members fields `Volunteer days` and `Workshops attended`; blank/missing values render as 0.
+- Changed the Collection point image to natural proportional sizing instead of a fixed-height crop.
+- Updated Interface Content and Baserow schema/import files.
+
 # v2.9.8
 - Fixed founder badge assignment to use the current Active member count already loaded during signup, matching the public Total members statistic and requiring no extra Baserow read.
 - Removed the row-ID-based founder badge fallback from the dashboard/member API.

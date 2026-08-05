@@ -800,3 +800,85 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
   .dashboard-primary-grid,.dashboard-secondary-grid{grid-template-columns:1fr}
   .dashboard-reference-help{padding-left:0}
 }
+
+/* v2.9.9 dashboard participation layout */
+.dashboard-membership-eyebrow{margin:.1rem 0 .7rem}
+.dashboard-membership-identity{
+  display:grid;
+  grid-template-columns:minmax(0,3fr) minmax(0,2fr);
+  gap:1rem;
+  align-items:center;
+}
+.dashboard-membership-identity .dashboard-badge{
+  justify-content:flex-start;
+  margin:0!important;
+}
+.dashboard-membership-identity .dashboard-badge img{
+  width:min(100%,280px);
+  height:auto;
+  max-height:none!important;
+  object-fit:contain;
+}
+.dashboard-membership-identity .dashboard-membership-credit{
+  align-items:flex-start;
+  text-align:left;
+  min-width:0;
+}
+.dashboard-membership-identity .dashboard-membership-credit span,
+.dashboard-membership-identity .dashboard-membership-credit strong{
+  text-align:left;
+}
+.dashboard-membership-identity .dashboard-membership-credit strong{
+  white-space:nowrap;
+  font-size:clamp(1.8rem,4vw,2.9rem);
+}
+.dashboard-point-image{
+  display:block;
+  width:100%!important;
+  height:auto!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  object-fit:contain!important;
+  object-position:center;
+}
+.dashboard-impact-card{
+  display:block;
+}
+.dashboard-participation-grid{
+  display:grid;
+  grid-template-columns:minmax(0,3fr) minmax(0,2fr);
+  gap:0 1.25rem;
+  margin-top:.65rem;
+}
+.dashboard-participation-stat{
+  margin:0;
+  padding:1rem 0;
+  border-top:1px solid var(--border);
+  display:grid;
+  gap:.2rem;
+}
+.dashboard-participation-stat strong{
+  font-size:clamp(1.65rem,3.4vw,2.45rem);
+  line-height:1.05;
+}
+.dashboard-participation-stat span{
+  font-size:.92rem;
+  line-height:1.3;
+}
+@media(max-width:900px){
+  .dashboard-membership-identity,
+  .dashboard-participation-grid{
+    grid-template-columns:minmax(0,3fr) minmax(0,2fr);
+  }
+  .dashboard-membership-identity .dashboard-badge img{
+    width:min(100%,220px);
+  }
+}
+@media(max-width:480px){
+  .dashboard-membership-identity{gap:.75rem}
+  .dashboard-membership-identity .dashboard-badge img{width:100%;max-width:190px}
+  .dashboard-membership-identity .dashboard-membership-credit strong{font-size:clamp(1.55rem,9vw,2.25rem)}
+  .dashboard-participation-grid{gap:0 .8rem}
+  .dashboard-participation-stat strong{font-size:clamp(1.4rem,7vw,2rem)}
+  .dashboard-participation-stat span{font-size:.85rem}
+}
