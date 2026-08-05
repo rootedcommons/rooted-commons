@@ -17,93 +17,203 @@ const badgeLogos={
   'Founder 50':s.founder50Badge
 };
 const membershipPerks=s.membershipPerks || [];
+const copy={
+  greeting:c('dashboard.greeting','Hi {name}'),
+  welcome:c('dashboard.welcome','Welcome {name}'),
+  membershipEyebrow:c('dashboard.membership_eyebrow','Your membership'),
+  defaultMemberLevel:c('dashboard.default_member_level','Rooted Commons member'),
+  creditLabel:c('dashboard.credit_label','Member credit'),
+  weeksSupporting:c('dashboard.weeks_supporting','supporting local producers'),
+  localImpact:c('dashboard.local_impact','redirected locally'),
+  topupNeeded:c('dashboard.topup_needed','{amount} top-up needed'),
+  topupRequirement:c('dashboard.topup_requirement','Your balance must be back to £0.00 or above before collection.'),
+  payBank:c('dashboard.pay_bank','Pay by bank transfer'),
+  recommended:c('dashboard.recommended','Recommended'),
+  payOnline:c('dashboard.pay_online','Pay securely online'),
+  cardPayment:c('dashboard.card_payment','Card payment'),
+  openBanking:c('dashboard.open_banking','Open banking'),
+  onlineComingSoon:c('dashboard.online_coming_soon','Secure online payment options are coming soon.'),
+  bankAccountName:c('dashboard.bank_account_name','Account name'),
+  bankSortCode:c('dashboard.bank_sort_code','Sort code'),
+  bankAccountNumber:c('dashboard.bank_account_number','Account number'),
+  bankReference:c('dashboard.bank_reference','Reference'),
+  browseMarket:c('dashboard.shop_button','Browse this week’s market'),
+  currentReserved:c('dashboard.current_order_reserved','Review this week’s reserved order'),
+  currentConfirmed:c('dashboard.current_order_confirmed','Review this week’s confirmed order'),
+  lastOrderNone:c('dashboard.last_order_none','No previous website order'),
+  lastOrderToday:c('dashboard.last_order_today','You last ordered today'),
+  lastOrderYesterday:c('dashboard.last_order_yesterday','You last ordered yesterday'),
+  lastOrderDays:c('dashboard.last_order_days','You last ordered {days} days ago'),
+  lastOrderWeeks:c('dashboard.last_order_weeks','You last ordered {weeks} week{plural} ago'),
+  perksUnlocked:c('dashboard.perks_unlocked','You’ve unlocked…'),
+  perksUpcoming:c('dashboard.perks_upcoming','Coming up…'),
+  perkInWeeks:c('dashboard.perk_in_weeks','in {weeks} week{plural}'),
+  collectionEyebrow:c('dashboard.collection_eyebrow','Your collection point'),
+  collectionNotSelected:c('dashboard.collection_not_selected','Not selected'),
+  collectionView:c('dashboard.collection_view','View collection point →'),
+  changeCollection:c('dashboard.change_collection','Change collection preferences'),
+  chooseCollection:c('dashboard.choose_collection','Choose your collection point'),
+  preferredCollectionDay:c('dashboard.preferred_collection_day','Preferred collection day'),
+  saveCollection:c('dashboard.save_collection','Save collection point'),
+  cancel:c('dashboard.cancel','Cancel'),
+  collectionSaving:c('dashboard.collection_saving','Saving…'),
+  collectionUpdated:c('dashboard.collection_updated','Collection point updated.'),
+  collectionFailed:c('dashboard.collection_failed','The collection point could not be updated.'),
+  commitmentEyebrow:c('dashboard.commitment_eyebrow','Your weekly commitment'),
+  commitmentBody:c('dashboard.commitment_body','Your regular contribution creates predictable demand that local producers can plan around.'),
+  weeklyEquivalent:c('dashboard.weekly_equivalent','Your selected regular payment is {amount} {frequency}.'),
+  regularPaymentHeading:c('dashboard.regular_payment_heading','Your regular payment'),
+  setupRegularPaymentHeading:c('dashboard.setup_regular_payment_heading','Set up your regular payment'),
+  regularPaymentBody:c('dashboard.regular_payment_body','Set up a BACS standing order using the details below.'),
+  regularPaymentNote:c('dashboard.regular_payment_note','Regular BACS payments have no processing charge and help us keep member prices low.'),
+  averageOrders:c('dashboard.average_orders','Average weekly orders'),
+  recentPayments:c('dashboard.recent_payments','Recent payments'),
+  noPayments:c('dashboard.no_payments','No recent payments found.'),
+  accountActivity:c('dashboard.account_activity','View full account activity'),
+  increasePrompt:c('dashboard.increase_prompt','Your recent orders average {average} a week, around {difference} more than your current commitment.'),
+  loading:c('dashboard.loading','Loading your membership…'),
+  invalidHeading:c('dashboard.invalid_link_heading','This secure link is no longer valid'),
+  invalidBody:c('dashboard.invalid_link_body','Request a new link from checkout or use the latest weekly email.'),
+  emailVerified:c('dashboard.email_verified','Email address confirmed.'),
+  weekUnit:c('dashboard.week_unit','week'),
+  weeksUnit:c('dashboard.weeks_unit','weeks'),
+  perWeek:c('dashboard.per_week','per week'),
+  perMonth:c('dashboard.per_month','per month'),
+  collectionImageAlt:c('dashboard.collection_image_alt','{name} collection point')
+};
 ---
 <BaseLayout settings={s} pages={data.pages} title={page.seoTitle || page.title} description={page.seoDescription || page.intro}>
   <PageHero page={page} />
 
   <main class="dashboard-shell">
-    <section id="dashboard-loading" class="dashboard-card"><p>{c('dashboard.loading')}</p></section>
-    <p id="dashboard-email-verified" class="dashboard-verified-notice" hidden>{c('dashboard.email_verified','Email address confirmed.')}</p>
-    <section id="dashboard-content" hidden>
-      <div class="dashboard-overview">
-        <article class="dashboard-card dashboard-welcome">
-          <h1 id="dashboard-greeting">Hi member</h1>
-          <p class="dashboard-credit"><span>{c('dashboard.credit_label')}</span><strong id="dashboard-credit-value">£0.00</strong></p>
-          <div id="dashboard-payment-prompt" class="dashboard-payment-prompt" hidden></div>
-          <a id="dashboard-mollie-link" class="button dashboard-topup-link" hidden>{c('dashboard.online_button')}</a>
-          <a id="dashboard-shop-link" class="button" href="/orders/">{c('dashboard.shop_button')}</a>
-        </article>
+    <section id="dashboard-loading" class="dashboard-card"><p>{copy.loading}</p></section>
+    <p id="dashboard-email-verified" class="dashboard-verified-notice" hidden>{copy.emailVerified}</p>
 
-        <article class="dashboard-card dashboard-membership-card">
-          <div class="dashboard-membership-copy">
-            <div id="dashboard-badge" class="dashboard-badge"></div>
-            <p class="eyebrow">{c('dashboard.membership_eyebrow')}</p>
-            <h2 id="dashboard-founder-level">{c('dashboard.default_member_level')}</h2>
-            <div class="dashboard-impact-stats">
-              <p class="dashboard-impact-stat"><strong id="dashboard-member-weeks">0 weeks</strong><span>supporting local producers</span></p>
-              <p class="dashboard-impact-stat"><strong id="dashboard-impact">£0</strong><span>{c('dashboard.local_impact')}</span></p>
+    <section id="dashboard-content" hidden>
+      <article class="dashboard-card dashboard-membership-card dashboard-membership-v295">
+        <h1 id="dashboard-greeting" class="dashboard-member-greeting">Hi member</h1>
+        <div id="dashboard-badge" class="dashboard-badge"></div>
+
+        <div class="dashboard-membership-heading-grid">
+          <div>
+            <p class="eyebrow">{copy.membershipEyebrow}</p>
+            <h2 id="dashboard-founder-level">{copy.defaultMemberLevel}</h2>
+          </div>
+          <p class="dashboard-credit dashboard-membership-credit">
+            <span>{copy.creditLabel}</span>
+            <strong id="dashboard-credit-value">£0.00</strong>
+          </p>
+        </div>
+
+        <section id="dashboard-payment-prompt" class="dashboard-payment-choice" hidden>
+          <div class="dashboard-payment-choice-heading">
+            <strong id="dashboard-topup-needed"></strong>
+            <span>{copy.topupRequirement}</span>
+          </div>
+
+          <fieldset class="dashboard-payment-options">
+            <label>
+              <input type="radio" name="dashboard-payment-method" value="bank" checked />
+              <span>{copy.payBank} <em>({copy.recommended.toLowerCase()})</em></span>
+            </label>
+            <label>
+              <input type="radio" name="dashboard-payment-method" value="online" />
+              <span>{copy.payOnline}</span>
+            </label>
+          </fieldset>
+
+          <div id="dashboard-payment-bank" class="dashboard-payment-method-detail">
+            <dl class="bank-details">
+              <div><dt>{copy.bankAccountName}</dt><dd id="dashboard-topup-bank-name"></dd></div>
+              <div><dt>{copy.bankSortCode}</dt><dd id="dashboard-topup-sort-code"></dd></div>
+              <div><dt>{copy.bankAccountNumber}</dt><dd id="dashboard-topup-account-number"></dd></div>
+              <div><dt>{copy.bankReference}</dt><dd id="dashboard-topup-reference"></dd></div>
+            </dl>
+          </div>
+
+          <div id="dashboard-payment-online" class="dashboard-payment-method-detail" hidden>
+            <div class="dashboard-online-options">
+              <label><input type="radio" disabled /><span>{copy.cardPayment}</span></label>
+              <label><input type="radio" disabled /><span>{copy.openBanking}</span></label>
             </div>
-            <p id="dashboard-last-order"></p>
-            <div id="dashboard-perks" class="dashboard-perks"></div>
+            <p class="small-print">{copy.onlineComingSoon}</p>
+          </div>
+        </section>
+
+        <div class="dashboard-impact-stats">
+          <p class="dashboard-impact-stat">
+            <strong id="dashboard-member-weeks">0 weeks</strong>
+            <span>{copy.weeksSupporting}</span>
+          </p>
+          <p class="dashboard-impact-stat">
+            <strong id="dashboard-impact">£0</strong>
+            <span>{copy.localImpact}</span>
+          </p>
+        </div>
+
+        <a id="dashboard-shop-link" class="button dashboard-market-button" href="/orders/">{copy.browseMarket}</a>
+        <p id="dashboard-last-order" class="dashboard-last-order"></p>
+        <div id="dashboard-perks" class="dashboard-perks"></div>
+      </article>
+
+      <div class="dashboard-detail-grid dashboard-detail-grid-v295">
+        <article class="dashboard-card dashboard-commitment-card">
+          <p class="eyebrow">{copy.commitmentEyebrow}</p>
+          <p class="commitment-amount"><strong id="dashboard-commitment">£0</strong><span>/week</span></p>
+          <FormattedText text={copy.commitmentBody} class="rich-body" />
+          <p id="dashboard-monthly-equivalent" class="small-print"></p>
+
+          <section class="regular-payment-details">
+            <h3 id="dashboard-regular-payment-heading">{copy.regularPaymentHeading}</h3>
+            <FormattedText text={copy.regularPaymentBody} class="rich-body" />
+            <dl class="bank-details">
+              <div><dt>{copy.bankAccountName}</dt><dd id="dashboard-regular-bank-name"></dd></div>
+              <div><dt>{copy.bankSortCode}</dt><dd id="dashboard-regular-sort-code"></dd></div>
+              <div><dt>{copy.bankAccountNumber}</dt><dd id="dashboard-regular-account-number"></dd></div>
+              <div><dt>{copy.bankReference}</dt><dd id="dashboard-regular-payment-reference"></dd></div>
+            </dl>
+            <FormattedText text={copy.regularPaymentNote} class="small-print rich-body" />
+          </section>
+
+          <div id="dashboard-existing-commitment-detail">
+            <div class="commitment-metrics">
+              <div><span>{copy.averageOrders}</span><strong id="dashboard-average-spend">£0.00</strong></div>
+            </div>
+            <div class="recent-topups">
+              <h3>{copy.recentPayments}</h3>
+              <div id="dashboard-topups"><p class="small-print">{copy.noPayments}</p></div>
+              <details id="dashboard-account-activity" class="account-activity">
+                <summary>{copy.accountActivity}</summary>
+                <div id="dashboard-activity"></div>
+              </details>
+            </div>
+            <div id="dashboard-increase-prompt" class="commitment-prompt" hidden>
+              <p id="dashboard-increase-copy"></p>
+              {s.increaseCommitmentButtonUrl && <a class="button" href={s.increaseCommitmentButtonUrl}>{s.increaseCommitmentButtonText}</a>}
+            </div>
           </div>
         </article>
-      </div>
 
-      <div class="dashboard-detail-grid">
         <article class="dashboard-card dashboard-collection">
-          <p class="eyebrow">{c('dashboard.collection_eyebrow')}</p>
+          <p class="eyebrow">{copy.collectionEyebrow}</p>
           <img id="dashboard-point-image" class="dashboard-point-image" src="" alt="" hidden />
-          <h2 id="dashboard-point-name">Not selected</h2>
+          <h2 id="dashboard-point-name">{copy.collectionNotSelected}</h2>
           <p id="dashboard-point-time"></p>
-          <p id="dashboard-point-preference" class="small-print"></p>
           <p id="dashboard-point-address"></p>
-          <p id="dashboard-point-deadline" class="collection-deadline-readable"></p>
-          <a id="dashboard-point-link" class="text-link" hidden>View collection point →</a>
-          <button id="dashboard-change-point" class="button dashboard-change-point" type="button">{c('dashboard.change_collection')}</button>
+          <a id="dashboard-point-link" class="text-link" hidden>{copy.collectionView}</a>
+          <button id="dashboard-change-point" class="button dashboard-change-point" type="button">{copy.changeCollection}</button>
+
           <form id="dashboard-point-form" class="dashboard-point-form" hidden>
-            <label for="dashboard-point-select">{c('dashboard.choose_collection')}</label>
+            <label for="dashboard-point-select">{copy.chooseCollection}</label>
             <select id="dashboard-point-select" required></select>
-            <label for="dashboard-day-select">Preferred collection day</label>
+            <label for="dashboard-day-select">{copy.preferredCollectionDay}</label>
             <select id="dashboard-day-select" required></select>
             <div class="dashboard-point-actions">
-              <button class="button" type="submit">{c('dashboard.save_collection')}</button>
-              <button id="dashboard-cancel-point" class="button button-secondary" type="button">{c('dashboard.cancel')}</button>
+              <button class="button" type="submit">{copy.saveCollection}</button>
+              <button id="dashboard-cancel-point" class="button button-secondary" type="button">{copy.cancel}</button>
             </div>
             <p id="dashboard-point-message" class="small-print" aria-live="polite"></p>
           </form>
-        </article>
-
-        <article class="dashboard-card dashboard-commitment-card">
-          <p class="eyebrow">{c('dashboard.commitment_eyebrow')}</p>
-          <p class="commitment-amount"><strong id="dashboard-commitment">£0</strong><span>/week</span></p>
-          <FormattedText text={c('dashboard.commitment_body')} class="rich-body" />
-          <p id="dashboard-monthly-equivalent" class="small-print"></p>
-          <section class="regular-payment-details">
-            <h3>{c('dashboard.regular_payment_heading')}</h3>
-            <FormattedText text={c('dashboard.regular_payment_body')} class="rich-body" />
-            <dl class="bank-details">
-              <div><dt>Account name</dt><dd id="dashboard-regular-bank-name"></dd></div>
-              <div><dt>Sort code</dt><dd id="dashboard-regular-sort-code"></dd></div>
-              <div><dt>Account number</dt><dd id="dashboard-regular-account-number"></dd></div>
-              <div><dt>Reference</dt><dd id="dashboard-regular-payment-reference"></dd></div>
-            </dl>
-            <FormattedText text={c('dashboard.regular_payment_note')} class="small-print rich-body" />
-          </section>
-          <div class="commitment-metrics">
-            <div><span>{c('dashboard.average_orders')}</span><strong id="dashboard-average-spend">£0.00</strong></div>
-          </div>
-          <div class="recent-topups">
-            <h3>{c('dashboard.recent_payments')}</h3>
-            <div id="dashboard-topups"><p class="small-print">{c('dashboard.no_payments')}</p></div>
-            <details id="dashboard-account-activity" class="account-activity">
-              <summary>{c('dashboard.account_activity')}</summary>
-              <div id="dashboard-activity"></div>
-            </details>
-          </div>
-          <div id="dashboard-increase-prompt" class="commitment-prompt" hidden>
-            <p id="dashboard-increase-copy"></p>
-            {s.increaseCommitmentButtonUrl && <a class="button" href={s.increaseCommitmentButtonUrl}>{s.increaseCommitmentButtonText}</a>}
-          </div>
         </article>
       </div>
     </section>
@@ -111,7 +221,7 @@ const membershipPerks=s.membershipPerks || [];
 
   {blocks.map((block)=><SectionRenderer block={block} products={data.products} settings={s} />)}
 
-  <script is:inline define:vars={{ badgeLogos, membershipPerks, collectionPoints:data.collectionPoints, bankAccountName:s.bankAccountName, bankSortCode:s.bankSortCode, bankAccountNumber:s.bankAccountNumber }}>
+  <script is:inline define:vars={{ badgeLogos, membershipPerks, collectionPoints:data.collectionPoints, bankAccountName:s.bankAccountName, bankSortCode:s.bankSortCode, bankAccountNumber:s.bankAccountNumber, copy }}>
     const TOKEN_KEY='rooted-commons-order-token-v1';
     const params=new URLSearchParams(location.search);
     const urlToken=params.get('token');
@@ -119,12 +229,16 @@ const membershipPerks=s.membershipPerks || [];
     const token=urlToken||localStorage.getItem(TOKEN_KEY)||'';
     const verifiedNotice=document.querySelector('#dashboard-email-verified');
     if(params.get('verified')==='1'&&verifiedNotice)verifiedNotice.hidden=false;
+
     const money=new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'});
     const formatDate=value=>value?new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',year:'numeric'}).format(new Date(value)):'';
+    const interpolate=(template,values={})=>String(template||'').replace(/\{(\w+)\}/g,(_,key)=>values[key]??'');
+
     const pointSelect=document.querySelector('#dashboard-point-select');
     const pointForm=document.querySelector('#dashboard-point-form');
     const daySelect=document.querySelector('#dashboard-day-select');
     const pointMessage=document.querySelector('#dashboard-point-message');
+
     const populatePointSelect=(selectedId)=>{
       pointSelect.innerHTML=(collectionPoints||[]).map(point=>`<option value="${point.id}" ${Number(point.id)===Number(selectedId)?'selected':''}>${point.name}</option>`).join('');
     };
@@ -137,62 +251,67 @@ const membershipPerks=s.membershipPerks || [];
     pointSelect.addEventListener('change',()=>populateDaySelect(''));
     document.querySelector('#dashboard-change-point').addEventListener('click',()=>{pointForm.hidden=false;pointMessage.textContent='';pointSelect.focus();});
     document.querySelector('#dashboard-cancel-point').addEventListener('click',()=>{pointForm.hidden=true;pointMessage.textContent='';});
+
     pointForm.addEventListener('submit',async event=>{
       event.preventDefault();
       const button=pointForm.querySelector('button[type="submit"]');
       button.disabled=true;
-      pointMessage.textContent='Saving…';
+      pointMessage.textContent=copy.collectionSaving;
       const response=await fetch('/api/member',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({token,collectionPointId:Number(pointSelect.value),preferredCollectionDay:daySelect.value})});
       const payload=await response.json();
       if(response.ok&&payload.ok){
         const point=payload.collectionPoint||{};
-        document.querySelector('#dashboard-point-name').textContent=point.name||'Not selected';
+        document.querySelector('#dashboard-point-name').textContent=point.name||copy.collectionNotSelected;
         const slot=(point.collectionSlots||[]).find(item=>item.day===payload.preferredCollectionDay)||(point.collectionSlots||[])[0];
         document.querySelector('#dashboard-point-time').textContent=slot?`${slot.day} · ${slot.time}`:(point.collectionTime||'');
-        document.querySelector('#dashboard-point-preference').textContent=slot?'Your preferred collection slot. Checkout will offer earlier options if your basket contains fresher items.':'';
         document.querySelector('#dashboard-point-address').textContent=point.address||'';
         const pointImage=document.querySelector('#dashboard-point-image');
-        if(point.image){pointImage.src=point.image;pointImage.alt=point.name?`${point.name} collection point`:'';pointImage.hidden=false;}else{pointImage.hidden=true;pointImage.removeAttribute('src');}
-        document.querySelector('#dashboard-point-deadline').textContent='Orders close Wednesday 18.00.';
+        if(point.image){pointImage.src=point.image;pointImage.alt=point.name?interpolate(copy.collectionImageAlt,{name:point.name}):'';pointImage.hidden=false;}else{pointImage.hidden=true;pointImage.removeAttribute('src');}
         const pointLink=document.querySelector('#dashboard-point-link');
         pointLink.hidden=!point.link;
         if(point.link)pointLink.href=point.link;
-        pointMessage.textContent='Collection point updated.';
+        pointMessage.textContent=copy.collectionUpdated;
         setTimeout(()=>{pointForm.hidden=true;pointMessage.textContent='';},900);
-      }else pointMessage.textContent=payload.message||'The collection point could not be updated.';
+      }else pointMessage.textContent=payload.message||copy.collectionFailed;
       button.disabled=false;
     });
-    const formatLocalDeadline=value=>{
-      if(!value)return '';
-      const raw=String(value).trim();
-      const match=raw.match(/^(?:\d{4}-\d{2}-\d{2}[T\s])?(\d{1,2})[:.](\d{2})/);
-      if(!match)return raw;
-      const hour=Number(match[1]);
-      const minute=match[2];
-      const suffix=hour>=12?'pm':'am';
-      const displayHour=hour%12||12;
-      return `${displayHour}:${minute}${suffix}`;
-    };
+
     const relativeDate=value=>{
-      if(!value)return 'No previous website order';
+      if(!value)return copy.lastOrderNone;
       const days=Math.max(0,Math.floor((Date.now()-new Date(value).getTime())/86400000));
-      if(days===0)return 'You last ordered today';
-      if(days===1)return 'You last ordered yesterday';
-      if(days<14)return `You last ordered ${days} days ago`;
+      if(days===0)return copy.lastOrderToday;
+      if(days===1)return copy.lastOrderYesterday;
+      if(days<14)return interpolate(copy.lastOrderDays,{days});
       const weeks=Math.floor(days/7);
-      return `You last ordered ${weeks} week${weeks===1?'':'s'} ago`;
+      return interpolate(copy.lastOrderWeeks,{weeks,plural:weeks===1?'':'s'});
     };
-    const renderPerks=(weeks)=>{
-      const perks=(membershipPerks||[]).map(item=>({label:item.label,unlockWeeks:Number(item.unlockWeeks)||0})).filter(item=>item.label);
-      const unlocked=perks.filter(item=>weeks>=item.unlockWeeks);
-      const next=perks.find(item=>weeks<item.unlockWeeks);
+
+    const renderPerks=(weeks,isNew)=>{
       const container=document.querySelector('#dashboard-perks');
+      if(isNew){container.hidden=true;return;}
+      const perks=(membershipPerks||[])
+        .map(item=>({label:item.label,unlockWeeks:Number(item.unlockWeeks)||0}))
+        .filter(item=>item.label)
+        .sort((a,b)=>a.unlockWeeks-b.unlockWeeks);
       if(!perks.length){container.hidden=true;return;}
-      container.innerHTML=`<h3>You’ve unlocked…</h3>${unlocked.length?`<ul>${unlocked.map(item=>`<li>${item.label}</li>`).join('')}</ul>`:'<p>Your first member perk is on its way.</p>'}${next?`<p class="next-perk"><strong>Next:</strong> ${next.label} — unlocks in ${next.unlockWeeks-weeks} week${next.unlockWeeks-weeks===1?'':'s'}.</p>`:''}`;
+      const unlocked=perks.filter(item=>weeks>=item.unlockWeeks);
+      const upcoming=perks.filter(item=>weeks<item.unlockWeeks);
+      const unlockedHtml=unlocked.length
+        ? `<h3>${copy.perksUnlocked}</h3><ul>${unlocked.map(item=>`<li>${item.label}</li>`).join('')}</ul>`
+        : '';
+      const upcomingHtml=upcoming.length
+        ? `<h3 class="dashboard-upcoming-perks-heading">${copy.perksUpcoming}</h3><ul class="dashboard-upcoming-perks">${upcoming.map(item=>{
+            const remaining=item.unlockWeeks-weeks;
+            return `<li><span>${item.label}</span><strong>${interpolate(copy.perkInWeeks,{weeks:remaining,plural:remaining===1?'':'s'})}</strong></li>`;
+          }).join('')}</ul>`
+        : '';
+      container.innerHTML=unlockedHtml+upcomingHtml;
+      container.hidden=false;
     };
+
     const renderTopups=payments=>{
       const container=document.querySelector('#dashboard-topups');
-      if(!payments?.length)return;
+      if(!payments?.length){container.innerHTML=`<p class="small-print">${copy.noPayments}</p>`;return;}
       container.innerHTML=payments.map(item=>`<div class="topup-line"><span>${formatDate(item.date)}${item.type?` · ${item.type}`:''}</span><strong>+${money.format(Math.abs(item.amount||0))}</strong></div>`).join('');
     };
 
@@ -202,70 +321,114 @@ const membershipPerks=s.membershipPerks || [];
       container.innerHTML=activity.map(item=>{
         const amount=Number(item.amount)||0;
         const sign=amount>0?'+':'';
-        return `<div class="activity-line"><span>${formatDate(item.date)}<small>${item.type||item.notes||'Account activity'}</small></span><strong class="${amount<0?'amount-negative':'amount-positive'}">${sign}${money.format(amount)}</strong></div>`;
+        return `<div class="activity-line"><span>${formatDate(item.date)}<small>${item.type||item.notes||''}</small></span><strong class="${amount<0?'amount-negative':'amount-positive'}">${sign}${money.format(amount)}</strong></div>`;
       }).join('');
     };
+
+    document.querySelectorAll('input[name="dashboard-payment-method"]').forEach(input=>input.addEventListener('change',()=>{
+      const bank=input.value==='bank'&&input.checked;
+      const online=input.value==='online'&&input.checked;
+      if(bank){document.querySelector('#dashboard-payment-bank').hidden=false;document.querySelector('#dashboard-payment-online').hidden=true;}
+      if(online){document.querySelector('#dashboard-payment-bank').hidden=true;document.querySelector('#dashboard-payment-online').hidden=false;}
+    }));
+
     async function load(){
       if(!token){location.href='/orders/';return;}
       const response=await fetch(`/api/member?token=${encodeURIComponent(token)}`);
-      if(!response.ok){document.querySelector('#dashboard-loading').innerHTML='<h2>This secure link is no longer valid</h2><p>Request a new link from checkout or use the latest weekly email.</p>';return;}
+      if(!response.ok){
+        document.querySelector('#dashboard-loading').innerHTML=`<h2>${copy.invalidHeading}</h2><p>${copy.invalidBody}</p>`;
+        return;
+      }
       const {member}=await response.json();
+      const totalPayments=Number(member.account?.totalPaymentsReceived)||0;
+      const isNew=totalPayments<=0;
+
       document.querySelector('#dashboard-loading').hidden=true;
       document.querySelector('#dashboard-content').hidden=false;
-      document.querySelector('#dashboard-greeting').textContent=`Hi ${member.firstName||'there'}`;
+      document.querySelector('#dashboard-greeting').textContent=interpolate(isNew?copy.welcome:copy.greeting,{name:member.firstName||'there'});
       document.querySelector('#dashboard-credit-value').textContent=money.format(member.credit||0);
-      document.querySelector('#dashboard-shop-link').href=`/orders/?token=${encodeURIComponent(token)}`;
+
       const point=member.collectionPoint||{};
       populatePointSelect(point.id);
       populateDaySelect(member.preferredCollectionDay||'Thursday');
-      document.querySelector('#dashboard-point-name').textContent=point.name||'Choose at checkout';
+      document.querySelector('#dashboard-point-name').textContent=point.name||copy.collectionNotSelected;
       const preferredSlot=(point.collectionSlots||[]).find(item=>item.day===member.preferredCollectionDay)||(point.collectionSlots||[])[0];
       document.querySelector('#dashboard-point-time').textContent=preferredSlot?`${preferredSlot.day} · ${preferredSlot.time}`:(point.collectionTime||'');
-      document.querySelector('#dashboard-point-preference').textContent=preferredSlot?'Your preferred collection slot. Checkout confirms what is available for each basket.':'';
       document.querySelector('#dashboard-point-address').textContent=point.address||'';
       const pointImage=document.querySelector('#dashboard-point-image');
-      if(point.image){pointImage.src=point.image;pointImage.alt=point.name?`${point.name} collection point`:'';pointImage.hidden=false;}else{pointImage.hidden=true;pointImage.removeAttribute('src');}
-      document.querySelector('#dashboard-point-deadline').textContent='Orders close Wednesday 18.00.';
+      if(point.image){pointImage.src=point.image;pointImage.alt=point.name?interpolate(copy.collectionImageAlt,{name:point.name}):'';pointImage.hidden=false;}else{pointImage.hidden=true;pointImage.removeAttribute('src');}
       const pointLink=document.querySelector('#dashboard-point-link');
-      if(point.link){pointLink.href=point.link;pointLink.hidden=false;}
-      document.querySelector('#dashboard-founder-level').textContent=member.founderBadge||'Rooted Commons member';
-      const weeks=Number(member.membershipWeeks)||0;
-      document.querySelector('#dashboard-member-weeks').textContent=member.membershipWeeks!=null?`${weeks} week${weeks===1?'':'s'}`:(member.memberSince?'Member':'New member');
-      document.querySelector('#dashboard-last-order').textContent=member.lastOrder?`${relativeDate(member.lastOrder.submittedAt)} (${money.format(member.lastOrder.total||0)}).`:relativeDate('');
-      renderPerks(weeks);
+      if(point.link){pointLink.href=point.link;pointLink.hidden=false;}else pointLink.hidden=true;
+
+      document.querySelector('#dashboard-founder-level').textContent=member.founderBadge||copy.defaultMemberLevel;
       const logo=badgeLogos[member.founderBadge];
-      if(logo)document.querySelector('#dashboard-badge').innerHTML=`<img src="${logo}" alt="${member.founderBadge}">`;
+      const badge=document.querySelector('#dashboard-badge');
+      if(logo){badge.innerHTML=`<img src="${logo}" alt="${member.founderBadge}">`;badge.hidden=false;}else{badge.innerHTML='';badge.hidden=true;}
+
+      const weeks=Number(member.membershipWeeks)||0;
+      document.querySelector('#dashboard-member-weeks').textContent=member.membershipWeeks!=null?`${weeks} ${weeks===1?copy.weekUnit:copy.weeksUnit}`:(member.memberSince?copy.weekUnit:copy.weeksUnit);
+      const totalImpact=Number(member.account?.totalOrderSpend)||0;
+      document.querySelector('#dashboard-impact').textContent=money.format(totalImpact).replace('.00','');
+
+      const lastOrder=document.querySelector('#dashboard-last-order');
+      if(isNew){lastOrder.hidden=true;}else{
+        lastOrder.textContent=member.lastOrder?`${relativeDate(member.lastOrder.submittedAt)} (${money.format(member.lastOrder.total||0)}).`:relativeDate('');
+        lastOrder.hidden=false;
+      }
+      renderPerks(weeks,isNew);
+
+      const shop=document.querySelector('#dashboard-shop-link');
+      shop.href=`/orders/?token=${encodeURIComponent(token)}`;
+      if(member.currentOrder){
+        const status=String(member.currentOrder.status||'').toLowerCase();
+        shop.textContent=status==='processing'?copy.currentReserved:copy.currentConfirmed;
+        shop.dataset.currentOrderId=String(member.currentOrder.id||'');
+        shop.dataset.currentOrderStatus=status;
+      }else{
+        shop.textContent=copy.browseMarket;
+        shop.removeAttribute('data-current-order-id');
+        shop.removeAttribute('data-current-order-status');
+      }
 
       const commitment=Number(member.weeklyCommitment)||0;
-      const average=Number(member.account?.averageWeeklySpend)||0;
-      const totalImpact=Number(member.account?.totalOrderSpend)||0;
+      const monthly=Number(member.monthlyEquivalent)||0;
+      const frequency=String(member.contributionFrequency||'Weekly');
       document.querySelector('#dashboard-commitment').textContent=money.format(commitment).replace('.00','');
-      document.querySelector('#dashboard-monthly-equivalent').textContent=commitment>0?`Equivalent to ${money.format(commitment*52/12)} per month, paid by regular BACS standing order.`:'';
-      document.querySelector('#dashboard-regular-bank-name').textContent=bankAccountName||'Roots to Fruits CIC';
-      document.querySelector('#dashboard-regular-sort-code').textContent=bankSortCode||'Contact us for bank details';
+      const actualAmount=frequency==='Monthly'?(monthly||commitment*52/12):commitment;
+      const frequencyLabel=frequency==='Monthly'?copy.perMonth:copy.perWeek;
+      document.querySelector('#dashboard-monthly-equivalent').textContent=actualAmount>0?interpolate(copy.weeklyEquivalent,{amount:money.format(actualAmount),frequency:frequencyLabel}):'';
+
+      document.querySelector('#dashboard-regular-bank-name').textContent=bankAccountName||'—';
+      document.querySelector('#dashboard-regular-sort-code').textContent=bankSortCode||'—';
       document.querySelector('#dashboard-regular-account-number').textContent=bankAccountNumber||'—';
       document.querySelector('#dashboard-regular-payment-reference').textContent=member.paymentReference||`RC-${member.id}`;
-      document.querySelector('#dashboard-average-spend').textContent=money.format(average);
-      document.querySelector('#dashboard-impact').textContent=money.format(totalImpact).replace('.00','');
-      renderTopups(member.account?.payments||[]);
-      renderActivity(member.account?.activity||[]);
+      document.querySelector('#dashboard-regular-payment-heading').textContent=isNew?copy.setupRegularPaymentHeading:copy.regularPaymentHeading;
+
+      document.querySelector('#dashboard-topup-bank-name').textContent=bankAccountName||'—';
+      document.querySelector('#dashboard-topup-sort-code').textContent=bankSortCode||'—';
+      document.querySelector('#dashboard-topup-account-number').textContent=bankAccountNumber||'—';
+      document.querySelector('#dashboard-topup-reference').textContent=member.paymentReference||`RC-${member.id}`;
+
+      const existingDetail=document.querySelector('#dashboard-existing-commitment-detail');
+      existingDetail.hidden=isNew;
+      if(!isNew){
+        const average=Number(member.account?.averageWeeklySpend)||0;
+        document.querySelector('#dashboard-average-spend').textContent=money.format(average);
+        renderTopups(member.account?.payments||[]);
+        renderActivity(member.account?.activity||[]);
+        const threshold=Math.max(2,commitment*.15);
+        if(commitment>0&&average>=commitment+threshold){
+          document.querySelector('#dashboard-increase-prompt').hidden=false;
+          document.querySelector('#dashboard-increase-copy').textContent=interpolate(copy.increasePrompt,{average:money.format(average),difference:money.format(average-commitment)});
+        }
+      }
+
       const credit=Number(member.credit)||0;
       const paymentPrompt=document.querySelector('#dashboard-payment-prompt');
-      const mollie=document.querySelector('#dashboard-mollie-link');
       if(credit<0){
-        paymentPrompt.innerHTML=`<strong>${money.format(Math.abs(credit))} top-up needed</strong><span>Your balance must be back to £0.00 or above before collection.</span>`;
+        document.querySelector('#dashboard-topup-needed').textContent=interpolate(copy.topupNeeded,{amount:money.format(Math.abs(credit))});
         paymentPrompt.hidden=false;
-      }
-      if(member.molliePaymentUrl && credit<0){
-        mollie.href=member.molliePaymentUrl;
-        mollie.textContent=credit<0?`Pay ${money.format(Math.abs(credit))} securely`:'Top up member credit';
-        mollie.hidden=false;
-      } else { mollie.hidden=true; }
-      const threshold=Math.max(2,commitment*.15);
-      if(commitment>0&&average>=commitment+threshold){
-        document.querySelector('#dashboard-increase-prompt').hidden=false;
-        document.querySelector('#dashboard-increase-copy').textContent=`Your recent orders average ${money.format(average)} a week, around ${money.format(average-commitment)} more than your current commitment.`;
-      }
+      }else paymentPrompt.hidden=true;
     }
     load();
   </script>

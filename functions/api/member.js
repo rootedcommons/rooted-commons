@@ -1,4 +1,4 @@
-import { envConfig, json, listRows, updateRow, tokenValid, publicMember, publicCollectionPoint, linkedIds, linkedValues, unwrap, number, truthy } from '../_baserow.js';
+import { envConfig, json, listRows, updateRow, tokenValid, publicMember, publicCollectionPoint, linkedIds, linkedValues, unwrap, number, truthy, ukMarketCycle } from '../_baserow.js';
 
 function belongsToMember(row, member) {
   const memberId = Number(member.id);
@@ -38,14 +38,16 @@ function summariseTransactions(rows, member) {
     .sort((a,b) => new Date(b.date || 0) - new Date(a.date || 0));
 
   const included = mine.filter(item => item.includedInCredit);
-  const payments = included.filter(item => item.amount > 0).slice(0,4);
+  const allPayments = included.filter(item => item.amount > 0 && !/refund|reversal/i.test(item.type));
+  const payments = allPayments.slice(0,4);
+  const totalPaymentsReceived = allPayments.reduce((sum,item)=>sum+Math.abs(item.amount),0);
   const recentOrders = included.filter(item => /order/i.test(item.type) && !/reversal|refund/i.test(item.type));
   const eightWeekSpend = recentOrders
     .filter(item => new Date(item.date || 0).getTime() >= eightWeeksAgo)
     .reduce((sum,item) => sum + Math.abs(item.amount), 0);
   const averageWeeklySpend = eightWeekSpend / 8;
   const totalOrderSpend = recentOrders.reduce((sum,item) => sum + Math.abs(item.amount), 0);
-  return { payments, activity: included.slice(0,20), averageWeeklySpend, totalOrderSpend };
+  return { payments, activity: included.slice(0,20), averageWeeklySpend, totalOrderSpend, totalPaymentsReceived };
 }
 
 export async function onRequestGet({ request, env }) {
@@ -67,6 +69,11 @@ export async function onRequestGet({ request, env }) {
       .filter(order => orderBelongsToMember(order, member) && String(order.Status || '') !== 'Cancelled')
       .sort((a,b) => new Date(b['Submitted at'] || 0) - new Date(a['Submitted at'] || 0));
     const account = summariseTransactions(transactions, member);
+    const currentWeek = ukMarketCycle().orderWeek;
+    const currentOrder = memberOrders.find(order =>
+      String(unwrap(order['Order week'])) === currentWeek &&
+      ['Processing','Confirmed'].includes(String(unwrap(order.Status)))
+    ) || null;
     if (!account.averageWeeklySpend && memberOrders.length) {
       const eightWeeksAgo = Date.now() - (8 * 7 * 86400000);
       account.averageWeeklySpend = memberOrders
@@ -79,6 +86,7 @@ export async function onRequestGet({ request, env }) {
     return json({authenticated:true, member:publicMember(member, {
       collectionPoint: publicCollectionPoint(point),
       lastOrder: memberOrders[0] || null,
+      currentOrder,
       account
     })});
   } catch (error) {

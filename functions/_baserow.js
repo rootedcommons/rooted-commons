@@ -116,16 +116,29 @@ export function publicCollectionPoint(point) {
   };
 }
 
-export function publicMember(member, { collectionPoint = null, lastOrder = null, account = null } = {}) {
+export function publicMember(member, { collectionPoint = null, lastOrder = null, currentOrder = null, account = null } = {}) {
   const memberSince = member['Member since'] || member['Joined date'] || member['Join date'] || '';
-  const founderBadge = unwrap(member['Founder badge'] || member['Founder level'] || member['Membership badge']);
+  const memberId = Number(member.id);
+  const storedFounderBadge = unwrap(member['Founder badge'] || member['Founder level'] || member['Membership badge']);
+  const automaticFounderBadge = memberId <= 10 ? 'Founder 10' : memberId <= 25 ? 'Founder 25' : memberId <= 50 ? 'Founder 50' : '';
+  const founderBadge = storedFounderBadge || automaticFounderBadge;
   const sinceTime = memberSince ? new Date(memberSince).getTime() : NaN;
   const membershipWeeks = Number.isFinite(sinceTime) ? Math.max(0, Math.floor((Date.now() - sinceTime) / 604800000)) : null;
+  const orderSummary = row => row ? {
+    id: Number(row.id),
+    orderNumber: unwrap(row['Order number']),
+    submittedAt: row['Submitted at'] || '',
+    total: number(row['Order total']),
+    status: unwrap(row.Status),
+    orderWeek: unwrap(row['Order week'])
+  } : null;
   return {
-    id: Number(member.id),
+    id: memberId,
     firstName: unwrap(member['First name']),
     credit: number(member['Current credit']),
     weeklyCommitment: number(member['Weekly commitment']),
+    monthlyEquivalent: number(member['Monthly equivalent']),
+    contributionFrequency: unwrap(member['Contribution frequency']) || 'Weekly',
     paymentReference: unwrap(member['Member number']) || `RC-${member.id}`,
     preferredCollectionDay: unwrap(member['Preferred collection day']) || 'Thursday',
     molliePaymentUrl: unwrap(member['Mollie payment URL'] || member['Online payment URL']),
@@ -136,13 +149,9 @@ export function publicMember(member, { collectionPoint = null, lastOrder = null,
     founderBadge,
     memberSince: memberSince || '',
     membershipWeeks,
-    account: account || { payments: [], averageWeeklySpend: 0, totalOrderSpend: 0 },
-    lastOrder: lastOrder ? {
-      orderNumber: unwrap(lastOrder['Order number']),
-      submittedAt: lastOrder['Submitted at'] || '',
-      total: number(lastOrder['Order total']),
-      status: unwrap(lastOrder.Status)
-    } : null
+    account: account || { payments: [], averageWeeklySpend: 0, totalOrderSpend: 0, totalPaymentsReceived: 0 },
+    lastOrder: orderSummary(lastOrder),
+    currentOrder: orderSummary(currentOrder)
   };
 }
 

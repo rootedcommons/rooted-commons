@@ -1,3 +1,15 @@
+# v2.9.5
+- Removed the separate dashboard welcome/credit card and consolidated greeting, founder badge, membership identity and Member Credit into the main Membership card.
+- New members with no positive account payments see `Welcome {name}` and do not see previous-order, perks, average-order, payment-history or account-activity sections.
+- Negative credit now opens a highlighted payment chooser spanning the Membership card, with BACS as the recommended option and placeholders for future Card / Open Banking checkout.
+- The market button is positioned below membership impact and changes wording when a current Processing/Confirmed weekly order exists.
+- Weekly commitment is now card 2; its regular-payment heading changes to `Set up your regular payment` for new members.
+- Collection point is card 3 and no longer shows the preferred-slot explainer or Wednesday order-close line.
+- Founder badge display is automatically derived from member row ID (Founder 10 / Founder 25 / Founder 50) when no explicit badge is stored.
+- Existing members now see every upcoming membership perk with a weeks-remaining countdown, not only the next perk.
+- Added current-week order status and total positive payments to the member API response.
+- Expanded Dashboard Interface Content rows so all new dashboard copy is editable.
+
 # v2.9.4
 - Changed `Member number` to the Baserow formula `concat('RC-', row_id())`; signup no longer performs a second write or rollback.
 - Reordered signup collection controls so Collection point is chosen before Preferred collection day; days are then filtered to that point's actual collection slots.
