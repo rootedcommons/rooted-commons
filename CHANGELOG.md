@@ -1,3 +1,17 @@
+# Changelog
+
+## v2.9.15 — stats campaign presentation
+
+- Added `{{total_commitments}}` public stats token, calculated from active members' `Weekly commitment` values.
+- Added optional `Group heading` support for grouped Cards, Stats and Gallery sections; blank means no visible group heading and the internal group key is never displayed.
+- Styled grouped Stats as one rounded highlight panel, matching the signup/dashboard visual language.
+- Added reusable CTA countdown support through optional Baserow `Countdown date` and `Countdown label` fields. The countdown renders days remaining, then `Launch day`, then `Now launched`.
+- Kept the existing Baserow import/specification folders unchanged pending the v3.0 database rebuild.
+
+# Documentation packaging note
+
+The restructured v2.9.14 download contains no runtime code changes. Historical setup/design notes were consolidated into five current documentation files; version history remains below. Future releases should update the canonical documents in place rather than adding version-specific setup notes.
+
 # v2.9.14
 - Added statutory cancellation-refund timing to Terms of Sale.
 - Removed duplicated Member Credit/top-up mechanics from Terms of Sale and cross-referenced Membership Terms.

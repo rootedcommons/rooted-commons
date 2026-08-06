@@ -9,7 +9,7 @@ const background = `background-${section.backgroundStyle}`;
 const spaces = `space-above-${section.spaceAbove} space-below-${section.spaceBelow}`;
 const alignment = `align-${section.alignment}`;
 const button = section.buttonVisible && section.buttonText && section.buttonUrl;
-const groupTitle = section.eyebrow || (block.key ? (() => { const label = block.key.replace(/[-_]+/g, ' ').trim(); return label ? label.charAt(0).toUpperCase() + label.slice(1) : ''; })() : '');
+const groupTitle = block.items.find((item) => item.groupHeading)?.groupHeading || '';
 const inferredGridCategory = section.gridCategory || (section.page === 'cupboard-staples' ? 'Cupboard Staples' : section.page === 'fresh-produce' ? 'Fresh Produce' : section.page === 'refills' ? 'Refills' : '');
 ---
 {type === 'text' && (
@@ -124,6 +124,12 @@ const inferredGridCategory = section.gridCategory || (section.page === 'cupboard
         {section.heading && <h2 class={`size-${section.headingSize}`}>{section.heading}</h2>}
         {section.subheading && <p class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
         {section.body && <FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} />}
+        {section.countdownDate && (
+          <p class="campaign-countdown" data-countdown-date={section.countdownDate} data-countdown-label={section.countdownLabel || 'to launch'}>
+            <strong class="campaign-countdown-value"></strong>
+            <span class="campaign-countdown-label"></span>
+          </p>
+        )}
         {button && <a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
       </div>
     </div>
@@ -145,3 +151,39 @@ const inferredGridCategory = section.gridCategory || (section.page === 'cupboard
     </div>
   </section>
 )}
+
+
+<script>
+  const updateCampaignCountdowns = () => {
+    document.querySelectorAll('[data-countdown-date]').forEach((element) => {
+      const dateValue = element.getAttribute('data-countdown-date') || '';
+      const match = dateValue.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (!match) return;
+
+      const target = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      target.setHours(0, 0, 0, 0);
+      const days = Math.ceil((target.getTime() - today.getTime()) / 86400000);
+      const value = element.querySelector('.campaign-countdown-value');
+      const label = element.querySelector('.campaign-countdown-label');
+      if (!value || !label) return;
+
+      if (days > 1) {
+        value.textContent = `${days} days`;
+        label.textContent = element.getAttribute('data-countdown-label') || 'to launch';
+      } else if (days === 1) {
+        value.textContent = '1 day';
+        label.textContent = element.getAttribute('data-countdown-label') || 'to launch';
+      } else if (days === 0) {
+        value.textContent = 'Launch day';
+        label.textContent = '';
+      } else {
+        value.textContent = 'Now launched';
+        label.textContent = '';
+      }
+    });
+  };
+  updateCampaignCountdowns();
+  document.addEventListener('astro:page-load', updateCampaignCountdowns);
+</script>

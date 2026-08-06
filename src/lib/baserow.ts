@@ -258,10 +258,14 @@ export async function getSiteData() {
     .filter((row: any) => ['order-charge', 'order-charges'].includes(normalized(choice(row, 'Type'), '')))
     .reduce((sum: number, row: any) => sum + numeric(row, 'Amount', 0), 0));
   const totalMemberSpending = numeric(validSettingsRow, 'Historic total member spending', 0) + orderChargeTotal;
+  const totalCommitments = (memberRows || [])
+    .filter((row: any) => boolean(row, 'Active', true))
+    .reduce((sum: number, row: any) => sum + numeric(row, 'Weekly commitment', 0), 0);
   const statTokens: Record<string, string> = {
     '{{members}}': totalMembers.toLocaleString('en-GB'),
     '{{network_partners}}': totalNetworkPartners.toLocaleString('en-GB'),
-    '{{member_spending}}': totalMemberSpending.toLocaleString('en-GB', { maximumFractionDigits: 0 })
+    '{{member_spending}}': totalMemberSpending.toLocaleString('en-GB', { maximumFractionDigits: 0 }),
+    '{{total_commitments}}': totalCommitments.toLocaleString('en-GB', { maximumFractionDigits: 2 })
   };
   const resolveStatTokens = (value: string) => Object.entries(statTokens)
     .reduce((result, [token, replacement]) => result.replaceAll(token, replacement), value || '');
@@ -309,6 +313,9 @@ export async function getSiteData() {
       imagePosition: normalized(choice(row, 'Image position'), 'right'),
       buttonVisible: boolean(row, 'Button visible', Boolean(text(row, 'Button text'))),
       groupKey,
+      groupHeading: text(row, 'Group heading'),
+      countdownDate: text(row, 'Countdown date'),
+      countdownLabel: text(row, 'Countdown label'),
       imageCaption: text(row, 'Image caption')
     };
   }).filter((section: any) => section.page && section.visible).sort((a: any, b: any) => a.order - b.order);
