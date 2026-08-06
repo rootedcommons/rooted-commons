@@ -209,5 +209,7 @@ Grouped Cards, Stats and Gallery sections use `Group key` only as an internal gr
 
 Public Stats headings support `{{members}}`, `{{network_partners}}`, `{{member_spending}}` and `{{total_commitments}}`. `{{total_commitments}}` is the sum of `Weekly commitment` for active Members.
 
-A Call to action section can optionally show a live campaign countdown. Add `Countdown date` (date field) and `Countdown label` (single-line text) to Sections. A date such as `2026-09-10` plus label `to our first market` renders `35 days to our first market`, changing automatically in the visitor's browser. On the date it reads `Launch day`; after the date it reads `Now launched`.
+A `Campaign` section is intended for launch/member campaigns. It uses a single text column, then renders up to three images (`Image`, `Image 2`, `Image 3`) in one responsive row where space allows, followed by optional countdown timing and the CTA button. Add `Campaign` to the **Section type** single-select options in Baserow.
+
+Countdown fields are `Countdown date` (date), `Pre-countdown text` (single-line text) and `Post-countdown text` (single-line text). For example, pre-text `First online market: Thursday 3rd – Wednesday 9th September`, date `2026-09-03`, and post-text `to go` renders the market line followed by `28 days to go`. The day count updates in the visitor's browser and disappears after the target date. Existing Call to action sections can use the same countdown fields.
 

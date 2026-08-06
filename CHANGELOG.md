@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.9.18
+
+- Added `*italic*` formatting support to Baserow rich text alongside existing `**bold**` and Markdown links.
+
+## 2.9.17
+
+- Fixed Baserow rich-text rendering so `**bold text**` in section/card bodies renders as bold instead of showing the Markdown asterisks.
+
+## v2.9.16 — dedicated campaign section
+
+- Added `Campaign` as a dedicated Sections renderer type for time-limited membership and launch campaigns.
+- Campaign sections use one text column and can display up to three images in a responsive row after the body copy.
+- Replaced the old countdown label with optional `Pre-countdown text` and `Post-countdown text` fields while retaining `Countdown date`.
+- Campaign timing now renders the pre-countdown line above the live day count and leaves a deliberate gap before the CTA button.
+- Existing Call to action sections remain supported and can use the same new countdown text fields.
+
 ## v2.9.15 — stats campaign presentation
 
 - Added `{{total_commitments}}` public stats token, calculated from active members' `Weekly commitment` values.

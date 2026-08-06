@@ -315,7 +315,8 @@ export async function getSiteData() {
       groupKey,
       groupHeading: text(row, 'Group heading'),
       countdownDate: text(row, 'Countdown date'),
-      countdownLabel: text(row, 'Countdown label'),
+      preCountdownText: text(row, 'Pre-countdown text'),
+      postCountdownText: text(row, 'Post-countdown text'),
       imageCaption: text(row, 'Image caption')
     };
   }).filter((section: any) => section.page && section.visible).sort((a: any, b: any) => a.order - b.order);

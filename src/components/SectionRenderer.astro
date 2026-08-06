@@ -125,13 +125,55 @@ const inferredGridCategory = section.gridCategory || (section.page === 'cupboard
         {section.subheading && <p class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
         {section.body && <FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} />}
         {section.countdownDate && (
-          <p class="campaign-countdown" data-countdown-date={section.countdownDate} data-countdown-label={section.countdownLabel || 'to launch'}>
-            <strong class="campaign-countdown-value"></strong>
-            <span class="campaign-countdown-label"></span>
-          </p>
+          <div class="campaign-timing">
+            {section.preCountdownText && <p class="campaign-pre-countdown">{section.preCountdownText}</p>}
+            <p class="campaign-countdown" data-countdown-date={section.countdownDate} data-countdown-post={section.postCountdownText || ''}>
+              <strong class="campaign-countdown-value"></strong>
+              <span class="campaign-countdown-post"></span>
+            </p>
+          </div>
         )}
         {button && <a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
       </div>
+    </div>
+  </section>
+)}
+
+{type === 'campaign' && (
+  <section class={`content-section campaign-section ${background} ${spaces} ${alignment}`}>
+    <div class="section-inner campaign-inner">
+      <div class="campaign-copy">
+        {section.eyebrow && <p class="eyebrow">{section.eyebrow}</p>}
+        {section.heading && <h2 class={`size-${section.headingSize}`}>{section.heading}</h2>}
+        {section.subheading && <p class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
+        {section.body && <FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} />}
+      </div>
+
+      {(section.image || section.image2 || section.image3) && (
+        <div class="campaign-images">
+          {[
+            { src: section.image, alt: section.imageAlt },
+            { src: section.image2, alt: section.image2Alt },
+            { src: section.image3, alt: section.image3Alt }
+          ].filter((image) => image.src).map((image) => (
+            <figure class={`campaign-image fit-${section.imageFit}`}>
+              <img src={image.src} alt={image.alt || ''} loading="lazy" />
+            </figure>
+          ))}
+        </div>
+      )}
+
+      {section.countdownDate && (
+        <div class="campaign-timing">
+          {section.preCountdownText && <p class="campaign-pre-countdown">{section.preCountdownText}</p>}
+          <p class="campaign-countdown" data-countdown-date={section.countdownDate} data-countdown-post={section.postCountdownText || ''}>
+            <strong class="campaign-countdown-value"></strong>
+            <span class="campaign-countdown-post"></span>
+          </p>
+        </div>
+      )}
+
+      {button && <a class={`button campaign-button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
     </div>
   </section>
 )}
@@ -166,21 +208,22 @@ const inferredGridCategory = section.gridCategory || (section.page === 'cupboard
       target.setHours(0, 0, 0, 0);
       const days = Math.ceil((target.getTime() - today.getTime()) / 86400000);
       const value = element.querySelector('.campaign-countdown-value');
-      const label = element.querySelector('.campaign-countdown-label');
-      if (!value || !label) return;
+      const post = element.querySelector('.campaign-countdown-post');
+      if (!value || !post) return;
 
       if (days > 1) {
         value.textContent = `${days} days`;
-        label.textContent = element.getAttribute('data-countdown-label') || 'to launch';
+        post.textContent = element.getAttribute('data-countdown-post') || '';
       } else if (days === 1) {
         value.textContent = '1 day';
-        label.textContent = element.getAttribute('data-countdown-label') || 'to launch';
+        post.textContent = element.getAttribute('data-countdown-post') || '';
       } else if (days === 0) {
-        value.textContent = 'Launch day';
-        label.textContent = '';
+        value.textContent = 'Today';
+        post.textContent = '';
       } else {
-        value.textContent = 'Now launched';
-        label.textContent = '';
+        value.textContent = '';
+        post.textContent = '';
+        element.setAttribute('hidden', '');
       }
     });
   };

@@ -19,23 +19,47 @@ const safeHref = (href) => {
 const parseInline = (line) => {
   const source = String(line ?? '');
   const parts = [];
-  const pattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+  // Support the small Markdown subset used by Baserow content: links, **bold**, and *italics*.
+  // Bold is matched before italics so **text** is not split into italic markers.
+  const pattern = /\[([^\]]+)\]\(([^)]+)\)|\*\*([^*]+)\*\*|(?<!\*)\*([^*\n]+)\*(?!\*)/g;
   let cursor = 0;
   let match;
 
   while ((match = pattern.exec(source)) !== null) {
     if (match.index > cursor) parts.push(source.slice(cursor, match.index));
-    parts.push({
-      type: 'link',
-      label: match[1],
-      href: safeHref(match[2])
-    });
+    if (match[1] !== undefined) {
+      parts.push({
+        type: 'link',
+        label: match[1],
+        href: safeHref(match[2])
+      });
+    } else if (match[3] !== undefined) {
+      parts.push({
+        type: 'bold',
+        label: match[3]
+      });
+    } else {
+      parts.push({
+        type: 'italic',
+        label: match[4]
+      });
+    }
     cursor = pattern.lastIndex;
   }
 
   if (cursor < source.length) parts.push(source.slice(cursor));
   return parts;
 };
+
+const renderInlinePart = (part) => typeof part === 'string'
+  ? part
+  : part.type === 'link'
+    ? <a href={part.href}>{part.label}</a>
+    : part.type === 'bold'
+      ? <strong>{part.label}</strong>
+      : part.type === 'italic'
+        ? <em>{part.label}</em>
+        : part.label;
 
 const blocks = rawBlocks.map((block) => {
   const lines = block.split('\n').map((line) => line.trimEnd());
@@ -63,9 +87,7 @@ const Tag = as;
       <ul>
         {block.items.map((item) => (
           <li>
-            {item.map((part) => typeof part === 'string'
-              ? part
-              : <a href={part.href}>{part.label}</a>)}
+            {item.map((part) => renderInlinePart(part))}
           </li>
         ))}
       </ul>
@@ -74,9 +96,7 @@ const Tag = as;
         {block.lines.map((line, lineIndex) => (
           <>
             {lineIndex > 0 && <br />}
-            {line.map((part) => typeof part === 'string'
-              ? part
-              : <a href={part.href}>{part.label}</a>)}
+            {line.map((part) => renderInlinePart(part))}
           </>
         ))}
       </p>
