@@ -1,6 +1,5 @@
 import { refreshedConnection } from './_oauth.js';
-
-const BANK_TRANSACTIONS_URL = 'https://api.xero.com/api.xro/2.0/BankTransactions';
+import { fetchRecentReceives } from './_payments.js';
 
 function escapeHtml(value = '') {
   return String(value).replace(/[&<>"']/g, char => ({
@@ -80,23 +79,6 @@ function findRcReferences(value, path = '$', found = []) {
     for (const [key, child] of Object.entries(value)) findRcReferences(child, `${path}.${key}`, found);
   }
   return found;
-}
-
-async function fetchRecentReceives(accessToken, tenantId) {
-  const url = new URL(BANK_TRANSACTIONS_URL);
-  url.searchParams.set('where', 'Type=="RECEIVE"');
-  url.searchParams.set('order', 'Date DESC');
-  url.searchParams.set('page', '1');
-  const response = await fetch(url, {
-    headers: {
-      authorization: `Bearer ${accessToken}`,
-      'xero-tenant-id': tenantId,
-      accept: 'application/json'
-    }
-  });
-  if (!response.ok) throw new Error(`Xero BankTransactions ${response.status}: ${await response.text()}`);
-  const payload = await response.json();
-  return Array.isArray(payload.BankTransactions) ? payload.BankTransactions : [];
 }
 
 async function submittedKey(request) {

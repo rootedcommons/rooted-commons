@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.9.22 — 2026-08-06
+
+- Added a protected manual Xero member-payment import test at `/api/xero/import-test`.
+- Imports only the newest recent reconciled, AUTHORISED, positive Xero `RECEIVE` transaction whose Reference is an exact `RC-number`.
+- Matches that reference to the Baserow `Members` table, creates one linked `Account Transactions` row, and marks it included in credit.
+- Uses `Xero BankTransactionsID` as the idempotency key, so rerunning the test cannot create the same payment twice.
+- Refactored recent Xero RECEIVE retrieval into a shared helper used by both the diagnostic and import test.
+- The 15-minute scheduled sync is still intentionally not enabled until the manual import is verified.
+
 ## v2.9.21
 
 - Added a protected, read-only Xero bank-transaction diagnostic at `/api/xero/diagnostic` for testing the first reconciled member payment before ledger writes are enabled.
