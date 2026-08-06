@@ -1,5 +1,24 @@
 # Changelog
 
+## 2.9.24 — 2026-08-06
+
+- Added production Xero member-payment sync endpoint at `/api/xero/sync`, protected by a dedicated `XERO_SYNC_KEY` and accepting POST only.
+- Sync scans recent Xero `RECEIVE` BankTransactions, imports all safe reconciled `RC-number` payments, and uses `Xero BankTransactionsID` to prevent repeat imports.
+- Exact member references are credited automatically; valid `RC-number` payments with no member match are recorded as `Unmatched` and excluded from credit for manual review.
+- Other business receipts without an exact Rooted Commons `RC-number` reference are ignored.
+- Xero Sync State now records last attempted/successful sync and sync errors.
+- Added a minimal separate Cloudflare Cron Worker script (`cloudflare/xero-sync-cron-worker.js`) for a `*/15 * * * *` schedule, because Pages Functions themselves do not expose a Cron Trigger handler.
+- Existing manual diagnostic/import-test endpoints remain available for troubleshooting.
+- Existing Baserow import/specification folders remain unchanged pending the v3.0 rebuild.
+
+## 2.9.23 — 2026-08-06
+
+- Simplified Xero member-payment imports: `Type` is now `Payment` and `Source` is `Xero`.
+- Removed the importer dependency on the redundant `Xero Reference` field; the canonical member payment reference remains `Payment reference`.
+- `Xero BankTransactionsID` remains the sole Xero idempotency key for Receive Money / bank transaction imports.
+- `Xero PaymentID` is not used by the current member-payment architecture and may be removed from Baserow.
+- The existing `baserow-imports` and `baserow-table-specification` folders are intentionally left unchanged pending the v3.0 Baserow rebuild.
+
 ## 2.9.22 — 2026-08-06
 
 - Added a protected manual Xero member-payment import test at `/api/xero/import-test`.

@@ -90,3 +90,12 @@ No token is displayed in the browser.
 - The Baserow runtime token must be server-side only.
 - Never expose `Refresh token` in `/api/member`, site builds, public views or GitHub.
 - The later payment-sync function must replace `Refresh token` in Baserow every time Xero returns a rotated refresh token.
+
+## Automatic Xero member-payment sync
+
+The website exposes a protected `POST /api/xero/sync` endpoint. Configure a secret named `XERO_SYNC_KEY` in the Cloudflare Pages project. The endpoint refreshes the existing Xero OAuth connection, imports reconciled `RC-number` Receive Money transactions, and updates the Xero Sync State record.
+
+Cloudflare Pages Functions do not themselves provide a Cron Trigger configuration. Deploy `cloudflare/xero-sync-cron-worker.js` as a small separate Worker, configure `ROOTED_SYNC_URL` as `https://rootedcommons.uk/api/xero/sync`, give it the same `XERO_SYNC_KEY`, and add the Cron Trigger `*/15 * * * *`.
+
+The sync is idempotent by Xero BankTransactionID. Payments with an exact RC reference but no matching member are recorded as Unmatched and excluded from member credit; unrelated receipts are ignored.
+

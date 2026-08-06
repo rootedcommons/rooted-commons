@@ -63,7 +63,7 @@ Do not expose OAuth client secrets, refresh tokens or access tokens in website H
 
 ## v2.9.3 member matching
 
-Member payments use the single generic Xero contact `Rooted Commons Membership`. Personal member details are not required in Xero. For Receive Money transactions coded to `810 – Member Credit`, preserve the bank/Xero reference. Extract an `RC-<number>` token and match it to `Members → Member number`. Only import when exactly one member matches. Store the raw reference in `Xero Reference` and use `Xero BankTransactionsID` / `Xero PaymentID` for idempotency. Manual Receive Money transactions can be imported before the bank feed arrives; later reconcile the bank line against that existing Xero transaction rather than creating a second transaction.
+Member payments use the single generic Xero contact `Rooted Commons Membership`. Personal member details are not required in Xero. For Receive Money transactions coded to `810 – Member Credit`, preserve the bank/Xero reference. Extract an `RC-<number>` token and match it to `Members → Member number`. Only import when exactly one member matches. Store the matched `RC-<number>` in `Payment reference`. Use `Xero BankTransactionsID` as the idempotency key for imported Receive Money / bank transactions. `Xero Reference` and `Xero PaymentID` are not required by the current member-payment architecture. Manual Receive Money transactions can be imported before the bank feed arrives; later reconcile the bank line against that existing Xero transaction rather than creating a second transaction.
 
 ## Welcome/service email template
 

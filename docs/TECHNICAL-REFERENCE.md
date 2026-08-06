@@ -213,3 +213,33 @@ A `Campaign` section is intended for launch/member campaigns. It uses a single t
 
 Countdown fields are `Countdown date` (date), `Pre-countdown text` (single-line text) and `Post-countdown text` (single-line text). For example, pre-text `First online market: Thursday 3rd – Wednesday 9th September`, date `2026-09-03`, and post-text `to go` renders the market line followed by `28 days to go`. The day count updates in the visitor's browser and disappears after the target date. Existing Call to action sections can use the same countdown fields.
 
+
+## Xero member-payment field mapping (v2.9.23)
+
+Imported member payments use `Type = Payment`, `Source = Xero`, `Payment reference = RC-x`, and `Xero BankTransactionsID` as the unique external transaction identifier. The current Receive Money / bank-transaction sync does not require `Xero Reference` or `Xero PaymentID`.
+
+## Temporary Xero payment diagnostic (v2.9.21)
+
+Before enabling automated Account Transactions writes, `/api/xero/diagnostic` can be used to inspect recent reconciled Xero `RECEIVE` BankTransactions.
+
+1. Set `XERO_DIAGNOSTIC_KEY` as a server-side Cloudflare secret.
+2. Deploy the site.
+3. Open `/api/xero/diagnostic` in a browser and enter that key.
+4. Confirm the known test payment appears and note where its `RC-<member id>` reference is returned.
+
+The diagnostic rotates and persists the Xero refresh token as part of the read. It does not create, update or delete Account Transactions. Remove or rotate the diagnostic key once this testing stage is complete.
+
+### Manual Xero member-payment import test (v2.9.22)
+
+`/api/xero/import-test` is a temporary protected test endpoint using the same `XERO_DIAGNOSTIC_KEY` secret as the read-only diagnostic. It imports only the newest recent Xero `RECEIVE` BankTransaction that is reconciled, `AUTHORISED`, positive, and has an exact `RC-number` Reference. It matches that reference to `Members.Member number`, writes the actual current Account Transactions fields, and refuses to duplicate an existing `Xero BankTransactionsID`. The scheduled sync remains disabled until this manual path has been verified against a real payment.
+
+## Xero member-payment sync
+
+- `/api/xero/sync` is the production POST-only sync endpoint and requires `Authorization: Bearer <XERO_SYNC_KEY>`.
+- `functions/api/xero/_sync.js` contains the shared import logic.
+- `Xero BankTransactionsID` is the idempotency key.
+- `Payment reference` is the canonical `RC-number` member reference.
+- Imported matched rows use `Type = Payment`, `Source = Xero`, `Reconciled = true`, `Included in credit = true`.
+- Exact RC references that do not match a member are retained as `Match status = Unmatched` with `Included in credit = false`.
+- The scheduler is the separate `cloudflare/xero-sync-cron-worker.js` Worker with a 15-minute Cron Trigger.
+

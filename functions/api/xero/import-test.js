@@ -115,8 +115,7 @@ export async function onRequestPost({ request, env }) {
     const now = new Date().toISOString();
     const fields = {
       'Date': xeroDate(tx),
-      'Xero Reference': String(tx.Reference || '').trim(),
-      'Type': 'Xero payment',
+      'Type': 'Payment',
       'Amount': Math.round(Number(tx.Total) * 100) / 100,
       'Xero BankTransactionsID': txId,
       'Notes': `Xero member payment${tx.Contact?.Name ? ` · ${tx.Contact.Name}` : ''}`,
@@ -125,7 +124,8 @@ export async function onRequestPost({ request, env }) {
       'Updated': now,
       'Match status': 'Matched',
       'Reconciled': true,
-      'Included in credit': true
+      'Included in credit': true,
+      'Source': 'Xero'
     };
 
     const created = await createRow(cfg, cfg.transactions, fields);
