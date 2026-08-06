@@ -51,16 +51,6 @@ const parseInline = (line) => {
   return parts;
 };
 
-const renderInlinePart = (part) => typeof part === 'string'
-  ? part
-  : part.type === 'link'
-    ? <a href={part.href}>{part.label}</a>
-    : part.type === 'bold'
-      ? <strong>{part.label}</strong>
-      : part.type === 'italic'
-        ? <em>{part.label}</em>
-        : part.label;
-
 const blocks = rawBlocks.map((block) => {
   const lines = block.split('\n').map((line) => line.trimEnd());
   const nonEmptyLines = lines.filter((line) => line.trim());
@@ -87,7 +77,13 @@ const Tag = as;
       <ul>
         {block.items.map((item) => (
           <li>
-            {item.map((part) => renderInlinePart(part))}
+            {item.map((part) => typeof part === 'string' ? part : part.type === 'link' ? (
+              <a href={part.href}>{part.label}</a>
+            ) : part.type === 'bold' ? (
+              <strong>{part.label}</strong>
+            ) : part.type === 'italic' ? (
+              <em>{part.label}</em>
+            ) : part.label)}
           </li>
         ))}
       </ul>
@@ -96,7 +92,13 @@ const Tag = as;
         {block.lines.map((line, lineIndex) => (
           <>
             {lineIndex > 0 && <br />}
-            {line.map((part) => renderInlinePart(part))}
+            {line.map((part) => typeof part === 'string' ? part : part.type === 'link' ? (
+              <a href={part.href}>{part.label}</a>
+            ) : part.type === 'bold' ? (
+              <strong>{part.label}</strong>
+            ) : part.type === 'italic' ? (
+              <em>{part.label}</em>
+            ) : part.label)}
           </>
         ))}
       </p>

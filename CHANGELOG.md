@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.9.20
+
+- Fixed the Astro build failure introduced by the bold/italic `FormattedText` update: inline elements are now rendered in the Astro template rather than JSX inside frontmatter.
+- Retained `**bold**`, `*italic*`, and Markdown link support in Baserow body text.
+- Retained the v2.9.19 Stats highlight-colour and rounded CTA/Campaign styling changes.
+- Updated the package version to 2.9.20.
+
 ## v2.9.19
 
 - Changed the grouped Stats panel to use the configured Highlight colour directly.
