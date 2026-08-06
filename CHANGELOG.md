@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.9.21
+
+- Added a protected, read-only Xero bank-transaction diagnostic at `/api/xero/diagnostic` for testing the first reconciled member payment before ledger writes are enabled.
+- The diagnostic refreshes Xero OAuth tokens safely and immediately persists the newly rotated refresh token in the private Xero Sync State table.
+- It retrieves recent `RECEIVE` BankTransactions and shows only a deliberately limited diagnostic view, including any `RC-*` reference values and their JSON paths; it does not create or alter Account Transactions.
+- Added the Xero server-side environment variables to `.env.example`, including a temporary `XERO_DIAGNOSTIC_KEY` used to protect the diagnostic page.
+
 ## v2.9.20
 
 - Fixed the Astro build failure introduced by the bold/italic `FormattedText` update: inline elements are now rendered in the Astro template rather than JSX inside frontmatter.
@@ -166,6 +173,13 @@ The restructured v2.9.14 download contains no runtime code changes. Historical s
 
 # Changelog
 
+## v2.9.21
+
+- Added a protected, read-only Xero bank-transaction diagnostic at `/api/xero/diagnostic` for testing the first reconciled member payment before ledger writes are enabled.
+- The diagnostic refreshes Xero OAuth tokens safely and immediately persists the newly rotated refresh token in the private Xero Sync State table.
+- It retrieves recent `RECEIVE` BankTransactions and shows only a deliberately limited diagnostic view, including any `RC-*` reference values and their JSON paths; it does not create or alter Account Transactions.
+- Added the Xero server-side environment variables to `.env.example`, including a temporary `XERO_DIAGNOSTIC_KEY` used to protect the diagnostic page.
+
 ## 2.9.1 — 2026-08-04
 
 - Reworked signup into clearer personal, collection, commitment and communications sections.
@@ -204,6 +218,13 @@ The restructured v2.9.14 download contains no runtime code changes. Historical s
 - Checkout now shows the existing collection choice first and reveals the full chooser only when Change collection point is selected.
 
 # Changelog
+
+## v2.9.21
+
+- Added a protected, read-only Xero bank-transaction diagnostic at `/api/xero/diagnostic` for testing the first reconciled member payment before ledger writes are enabled.
+- The diagnostic refreshes Xero OAuth tokens safely and immediately persists the newly rotated refresh token in the private Xero Sync State table.
+- It retrieves recent `RECEIVE` BankTransactions and shows only a deliberately limited diagnostic view, including any `RC-*` reference values and their JSON paths; it does not create or alter Account Transactions.
+- Added the Xero server-side environment variables to `.env.example`, including a temporary `XERO_DIAGNOSTIC_KEY` used to protect the diagnostic page.
 
 ## 2.8.0 — Signup and product information
 - Added `/signup/` with editable Interface Content and secure Baserow member creation.
@@ -347,6 +368,13 @@ The restructured v2.9.14 download contains no runtime code changes. Historical s
 - New Baserow product information fields and import CSV.
 
 # Changelog
+
+## v2.9.21
+
+- Added a protected, read-only Xero bank-transaction diagnostic at `/api/xero/diagnostic` for testing the first reconciled member payment before ledger writes are enabled.
+- The diagnostic refreshes Xero OAuth tokens safely and immediately persists the newly rotated refresh token in the private Xero Sync State table.
+- It retrieves recent `RECEIVE` BankTransactions and shows only a deliberately limited diagnostic view, including any `RC-*` reference values and their JSON paths; it does not create or alter Account Transactions.
+- Added the Xero server-side environment variables to `.env.example`, including a temporary `XERO_DIAGNOSTIC_KEY` used to protect the diagnostic page.
 
 ## 2.3.0 — 2026-07-29
 

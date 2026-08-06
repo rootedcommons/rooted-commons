@@ -97,6 +97,64 @@ export async function fetchConnections(accessToken) {
   return response.json();
 }
 
+
+export async function loadConnection(env) {
+  const cfg = envConfig(env);
+  if (!cfg.xeroSyncState) throw new Error('BASEROW_XERO_SYNC_STATE_TABLE_ID is missing');
+  const rows = await listRows(cfg, cfg.xeroSyncState);
+  const row = rows.find(item => String(item.Name || '').trim().toLowerCase() === 'xero primary connection') || rows[0];
+  if (!row) throw new Error('Xero Sync State table has no connection row');
+  const tenantId = String(row['Tenant ID'] || '').trim();
+  const refreshToken = String(row['Refresh token'] || '').trim();
+  if (!tenantId || !refreshToken) throw new Error('The Xero connection row is missing its tenant ID or refresh token');
+  return { cfg, row, tenantId, refreshToken };
+}
+
+export async function refreshTokens(env, refreshToken) {
+  const clientId = requireEnv(env, 'XERO_CLIENT_ID');
+  const clientSecret = requireEnv(env, 'XERO_CLIENT_SECRET');
+  const response = await fetch(TOKEN_URL, {
+    method: 'POST',
+    headers: {
+      authorization: `Basic ${btoa(`${clientId}:${clientSecret}`)}`,
+      'content-type': 'application/x-www-form-urlencoded',
+      accept: 'application/json'
+    },
+    body: new URLSearchParams({
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken
+    })
+  });
+  if (!response.ok) throw new Error(`Xero token refresh ${response.status}: ${await response.text()}`);
+  const tokens = await response.json();
+  if (!tokens.access_token || !tokens.refresh_token) throw new Error('Xero did not return the expected access and rotated refresh tokens');
+  return tokens;
+}
+
+export async function refreshedConnection(env) {
+  const connection = await loadConnection(env);
+  try {
+    const tokens = await refreshTokens(env, connection.refreshToken);
+    // Xero refresh tokens rotate. Persist the new token before using the access token
+    // so a later request never falls back to the now-replaced token.
+    await updateRow(connection.cfg, connection.cfg.xeroSyncState, connection.row.id, {
+      'Refresh token': tokens.refresh_token,
+      'Connection status': 'Connected',
+      'Last error': '',
+      'Consecutive failures': 0
+    });
+    return { ...connection, accessToken: tokens.access_token };
+  } catch (error) {
+    const failures = Number(connection.row['Consecutive failures'] || 0) + 1;
+    await updateRow(connection.cfg, connection.cfg.xeroSyncState, connection.row.id, {
+      'Connection status': 'Error',
+      'Last error': String(error.message || error).slice(0, 4000),
+      'Consecutive failures': failures
+    }).catch(() => {});
+    throw error;
+  }
+}
+
 export async function saveConnection(env, { tenantId, refreshToken, tenantName = '' }) {
   const cfg = envConfig(env);
   if (!cfg.xeroSyncState) throw new Error('BASEROW_XERO_SYNC_STATE_TABLE_ID is missing');
