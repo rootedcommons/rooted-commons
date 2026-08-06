@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.9.19
+
+- Changed the grouped Stats panel to use the configured Highlight colour directly.
+- Added the same rounded corners used by Cards/Stats to Call to action and Campaign boxes.
+- Preserved all existing v2.9.18 behaviour, including bold/italic body formatting.
+
 ## 2.9.18
 
 - Added `*italic*` formatting support to Baserow rich text alongside existing `**bold**` and Markdown links.

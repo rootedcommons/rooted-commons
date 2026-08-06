@@ -312,7 +312,7 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .cards-section .content-card h3{margin-top:.85rem;margin-bottom:.75rem}
 .cards-section .content-card .rich-body>:last-child{margin-bottom:0}
 /* v2.9.15 grouped Stats panel */
-.stats-section .section-inner{padding:clamp(1.25rem,4vw,2.5rem);border:1px solid var(--line);border-radius:1.2rem;background:color-mix(in srgb,var(--highlight) 58%,transparent)}
+.stats-section .section-inner{padding:clamp(1.25rem,4vw,2.5rem);border:1px solid var(--line);border-radius:1.2rem;background:var(--highlight)}
 .stats-section .group-heading{margin-bottom:1.5rem}
 .stats-grid{display:grid;grid-template-columns:repeat(var(--columns,4),minmax(0,1fr));gap:1.5rem}
 .stat-tile{padding-right:1.5rem;border-right:1px solid var(--line)}
@@ -392,7 +392,7 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 
 .cta-section .section-inner{max-width:var(--max)}
 .cta-section:not(.cta-with-image) .section-inner{max-width:800px}
-.cta-inner{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.8fr);gap:clamp(1.5rem,4vw,4rem);align-items:center;padding-block:clamp(2rem,5vw,4rem);border:1px solid var(--line);background:var(--highlight)}
+.cta-inner{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.8fr);gap:clamp(1.5rem,4vw,4rem);align-items:center;padding:clamp(2rem,5vw,4rem);border:1px solid var(--line);border-radius:1.2rem;background:var(--highlight)}
 .cta-section.cta-with-image .section-inner{padding-inline:2rem}
 .cta-section.image-left .cta-media{order:-1}
 .cta-media{margin:0;aspect-ratio:4/3;overflow:hidden}
@@ -405,7 +405,7 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .campaign-countdown-post{font-weight:700;opacity:.8}
 
 /* v2.9.16 campaign section */
-.campaign-section .campaign-inner{padding:clamp(2rem,5vw,4rem);border:1px solid var(--line);background:var(--highlight)}
+.campaign-section .campaign-inner{padding:clamp(2rem,5vw,4rem);border:1px solid var(--line);border-radius:1.2rem;background:var(--highlight)}
 .campaign-copy{max-width:900px}
 .campaign-images{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(1rem,3vw,2rem);align-items:center;margin:clamp(1.5rem,4vw,2.75rem) 0}
 .campaign-image{margin:0;min-width:0;display:grid;place-items:center}
