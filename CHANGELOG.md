@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.9.26 — 2026-08-07
+
+- Corrected the access-link request flow so it **does not rotate or replace the member's existing Order token**.
+- `/api/request-link` now updates only `Access link requested at`, allowing Baserow/mailbox.org to resend the member's current link.
+- This preserves links already issued in weekly emails and avoids invalidating a member's previously supplied access link.
+- Updated signup fallback copy and the generic endpoint response to say the existing access link is being resent rather than a new link being created.
+- Retained the one-minute repeat-request guard and non-enumerating public response.
+
+## 2.9.25 — 2026-08-07
+
+- Reworked the existing `/api/request-link` flow to trigger Baserow-managed access-link email instead of sending through the legacy magic-link webhook.
+- A successful active-member match now rotates the secure `Order token`, refreshes its expiry, and updates the new `Access link requested at` date/time field.
+- The existing checkout and signup access-link forms continue to use the same endpoint and keep the same non-enumerating public response.
+- Added a one-minute repeat-request guard so repeated submissions do not repeatedly trigger the Baserow email automation.
+- The Baserow automation can now send the email through the existing mailbox.org SMTP connection using the member row's current `Order token`.
+- Existing Baserow import/specification folders remain unchanged pending the v3.0 rebuild.
+
 ## 2.9.24 — 2026-08-06
 
 - Added production Xero member-payment sync endpoint at `/api/xero/sync`, protected by a dedicated `XERO_SYNC_KEY` and accepting POST only.

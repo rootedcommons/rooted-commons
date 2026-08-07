@@ -257,7 +257,7 @@ export const fallbackInterfaceContent: Record<string, string> = {
   "signup.success_message": "Your membership has been created successfully.",
   "signup.dashboard_button": "Your new member dashboard",
   "signup.existing_member_heading": "It looks like you’re already a Rooted Commons member.",
-  "signup.existing_member_body": "We can send a new secure login link to the email address above.",
+  "signup.existing_member_body": "We can resend your access link to the email address above.",
   "signup.existing_member_button": "Send me a new login link",
   "dashboard.email_verified": "Email address confirmed.",
   "signup.dashboard_security": "**Please keep this unique link secret.** It is a private key to your membership account and wallet, so don’t share it with anyone or log in on someone else’s device.\n\nTo keep your account and member credit secure, we’ll send you a new unique link every Wednesday after orders close. Your previous link will stop working when the new one is issued."
