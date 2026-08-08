@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.9.31
+
+- Fixed an Astro build-breaking quote in the signup success security fallback copy.
+- Changed the existing-member signup button fallback to “Send me my access link” to match the non-rotating resend behaviour.
+
 ## 2.9.30
 
 - Finalised the clean secure-session architecture for a pre-launch installation: Member Sessions now uses only `Weekly access` and `Device session`.

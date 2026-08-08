@@ -83,7 +83,7 @@ const collectionPoints=data.collectionPoints.map(point=>({id:point.id,name:point
         <div id="signup-existing-member" class="signup-existing-member full" hidden>
           <strong>{c('signup.existing_member_heading',"It looks like you're already a Rooted Commons member.")}</strong>
           <p>{c('signup.existing_member_body','We can resend your access link to the email address above.')}</p>
-          <button id="signup-send-login" class="button" type="button">{c('signup.existing_member_button','Send me a new login link')}</button>
+          <button id="signup-send-login" class="button" type="button">{c('signup.existing_member_button','Send me my access link')}</button>
           <p id="signup-existing-member-status" class="small-print" aria-live="polite"></p>
         </div>
       </form>
@@ -91,7 +91,7 @@ const collectionPoints=data.collectionPoints.map(point=>({id:point.id,name:point
         <h2>{c('signup.success_heading','Welcome to Rooted Commons')}</h2>
         <FormattedText text={c('signup.success_message','Your membership has been created successfully.')} class="rich-body" />
         <p><a id="signup-dashboard-link" class="button" href="/dashboard/">{c('signup.dashboard_button','Your new member dashboard')}</a></p>
-        <FormattedText text={c('signup.dashboard_security','**Keep your access link private.** It can be used to sign in to your membership on a new device. Once signed in, you'll normally stay signed in on that device for up to 90 days.\n\nWe'll send you a new weekly access link each Wednesday after orders close. Each new weekly link replaces the previous link for new sign-ins, but devices that are already signed in remain signed in.')} class="rich-body" />
+        <FormattedText text={c('signup.dashboard_security',"**Keep your access link private.** It can be used to sign in to your membership on a new device. Once signed in, you'll normally stay signed in on that device for up to 90 days.\n\nWe'll send you a new weekly access link each Wednesday after orders close. Each new weekly link replaces the previous link for new sign-ins, but devices that are already signed in remain signed in.")} class="rich-body" />
       </div>
     </section>
   </main>
