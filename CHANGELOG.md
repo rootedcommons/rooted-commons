@@ -1,3 +1,11 @@
+## 2.9.40 - 2026-08-08
+
+- Metrics and Network Partners now load live through `/api/public-network` using `BASEROW_RUNTIME_TOKEN`; changes in Baserow appear without an Astro redeploy.
+- Static builds no longer require `BASEROW_TOKEN` read access to Metrics or Network Partners.
+- Live metric values resolve the existing aggregate tokens server-side and expose only aggregate/public data.
+- Stats sections retain their linked Metrics selection while values are hydrated at page load.
+- Network sections render active partners and partner modal metrics from the live endpoint.
+
 ## v2.9.39 — metrics consolidation
 
 - Consolidated homepage and network impact statistics into the single `Metrics` table.

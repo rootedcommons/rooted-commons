@@ -5,7 +5,7 @@ const { partners = [], metrics = [] } = Astro.props;
 const safeId = (value) => String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const metricHeadline = (metric) => metric.displayValue || (metric.value !== null && metric.value !== undefined ? `${metric.value.toLocaleString('en-GB')}${metric.unit ? ` ${metric.unit}` : ''}` : metric.valueText || '');
 ---
-<div class="network-grid" data-network-grid>
+<div class="network-grid" data-network-grid data-live-network>
   {partners.map((partner) => {
     const modalId = `network-partner-${safeId(partner.name)}-${partner.id}`;
     const partnerMetrics = metrics.filter((metric) => metric.networkPartner === partner.name && (metric.placements || []).includes('Partner'));

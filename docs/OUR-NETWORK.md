@@ -26,3 +26,11 @@ The `Network` section reads **Network Partners**, not generic Cards. The compact
 Expanded profiles can contain: Long description; What they bring; How we work together; Address; Website; Volunteer URL; Social URL; Get involved label/URL; images; and partner-specific Metrics.
 
 Partner-level statistics are optional. Do not invent figures merely to fill the layout.
+
+## Live data behaviour (v2.9.40)
+
+Metrics and Network Partners are runtime data. The static page contains the Section structure and linked Metric IDs, then the browser requests `/api/public-network`. That Pages Function reads Baserow with `BASEROW_RUNTIME_TOKEN`, strips records to explicitly public fields, resolves supported aggregate `{{...}}` values server-side, and returns only the public data needed by the page.
+
+Changes to Metrics values, Network Partner content, Active/Public flags, images and partner modal content therefore appear without rebuilding the Astro site. Changes to Pages/Sections still require the normal static site rebuild.
+
+`BASEROW_RUNTIME_TOKEN` needs Read access to Metrics and Network Partners, plus the existing permissions on any private tables needed for aggregate calculation tokens. `BASEROW_TOKEN` does not need access to Metrics or Network Partners.

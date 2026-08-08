@@ -1,0 +1,127 @@
+<script>
+  const escapeHtml = (value = '') => String(value).replace(/[&<>'"]/g, (char) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+  }[char]));
+
+  const richText = (value = '') => {
+    const safe = escapeHtml(value)
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    return safe.split(/\n\s*\n/).filter(Boolean).map((paragraph) => `<p>${paragraph.replace(/\n/g, '<br>')}</p>`).join('');
+  };
+
+  const galleryHtml = (partner, prefix) => {
+    const images = [
+      [partner.image, partner.imageAlt],
+      [partner.image2, partner.image2Alt],
+      [partner.image3, partner.image3Alt]
+    ].filter(([src]) => src);
+    if (!images.length) return '';
+    if (images.length === 1) return `<figure class="card-media image-size-large fit-cover"><img src="${escapeHtml(images[0][0])}" alt="${escapeHtml(images[0][1] || '')}" loading="lazy"></figure>`;
+    return `<figure class="card-gallery-shell" data-card-gallery id="${prefix}">
+      <div class="card-gallery image-size-large fit-cover" data-card-gallery-track tabindex="0" aria-label="Image gallery">
+        ${images.map(([src, alt]) => `<div class="card-gallery-slide" data-card-gallery-slide><img src="${escapeHtml(src)}" alt="${escapeHtml(alt || '')}" loading="lazy"></div>`).join('')}
+      </div>
+      <button class="card-gallery-arrow card-gallery-arrow-prev" type="button" data-card-gallery-prev aria-label="Previous image">‹</button>
+      <button class="card-gallery-arrow card-gallery-arrow-next" type="button" data-card-gallery-next aria-label="Next image">›</button>
+      <div class="card-gallery-dots" aria-hidden="true">${images.map((_, index) => `<span class="card-gallery-dot${index === 0 ? ' active' : ''}" data-card-gallery-dot></span>`).join('')}</div>
+    </figure>`;
+  };
+
+  const initGalleries = () => {
+    document.querySelectorAll('[data-card-gallery]').forEach((gallery) => {
+      if (gallery.dataset.galleryReady === 'true') return;
+      gallery.dataset.galleryReady = 'true';
+      const track = gallery.querySelector('[data-card-gallery-track]');
+      const slides = [...gallery.querySelectorAll('[data-card-gallery-slide]')];
+      const dots = [...gallery.querySelectorAll('[data-card-gallery-dot]')];
+      if (!track || slides.length < 2) return;
+      const activeIndex = () => Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / (track.clientWidth || 1))));
+      const updateDots = () => dots.forEach((dot, index) => dot.classList.toggle('active', index === activeIndex()));
+      const move = (direction) => slides[Math.max(0, Math.min(slides.length - 1, activeIndex() + direction))]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+      gallery.querySelector('[data-card-gallery-prev]')?.addEventListener('click', () => move(-1));
+      gallery.querySelector('[data-card-gallery-next]')?.addEventListener('click', () => move(1));
+      track.addEventListener('scroll', () => requestAnimationFrame(updateDots), { passive: true });
+      updateDots();
+    });
+  };
+
+  const initDialogs = () => {
+    document.querySelectorAll('[data-network-open]').forEach((button) => {
+      if (button.dataset.ready === 'true') return;
+      button.dataset.ready = 'true';
+      button.addEventListener('click', () => document.getElementById(button.getAttribute('data-network-open') || '')?.showModal?.());
+    });
+    document.querySelectorAll('[data-network-dialog]').forEach((dialog) => {
+      if (dialog.dataset.ready === 'true') return;
+      dialog.dataset.ready = 'true';
+      dialog.querySelector('[data-network-close]')?.addEventListener('click', () => dialog.close());
+      dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+    });
+  };
+
+  const partnerHtml = (partner, metrics) => {
+    const safeKey = `${String(partner.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}-${partner.id}`;
+    const modalId = `network-partner-${safeKey}`;
+    const partnerMetrics = metrics.filter((metric) => metric.networkPartner === partner.name && (metric.placements || []).includes('Partner'));
+    const role = (partner.role || []).join(' · ');
+    const metricHtml = partnerMetrics.length ? `<section><h3>Our work together</h3><div class="network-partner-stats">${partnerMetrics.map((metric) => `<div><strong>${escapeHtml(metric.value)}</strong><span>${escapeHtml(metric.name)}</span></div>`).join('')}</div></section>` : '';
+    const links = [
+      partner.getInvolvedUrl ? `<a class="button button-medium" href="${escapeHtml(partner.getInvolvedUrl)}">${escapeHtml(partner.getInvolvedLabel || 'Get involved')}</a>` : '',
+      partner.volunteerUrl ? `<a class="text-link" href="${escapeHtml(partner.volunteerUrl)}">Volunteer →</a>` : '',
+      partner.website ? `<a class="text-link" href="${escapeHtml(partner.website)}">Website →</a>` : '',
+      partner.socialUrl ? `<a class="text-link" href="${escapeHtml(partner.socialUrl)}">Follow →</a>` : ''
+    ].filter(Boolean).join('');
+    return `<article class="network-card">
+      ${galleryHtml(partner, `network-card-gallery-${safeKey}`)}
+      <div class="network-card-copy"><h3>${escapeHtml(partner.name)}</h3>${role ? `<p class="network-role">${escapeHtml(role)}</p>` : ''}${partner.summary ? `<p>${escapeHtml(partner.summary)}</p>` : ''}<button class="network-explore" type="button" data-network-open="${modalId}">Explore <span aria-hidden="true">→</span></button></div>
+    </article>
+    <dialog class="network-dialog" id="${modalId}" data-network-dialog>
+      <button class="network-dialog-close" type="button" data-network-close aria-label="Close ${escapeHtml(partner.name)}">×</button>
+      <div class="network-dialog-inner">
+        <div class="network-dialog-media">${galleryHtml(partner, `network-dialog-gallery-${safeKey}`)}</div>
+        <div class="network-dialog-copy">
+          <header><h2>${escapeHtml(partner.name)}</h2>${role ? `<p class="network-role">${escapeHtml(role)}</p>` : ''}</header>
+          ${partner.longDescription ? `<section><h3>About</h3><div class="rich-body">${richText(partner.longDescription)}</div></section>` : ''}
+          ${partner.howWeWorkTogether ? `<section><h3>Part of Rooted Commons</h3><div class="rich-body">${richText(partner.howWeWorkTogether)}</div></section>` : ''}
+          ${partner.whatTheyBring ? `<section><h3>What they bring</h3><div class="rich-body">${richText(partner.whatTheyBring)}</div></section>` : ''}
+          ${metricHtml}
+          ${partner.address ? `<section><h3>Where to find them</h3><p>${escapeHtml(partner.address)}</p></section>` : ''}
+          ${links ? `<section class="network-links"><h3>Get involved</h3><div>${links}</div></section>` : ''}
+        </div>
+      </div>
+    </dialog>`;
+  };
+
+  let liveNetworkPromise;
+  const fetchLiveNetwork = () => liveNetworkPromise ||= fetch('/api/public-network', { headers: { accept: 'application/json' } })
+    .then((response) => { if (!response.ok) throw new Error(`Public network request failed (${response.status})`); return response.json(); });
+
+  const hydrateLiveNetwork = async () => {
+    const metricGrids = [...document.querySelectorAll('[data-live-metrics]')];
+    const networkGrids = [...document.querySelectorAll('[data-live-network]')];
+    if (!metricGrids.length && !networkGrids.length) return;
+    try {
+      const data = await fetchLiveNetwork();
+      const metrics = data.metrics || [];
+      const partners = data.partners || [];
+
+      metricGrids.forEach((grid) => {
+        const ids = String(grid.dataset.metricIds || '').split(',').map(Number).filter(Number.isFinite);
+        const names = String(grid.dataset.metricNames || '').split('|').map((value) => value.trim()).filter(Boolean);
+        const selected = metrics.filter((metric) => ids.includes(metric.id) || names.includes(metric.name));
+        if (!selected.length) return;
+        grid.innerHTML = selected.map((metric) => `<article class="stat-tile align-center">${metric.icon ? `<img class="impact-stat-icon" src="${escapeHtml(metric.icon)}" alt="" aria-hidden="true">` : ''}<strong class="stat-number">${escapeHtml(metric.value)}</strong><span class="stat-label">${escapeHtml(metric.name)}</span>${metric.description ? `<small class="stat-description">${escapeHtml(metric.description)}</small>` : ''}</article>`).join('');
+      });
+
+      networkGrids.forEach((grid) => { grid.innerHTML = partners.map((partner) => partnerHtml(partner, metrics)).join(''); });
+      initGalleries();
+      initDialogs();
+    } catch (error) {
+      console.error('Unable to load live Metrics / Network Partners', error);
+    }
+  };
+
+  hydrateLiveNetwork();
+  document.addEventListener('astro:page-load', hydrateLiveNetwork);
+</script>

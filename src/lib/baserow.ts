@@ -149,8 +149,10 @@ export async function getSiteData() {
     listRows(TABLES.interfaceContent),
     listRows(TABLES.members, RUNTIME_TOKEN),
     listRows(TABLES.accountTransactions, RUNTIME_TOKEN),
-    listRows(TABLES.networkPartners),
-    listRows(TABLES.metrics)
+    // Network Partners and Metrics are hydrated live through /api/public-network
+    // using BASEROW_RUNTIME_TOKEN, so the static build token does not need access.
+    Promise.resolve([]),
+    Promise.resolve([])
   ]);
 
   const validSettingsRow = settingsRows?.find((row) => text(row, 'Site title') || fileUrl(row, 'Header logo'));

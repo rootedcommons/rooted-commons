@@ -10,7 +10,9 @@ export function envConfig(env) {
     orders: env.BASEROW_WEB_ORDERS_TABLE_ID,
     transactions: env.BASEROW_ACCOUNT_TRANSACTIONS_TABLE_ID,
     xeroSyncState: env.BASEROW_XERO_SYNC_STATE_TABLE_ID,
-    sessions: env.BASEROW_MEMBER_SESSIONS_TABLE_ID
+    sessions: env.BASEROW_MEMBER_SESSIONS_TABLE_ID,
+    networkPartners: env.BASEROW_NETWORK_PARTNERS_TABLE_ID,
+    metrics: env.BASEROW_METRICS_TABLE_ID || env.BASEROW_IMPACT_METRICS_TABLE_ID
   };
 }
 
