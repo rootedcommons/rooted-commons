@@ -1,3 +1,9 @@
+## v2.9.36
+- Fixed Pages Functions auth import regression in access-link requests.
+- Restored validated return paths so checkout access-link requests return members to checkout.
+- Reused an existing remembered device session when a signed-in member opens a weekly access link, avoiding redundant active device-session rows.
+- Limited current weekly-access session lookup to the member's linked session rows instead of scanning the full Member Sessions table.
+
 # Changelog
 
 ## 2.9.35

@@ -69,9 +69,14 @@ export async function getRow(cfg, tableId, rowId) {
 export async function listRowsFiltered(cfg, tableId, filters = {}, { size = 20 } = {}) {
   if (!tableId) throw new Error('A required Baserow table ID is missing');
   const params=new URLSearchParams({user_field_names:'true',size:String(Math.min(200,Math.max(1,size)))});
-  for(const [field,value] of Object.entries(filters)){
+  for(const [field,raw] of Object.entries(filters)){
+    const spec=(raw && typeof raw==='object' && !Array.isArray(raw) && Object.prototype.hasOwnProperty.call(raw,'value'))
+      ? raw
+      : {operator:'equal',value:raw};
+    const value=spec.value;
+    const operator=String(spec.operator||'equal');
     if(value===undefined||value===null||value==='') continue;
-    params.set(`filter__${field}__equal`,String(value));
+    params.set(`filter__${field}__${operator}`,String(value));
   }
   const payload=await apiRequest(cfg, `/api/database/rows/table/${tableId}/?${params.toString()}`);
   return payload.results||[];

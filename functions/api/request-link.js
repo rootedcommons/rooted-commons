@@ -1,5 +1,5 @@
 import { envConfig, json, listRowsFiltered, normaliseEmail, updateRow } from '../_baserow.js';
-import { getOrCreateCurrentSignedSession } from '../_auth.js';
+import { getOrCreateCurrentAccessSession, safeReturnPath } from '../_auth.js';
 import { sendMail } from '../_smtp.js';
 
 const recentlyRequested=(member,now,windowMs=60_000)=>{
@@ -21,9 +21,10 @@ export async function onRequestPost({request,env}){
     if(member){
       const requestedAt=new Date();
       if(!recentlyRequested(member,requestedAt)){
-        const {token,session}=await getOrCreateCurrentSignedSession(cfg,member.id,env);
+        const {token}=await getOrCreateCurrentAccessSession(cfg,member.id,env);
         const origin=new URL(request.url).origin;
-        const accessUrl=`${origin}/api/access?token=${encodeURIComponent(token)}&return=${encodeURIComponent('/dashboard/')}`;
+        const returnPath=safeReturnPath(body.returnPath||'/dashboard/');
+        const accessUrl=`${origin}/api/access?token=${encodeURIComponent(token)}&return=${encodeURIComponent(returnPath)}`;
         const firstName=escapeHtml(member['First name']||'there');
         await sendMail(env,{
           to:email,

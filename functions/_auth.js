@@ -93,7 +93,7 @@ export async function createSignedSession(cfg,memberId,env,{purpose=ACCESS_PURPO
 
 export async function getOrCreateCurrentAccessSession(cfg,memberId,env){
   if(!cfg.sessions) throw new Error('BASEROW_MEMBER_SESSIONS_TABLE_ID is missing');
-  const sessions=await listRows(cfg,cfg.sessions);
+  const sessions=await listRowsFiltered(cfg,cfg.sessions,{Member:{operator:'link_row_has',value:Number(memberId)}},{size:50});
   const current=sessions
     .filter(s=>linkedIds(s.Member).includes(Number(memberId)) && s['Session ID'] && sessionUsable(s) && String(s.Purpose||'')===ACCESS_PURPOSE)
     .sort((a,b)=>new Date(b['Created at']||0)-new Date(a['Created at']||0))[0];
