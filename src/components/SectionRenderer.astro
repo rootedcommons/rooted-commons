@@ -2,7 +2,8 @@
 import ProductGrid from './ProductGrid.astro';
 import FormattedText from './FormattedText.astro';
 import CardGallery from './CardGallery.astro';
-const { block, products, settings } = Astro.props;
+import NetworkGrid from './NetworkGrid.astro';
+const { block, products, settings, networkPartners = [], metrics = [] } = Astro.props;
 const section = block.section;
 const type = block.type;
 const background = `background-${section.backgroundStyle}`;
@@ -11,6 +12,16 @@ const alignment = `align-${section.alignment}`;
 const button = section.buttonVisible && section.buttonText && section.buttonUrl;
 const groupTitle = block.items.find((item) => item.groupHeading)?.groupHeading || '';
 const inferredGridCategory = section.gridCategory || (section.page === 'cupboard-staples' ? 'Cupboard Staples' : section.page === 'fresh-produce' ? 'Fresh Produce' : section.page === 'refills' ? 'Refills' : '');
+
+const selectedMetrics = metrics.filter((metric) =>
+  (section.metricIds || []).includes(metric.id) || (section.metricNames || []).includes(metric.name)
+);
+const metricHeadline = (metric) => metric.displayValue || (metric.value !== null && metric.value !== undefined
+  ? `${metric.value.toLocaleString('en-GB')}${metric.unit ? ` ${metric.unit}` : ''}`
+  : metric.valueText || '');
+const selectedProducts = (section.productIds || []).length
+  ? products.filter((product) => section.productIds.includes(product.id))
+  : products;
 ---
 {type === 'text' && (
   <section class={`content-section text-section ${background} ${spaces} ${alignment}`}>
@@ -87,15 +98,39 @@ const inferredGridCategory = section.gridCategory || (section.page === 'cupboard
 {type === 'stats' && (
   <section class={`content-section stats-section ${background} ${spaces}`}>
     <div class="section-inner">
-      {groupTitle && <h2 class={`group-heading align-${section.alignment} size-${section.headingSize}`}>{groupTitle}</h2>}
+      {section.eyebrow && <p class={`eyebrow ${alignment}`}>{section.eyebrow}</p>}
+      {(section.heading || groupTitle) && <h2 class={`group-heading ${alignment} size-${section.headingSize}`}>{section.heading || groupTitle}</h2>}
+      {section.subheading && <p class={`group-subheading ${alignment} size-${section.subheadingSize}`}>{section.subheading}</p>}
+      {section.body && <FormattedText text={section.body} class={`rich-body ${alignment} size-${section.bodySize}`} />}
       <div class="stats-grid" style={`--columns:${section.columns}`}>
-        {block.items.map((item) => (
+        {selectedMetrics.length > 0 ? selectedMetrics.map((metric) => (
+          <article class="stat-tile align-center">
+            {metric.icon && <img class="impact-stat-icon" src={metric.icon} alt="" aria-hidden="true" />}
+            <strong class="stat-number">{metricHeadline(metric)}</strong>
+            <span class="stat-label">{metric.name}</span>
+            {metric.description && <small class="stat-description">{metric.description}</small>}
+          </article>
+        )) : block.items.map((item) => (
           <div class={`stat-tile align-${item.alignment}`}>
             <strong class="stat-number">{item.heading}</strong>
             <span class="stat-label">{item.subheading}</span>
           </div>
         ))}
       </div>
+      {button && <p class={alignment}><a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a></p>}
+    </div>
+  </section>
+)}
+
+{type === 'network' && (
+  <section class={`content-section network-section ${background} ${spaces}`}>
+    <div class="section-inner">
+      {section.eyebrow && <p class={`eyebrow ${alignment}`}>{section.eyebrow}</p>}
+      {section.heading && <h2 class={`${alignment} size-${section.headingSize}`}>{section.heading}</h2>}
+      {section.subheading && <p class={`section-subheading ${alignment} size-${section.subheadingSize}`}>{section.subheading}</p>}
+      {section.body && <FormattedText text={section.body} class={`rich-body ${alignment} size-${section.bodySize}`} />}
+      <NetworkGrid partners={networkPartners} metrics={metrics} />
+      {button && <p class={alignment}><a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a></p>}
     </div>
   </section>
 )}
@@ -107,7 +142,7 @@ const inferredGridCategory = section.gridCategory || (section.page === 'cupboard
       {section.heading && <h2 class={`${alignment} size-${section.headingSize}`}>{section.heading}</h2>}
       {section.subheading && <p class={`section-subheading ${alignment} size-${section.subheadingSize}`}>{section.subheading}</p>}
       {section.body && <FormattedText text={section.body} class={`rich-body ${alignment} size-${section.bodySize}`} />}
-      <ProductGrid products={products} category={inferredGridCategory} columns={section.columns} settings={settings} />
+      <ProductGrid products={selectedProducts} category={inferredGridCategory} columns={section.columns} settings={settings} />
       {button && <p class={alignment}><a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a></p>}
     </div>
   </section>

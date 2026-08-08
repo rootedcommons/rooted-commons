@@ -11,7 +11,9 @@ const TABLES = {
   collectionPoints: import.meta.env.BASEROW_COLLECTION_POINTS_TABLE_ID,
   interfaceContent: import.meta.env.BASEROW_INTERFACE_CONTENT_TABLE_ID,
   members: import.meta.env.BASEROW_MEMBERS_TABLE_ID,
-  accountTransactions: import.meta.env.BASEROW_ACCOUNT_TRANSACTIONS_TABLE_ID
+  accountTransactions: import.meta.env.BASEROW_ACCOUNT_TRANSACTIONS_TABLE_ID,
+  networkPartners: import.meta.env.BASEROW_NETWORK_PARTNERS_TABLE_ID,
+  metrics: import.meta.env.BASEROW_METRICS_TABLE_ID || import.meta.env.BASEROW_IMPACT_METRICS_TABLE_ID
 };
 
 const RUNTIME_TOKEN = import.meta.env.BASEROW_RUNTIME_TOKEN;
@@ -138,7 +140,7 @@ function heroWidth(value: string) {
 
 
 export async function getSiteData() {
-  const [settingsRows, pageRows, sectionRows, productRows, collectionRows, interfaceRows, memberRows, accountTransactionRows] = await Promise.all([
+  const [settingsRows, pageRows, sectionRows, productRows, collectionRows, interfaceRows, memberRows, accountTransactionRows, networkPartnerRows, metricRows] = await Promise.all([
     listRows(TABLES.settings),
     listRows(TABLES.pages),
     listRows(TABLES.sections),
@@ -146,7 +148,9 @@ export async function getSiteData() {
     listRows(TABLES.collectionPoints),
     listRows(TABLES.interfaceContent),
     listRows(TABLES.members, RUNTIME_TOKEN),
-    listRows(TABLES.accountTransactions, RUNTIME_TOKEN)
+    listRows(TABLES.accountTransactions, RUNTIME_TOKEN),
+    listRows(TABLES.networkPartners),
+    listRows(TABLES.metrics)
   ]);
 
   const validSettingsRow = settingsRows?.find((row) => text(row, 'Site title') || fileUrl(row, 'Header logo'));
@@ -252,11 +256,13 @@ export async function getSiteData() {
   // Public Stats tokens are resolved at build time from Baserow. Only aggregate
   // values are exposed to the rendered site; member/transaction rows remain private.
   const totalMembers = (memberRows || []).filter((row: any) => boolean(row, 'Active', true)).length;
-  const totalNetworkPartners = sourceSections.filter((row: any) => {
-    const page = linkedValues(raw(row, 'Page') ?? row.page)[0] || text(row, 'Page', row.page || '');
-    const type = normalized(choice(row, 'Section type', row.type || ''), '');
-    return page === 'our-partners' && boolean(row, 'Visible', row.visible ?? true) && type === 'cards';
-  }).length;
+  const totalNetworkPartners = networkPartnerRows?.length
+    ? networkPartnerRows.filter((row: any) => boolean(row, 'Active', true) && text(row, 'Name')).length
+    : sourceSections.filter((row: any) => {
+        const page = linkedValues(raw(row, 'Page') ?? row.page)[0] || text(row, 'Page', row.page || '');
+        const type = normalized(choice(row, 'Section type', row.type || ''), '');
+        return ['our-partners', 'our-network'].includes(page) && boolean(row, 'Visible', row.visible ?? true) && type === 'cards';
+      }).length;
   const orderChargeTotal = Math.abs((accountTransactionRows || [])
     .filter((row: any) => ['order-charge', 'order-charges'].includes(normalized(choice(row, 'Type'), '')))
     .reduce((sum: number, row: any) => sum + numeric(row, 'Amount', 0), 0));
@@ -266,6 +272,7 @@ export async function getSiteData() {
     .reduce((sum: number, row: any) => sum + numeric(row, 'Weekly commitment', 0), 0);
   const statTokens: Record<string, string> = {
     '{{members}}': totalMembers.toLocaleString('en-GB'),
+    '{{total_members}}': totalMembers.toLocaleString('en-GB'),
     '{{network_partners}}': totalNetworkPartners.toLocaleString('en-GB'),
     '{{member_spending}}': totalMemberSpending.toLocaleString('en-GB', { maximumFractionDigits: 0 }),
     '{{total_commitments}}': totalCommitments.toLocaleString('en-GB', { maximumFractionDigits: 2 })
@@ -313,7 +320,10 @@ export async function getSiteData() {
       buttonSize: normalized(choice(row, 'Button size'), 'medium'),
       spaceAbove: normalized(choice(row, 'Space above'), 'medium'),
       spaceBelow: normalized(choice(row, 'Space below'), 'medium'),
-      gridSource: choice(row, 'Grid source'),
+      productIds: linkedIds(raw(row, 'Products') ?? raw(row, 'Grid source')),
+      productNames: linkedValues(raw(row, 'Products') ?? raw(row, 'Grid source')),
+      metricIds: linkedIds(raw(row, 'Metrics')),
+      metricNames: linkedValues(raw(row, 'Metrics')),
       gridCategory: choice(row, 'Grid category'),
       catalogueCategory: choice(row, 'Catalogue category', text(row, 'Catalogue category')),
       imagePosition: normalized(choice(row, 'Image position'), 'right'),
@@ -401,6 +411,58 @@ export async function getSiteData() {
     availableCategories: linkedValues(raw(row, 'Available to collect here'))
   })).filter((point: any) => point.name && point.active);
 
+  const networkPartners = (networkPartnerRows || []).map((row: any, index: number) => ({
+    id: Number(row.id) || index + 1,
+    name: text(row, 'Name'),
+    role: linkedValues(raw(row, 'Network role')).length ? linkedValues(raw(row, 'Network role')) : linkedValues(raw(row, 'Role')),
+    summary: text(row, 'Summary'),
+    longDescription: text(row, 'Long description'),
+    whatTheyBring: text(row, 'What they bring'),
+    howWeWorkTogether: text(row, 'How we work together'),
+    address: text(row, 'Address'),
+    website: text(row, 'Website'),
+    volunteerUrl: text(row, 'Volunteer URL'),
+    socialUrl: text(row, 'Social URL'),
+    getInvolvedLabel: text(row, 'Get involved label', 'Get involved'),
+    getInvolvedUrl: text(row, 'Get involved URL'),
+    image: fileUrl(row, 'Image'),
+    image2: fileUrl(row, 'Image 2'),
+    image3: fileUrl(row, 'Image 3'),
+    imageAlt: text(row, 'Image alt text'),
+    image2Alt: text(row, 'Image 2 alt text'),
+    image3Alt: text(row, 'Image 3 alt text'),
+    order: numeric(row, 'Display order', numeric(row, 'Order', 9999)),
+    active: boolean(row, 'Active', true)
+  })).filter((partner: any) => partner.name && partner.active).sort((a: any, b: any) => a.order - b.order || a.name.localeCompare(b.name));
+
+  const metrics = (metricRows || []).map((row: any, index: number) => {
+    const valueText = resolveStatTokens(text(row, 'Value'));
+    const displayValue = resolveStatTokens(text(row, 'Display value'));
+    const numericText = valueText.replace(/,/g, '').trim();
+    const parsedValue = /^-?\d+(?:\.\d+)?$/.test(numericText) ? Number(numericText) : null;
+    return {
+      id: Number(row.id) || index + 1,
+      name: text(row, 'Name'),
+      value: parsedValue,
+      valueText,
+      unit: text(row, 'Unit'),
+      displayValue,
+      description: text(row, 'Description'),
+      icon: fileUrl(row, 'Icon'),
+      placements: linkedValues(raw(row, 'Placement')),
+      order: numeric(row, 'Display order', numeric(row, 'Order', 9999)),
+      active: boolean(row, 'Active', true),
+      public: boolean(row, 'Public', true),
+      tomTheme: choice(row, 'TOM Theme', text(row, 'TOM theme')),
+      tomOutcome: text(row, 'TOM Outcome'),
+      tomMeasure: text(row, 'TOM Measure'),
+      calcMethod: text(row, 'Calc method'),
+      evidenceSource: text(row, 'Evidence / source'),
+      lastUpdated: text(row, 'Last updated'),
+      networkPartner: linkedValues(raw(row, 'Network Partner') ?? raw(row, 'Network partner'))[0] || ''
+    };
+  }).filter((metric: any) => metric.name && metric.active && metric.public).sort((a: any, b: any) => a.order - b.order || a.name.localeCompare(b.name));
+
   const interfaceContent = { ...fallbackInterfaceContent };
   for (const row of interfaceRows || []) {
     const key = text(row, 'Key');
@@ -408,5 +470,5 @@ export async function getSiteData() {
     if (key && content) interfaceContent[key] = content;
   }
 
-  return { settings, interfaceContent, pages, sections, products, collectionPoints };
+  return { settings, interfaceContent, pages, sections, products, collectionPoints, networkPartners, metrics };
 }

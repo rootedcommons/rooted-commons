@@ -495,3 +495,27 @@ The default Rooted Commons palette uses taupe `#ded8cc` for the page backdrop, w
 Site Settings separates the page backdrop from content surfaces: `Background colour` controls the overall page backdrop, `Surface colour` controls normal cards/forms/boxed sections, `Highlight colour` controls emphasized/inset panels, `Primary colour` controls main text and buttons, `Border colour` controls lines/borders, and `Accent colour` controls secondary botanical/decorative details.
 
 `Watermark image` and `Watermark opacity` belong to Sections and are rendered only by `Campaign` and `Call to action` section types. Other section types ignore them. `Watermark opacity` is a percentage from 0 to 100 and defaults to 8 when blank. `Pre-countdown label` provides the small label above `Pre-countdown text` (for example `First online market:`). `Eyebrow icon` belongs to Site Settings and is used beside Campaign and Call to action eyebrows.
+
+
+## Network and impact tables (v2.9.38+)
+
+Create a **Network Partners** table using `baserow-table-specification/15-network-partners-fields.csv`, then add its table ID to Cloudflare as `BASEROW_NETWORK_PARTNERS_TABLE_ID`. The public website token needs read access to this table.
+
+Create a **Metrics** table using `baserow-table-specification/16-metrics-fields.csv`, then add its table ID to Cloudflare as `BASEROW_METRICS_TABLE_ID`. The public website token needs read access to this table. `Value` is a Single line text field so it can hold either a literal value or a build-time `{{...}}` calculation token. Use `Display value` only when you need a different public format. `TOM Theme`, `TOM Outcome`, `TOM Measure`, `Calc method`, and `Evidence / source` are internal impact-data metadata and are not rendered publicly.
+
+On the Our Network page, add a Section with `Section type = Stats` and explicitly link the Metrics you want to show using **Sections → Metrics**. Add another Section with `Section type = Network` to render active Network Partners as clickable cards. A partner metric appears inside that partner's detail modal when it links the relevant Network Partner and `Placement` contains `Partner`.
+
+The recommended page order is: introductory Text section → Stats → Network → Call to action. The final Call to action can use the existing watermark/image controls.
+
+During migration, the old grouped Cards rows can remain visible while the new Network Partners table is populated. Once the Network section looks correct, hide the old partner Cards rows to avoid displaying the same organisations twice.
+
+
+## Metrics consolidation (v2.9.39)
+
+Use one **Metrics** table for public network-level measures shown on Home, Our Network, partner profiles, or (later) the member dashboard. Member-specific calculations such as credit, weeks supporting the network, and individual spending remain dashboard calculations and are not Metric rows.
+
+In **Sections**, the field formerly called `Grid source` is now **Products** (link to Products). Add a separate **Metrics** link field allowing multiple linked Metric rows. A `Stats` section renders its explicitly linked Metrics in `Display order`. This keeps `Stats` as a presentation type rather than creating a separate impact-stats section type.
+
+Metrics may use literal values or the supported build-time `{{...}}` tokens. `Placement` is a multiple select (`Home`, `Network`, `Partner`, `Dashboard`) used as metadata; a Stats section's explicit Metrics links control what it displays. Partner modal metrics additionally require `Placement = Partner` and a linked `Network Partner`.
+
+The TOM fields are governance metadata only: `TOM Theme` (`Work`, `Economy`, `Community`, `Planet`), `TOM Outcome`, and `TOM Measure`. Leave outcome/measure blank unless there is a defensible mapping to the current external TOM taxonomy. Record methodology in `Calc method` and evidence provenance in `Evidence / source`.

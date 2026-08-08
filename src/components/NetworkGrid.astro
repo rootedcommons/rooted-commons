@@ -1,0 +1,94 @@
+---
+import CardGallery from './CardGallery.astro';
+import FormattedText from './FormattedText.astro';
+const { partners = [], metrics = [] } = Astro.props;
+const safeId = (value) => String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const metricHeadline = (metric) => metric.displayValue || (metric.value !== null && metric.value !== undefined ? `${metric.value.toLocaleString('en-GB')}${metric.unit ? ` ${metric.unit}` : ''}` : metric.valueText || '');
+---
+<div class="network-grid" data-network-grid>
+  {partners.map((partner) => {
+    const modalId = `network-partner-${safeId(partner.name)}-${partner.id}`;
+    const partnerMetrics = metrics.filter((metric) => metric.networkPartner === partner.name && (metric.placements || []).includes('Partner'));
+    const images = [
+      { src: partner.image, alt: partner.imageAlt },
+      { src: partner.image2, alt: partner.image2Alt },
+      { src: partner.image3, alt: partner.image3Alt }
+    ];
+    return (
+      <>
+        <article class="network-card">
+          {(partner.image || partner.image2 || partner.image3) && <CardGallery images={images} imageSize="large" imageFit="cover" />}
+          <div class="network-card-copy">
+            <h3>{partner.name}</h3>
+            {partner.role?.length > 0 && <p class="network-role">{partner.role.join(' · ')}</p>}
+            {partner.summary && <p>{partner.summary}</p>}
+            <button class="network-explore" type="button" data-network-open={modalId}>Explore <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+
+        <dialog class="network-dialog" id={modalId} data-network-dialog>
+          <button class="network-dialog-close" type="button" data-network-close aria-label={`Close ${partner.name}`}>×</button>
+          <div class="network-dialog-inner">
+            <div class="network-dialog-media">
+              {(partner.image || partner.image2 || partner.image3) && <CardGallery images={images} imageSize="large" imageFit="cover" />}
+            </div>
+            <div class="network-dialog-copy">
+              <header>
+                <h2>{partner.name}</h2>
+                {partner.role?.length > 0 && <p class="network-role">{partner.role.join(' · ')}</p>}
+              </header>
+              {partner.longDescription && <section><h3>About</h3><FormattedText text={partner.longDescription} class="rich-body" /></section>}
+              {partner.howWeWorkTogether && <section><h3>Part of Rooted Commons</h3><FormattedText text={partner.howWeWorkTogether} class="rich-body" /></section>}
+              {partner.whatTheyBring && <section><h3>What they bring</h3><FormattedText text={partner.whatTheyBring} class="rich-body" /></section>}
+              {partnerMetrics.length > 0 && (
+                <section>
+                  <h3>Our work together</h3>
+                  <div class="network-partner-stats">
+                    {partnerMetrics.map((metric) => (
+                      <div><strong>{metricHeadline(metric)}</strong><span>{metric.name}</span></div>
+                    ))}
+                  </div>
+                </section>
+              )}
+              {partner.address && <section><h3>Where to find them</h3><p>{partner.address}</p></section>}
+              {(partner.getInvolvedUrl || partner.volunteerUrl || partner.website || partner.socialUrl) && (
+                <section class="network-links">
+                  <h3>Get involved</h3>
+                  <div>
+                    {partner.getInvolvedUrl && <a class="button button-medium" href={partner.getInvolvedUrl}>{partner.getInvolvedLabel || 'Get involved'}</a>}
+                    {partner.volunteerUrl && <a class="text-link" href={partner.volunteerUrl}>Volunteer →</a>}
+                    {partner.website && <a class="text-link" href={partner.website}>Website →</a>}
+                    {partner.socialUrl && <a class="text-link" href={partner.socialUrl}>Follow →</a>}
+                  </div>
+                </section>
+              )}
+            </div>
+          </div>
+        </dialog>
+      </>
+    );
+  })}
+</div>
+
+<script>
+  const initNetworkDialogs = () => {
+    document.querySelectorAll('[data-network-open]').forEach((button) => {
+      if (button.dataset.ready === 'true') return;
+      button.dataset.ready = 'true';
+      button.addEventListener('click', () => {
+        const dialog = document.getElementById(button.getAttribute('data-network-open') || '');
+        if (dialog && typeof dialog.showModal === 'function') dialog.showModal();
+      });
+    });
+    document.querySelectorAll('[data-network-dialog]').forEach((dialog) => {
+      if (dialog.dataset.ready === 'true') return;
+      dialog.dataset.ready = 'true';
+      dialog.querySelector('[data-network-close]')?.addEventListener('click', () => dialog.close());
+      dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+    });
+  };
+  initNetworkDialogs();
+  document.addEventListener('astro:page-load', initNetworkDialogs);
+</script>

@@ -1,3 +1,23 @@
+## v2.9.39 — metrics consolidation
+
+- Consolidated homepage and network impact statistics into the single `Metrics` table.
+- `Stats` remains the reusable presentation section; Sections now link directly to the Metrics they display.
+- Renamed the Sections `Grid source` link to `Products` and added a separate `Metrics` link.
+- Renamed `Impact Metrics` to `Metrics` and `BASEROW_IMPACT_METRICS_TABLE_ID` to `BASEROW_METRICS_TABLE_ID` (the old environment name remains a temporary code fallback).
+- Added `Placement`, `TOM Theme`, `TOM Outcome`, `TOM Measure`, `Calc method`, `Evidence / source`, and `Last updated` support.
+- Metrics support both literal values and existing build-time `{{...}}` calculation tokens, including `{{total_members}}`.
+- Partner modals now show only Metrics linked to that partner with `Placement = Partner`.
+- Removed the special `Impact stats` renderer; existing legacy grouped Stats rows remain a fallback during migration.
+
+# v2.9.38
+
+- Added a dedicated Baserow-backed Network Partners model and `Network` section type with clickable partner cards and accessible detail modals.
+- Added an `Impact Metrics` table and reusable `Impact stats` section type for funder-ready network-wide measures and partner-level impact.
+- Added partner roles, longer descriptions, relationship copy, addresses and participation links to network modals.
+- Added optional partner-level metrics inside network detail modals.
+- Reduced Campaign heading sizes on mobile so founder-campaign copy no longer overwhelms narrow screens.
+- Network partner count now prefers the dedicated Network Partners table, while retaining the old Cards fallback during migration.
+
 ## v2.9.37
 - Refined Campaign launch panel to use one calendar icon with label, market date and countdown aligned in one text column.
 - Added `Pre-countdown label` support for Campaign and Call to action sections.

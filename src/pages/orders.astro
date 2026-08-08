@@ -10,7 +10,7 @@ const page = data.pages.find((item) => item.slug === 'orders') || {
   title: 'Weekly Shop', intro: '', titleSize: 'large', introSize: 'medium', heroLayout: 'text-only'
 };
 const orderSections = data.sections.filter((section) => section.page === 'orders');
-const gridSection = orderSections.find((section) => String(section.type).toLowerCase() === 'grid' && (!section.gridSource || String(section.gridSource).toLowerCase() === 'products'));
+const gridSection = orderSections.find((section) => String(section.type).toLowerCase() === 'grid');
 const sharedSections = orderSections.filter((section) => section !== gridSection && !section.catalogueCategory);
 const sharedBlocks = buildSectionBlocks(sharedSections);
 const broadCategories = [...new Set(data.products.flatMap((product) => product.categories || [product.category]).filter(Boolean))];

@@ -176,27 +176,22 @@ Add `Stats` to the **Section type** single-select options alongside:
 - Gallery
 - Stats
 
-For each stat row use:
+For each Stats section use:
 
 - **Section type**: `Stats`
-- **Group key**: the same value for every tile in the group, for example `impact-stats`
-- **Heading**: the large value, for example `£12,500` or `24`
-- **Subheading**: the short label, for example `spent with local producers`
-- **Alignment**: Left / Centre / Right
-- **Columns**: normally set on the first row in the group; use 2–4
-- **Order**: controls the tile order
-- **Space above / Space below / Background style / Heading size**: the first row controls the grouped section, just as with Cards and Gallery
+- **Metrics**: link the Metric rows this section should display
+- **Heading / Eyebrow / Subheading / Body**: optional framing copy for the group
+- **Columns**: 2–4
+- **Alignment / spacing / background / size controls**: presentation only
 
-Rows sharing both `Section type = Stats` and the same **Group key** render as one responsive tile row. On screens up to 640px wide the grid becomes two columns.
-
-The group heading is derived in the same way as existing grouped Cards/Gallery sections: use the first row's **Eyebrow** to set an explicit group title, or let the Group key provide the fallback label.
+The linked Metrics render in `Display order`. Legacy grouped Stats rows are still supported temporarily during migration. On screens up to 640px wide the grid becomes two columns.
 
 ## Dynamic values
 
-The Heading field can contain these build-time tokens:
+Metric `Value` / `Display value` and legacy Stats headings can contain these build-time tokens:
 
-- `{{members}}` — number of active rows in Members.
-- `{{network_partners}}` — number of visible `Cards` rows on the `our-partners` page.
+- `{{members}}` / `{{total_members}}` — number of active rows in Members.
+- `{{network_partners}}` — number of active rows in **Network Partners**.
 - `{{member_spending}}` — `Site Settings → Historic total member spending` plus the absolute sum of `Account Transactions → Amount` where Type is `Order charge`.
 
 Example headings: `{{members}}`, `{{network_partners}}`, `£{{member_spending}}`.
@@ -258,3 +253,8 @@ Backend Baserow error bodies are written only to Cloudflare logs. Public APIs re
 ## Semantic theme colours
 
 The public site theme is supplied by Site Settings and exposed as CSS variables: `Background colour` → `--background` (page backdrop), `Surface colour` → `--surface` (normal cards/forms/boxed content), `Highlight colour` → `--highlight` (emphasised/inset panels), `Primary colour` → `--primary` (text/buttons), `Border colour` → `--line`, and `Accent colour` → `--accent` (secondary botanical detail). Section `Background style` maps `Default` to transparent, `Alternate` to Surface, `Highlight` to Highlight, and `Accent` to Primary with Surface-coloured text. `Watermark image` and `Watermark opacity` are intentionally ignored by all section renderers except Campaign and Call to action. `Eyebrow icon` is supplied from Site Settings for those two section types.
+
+
+### Network / impact data
+
+`BASEROW_NETWORK_PARTNERS_TABLE_ID` supplies public partner profiles for the `Network` section renderer. `BASEROW_METRICS_TABLE_ID` supplies public aggregate and partner-attributed measures for the `Stats` renderer and partner modals. Both are build-time public-content reads and should use the least-privilege Baserow token.

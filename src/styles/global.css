@@ -1074,3 +1074,38 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .cta-watermark{position:absolute;z-index:0;top:-1.2rem;right:-1rem;width:min(34vw,420px);aspect-ratio:13/9;background-position:center;background-size:contain;background-repeat:no-repeat;opacity:var(--watermark-opacity,.08);pointer-events:none}
 .cta-section .cta-copy,.cta-section .cta-media{position:relative;z-index:1}
 @media(max-width:760px){.cta-watermark{width:260px;right:-3.5rem;top:-1.5rem;opacity:var(--watermark-opacity,.08)}}
+
+/* v2.9.38 network story + impact architecture */
+.impact-stat-card{display:grid;align-content:start;gap:.3rem;min-width:0;padding:0 clamp(1rem,2.2vw,1.7rem);border-right:1px solid var(--border);color:var(--primary)}
+.impact-stat-card:first-child{padding-left:0}.impact-stat-card:last-child{padding-right:0;border-right:0}
+.impact-stat-icon{width:2rem;height:2rem;object-fit:contain;margin-bottom:.3rem}
+.impact-stat-card strong{font-size:clamp(1.8rem,4vw,2.8rem);line-height:1;font-weight:800}
+.impact-stat-card span{font-weight:750}.impact-stat-card small{font-size:.82rem;line-height:1.35;opacity:.72}
+.network-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(1.2rem,3vw,2rem);margin-top:1.6rem}
+.network-card{overflow:hidden;border:1px solid var(--border);border-radius:1.1rem;background:var(--surface);box-shadow:0 7px 20px rgba(54,42,30,.05)}
+.network-card .card-media,.network-card .card-gallery-shell{margin:0}.network-card .card-gallery,.network-card .card-media{border-radius:0}
+.network-card-copy{padding:1.15rem 1.25rem 1.3rem}.network-card-copy h3{margin:0 0 .35rem}.network-card-copy>p:last-of-type{margin-bottom:.8rem}
+.network-role{margin:.1rem 0 .7rem;font-size:.8rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.network-explore{display:inline-flex;align-items:center;gap:.5rem;margin-top:.3rem;padding:0;border:0;background:none;color:var(--primary);font:inherit;font-weight:800;cursor:pointer}
+.network-explore:hover{text-decoration:underline}
+.network-dialog{width:min(1000px,calc(100vw - 2rem));max-height:calc(100vh - 2rem);padding:0;border:1px solid var(--border);border-radius:1.2rem;background:var(--surface);color:var(--primary);box-shadow:0 25px 80px rgba(30,20,25,.28)}
+.network-dialog::backdrop{background:rgba(25,19,23,.56);backdrop-filter:blur(2px)}
+.network-dialog-inner{display:grid;grid-template-columns:minmax(280px,.85fr) minmax(0,1.15fr);min-height:0}
+.network-dialog-media{position:sticky;top:0;align-self:start}.network-dialog-media .card-gallery,.network-dialog-media .card-media{border-radius:1.2rem 0 0 1.2rem}
+.network-dialog-copy{display:grid;gap:1.25rem;padding:clamp(1.5rem,4vw,2.8rem)}
+.network-dialog-copy header h2{margin:0}.network-dialog-copy section{padding-top:1rem;border-top:1px solid var(--border)}.network-dialog-copy section h3{margin:0 0 .55rem}
+.network-dialog-close{position:absolute;z-index:20;top:.75rem;right:.75rem;width:2.5rem;height:2.5rem;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--primary);font-size:1.8rem;line-height:1;cursor:pointer}
+.network-partner-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.network-partner-stats div{display:grid;gap:.2rem}.network-partner-stats strong{font-size:1.65rem}.network-partner-stats span{font-size:.85rem;opacity:.75}
+.network-links>div{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+@media(max-width:760px){
+  .campaign-heading.size-small{font-size:clamp(1.75rem,8vw,1.95rem)}
+  .campaign-heading.size-medium{font-size:clamp(1.9rem,9vw,2.25rem)}
+  .campaign-heading.size-large{font-size:clamp(2.05rem,10vw,2.55rem)}
+  .impact-stat-card{border-right:0;padding:.2rem 1rem .8rem 0;border-bottom:1px solid var(--border)}
+  .impact-stat-card:nth-child(even){padding-left:1rem;padding-right:0}
+  .network-grid{grid-template-columns:1fr}
+  .network-dialog-inner{grid-template-columns:1fr}.network-dialog-media{position:static}.network-dialog-media .card-gallery,.network-dialog-media .card-media{border-radius:1.2rem 1.2rem 0 0;max-height:42vh}
+}
+@media(max-width:430px){.campaign-heading.size-large{font-size:2.2rem}.campaign-heading.size-medium{font-size:2rem}.campaign-heading.size-small{font-size:1.8rem}}
+
+.stat-description{display:block;margin-top:.35rem;font-size:.82rem;line-height:1.35;opacity:.72}
