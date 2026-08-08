@@ -35,6 +35,7 @@ export const fallbackSettings = {
   highlightColour: '#f5f6ed',
   borderColour: '#d9dec5',
   accentColour: '#71856a',
+  eyebrowIcon: '',
   headerLogo: '',
   footerLogo: '',
   contactEmail: 'info@rootedcommons.uk',

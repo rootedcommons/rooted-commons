@@ -1,3 +1,10 @@
+## v2.9.37
+- Refined Campaign launch panel to use one calendar icon with label, market date and countdown aligned in one text column.
+- Added `Pre-countdown label` support for Campaign and Call to action sections.
+- Added editable `Watermark opacity` (0–100%) for Campaign and Call to action watermarks only.
+- Added Site Settings `Eyebrow icon` upload for Campaign and Call to action eyebrows, replacing the hard-coded campaign leaf.
+- Made Campaign heading and body typography respect the existing Baserow size controls, and slightly reduced founder badge size to better match the approved mock-up.
+
 ## v2.9.36
 - Fixed Pages Functions auth import regression in access-link requests.
 - Restored validated return paths so checkout access-link requests return members to checkout.

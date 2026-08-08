@@ -490,11 +490,8 @@ After the table exists, add its table ID to Cloudflare as `BASEROW_MEMBER_SESSIO
 
 ### Theme colours
 
-Site Settings controls the shared site palette: `Background colour`, `Primary colour`, `Highlight colour`, `Border colour`, and optional `Accent colour`. The default Rooted Commons palette is warm ivory `#faf8f1`, plum `#5a2d4d`, pale sage `#f5f6ed`, sage border `#d9dec5`, and botanical accent `#71856a`. Campaign sections can also use an optional `Watermark image` File field in Sections.
-
-
-### Theme colours
+The default Rooted Commons palette uses taupe `#ded8cc` for the page backdrop, warm ivory `#faf8f1` for content surfaces, plum `#5a2d4d` for primary text/buttons, pale sage `#f5f6ed` for highlights, sage `#d9dec5` for borders, and botanical green `#71856a` for decorative accents. Campaign and Call to action sections can use an optional `Watermark image` plus `Watermark opacity`, and Site Settings can provide an optional `Eyebrow icon`.
 
 Site Settings separates the page backdrop from content surfaces: `Background colour` controls the overall page backdrop, `Surface colour` controls normal cards/forms/boxed sections, `Highlight colour` controls emphasized/inset panels, `Primary colour` controls main text and buttons, `Border colour` controls lines/borders, and `Accent colour` controls secondary botanical/decorative details.
 
-`Watermark image` belongs to Sections and is rendered only by `Campaign` and `Call to action` section types. Other section types ignore it.
+`Watermark image` and `Watermark opacity` belong to Sections and are rendered only by `Campaign` and `Call to action` section types. Other section types ignore them. `Watermark opacity` is a percentage from 0 to 100 and defaults to 8 when blank. `Pre-countdown label` provides the small label above `Pre-countdown text` (for example `First online market:`). `Eyebrow icon` belongs to Site Settings and is used beside Campaign and Call to action eyebrows.

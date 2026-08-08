@@ -164,6 +164,7 @@ export async function getSiteData() {
     highlightColour: text(validSettingsRow, 'Highlight colour', fallbackSettings.highlightColour),
     borderColour: text(validSettingsRow, 'Border colour', fallbackSettings.borderColour),
     accentColour: text(validSettingsRow, 'Accent colour', fallbackSettings.accentColour),
+    eyebrowIcon: fileUrl(validSettingsRow, 'Eyebrow icon', fallbackSettings.eyebrowIcon || ''),
     headerLogo: fileUrl(validSettingsRow, 'Header logo'),
     footerLogo: fileUrl(validSettingsRow, 'Footer logo'),
     contactEmail: text(validSettingsRow, 'Contact email', fallbackSettings.contactEmail),
@@ -290,6 +291,7 @@ export async function getSiteData() {
       image2,
       image3,
       watermarkImage,
+      watermarkOpacity: Math.min(100, Math.max(0, numeric(row, 'Watermark opacity', 8))),
       order: numeric(row, 'Order', row.order || 0),
       visible: boolean(row, 'Visible', row.visible ?? true),
       type: explicitType || inferredType,
@@ -319,6 +321,7 @@ export async function getSiteData() {
       groupKey,
       groupHeading: text(row, 'Group heading'),
       countdownDate: text(row, 'Countdown date'),
+      preCountdownLabel: text(row, 'Pre-countdown label'),
       preCountdownText: text(row, 'Pre-countdown text'),
       postCountdownText: text(row, 'Post-countdown text'),
       imageCaption: text(row, 'Image caption')
