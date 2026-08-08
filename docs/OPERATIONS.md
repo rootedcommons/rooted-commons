@@ -77,13 +77,13 @@ Suggested body:
 >
 > Welcome to Rooted Commons. Your membership has been created successfully.
 >
-> Please confirm that this email address belongs to you by opening your secure member link:
+> Please confirm that this email address belongs to you by opening your weekly access link:
 >
 > **[Confirm my email and open my dashboard]**
 >
 > This is a unique private link to your membership account and member credit. Please do not share it with anyone or use it on someone else's device.
 >
-> We will send you a new unique link each Wednesday after orders close. When a new link is issued, the previous one stops working.
+> We send a new weekly access link each Wednesday after orders close. The new link replaces the previous link for new sign-ins, while devices that are already signed in remain signed in for up to 90 days.
 >
 > Your member number and payment reference is **{{ member_number }}**.
 >

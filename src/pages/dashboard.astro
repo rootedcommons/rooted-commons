@@ -252,11 +252,13 @@ const copy={
   {blocks.map((block)=><SectionRenderer block={block} products={data.products} settings={s} />)}
 
   <script is:inline define:vars={{ badgeLogos, memberBadge, membershipPerks, collectionPoints:data.collectionPoints, bankAccountName:s.bankAccountName, bankSortCode:s.bankSortCode, bankAccountNumber:s.bankAccountNumber, copy }}>
-    const TOKEN_KEY='rooted-commons-order-token-v1';
     const params=new URLSearchParams(location.search);
     const urlToken=params.get('token');
-    if(urlToken)localStorage.setItem(TOKEN_KEY,urlToken);
-    const token=urlToken||localStorage.getItem(TOKEN_KEY)||'';
+    if(urlToken){
+      localStorage.removeItem('rooted-commons-order-token-v1');
+      location.replace(`/api/access?token=${encodeURIComponent(urlToken)}&return=${encodeURIComponent('/dashboard/')}`);
+    }
+    const token='';
     const verifiedNotice=document.querySelector('#dashboard-email-verified');
     if(params.get('verified')==='1'&&verifiedNotice)verifiedNotice.hidden=false;
 
@@ -287,7 +289,7 @@ const copy={
       const button=pointForm.querySelector('button[type="submit"]');
       button.disabled=true;
       pointMessage.textContent=copy.collectionSaving;
-      const response=await fetch('/api/member',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({token,collectionPointId:Number(pointSelect.value),preferredCollectionDay:daySelect.value})});
+      const response=await fetch('/api/member',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({collectionPointId:Number(pointSelect.value),preferredCollectionDay:daySelect.value})});
       const payload=await response.json();
       if(response.ok&&payload.ok){
         const point=payload.collectionPoint||{};
@@ -350,8 +352,7 @@ const copy={
     }));
 
     async function load(){
-      if(!token){location.href='/orders/';return;}
-      const response=await fetch(`/api/member?token=${encodeURIComponent(token)}`);
+      const response=await fetch('/api/member');
       if(!response.ok){
         document.querySelector('#dashboard-loading').innerHTML=`<h2>${copy.invalidHeading}</h2><p>${copy.invalidBody}</p>`;
         return;
@@ -393,7 +394,7 @@ const copy={
       renderPerks(weeks,isNew);
 
       const shop=document.querySelector('#dashboard-shop-link');
-      shop.href=`/orders/?token=${encodeURIComponent(token)}`;
+      shop.href='/orders/';
       shop.textContent=copy.browseMarket;
 
       const commitment=Number(member.weeklyCommitment)||0;

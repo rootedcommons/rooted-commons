@@ -29,9 +29,7 @@ Required:
 - `First name`
 - `Email`
 - `Active`
-- `Order token`
-- `Token created` — date/time set whenever a new Order token is generated
-- `Order token expiry` — date/time; next Wednesday at 18:05 Europe/London
+- `Access link requested at` — optional date/time audit field written when a member asks for their current weekly access link to be resent
 - `Current credit`
 - `Weekly commitment`
 - `Collection point`
@@ -467,3 +465,24 @@ Every grouped Cards section now displays each `.content-card` as a visible highl
 - equal card height within each row.
 
 No additional Baserow field is needed. Keep the overall section background on **Default** when you want the individual highlighted cards to remain distinct.
+
+## Secure Member Sessions (v2.9.29+)
+
+Create a table named **Member Sessions** before enabling the secure-session release. Use these fields exactly:
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| Name | Single line text / primary | Human-readable label |
+| Member | Link to table → Members | One member |
+| Session ID | Single line text | Non-secret random identifier |
+| Created at | Date/time | Session creation time |
+| Expires at | Date/time | Weekly access: next Wednesday 18:05; device session: 90 days |
+| Revoked at | Date/time | Blank unless deliberately revoked |
+| Last used at | Date/time | Optional audit field; currently not written on every request |
+| Purpose | Single select | `Weekly access` or `Device session` |
+| Active | Checkbox | Enabled for usable sessions |
+
+Do **not** add a plaintext access-token field. The `Session ID` is deliberately not sufficient to sign in: Cloudflare signs it with `AUTH_SESSION_SECRET`, which never enters Baserow.
+
+After the table exists, add its table ID to Cloudflare as `BASEROW_MEMBER_SESSIONS_TABLE_ID`. Add `AUTH_SESSION_SECRET` as encrypted Cloudflare secrets.
+

@@ -9,7 +9,8 @@ export function envConfig(env) {
     collectionPoints: env.BASEROW_COLLECTION_POINTS_TABLE_ID,
     orders: env.BASEROW_WEB_ORDERS_TABLE_ID,
     transactions: env.BASEROW_ACCOUNT_TRANSACTIONS_TABLE_ID,
-    xeroSyncState: env.BASEROW_XERO_SYNC_STATE_TABLE_ID
+    xeroSyncState: env.BASEROW_XERO_SYNC_STATE_TABLE_ID,
+    sessions: env.BASEROW_MEMBER_SESSIONS_TABLE_ID
   };
 }
 
@@ -40,7 +41,11 @@ async function apiRequest(cfg, path, options = {}) {
     ...options,
     headers: { Authorization: `Token ${cfg.token}`, 'content-type':'application/json', ...(options.headers || {}) }
   });
-  if (!response.ok) throw new Error(`Baserow ${response.status}: ${await response.text()}`);
+  if (!response.ok) {
+    const detail=await response.text();
+    console.error('Baserow request failed',{status:response.status,path,detail:detail.slice(0,1000)});
+    throw new Error(`Baserow request failed (${response.status})`);
+  }
   if (response.status === 204) return null;
   return response.json();
 }
@@ -55,6 +60,23 @@ export async function listRows(cfg, tableId) {
     page += 1;
   }
 }
+
+export async function getRow(cfg, tableId, rowId) {
+  if (!tableId) throw new Error('A required Baserow table ID is missing');
+  return apiRequest(cfg, `/api/database/rows/table/${tableId}/${rowId}/?user_field_names=true`);
+}
+
+export async function listRowsFiltered(cfg, tableId, filters = {}, { size = 20 } = {}) {
+  if (!tableId) throw new Error('A required Baserow table ID is missing');
+  const params=new URLSearchParams({user_field_names:'true',size:String(Math.min(200,Math.max(1,size)))});
+  for(const [field,value] of Object.entries(filters)){
+    if(value===undefined||value===null||value==='') continue;
+    params.set(`filter__${field}__equal`,String(value));
+  }
+  const payload=await apiRequest(cfg, `/api/database/rows/table/${tableId}/?${params.toString()}`);
+  return payload.results||[];
+}
+
 export async function createRow(cfg, tableId, fields) {
   return apiRequest(cfg, `/api/database/rows/table/${tableId}/?user_field_names=true`, {method:'POST', body:JSON.stringify(fields)});
 }
@@ -64,13 +86,6 @@ export async function deleteRow(cfg, tableId, rowId) {
 
 export async function updateRow(cfg, tableId, rowId, fields) {
   return apiRequest(cfg, `/api/database/rows/table/${tableId}/${rowId}/?user_field_names=true`, {method:'PATCH', body:JSON.stringify(fields)});
-}
-
-export function tokenValid(member, token) {
-  if (!token || String(member['Order token'] || '') !== String(token)) return false;
-  if (!truthy(member.Active, false)) return false;
-  const expiry = member['Order token expiry'];
-  return !expiry || new Date(expiry).getTime() > Date.now();
 }
 
 

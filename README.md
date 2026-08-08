@@ -29,3 +29,8 @@ npm run build
 ```
 
 The existing `baserow-imports/` and `baserow-table-specification/` folders are retained unchanged in this housekeeping release. They will be rebuilt from clean live exports for v3.0.
+
+
+## Access-link email flow
+
+Checkout, signup and the Sign in page post to `/api/request-link`. For a matching active member, Cloudflare reconstructs the current weekly access link from the non-secret Member Sessions record plus the Cloudflare signing secret and sends it directly through mailbox.org SMTP. Baserow never stores a usable bearer link. Opening a weekly link creates a separate 90-day HttpOnly device session. A Wednesday scheduler replaces only the `Weekly access` credential and emails it to active members; existing device sessions are unaffected.

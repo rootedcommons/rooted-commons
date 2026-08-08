@@ -208,7 +208,7 @@ export const fallbackInterfaceContent: Record<string, string> = {
   "faq.05.question": "What can I buy?",
   "faq.05.answer": "The range can include fresh seasonal produce, organic cooking staples, household refills and locally produced goods such as flowers, beeswax products or charcoal. Availability changes from week to week.",
   "faq.06.question": "How do I place an order?",
-  "faq.06.answer": "Sign in using your secure member link, browse the weekly market, add products to your basket and confirm your order before the weekly deadline shown on the site.",
+  "faq.06.answer": "Sign in using your weekly access link, or return on a device where you're already signed in. Browse the weekly market, add products to your basket and confirm your order before the weekly deadline shown on the site.",
   "faq.07.question": "Where do I collect my order?",
   "faq.07.answer": "Choose one of the available local collection points. Products from across the network are brought together into one order ready for collection at the advertised time.",
   "faq.08.question": "What happens if I do not spend all my credit?",
@@ -243,7 +243,7 @@ export const fallbackInterfaceContent: Record<string, string> = {
   "signup.weekly_commitment_help": "Minimum £10.00/week. Your regular contribution becomes member credit to spend through the weekly market.",
   "signup.monthly_commitment_help": "Minimum £43.33/month (equivalent to £10/week). Your regular contribution becomes member credit to spend through the weekly market.",
   "signup.keeping_in_touch_heading": "Keeping in touch",
-  "signup.keeping_in_touch_body": "Each Wednesday after orders close, we'll email you a new unique link to the following week's market. This gives you secure access to your account and member credit without needing a password.",
+  "signup.keeping_in_touch_body": "Each Wednesday after orders close, we'll email you a new secure access link for the following week's market. When you use it, we'll keep you signed in on that device so you can return without using the link again.",
   "signup.weekly_newsletter_text": "I'm happy for occasional Rooted Commons news and updates to be included in this weekly email.",
   "signup.membership_consent_prefix": "I agree to the",
   "signup.membership_terms_link": "Rooted Commons Membership Terms",
@@ -260,5 +260,5 @@ export const fallbackInterfaceContent: Record<string, string> = {
   "signup.existing_member_body": "We can resend your access link to the email address above.",
   "signup.existing_member_button": "Send me a new login link",
   "dashboard.email_verified": "Email address confirmed.",
-  "signup.dashboard_security": "**Please keep this unique link secret.** It is a private key to your membership account and wallet, so don’t share it with anyone or log in on someone else’s device.\n\nTo keep your account and member credit secure, we’ll send you a new unique link every Wednesday after orders close. Your previous link will stop working when the new one is issued."
+  "signup.dashboard_security": "**Keep your access link private.** It can be used to sign in to your membership on a new device. Once signed in, you'll normally stay signed in on that device for up to 90 days.\n\nWe'll send you a new weekly access link each Wednesday after orders close. Each new weekly link replaces the previous link for new sign-ins, but devices that are already signed in remain signed in."
 };

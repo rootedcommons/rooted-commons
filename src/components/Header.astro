@@ -12,23 +12,27 @@ const links = Array.isArray(settings.navigationLinks) && settings.navigationLink
   <nav class={`text-${settings.navigationTextSize}`} aria-label="Main navigation">
     {links.map((link) => <a href={link.url}>{link.label}</a>)}
   </nav>
-  <a id="membership-header-button" class={`button header-cta button-${settings.buttonTextSize}`} href={settings.headerButtonUrl || settings.joinButtonUrl || '/volunteering/'}>
-    {settings.headerButtonText || settings.joinButtonText || 'Join our growing network'}
-  </a>
+  <div class="header-actions">
+    <a id="auth-header-button" class="header-auth-link" href="/signin/">Sign in</a>
+    <a id="membership-header-button" class={`button header-cta button-${settings.buttonTextSize}`} href={settings.headerButtonUrl || settings.joinButtonUrl || '/volunteering/'}>
+      {settings.headerButtonText || settings.joinButtonText || 'Join our growing network'}
+    </a>
+  </div>
 </header>
 {settings.headerText && <FormattedText text={settings.headerText} class="header-message" />}
 
 <script is:inline>
   (() => {
-    const TOKEN_KEY = 'rooted-commons-order-token-v1';
-    const params = new URLSearchParams(window.location.search);
-    const urlToken = params.get('token');
-    if (urlToken) localStorage.setItem(TOKEN_KEY, urlToken);
-    const token = urlToken || localStorage.getItem(TOKEN_KEY);
-    if (!token) return;
-    const button = document.querySelector('#membership-header-button');
-    if (!button) return;
-    button.textContent = 'My Membership';
-    button.setAttribute('href', '/dashboard/');
+    localStorage.removeItem('rooted-commons-order-token-v1');
+    const button=document.querySelector('#membership-header-button');
+    const authButton=document.querySelector('#auth-header-button');
+    if(!button||!authButton)return;
+    fetch('/api/member').then(response=>{
+      if(!response.ok)return;
+      button.textContent='My Membership';
+      button.setAttribute('href','/dashboard/');
+      authButton.textContent='Sign out';
+      authButton.setAttribute('href','/api/signout');
+    }).catch(()=>{});
   })();
 </script>

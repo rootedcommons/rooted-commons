@@ -31,17 +31,20 @@ const mapPoints = points
       const params=new URLSearchParams(window.location.search);
       const returnPath=params.get('return')||'';
       const selectionMode=params.get('select')==='1';
-      const TOKEN_KEY='rooted-commons-order-token-v1';
-      const memberToken=params.get('token')||localStorage.getItem(TOKEN_KEY)||'';
-      const canSelect=selectionMode||Boolean(memberToken);
+      localStorage.removeItem('rooted-commons-order-token-v1');
+      const urlToken=params.get('token')||'';
+      if(urlToken)location.replace(`/api/access?token=${encodeURIComponent(urlToken)}&return=${encodeURIComponent(location.pathname+location.search.replace(/([?&])token=[^&]*&?/,'$1').replace(/[?&]$/,''))}`);
+      let memberAuthenticated=false;
       const backButton=document.getElementById('collection-map-back');
       backButton?.addEventListener('click',()=>{
         if(window.history.length>1)window.history.back();
         else window.location.href=returnPath||'/';
       });
 
-      const initialise=()=>{
+      const initialise=async()=>{
         if(!window.L)return;
+        if(!selectionMode){try{memberAuthenticated=(await fetch('/api/member')).ok;}catch{memberAuthenticated=false;}}
+        const canSelect=selectionMode||memberAuthenticated;
         const map=L.map(mapEl,{scrollWheelZoom:false});
         const bounds=[];
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
@@ -75,10 +78,10 @@ const mapPoints = points
                 window.location.href=returnPath||'/signup/';
                 return;
               }
-              if(memberToken){
-                const current=await fetch(`/api/member?token=${encodeURIComponent(memberToken)}`).then(r=>r.json());
+              if(memberAuthenticated){
+                const current=await fetch('/api/member').then(r=>r.json());
                 const preferred=current?.member?.preferredCollectionDay||'Thursday';
-                const response=await fetch('/api/member',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({token:memberToken,collectionPointId:pointId,preferredCollectionDay:preferred})});
+                const response=await fetch('/api/member',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({collectionPointId:pointId,preferredCollectionDay:preferred})});
                 const payload=await response.json();
                 if(!response.ok)throw new Error(payload.message||'Could not update collection point.');
                 if(status){status.hidden=false;status.textContent='Collection point updated.';}

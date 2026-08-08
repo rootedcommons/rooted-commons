@@ -48,7 +48,7 @@ Basket contents do not reserve stock. The endpoint rechecks stock immediately be
 
 ## Before publishing the Baserow workflow
 
-1. Create a test member with a valid Order token.
+1. Create a test member and a valid `Weekly access` row in Member Sessions.
 2. Confirm Products have numeric Member price and rollup Available stock.
 3. Confirm exact select options exist.
 4. Create a workflow test Web Order with a small basket.
@@ -243,3 +243,13 @@ The diagnostic rotates and persists the Xero refresh token as part of the read. 
 - Exact RC references that do not match a member are retained as `Match status = Unmatched` with `Included in credit = false`.
 - The scheduler is the separate `cloudflare/xero-sync-cron-worker.js` Worker with a 15-minute Cron Trigger.
 
+
+## Authentication security architecture (v2.9.27+)
+
+Member authentication is intentionally separated from the Members table. Baserow stores only session metadata: a non-secret `Session ID` for new links, or a one-way SHA-256 digest for legacy links issued before migration. Cloudflare holds `AUTH_SESSION_SECRET` and signs each Session ID with HMAC-SHA-256. A Baserow export therefore does not contain a replayable member credential.
+
+An emailed access URL first visits `/api/access`. Cloudflare verifies the signed/legacy session, sets an `HttpOnly; Secure; SameSite=Lax` session cookie, and redirects to a clean dashboard/orders/checkout URL. Member tokens are no longer persisted in browser localStorage or repeatedly placed in internal URLs.
+
+`/api/request-link` performs an API-level Baserow email filter rather than loading every Member row. It reconstructs the member's current weekly access link from non-secret Session ID + the Cloudflare signing secret and sends it directly over SMTP. Opening that link exchanges it for a separate 90-day `Device session` stored in an HttpOnly cookie. Resending the current weekly link does not revoke the member's device sessions.
+
+Backend Baserow error bodies are written only to Cloudflare logs. Public APIs return generic server errors. Keep Baserow database-token permissions at the minimum needed per table and rotate credentials if a Cloudflare secret is ever suspected of exposure.

@@ -113,7 +113,7 @@ const collectionPointsForMemberBar = data.collectionPoints.map((point) => ({ id:
 
   <script is:inline define:vars={{ basketEmptyText: c('basket.empty'), basketNotice: c('basket.notice'), broadCategories, collectionPointsForMemberBar }}>
     const STORAGE_KEY = 'rooted-commons-basket-v1';
-    const TOKEN_KEY = 'rooted-commons-order-token-v1';
+    localStorage.removeItem('rooted-commons-order-token-v1');
     const money = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' });
     const normalise = (value) => String(value || '').trim().toLowerCase();
     const slugify = (value) => normalise(value).replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -121,8 +121,8 @@ const collectionPointsForMemberBar = data.collectionPoints.map((point) => ({ id:
 
     const params = new URLSearchParams(location.search);
     const urlToken = params.get('token');
-    if (urlToken) localStorage.setItem(TOKEN_KEY, urlToken);
-    const token = urlToken || localStorage.getItem(TOKEN_KEY) || '';
+    if(urlToken)location.replace(`/api/access?token=${encodeURIComponent(urlToken)}&return=${encodeURIComponent('/orders/')}`);
+    const token='';
     const dayRank={Thursday:0,Friday:1,Saturday:2,Sunday:3};
     function marketCycle(){
       const parts=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',weekday:'short',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).filter(part=>part.type!=='literal').map(part=>[part.type,part.value]));
@@ -202,7 +202,7 @@ const collectionPointsForMemberBar = data.collectionPoints.map((point) => ({ id:
       const preferredCollectionDay=document.querySelector('#member-summary-day').value;
       memberSummaryMessage.textContent='Saving…';
       try{
-        const response=await fetch('/api/member',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({token,collectionPointId,preferredCollectionDay})});
+        const response=await fetch('/api/member',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({collectionPointId,preferredCollectionDay})});
         const payload=await response.json();
         if(!response.ok||!payload.ok)throw new Error(payload.message||'Unable to update collection point.');
         member.collectionPoint=payload.collectionPoint;
@@ -313,8 +313,7 @@ const collectionPointsForMemberBar = data.collectionPoints.map((point) => ({ id:
     });
 
     async function loadMember(){
-      if(!token)return;
-      const response=await fetch(`/api/member?token=${encodeURIComponent(token)}`);
+      const response=await fetch('/api/member');
       if(!response.ok)return;
       const payload=await response.json();
       member=payload.member;

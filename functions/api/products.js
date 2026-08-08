@@ -16,6 +16,7 @@ export async function onRequestGet({ env }) {
     const rows = await listRows(cfg, cfg.products);
     return json({ ok: true, products: rows.map(stockPayload) });
   } catch (error) {
-    return json({ ok: false, message: String(error.message || 'Product availability could not be loaded.') }, 500);
+    console.error('product availability failed',error);
+    return json({ok:false,message:'Product availability could not be loaded.'},500);
   }
 }

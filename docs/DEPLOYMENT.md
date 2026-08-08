@@ -99,3 +99,26 @@ Cloudflare Pages Functions do not themselves provide a Cron Trigger configuratio
 
 The sync is idempotent by Xero BankTransactionID. Payments with an exact RC reference but no matching member are recorded as Unmatched and excluded from member credit; unrelated receipts are ignored.
 
+
+## v2.9.29 member-session security setup
+
+Before deploying the session migration, create the **Member Sessions** table described in `BASEROW-SETUP.md`.
+
+Add these encrypted secrets/variables to the Cloudflare Pages project:
+
+- `BASEROW_MEMBER_SESSIONS_TABLE_ID` — the new table ID.
+- `AUTH_SESSION_SECRET` — a long random value (at least 32 random bytes / 43+ base64url characters recommended). Never store this in Baserow or Git.
+- `SMTP_HOST` — `smtp.mailbox.org` unless using another SMTP service.
+- `SMTP_PORT` — `465`.
+- `SMTP_USERNAME` — the mailbox.org sending mailbox.
+- `SMTP_PASSWORD` — the mailbox password/app credential, stored as a Cloudflare secret.
+- `ACCESS_EMAIL_FROM` — sender address for member access links.
+- `EMAIL_FROM_NAME` — normally `Rooted Commons`.
+
+
+
+Access-link requests are now sent directly from the Cloudflare Function through mailbox.org SMTP. The Baserow `Access link requested at` field remains a useful audit/rate-limit timestamp but no Baserow email automation is required for access links.
+
+### Weekly access rotation
+
+Set `WEEKLY_ACCESS_SYNC_KEY` as an encrypted secret on the Pages project. Create a small standalone Cloudflare Worker from `cloudflare/weekly-access-cron-worker.js` with `ROOTED_WEEKLY_ACCESS_URL=https://rootedcommons.uk/api/weekly-access/sync` and the same `WEEKLY_ACCESS_SYNC_KEY`. Give the Worker two Wednesday cron triggers, `10 17 * * 3` and `10 18 * * 3`. The Worker checks Europe/London time and only calls the site during the 18:05–18:35 local window, so this remains correct across GMT/BST. The endpoint is idempotent: `Email sent at` prevents duplicate weekly messages on retry.

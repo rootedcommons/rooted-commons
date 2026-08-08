@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { loadSiteData } from '../data/baserow';
+const data=await loadSiteData();
+---
+<BaseLayout title="Sign in | Rooted Commons" data={data}>
+  <main class="signup-page">
+    <section class="signup-shell">
+      <div class="signup-card">
+        <h1>Sign in</h1>
+        <p>Enter the email address linked to your membership and we’ll send your current access link.</p>
+        <form id="signin-form" class="signup-grid">
+          <label class="full"><span>Email address</span><input name="email" type="email" autocomplete="email" required /></label>
+          <div class="full"><button class="button" type="submit">Send my access link</button></div>
+          <p id="signin-status" class="small-print full" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+<script is:inline>
+  (()=>{
+    const form=document.querySelector('#signin-form');
+    const status=document.querySelector('#signin-status');
+    if(!form||!status)return;
+    form.addEventListener('submit',async event=>{
+      event.preventDefault();
+      const button=form.querySelector('button[type="submit"]');
+      button.disabled=true;
+      status.textContent='Sending…';
+      try{
+        const response=await fetch('/api/request-link',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:new FormData(form).get('email'),returnPath:'/dashboard/'})});
+        const payload=await response.json().catch(()=>({}));
+        status.textContent=payload.message||'If that email belongs to an active member, we’ve sent your access link.';
+      }catch{
+        status.textContent='We could not send an access link just now. Please try again.';
+      }finally{button.disabled=false;}
+    });
+  })();
+</script>

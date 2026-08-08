@@ -1,5 +1,39 @@
 # Changelog
 
+## 2.9.30
+
+- Finalised the clean secure-session architecture for a pre-launch installation: Member Sessions now uses only `Weekly access` and `Device session`.
+- Removed legacy plaintext-token migration code and documentation.
+- Added scheduled Wednesday weekly-access rotation and service-email delivery through Cloudflare/mailbox.org.
+- Added `Email sent at` to Member Sessions so retries do not duplicate the weekly email.
+- Added `cloudflare/weekly-access-cron-worker.js`, with Europe/London time checking to handle GMT/BST safely.
+- On-demand access-link requests continue to resend the current weekly credential without rotating it or signing out existing devices.
+- Standardised outgoing mail display name on `EMAIL_FROM_NAME` (with backwards-compatible fallback).
+
+## v2.9.29 — 8 August 2026
+
+- Separated weekly access credentials from remembered-device sessions. Opening a weekly access link now creates a distinct 90-day `Device session`, so the next Wednesday link rotation does not sign out an already-authenticated device.
+- Email verification now creates the same 90-day device session.
+- Sign out now revokes the current device-session row as well as clearing the HttpOnly cookie.
+- Updated signup, FAQ, checkout, membership terms, privacy/cookie wording and welcome-email copy to describe weekly access links and remembered-device sessions accurately.
+- Updated Baserow import/specification CSVs: removed plaintext `Order token`, `Token created` and `Order token expiry` from Members; added `Access link requested at`; added the new `Member Sessions` table specification/import.
+
+## 2.9.28
+
+- Added a header Sign in / Sign out control alongside the existing membership button.
+- Added a dedicated sign-in page that resends the member’s current access link without rotating it.
+- Added a sign-out endpoint that clears the secure authentication cookie and returns to the home page.
+
+## v2.9.27 — 2026-08-07
+
+### Security hardening
+- Added a separate `Member Sessions` authentication layer. New access links use HMAC-signed session IDs; no reusable bearer secret is stored in Baserow.
+- Added a protected migration endpoint that hashes legacy member tokens into `Member Sessions`, creates a signed current session, then removes plaintext `Order token`, `Token created`, and `Order token expiry` values from `Members`. Existing already-sent links continue to work until their original expiry via the stored hash.
+- Member authentication now resolves a single session and linked member rather than downloading the whole Members table to find a plaintext token.
+- Authenticated browsing now uses an HttpOnly, Secure, SameSite=Lax session cookie. Legacy/token URLs are exchanged at `/api/access` and redirected to a clean URL; the browser no longer persists member tokens in localStorage.
+- `/api/request-link` now sends the current signed access link directly from Cloudflare through the configured mailbox.org SMTP account and no longer needs a Baserow email automation. Repeated requests within one minute are suppressed.
+- Baserow error response bodies are logged server-side only; member/signup/request-link APIs now return generic server errors rather than backend details.
+
 ## 2.9.26 — 2026-08-07
 
 - Corrected the access-link request flow so it **does not rotate or replace the member's existing Order token**.

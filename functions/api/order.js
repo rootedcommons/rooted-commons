@@ -1,4 +1,5 @@
-import { envConfig, json, listRows, createRow, tokenValid, number, linkedIds, linkedValues, unwrap, ukMarketCycle, publicCollectionPoint, truthy } from '../_baserow.js';
+import { envConfig, json, listRows, createRow, number, linkedIds, linkedValues, unwrap, ukMarketCycle, publicCollectionPoint, truthy } from '../_baserow.js';
+import { authenticatedMember } from '../_auth.js';
 
 function productPayload(row) {
   return {
@@ -38,21 +39,21 @@ export async function onRequestPost({ request, env }) {
     const selectedPointId = Number(body.collectionPointId || 0);
     const requestedCollectionDay = String(body.collectionDay || '').trim();
 
-    if (!token || !clientRequestId || !requested.length) {
+    if (!clientRequestId || !requested.length) {
       return json({ ok: false, message: 'Your basket or secure link is missing.' }, 400);
     }
     if (!selectedPointId) {
       return json({ ok: false, message: 'Choose a collection point before confirming your order.' }, 400);
     }
 
-    const [members, productRows, orders, points] = await Promise.all([
-      listRows(cfg, cfg.members),
+    const [auth, productRows, orders, points] = await Promise.all([
+      authenticatedMember(cfg,request,env,token),
       listRows(cfg, cfg.products),
       listRows(cfg, cfg.orders),
       listRows(cfg, cfg.collectionPoints)
     ]);
 
-    const member = members.find(row => tokenValid(row, token));
+    const member=auth?.member;
     if (!member) {
       return json({ ok: false, message: 'This ordering link is invalid or has expired.' }, 401);
     }
@@ -217,9 +218,9 @@ export async function onRequestPost({ request, env }) {
       message: 'Your order has been received and is being processed.'
     });
   } catch (error) {
-    return json(
-      { ok: false, message: String(error.message || 'The order could not be submitted.') },
-      Number(error.status) || 500
-    );
+    const status=Number(error.status)||500;
+    if(status>=400&&status<500)return json({ok:false,message:String(error.message||'The order could not be submitted.')},status);
+    console.error('order submission failed',error);
+    return json({ok:false,message:'The order could not be submitted. Please try again.'},500);
   }
 }

@@ -1,4 +1,5 @@
-import { envConfig, json, listRows, updateRow, tokenValid, publicMember, publicCollectionPoint, linkedIds, linkedValues, unwrap, number, truthy, ukMarketCycle } from '../_baserow.js';
+import { envConfig, json, listRows, updateRow, publicMember, publicCollectionPoint, linkedIds, linkedValues, unwrap, number, truthy, ukMarketCycle } from '../_baserow.js';
+import { authenticatedMember } from '../_auth.js';
 
 function belongsToMember(row, member) {
   const memberId = Number(member.id);
@@ -52,17 +53,15 @@ function summariseTransactions(rows, member) {
 
 export async function onRequestGet({ request, env }) {
   try {
-    const token = new URL(request.url).searchParams.get('token') || '';
-    if (!token) return json({authenticated:false}, 401);
     const cfg = envConfig(env);
-    const [members, orders, points, transactions] = await Promise.all([
-      listRows(cfg, cfg.members),
+    const auth=await authenticatedMember(cfg,request,env,new URL(request.url).searchParams.get('token')||'');
+    if(!auth)return json({authenticated:false},401);
+    const member=auth.member;
+    const [orders, points, transactions] = await Promise.all([
       cfg.orders ? listRows(cfg, cfg.orders) : Promise.resolve([]),
       cfg.collectionPoints ? listRows(cfg, cfg.collectionPoints) : Promise.resolve([]),
       cfg.transactions ? listRows(cfg, cfg.transactions) : Promise.resolve([])
     ]);
-    const member = members.find(row => tokenValid(row, token));
-    if (!member) return json({authenticated:false},401);
     const pointId = linkedIds(member['Collection point'])[0];
     const point = points.find(row => Number(row.id) === Number(pointId));
     const memberOrders = orders
@@ -90,7 +89,8 @@ export async function onRequestGet({ request, env }) {
       account
     })});
   } catch (error) {
-    return json({error:'Member lookup failed', detail:String(error.message||error)},500);
+    console.error('member lookup failed',error);
+    return json({error:'Member lookup failed'},500);
   }
 }
 
@@ -101,11 +101,11 @@ export async function onRequestPatch({ request, env }) {
     const token = String(body.token || '');
     const collectionPointId = Number(body.collectionPointId || 0);
     const preferredCollectionDay = String(body.preferredCollectionDay || '').trim();
-    if (!token || !collectionPointId) return json({ ok:false, message:'Choose a collection point.' }, 400);
+    if (!collectionPointId) return json({ ok:false, message:'Choose a collection point.' }, 400);
     const cfg = envConfig(env);
-    const [members, points] = await Promise.all([listRows(cfg, cfg.members), listRows(cfg, cfg.collectionPoints)]);
-    const member = members.find(row => tokenValid(row, token));
-    if (!member) return json({ ok:false, message:'This secure link is invalid or has expired.' }, 401);
+    const [auth,points]=await Promise.all([authenticatedMember(cfg,request,env,token),listRows(cfg,cfg.collectionPoints)]);
+    if(!auth)return json({ok:false,message:'This secure link is invalid or has expired.'},401);
+    const member=auth.member;
     const point = points.find(row => Number(row.id) === collectionPointId && truthy(row.Active, true));
     if (!point) return json({ ok:false, message:'That collection point is not currently available.' }, 409);
     const publicPoint = publicCollectionPoint(point);
@@ -114,14 +114,7 @@ export async function onRequestPatch({ request, env }) {
     await updateRow(cfg, cfg.members, member.id, { 'Collection point':[collectionPointId], 'Preferred collection day':savedDay });
     return json({ ok:true, collectionPoint:publicPoint, preferredCollectionDay:savedDay });
   } catch (error) {
-    const detail = String(error.message || error);
-    const permissionError = /Baserow\s+(401|403)/i.test(detail);
-    return json({
-      ok:false,
-      message: permissionError
-        ? 'Collection preferences could not be saved because the website does not have Update permission for the Members table.'
-        : 'The collection point could not be updated.',
-      detail
-    }, permissionError ? 403 : 500);
+    console.error('member update failed',error);
+    return json({ok:false,message:'The collection point could not be updated.'},500);
   }
 }

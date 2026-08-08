@@ -71,7 +71,7 @@ const collectionPoints=data.collectionPoints.map(point=>({id:point.id,name:point
         <div class="signup-section-heading full">
           <h2>{c('signup.keeping_in_touch_heading','Keeping in touch')}</h2>
         </div>
-        <p class="full signup-keeping-copy">{c('signup.keeping_in_touch_body',"Each Wednesday after orders close, we'll email you a new unique link to the following week's market. This gives you secure access to your account and member credit without needing a password.")}</p>
+        <p class="full signup-keeping-copy">{c('signup.keeping_in_touch_body',"Each Wednesday after orders close, we'll email you a new secure access link for the following week's market. When you use it, we'll keep you signed in on that device so you can return without using the link again.")}</p>
         <label class="signup-check full"><input name="weeklyNewsletter" type="checkbox" /><span>{c('signup.weekly_newsletter_text',"I'm happy for occasional Rooted Commons news and updates to be included in this weekly email.")}</span></label>
         <label class="signup-check full"><input name="membershipConsent" type="checkbox" required /><span>{c('signup.membership_consent_prefix','I agree to the')} <a href="/membership-terms/">{c('signup.membership_terms_link','Rooted Commons Membership Terms')}</a> {c('signup.privacy_prefix','and have read the')} <a href="/privacy/">{c('signup.privacy_link','Privacy Policy')}</a>.</span></label>
 
@@ -91,7 +91,7 @@ const collectionPoints=data.collectionPoints.map(point=>({id:point.id,name:point
         <h2>{c('signup.success_heading','Welcome to Rooted Commons')}</h2>
         <FormattedText text={c('signup.success_message','Your membership has been created successfully.')} class="rich-body" />
         <p><a id="signup-dashboard-link" class="button" href="/dashboard/">{c('signup.dashboard_button','Your new member dashboard')}</a></p>
-        <FormattedText text={c('signup.dashboard_security','**Please keep this unique link secret.** It is a private key to your membership account and wallet, so don’t share it with anyone or log in on someone else’s device.\n\nTo keep your account and member credit secure, we’ll send you a new unique link every Wednesday after orders close. Your previous link will stop working when the new one is issued.')} class="rich-body" />
+        <FormattedText text={c('signup.dashboard_security','**Keep your access link private.** It can be used to sign in to your membership on a new device. Once signed in, you'll normally stay signed in on that device for up to 90 days.\n\nWe'll send you a new weekly access link each Wednesday after orders close. Each new weekly link replaces the previous link for new sign-ins, but devices that are already signed in remain signed in.')} class="rich-body" />
       </div>
     </section>
   </main>

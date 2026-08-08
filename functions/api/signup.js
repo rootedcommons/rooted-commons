@@ -1,41 +1,7 @@
-import { createRow, envConfig, json, listRows, normaliseEmail, publicCollectionPoint, truthy } from '../_baserow.js';
+import { createRow, envConfig, json, listRows, listRowsFiltered, normaliseEmail, publicCollectionPoint, truthy } from '../_baserow.js';
+import { createSignedSession, nextWednesdayExpiry } from '../_auth.js';
 
 const clean=value=>String(value||'').trim();
-const token=()=>Array.from(crypto.getRandomValues(new Uint8Array(24)),b=>b.toString(16).padStart(2,'0')).join('');
-const money=value=>Math.round((Number(value)+Number.EPSILON)*100)/100;
-const hasPennyPrecision=value=>Number.isFinite(Number(value)) && Math.abs(Number(value)*100-Math.round(Number(value)*100))<1e-6;
-const nextWednesdayExpiry=(from=new Date())=>{
-  const format=new Intl.DateTimeFormat('en-GB',{
-    timeZone:'Europe/London',
-    year:'numeric',month:'2-digit',day:'2-digit',weekday:'short',
-    hour:'2-digit',minute:'2-digit',hourCycle:'h23'
-  });
-  const parts=Object.fromEntries(format.formatToParts(from).filter(p=>p.type!=='literal').map(p=>[p.type,p.value]));
-  const weekday={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6}[parts.weekday];
-  const localMinutes=Number(parts.hour)*60+Number(parts.minute);
-  let days=(3-weekday+7)%7;
-  if(days===0 && localMinutes>=18*60+5)days=7;
-
-  const localDate=new Date(Date.UTC(Number(parts.year),Number(parts.month)-1,Number(parts.day)));
-  localDate.setUTCDate(localDate.getUTCDate()+days);
-  const y=localDate.getUTCFullYear();
-  const m=localDate.getUTCMonth()+1;
-  const d=localDate.getUTCDate();
-
-  // Convert the intended Europe/London wall-clock time (18:05) to UTC,
-  // including GMT/BST automatically.
-  const targetAsUtc=Date.UTC(y,m-1,d,18,5,0,0);
-  let guess=new Date(targetAsUtc);
-  for(let i=0;i<3;i+=1){
-    const seen=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{
-      timeZone:'Europe/London',year:'numeric',month:'2-digit',day:'2-digit',
-      hour:'2-digit',minute:'2-digit',hourCycle:'h23'
-    }).formatToParts(guess).filter(p=>p.type!=='literal').map(p=>[p.type,p.value]));
-    const seenAsUtc=Date.UTC(Number(seen.year),Number(seen.month)-1,Number(seen.day),Number(seen.hour),Number(seen.minute));
-    guess=new Date(guess.getTime()+(targetAsUtc-seenAsUtc));
-  }
-  return guess.toISOString();
-};
 const attempts=new Map();
 const RATE_WINDOW_MS=15*60*1000;
 const RATE_MAX=5;
@@ -94,8 +60,8 @@ export async function onRequestPost({request,env}){
     const monthlyEquivalent=contributionFrequency==='Monthly'?money(contributionAmount):money(contributionAmount*52/12);
 
     const cfg=envConfig(env);
-    const [members,points]=await Promise.all([listRows(cfg,cfg.members),listRows(cfg,cfg.collectionPoints)]);
-    if(members.some(row=>normaliseEmail(row.Email)===email))return json({ok:false,code:'existing_member',message:'It looks like you’re already a Rooted Commons member.'},409);
+    const [existingMembers,points,members]=await Promise.all([listRowsFiltered(cfg,cfg.members,{Email:email},{size:2}),listRows(cfg,cfg.collectionPoints),listRows(cfg,cfg.members)]);
+    if(existingMembers.some(row=>normaliseEmail(row.Email)===email))return json({ok:false,code:'existing_member',message:'It looks like you’re already a Rooted Commons member.'},409);
     const point=points.find(row=>Number(row.id)===collectionPointId && truthy(row.Active,true));
     if(!point)return json({ok:false,message:'That collection point is not currently available.'},409);
     const validDays=(publicCollectionPoint(point).collectionSlots||[]).map(slot=>slot.day);
@@ -111,16 +77,12 @@ export async function onRequestPost({request,env}){
           : '';
 
     const now=new Date();
-    const orderToken=token();
     const fields={
       'First name':firstName,
       'Last name':lastName,
       'Email':email,
       'Phone':phone,
       'Active':true,
-      'Order token':orderToken,
-      'Token created':now.toISOString(),
-      'Order token expiry':nextWednesdayExpiry(now),
       'Weekly commitment':weeklyCommitment,
       'Monthly equivalent':monthlyEquivalent,
       'Contribution frequency':contributionFrequency,
@@ -134,9 +96,10 @@ export async function onRequestPost({request,env}){
       ...(founderBadge?{'Founder badge':founderBadge}:{})
     };
     const member=await createRow(cfg,cfg.members,fields);
+    const {token:orderToken}=await createSignedSession(cfg,member.id,env,{purpose:'Weekly access',expiresAt:nextWednesdayExpiry(now)});
     const memberNumber=String(member['Member number']||`RC-${member.id}`);
     const origin=new URL(request.url).origin;
-    const dashboardUrl=`/dashboard/?token=${encodeURIComponent(orderToken)}`;
+    const dashboardUrl=`/api/access?token=${encodeURIComponent(orderToken)}&return=${encodeURIComponent('/dashboard/')}`;
     const verificationUrl=`${origin}/api/verify-email?token=${encodeURIComponent(orderToken)}`;
     let welcomeEmailSent=false;
     const welcomeWebhook=env.WELCOME_EMAIL_WEBHOOK_URL||env.MAGIC_LINK_WEBHOOK_URL;
@@ -157,10 +120,10 @@ export async function onRequestPost({request,env}){
               subject:'Welcome to Rooted Commons – confirm your email',
               heading:'Welcome to Rooted Commons',
               intro:'Your membership has been created successfully.',
-              confirmationText:'Please confirm that this email address belongs to you by opening your secure member link.',
+              confirmationText:'Please confirm that this email address belongs to you by opening your weekly access link.',
               buttonText:'Confirm my email and open my dashboard',
-              securityText:'This is a unique private link to your membership account and member credit. Please do not share it with anyone or use it on someone else’s device.',
-              rotationText:'We will send you a new unique link each Wednesday after orders close. When a new link is issued, the previous one stops working.'
+              securityText:'Keep this access link private. It can be used to sign in to your membership on a new device. Once signed in, you will normally stay signed in on that device for up to 90 days.',
+              rotationText:'We will send you a new weekly access link each Wednesday after orders close. Each new weekly link replaces the previous link for new sign-ins, but devices that are already signed in remain signed in.'
             }
           })
         });
@@ -168,5 +131,5 @@ export async function onRequestPost({request,env}){
       }catch{}
     }
     return json({ok:true,memberId:member.id,memberNumber,dashboardUrl,welcomeEmailSent},201);
-  }catch(error){return json({ok:false,message:'We could not create your membership. Please try again.',detail:String(error.message||error)},500);}
+  }catch(error){console.error('signup failed',error);return json({ok:false,message:'We could not create your membership. Please try again.'},500);}
 }
