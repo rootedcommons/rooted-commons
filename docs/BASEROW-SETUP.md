@@ -486,3 +486,15 @@ Do **not** add a plaintext access-token field. The `Session ID` is deliberately 
 
 After the table exists, add its table ID to Cloudflare as `BASEROW_MEMBER_SESSIONS_TABLE_ID`. Add `AUTH_SESSION_SECRET` as encrypted Cloudflare secrets.
 
+
+
+### Theme colours
+
+Site Settings controls the shared site palette: `Background colour`, `Primary colour`, `Highlight colour`, `Border colour`, and optional `Accent colour`. The default Rooted Commons palette is warm ivory `#faf8f1`, plum `#5a2d4d`, pale sage `#f5f6ed`, sage border `#d9dec5`, and botanical accent `#71856a`. Campaign sections can also use an optional `Watermark image` File field in Sections.
+
+
+### Theme colours
+
+Site Settings separates the page backdrop from content surfaces: `Background colour` controls the overall page backdrop, `Surface colour` controls normal cards/forms/boxed sections, `Highlight colour` controls emphasized/inset panels, `Primary colour` controls main text and buttons, `Border colour` controls lines/borders, and `Accent colour` controls secondary botanical/decorative details.
+
+`Watermark image` belongs to Sections and is rendered only by `Campaign` and `Call to action` section types. Other section types ignore it.

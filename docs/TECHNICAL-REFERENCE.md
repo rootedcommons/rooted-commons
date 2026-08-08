@@ -246,10 +246,15 @@ The diagnostic rotates and persists the Xero refresh token as part of the read. 
 
 ## Authentication security architecture (v2.9.27+)
 
-Member authentication is intentionally separated from the Members table. Baserow stores only session metadata: a non-secret `Session ID` for new links, or a one-way SHA-256 digest for legacy links issued before migration. Cloudflare holds `AUTH_SESSION_SECRET` and signs each Session ID with HMAC-SHA-256. A Baserow export therefore does not contain a replayable member credential.
+Member authentication is intentionally separated from the Members table. Baserow stores only non-secret session metadata, including a `Session ID`. Cloudflare holds `AUTH_SESSION_SECRET` and signs each Session ID with HMAC-SHA-256. A Baserow export therefore does not contain a replayable member credential.
 
-An emailed access URL first visits `/api/access`. Cloudflare verifies the signed/legacy session, sets an `HttpOnly; Secure; SameSite=Lax` session cookie, and redirects to a clean dashboard/orders/checkout URL. Member tokens are no longer persisted in browser localStorage or repeatedly placed in internal URLs.
+An emailed access URL first visits `/api/access`. Cloudflare verifies the signed session, sets an `HttpOnly; Secure; SameSite=Lax` session cookie, and redirects to a clean dashboard/orders/checkout URL. Member tokens are no longer persisted in browser localStorage or repeatedly placed in internal URLs.
 
 `/api/request-link` performs an API-level Baserow email filter rather than loading every Member row. It reconstructs the member's current weekly access link from non-secret Session ID + the Cloudflare signing secret and sends it directly over SMTP. Opening that link exchanges it for a separate 90-day `Device session` stored in an HttpOnly cookie. Resending the current weekly link does not revoke the member's device sessions.
 
 Backend Baserow error bodies are written only to Cloudflare logs. Public APIs return generic server errors. Keep Baserow database-token permissions at the minimum needed per table and rotate credentials if a Cloudflare secret is ever suspected of exposure.
+
+
+## Semantic theme colours
+
+The public site theme is supplied by Site Settings and exposed as CSS variables: `Background colour` → `--background` (page backdrop), `Surface colour` → `--surface` (normal cards/forms/boxed content), `Highlight colour` → `--highlight` (emphasised/inset panels), `Primary colour` → `--primary` (text/buttons), `Border colour` → `--line`, and `Accent colour` → `--accent` (secondary botanical detail). Section `Background style` maps `Default` to transparent, `Alternate` to Surface, `Highlight` to Highlight, and `Accent` to Primary with Surface-coloured text. `Watermark image` is intentionally ignored by all section renderers except Campaign and Call to action.

@@ -16,8 +16,10 @@ const pageTitle = title ? `${title} | ${settings.siteTitle}` : settings.siteTitl
     <style define:vars={{
       primary: settings.primaryColour,
       background: settings.backgroundColour,
+      surface: settings.surfaceColour || '#faf8f1',
       highlight: settings.highlightColour,
-      line: settings.borderColour
+      line: settings.borderColour,
+      accent: settings.accentColour || '#71856a'
     }}></style>
   </head>
   <body>

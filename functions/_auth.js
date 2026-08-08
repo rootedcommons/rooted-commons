@@ -95,14 +95,12 @@ export async function getOrCreateCurrentAccessSession(cfg,memberId,env){
   if(!cfg.sessions) throw new Error('BASEROW_MEMBER_SESSIONS_TABLE_ID is missing');
   const sessions=await listRows(cfg,cfg.sessions);
   const current=sessions
-    .filter(s=>linkedIds(s.Member).includes(Number(memberId)) && s['Session ID'] && sessionUsable(s) && [ACCESS_PURPOSE,'Member access'].includes(String(s.Purpose||'')))
+    .filter(s=>linkedIds(s.Member).includes(Number(memberId)) && s['Session ID'] && sessionUsable(s) && String(s.Purpose||'')===ACCESS_PURPOSE)
     .sort((a,b)=>new Date(b['Created at']||0)-new Date(a['Created at']||0))[0];
   if(current) return {session:current,token:await buildSessionToken(String(current['Session ID']),env.AUTH_SESSION_SECRET)};
   return createSignedSession(cfg,memberId,env,{purpose:ACCESS_PURPOSE,expiresAt:nextWednesdayExpiry()});
 }
 
-// Backwards-compatible export name used by v2.9.27/28 request-link code.
-export const getOrCreateCurrentSignedSession=getOrCreateCurrentAccessSession;
 
 export async function createDeviceSession(cfg,memberId,env){
   return createSignedSession(cfg,memberId,env,{purpose:DEVICE_PURPOSE,expiresAt:deviceSessionExpiry()});

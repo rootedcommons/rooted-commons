@@ -15,7 +15,7 @@ export async function onRequestGet({request,env}){
     // separate remembered-device session so weekly link rotation does not sign out
     // devices that have already authenticated.
     const purpose=String(auth.session?.Purpose||'');
-    const device=(purpose==='Device session' && !auth.legacy)
+    const device=(purpose==='Device session')
       ? {token,session:auth.session}
       : await createDeviceSession(cfg,auth.member.id,env);
 

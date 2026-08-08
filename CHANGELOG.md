@@ -1,5 +1,30 @@
 # Changelog
 
+## 2.9.35
+
+- Restored the site backdrop as a separate `Background colour` (`#ded8cc`).
+- Added `Surface colour` for normal cards, forms and boxed content (`#faf8f1`).
+- Kept `Highlight colour` for emphasized/inset panels (`#f5f6ed`).
+- Audited section types and hard-coded UI panels to use semantic theme colours rather than conflating the page background with card surfaces.
+- `Background style: Alternate` now uses Surface colour; `Highlight` uses Highlight colour; `Accent` uses Primary colour.
+- Made the optional `Watermark image` render only on Campaign and Call to action sections.
+
+## 2.9.34
+
+- Moved the warm ivory / pale sage / plum campaign palette into global Site Settings defaults so the same colour system can be used consistently across the whole site.
+- Added optional `Accent colour` Site Setting for botanical/decorative accents (default `#71856a`).
+- Campaign body copy now uses the primary plum colour and normal Body typography; the configured Heading is the sole large campaign headline.
+- Added the small botanical leaf mark beside the campaign eyebrow, using the configurable accent colour.
+- Added optional `Watermark image` to Sections and removed the hard-coded campaign watermark asset.
+- Updated Baserow import/specification CSVs for the new theme and watermark fields.
+
+
+## 2.9.33
+- Reworked the campaign section to match the approved Founder Member mock-up: warm ivory campaign card, decorative botanical watermark, stronger typographic hierarchy, three-badge presentation, inset pale-sage launch panel, calendar details, and integrated plum CTA.
+- Kept the existing Baserow campaign copy and content model; the first body paragraph now receives the headline treatment automatically.
+- Added compact Founder badge captions and responsive three-across badge presentation on mobile.
+- Refined the sign-in card to use the standard highlight colour and added proper spacing between the email field and button.
+
 ## 2.9.32
 
 - Fixed the new sign-in page to import `getSiteData` from the existing `src/lib/baserow` module.

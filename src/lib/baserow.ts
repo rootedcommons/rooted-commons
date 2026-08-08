@@ -159,9 +159,11 @@ export async function getSiteData() {
     headerButtonText: text(validSettingsRow, 'Header button text', text(validSettingsRow, 'Header Button Text', fallbackSettings.headerButtonText)),
     headerButtonUrl: text(validSettingsRow, 'Header Button URL', text(validSettingsRow, 'Header button URL', fallbackSettings.headerButtonUrl)),
     backgroundColour: text(validSettingsRow, 'Background colour', fallbackSettings.backgroundColour),
+    surfaceColour: text(validSettingsRow, 'Surface colour', fallbackSettings.surfaceColour),
     primaryColour: text(validSettingsRow, 'Primary colour', fallbackSettings.primaryColour),
     highlightColour: text(validSettingsRow, 'Highlight colour', fallbackSettings.highlightColour),
     borderColour: text(validSettingsRow, 'Border colour', fallbackSettings.borderColour),
+    accentColour: text(validSettingsRow, 'Accent colour', fallbackSettings.accentColour),
     headerLogo: fileUrl(validSettingsRow, 'Header logo'),
     footerLogo: fileUrl(validSettingsRow, 'Footer logo'),
     contactEmail: text(validSettingsRow, 'Contact email', fallbackSettings.contactEmail),
@@ -276,6 +278,7 @@ export async function getSiteData() {
     const image = fileUrl(row, 'Image', row.image || '');
     const image2 = fileUrl(row, 'Image 2', row.image2 || '');
     const image3 = fileUrl(row, 'Image 3', row.image3 || '');
+    const watermarkImage = fileUrl(row, 'Watermark image', row.watermarkImage || '');
     const inferredType = groupKey ? 'Cards' : image ? 'Image and text' : 'Text';
     return {
       id: row.id,
@@ -286,6 +289,7 @@ export async function getSiteData() {
       image,
       image2,
       image3,
+      watermarkImage,
       order: numeric(row, 'Order', row.order || 0),
       visible: boolean(row, 'Visible', row.visible ?? true),
       type: explicitType || inferredType,
