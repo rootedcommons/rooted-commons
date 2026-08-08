@@ -1,9 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { loadSiteData } from '../data/baserow';
-const data=await loadSiteData();
+import { getSiteData } from '../lib/baserow';
+const data=await getSiteData();
 ---
-<BaseLayout title="Sign in | Rooted Commons" data={data}>
+<BaseLayout settings={data.settings} pages={data.pages} title="Sign in | Rooted Commons" description="Sign in to your Rooted Commons membership.">
   <main class="signup-page">
     <section class="signup-shell">
       <div class="signup-card">

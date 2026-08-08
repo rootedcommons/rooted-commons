@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.9.32
+
+- Fixed the new sign-in page to import `getSiteData` from the existing `src/lib/baserow` module.
+- Passed the standard `settings` and `pages` props to `BaseLayout`, matching the rest of the site.
+
 ## 2.9.31
 
 - Fixed an Astro build-breaking quote in the signup success security fallback copy.
