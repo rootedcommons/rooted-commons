@@ -1,3 +1,15 @@
+# Changelog
+
+## 2.9.42 — Live CMS public-content layer + resilient public APIs
+
+- Added `/api/public-content`, a runtime-token-backed, strict allowlist endpoint for Site Settings, Pages, Sections, Interface Content and Collection Points.
+- Added `LiveContentHydrator` so existing page heroes, section copy/buttons/images/styles, header/footer branding/navigation and theme colours refresh from Baserow without a deploy.
+- Preserved Astro-generated HTML as the fast/SEO-friendly fallback if the runtime endpoint is unavailable.
+- Existing Sections can be edited, hidden and reordered live; adding a brand-new Section row or changing its renderer type still requires a deploy because the component shell must exist in the generated HTML.
+- Hardened `/api/public-network`: table reads are isolated, so a Sections/Members/Transactions failure no longer blanks Network Partners and Metrics.
+- Both public endpoints expose only explicit public field allowlists and never expose the Baserow runtime token or raw private rows.
+- Public runtime responses remain `cache-control: no-store` so Baserow edits are visible on refresh.
+
 # v2.9.41 — Live Stats section links
 
 - Stats sections now read their current `Metrics` links from Baserow at runtime through the public-network Cloudflare endpoint.

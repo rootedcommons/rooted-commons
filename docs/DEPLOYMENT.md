@@ -122,3 +122,14 @@ Access-link requests are now sent directly from the Cloudflare Function through 
 ### Weekly access rotation
 
 Set `WEEKLY_ACCESS_SYNC_KEY` as an encrypted secret on the Pages project. Create a small standalone Cloudflare Worker from `cloudflare/weekly-access-cron-worker.js` with `ROOTED_WEEKLY_ACCESS_URL=https://rootedcommons.uk/api/weekly-access/sync` and the same `WEEKLY_ACCESS_SYNC_KEY`. Give the Worker two Wednesday cron triggers, `10 17 * * 3` and `10 18 * * 3`. The Worker checks Europe/London time and only calls the site during the 18:05–18:35 local window, so this remains correct across GMT/BST. The endpoint is idempotent: `Email sent at` prevents duplicate weekly messages on retry.
+
+
+## Live public CMS layer (v2.9.42)
+
+`CMS` means **Content Management System**. Baserow is the CMS for editable Rooted Commons website content. The browser never talks to Baserow directly. It requests sanitised JSON from Cloudflare Pages Functions, which hold `BASEROW_RUNTIME_TOKEN` server-side.
+
+`/api/public-content` reads Site Settings, Pages, Sections, Interface Content and Collection Points with strict public-field allowlists. `/api/public-network` independently reads Network Partners, Metrics and the aggregate inputs needed for approved calculated tokens. A failure in one optional table is reported in the endpoint `errors` array and no longer takes unrelated public content down.
+
+Astro still writes the last deployed Baserow content into the HTML as a fallback. On page load the live hydrators refresh existing CMS-controlled content. This preserves a fast first render and useful HTML for search engines while allowing routine Baserow edits to appear without redeploying. A new Section row or a Section type change still requires deployment because it changes the component structure.
+
+The runtime token should have the minimum permissions actually needed. For the live public CMS layer it needs **Read** on Site Settings, Pages, Sections, Interface Content, Collection Points, Metrics and Network Partners, in addition to the narrowly scoped permissions already required by member/order functions. Never expose this token in browser JavaScript.

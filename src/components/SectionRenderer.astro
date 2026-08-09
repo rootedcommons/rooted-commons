@@ -24,55 +24,55 @@ const selectedProducts = (section.productIds || []).length
   : products;
 ---
 {type === 'text' && (
-  <section class={`content-section text-section ${background} ${spaces} ${alignment}`}>
+  <section data-live-section-id={section.id} data-live-section-key={section.key || block.key || ''} class={`content-section text-section ${background} ${spaces} ${alignment}`}>
     <div class="section-inner prose-width">
-      {section.eyebrow && <p class="eyebrow">{section.eyebrow}</p>}
-      {section.heading && <h2 class={`size-${section.headingSize}`}>{section.heading}</h2>}
-      {section.subheading && <p class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
-      {section.body && <FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} />}
-      {button && <a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
+      {section.eyebrow && <p data-live-section-field="eyebrow" class="eyebrow">{section.eyebrow}</p>}
+      {section.heading && <h2 data-live-section-field="heading" class={`size-${section.headingSize}`}>{section.heading}</h2>}
+      {section.subheading && <p data-live-section-field="subheading" class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
+      {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} /></div>}
+      {button && <a data-live-section-button class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
     </div>
   </section>
 )}
 
 {type === 'image-and-text' && (
-  <section class={`content-section split-section image-${section.imagePosition} ${background} ${spaces} ${alignment}`}>
+  <section data-live-section-id={section.id} data-live-section-key={section.key || block.key || ''} class={`content-section split-section image-${section.imagePosition} ${background} ${spaces} ${alignment}`}>
     <div class="section-inner split-inner">
-      {section.image && <figure class={`section-media image-size-${section.imageSize} fit-${section.imageFit}`}>
-        <img src={section.image} alt={section.imageAlt || ''} loading="lazy" />
+      {section.image && <figure data-live-section-image class={`section-media image-size-${section.imageSize} fit-${section.imageFit}`}>
+        <img data-live-section-image-img src={section.image} alt={section.imageAlt || ''} loading="lazy" />
         {section.imageCaption && <figcaption>{section.imageCaption}</figcaption>}
       </figure>}
       <div class="section-copy">
-        {section.eyebrow && <p class="eyebrow">{section.eyebrow}</p>}
-        {section.heading && <h2 class={`size-${section.headingSize}`}>{section.heading}</h2>}
-        {section.subheading && <p class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
-        {section.body && <FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} />}
-        {button && <a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
+        {section.eyebrow && <p data-live-section-field="eyebrow" class="eyebrow">{section.eyebrow}</p>}
+        {section.heading && <h2 data-live-section-field="heading" class={`size-${section.headingSize}`}>{section.heading}</h2>}
+        {section.subheading && <p data-live-section-field="subheading" class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
+        {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} /></div>}
+        {button && <a data-live-section-button class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
       </div>
     </div>
   </section>
 )}
 
 {type === 'banner' && (
-  <section class={`banner-section ${background} ${spaces} ${alignment} image-size-${section.imageSize}`} style={section.image ? `background-image:linear-gradient(rgba(0,0,0,.28),rgba(0,0,0,.28)),url(${section.image})` : undefined}>
+  <section data-live-section-id={section.id} data-live-section-key={section.key || block.key || ''} class={`banner-section ${background} ${spaces} ${alignment} image-size-${section.imageSize}`} style={section.image ? `background-image:linear-gradient(rgba(0,0,0,.28),rgba(0,0,0,.28)),url(${section.image})` : undefined}>
     <div class="banner-copy">
-      {section.eyebrow && <p class="eyebrow">{section.eyebrow}</p>}
-      {section.heading && <h2 class={`size-${section.headingSize}`}>{section.heading}</h2>}
-      {section.subheading && <p class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
-      {section.body && <FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} />}
-      {button && <a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
+      {section.eyebrow && <p data-live-section-field="eyebrow" class="eyebrow">{section.eyebrow}</p>}
+      {section.heading && <h2 data-live-section-field="heading" class={`size-${section.headingSize}`}>{section.heading}</h2>}
+      {section.subheading && <p data-live-section-field="subheading" class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
+      {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} /></div>}
+      {button && <a data-live-section-button class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
     </div>
   </section>
 )}
 
 {type === 'cards' && (
-  <section class={`content-section cards-section ${background} ${spaces}`}>
+  <section data-live-section-id={section.id} data-live-section-key={section.key || block.key || ''} class={`content-section cards-section ${background} ${spaces}`}>
     <div class="section-inner">
       {groupTitle && <h2 class={`group-heading align-${section.alignment} size-${section.headingSize}`}>{groupTitle}</h2>}
       {section.subheading && <p class={`group-subheading align-${section.alignment} size-${section.subheadingSize}`}>{section.subheading}</p>}
       <div class="cards-grid" style={`--columns:${section.columns}`}>
         {block.items.map((item) => (
-          <article class={`content-card align-${item.alignment}`}>
+          <article data-live-card-id={item.id} class={`content-card align-${item.alignment}`}>
             {(item.image || item.image2 || item.image3) && <CardGallery
               images={[
                 { src: item.image, alt: item.imageAlt },
@@ -83,11 +83,11 @@ const selectedProducts = (section.productIds || []).length
               imageFit={item.imageFit}
               caption={item.imageCaption}
             />}
-            {item.eyebrow && <p class="eyebrow">{item.eyebrow}</p>}
-            {item.heading && <h3 class={`size-${item.headingSize}`}>{item.heading}</h3>}
-            {item.subheading && <p class={`section-subheading size-${item.subheadingSize}`}>{item.subheading}</p>}
-            {item.body && <FormattedText text={item.body} class={`rich-body size-${item.bodySize}`} />}
-            {item.buttonVisible && item.buttonText && item.buttonUrl && <a class={`text-link button-${item.buttonSize}`} href={item.buttonUrl}>{item.buttonText}</a>}
+            {item.eyebrow && <p data-live-card-field="eyebrow" class="eyebrow">{item.eyebrow}</p>}
+            {item.heading && <h3 data-live-card-field="heading" class={`size-${item.headingSize}`}>{item.heading}</h3>}
+            {item.subheading && <p data-live-card-field="subheading" class={`section-subheading size-${item.subheadingSize}`}>{item.subheading}</p>}
+            {item.body && <div data-live-card-rich="body"><FormattedText text={item.body} class={`rich-body size-${item.bodySize}`} /></div>}
+            {item.buttonVisible && item.buttonText && item.buttonUrl && <a data-live-card-button class={`text-link button-${item.buttonSize}`} href={item.buttonUrl}>{item.buttonText}</a>}
           </article>
         ))}
       </div>
@@ -96,12 +96,12 @@ const selectedProducts = (section.productIds || []).length
 )}
 
 {type === 'stats' && (
-  <section class={`content-section stats-section ${background} ${spaces}`}>
+  <section data-live-section-id={section.id} data-live-section-key={section.key || block.key || ''} class={`content-section stats-section ${background} ${spaces}`}>
     <div class="section-inner">
-      {section.eyebrow && <p class={`eyebrow ${alignment}`}>{section.eyebrow}</p>}
-      {(section.heading || groupTitle) && <h2 class={`group-heading ${alignment} size-${section.headingSize}`}>{section.heading || groupTitle}</h2>}
-      {section.subheading && <p class={`group-subheading ${alignment} size-${section.subheadingSize}`}>{section.subheading}</p>}
-      {section.body && <FormattedText text={section.body} class={`rich-body ${alignment} size-${section.bodySize}`} />}
+      {section.eyebrow && <p data-live-section-field="eyebrow" class={`eyebrow ${alignment}`}>{section.eyebrow}</p>}
+      {(section.heading || groupTitle) && <h2 data-live-section-field="heading" class={`group-heading ${alignment} size-${section.headingSize}`}>{section.heading || groupTitle}</h2>}
+      {section.subheading && <p data-live-section-field="subheading" class={`group-subheading ${alignment} size-${section.subheadingSize}`}>{section.subheading}</p>}
+      {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body ${alignment} size-${section.bodySize}`} /></div>}
       <div class="stats-grid" data-live-metrics data-section-id={section.id} data-section-key={section.key || ''} data-metric-ids={(section.metricIds || []).join(',')} data-metric-names={(section.metricNames || []).join('|')} style={`--columns:${section.columns}`}>
         {selectedMetrics.length > 0 ? selectedMetrics.map((metric) => (
           <article class="stat-tile align-center">
@@ -117,74 +117,74 @@ const selectedProducts = (section.productIds || []).length
           </div>
         ))}
       </div>
-      {button && <p class={alignment}><a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a></p>}
+      {button && <p class={alignment}><a data-live-section-button class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a></p>}
     </div>
   </section>
 )}
 
 {type === 'network' && (
-  <section class={`content-section network-section ${background} ${spaces}`}>
+  <section data-live-section-id={section.id} data-live-section-key={section.key || block.key || ''} class={`content-section network-section ${background} ${spaces}`}>
     <div class="section-inner">
-      {section.eyebrow && <p class={`eyebrow ${alignment}`}>{section.eyebrow}</p>}
-      {section.heading && <h2 class={`${alignment} size-${section.headingSize}`}>{section.heading}</h2>}
-      {section.subheading && <p class={`section-subheading ${alignment} size-${section.subheadingSize}`}>{section.subheading}</p>}
-      {section.body && <FormattedText text={section.body} class={`rich-body ${alignment} size-${section.bodySize}`} />}
+      {section.eyebrow && <p data-live-section-field="eyebrow" class={`eyebrow ${alignment}`}>{section.eyebrow}</p>}
+      {section.heading && <h2 data-live-section-field="heading" class={`${alignment} size-${section.headingSize}`}>{section.heading}</h2>}
+      {section.subheading && <p data-live-section-field="subheading" class={`section-subheading ${alignment} size-${section.subheadingSize}`}>{section.subheading}</p>}
+      {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body ${alignment} size-${section.bodySize}`} /></div>}
       <NetworkGrid partners={networkPartners} metrics={metrics} />
-      {button && <p class={alignment}><a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a></p>}
+      {button && <p class={alignment}><a data-live-section-button class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a></p>}
     </div>
   </section>
 )}
 
 {type === 'grid' && (
-  <section class={`content-section grid-section ${background} ${spaces}`}>
+  <section data-live-section-id={section.id} data-live-section-key={section.key || block.key || ''} class={`content-section grid-section ${background} ${spaces}`}>
     <div class="section-inner">
-      {section.eyebrow && <p class={`eyebrow ${alignment}`}>{section.eyebrow}</p>}
-      {section.heading && <h2 class={`${alignment} size-${section.headingSize}`}>{section.heading}</h2>}
-      {section.subheading && <p class={`section-subheading ${alignment} size-${section.subheadingSize}`}>{section.subheading}</p>}
-      {section.body && <FormattedText text={section.body} class={`rich-body ${alignment} size-${section.bodySize}`} />}
+      {section.eyebrow && <p data-live-section-field="eyebrow" class={`eyebrow ${alignment}`}>{section.eyebrow}</p>}
+      {section.heading && <h2 data-live-section-field="heading" class={`${alignment} size-${section.headingSize}`}>{section.heading}</h2>}
+      {section.subheading && <p data-live-section-field="subheading" class={`section-subheading ${alignment} size-${section.subheadingSize}`}>{section.subheading}</p>}
+      {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body ${alignment} size-${section.bodySize}`} /></div>}
       <ProductGrid products={selectedProducts} category={inferredGridCategory} columns={section.columns} settings={settings} />
-      {button && <p class={alignment}><a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a></p>}
+      {button && <p class={alignment}><a data-live-section-button class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a></p>}
     </div>
   </section>
 )}
 
 {type === 'call-to-action' && (
-  <section class={`content-section cta-section ${background} ${spaces} ${alignment} ${section.image ? `cta-with-image image-${section.imagePosition}` : ''}`}>
+  <section data-live-section-id={section.id} data-live-section-key={section.key || block.key || ''} class={`content-section cta-section ${background} ${spaces} ${alignment} ${section.image ? `cta-with-image image-${section.imagePosition}` : ''}`}>
     <div class={`section-inner ${section.image ? 'cta-inner' : 'prose-width'}`}>
       {section.watermarkImage && <div class="cta-watermark" style={`background-image:url("${section.watermarkImage}");--watermark-opacity:${section.watermarkOpacity / 100}`} aria-hidden="true"></div>}
       {section.image && <figure class={`cta-media fit-${section.imageFit}`}>
-        <img src={section.image} alt={section.imageAlt || ''} loading="lazy" />
+        <img data-live-section-image-img src={section.image} alt={section.imageAlt || ''} loading="lazy" />
       </figure>}
       <div class="cta-copy">
-        {section.eyebrow && <p class="eyebrow section-eyebrow">{settings.eyebrowIcon && <img class="eyebrow-icon" src={settings.eyebrowIcon} alt="" aria-hidden="true" />}<span>{section.eyebrow}</span></p>}
-        {section.heading && <h2 class={`size-${section.headingSize}`}>{section.heading}</h2>}
-        {section.subheading && <p class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
-        {section.body && <FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} />}
+        {section.eyebrow && <p data-live-section-field="eyebrow" class="eyebrow section-eyebrow">{settings.eyebrowIcon && <img class="eyebrow-icon" src={settings.eyebrowIcon} alt="" aria-hidden="true" />}<span>{section.eyebrow}</span></p>}
+        {section.heading && <h2 data-live-section-field="heading" class={`size-${section.headingSize}`}>{section.heading}</h2>}
+        {section.subheading && <p data-live-section-field="subheading" class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
+        {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} /></div>}
         {section.countdownDate && (
           <div class="campaign-timing">
-            {section.preCountdownLabel && <p class="campaign-pre-countdown-label">{section.preCountdownLabel}</p>}
-            {section.preCountdownText && <p class="campaign-pre-countdown">{section.preCountdownText}</p>}
+            {section.preCountdownLabel && <p data-live-section-field="preCountdownLabel" class="campaign-pre-countdown-label">{section.preCountdownLabel}</p>}
+            {section.preCountdownText && <p data-live-section-field="preCountdownText" class="campaign-pre-countdown">{section.preCountdownText}</p>}
             <p class="campaign-countdown" data-countdown-date={section.countdownDate} data-countdown-post={section.postCountdownText || ''}>
               <strong class="campaign-countdown-value"></strong>
               <span class="campaign-countdown-post"></span>
             </p>
           </div>
         )}
-        {button && <a class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
+        {button && <a data-live-section-button class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
       </div>
     </div>
   </section>
 )}
 
 {type === 'campaign' && (
-  <section class={`content-section campaign-section ${background} ${spaces} ${alignment}`}>
+  <section data-live-section-id={section.id} data-live-section-key={section.key || block.key || ''} class={`content-section campaign-section ${background} ${spaces} ${alignment}`}>
     <div class="section-inner campaign-inner">
       {section.watermarkImage && <div class="campaign-botanical" style={`background-image:url("${section.watermarkImage}");--watermark-opacity:${section.watermarkOpacity / 100}`} aria-hidden="true"></div>}
       <div class="campaign-copy">
-        {section.eyebrow && <p class="eyebrow campaign-eyebrow">{settings.eyebrowIcon && <img class="eyebrow-icon" src={settings.eyebrowIcon} alt="" aria-hidden="true" />}<span>{section.eyebrow}</span></p>}
-        {section.heading && <h2 class={`campaign-heading size-${section.headingSize}`}>{section.heading}</h2>}
-        {section.subheading && <p class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
-        {section.body && <FormattedText text={section.body} class={`rich-body campaign-body size-${section.bodySize}`} />}
+        {section.eyebrow && <p data-live-section-field="eyebrow" class="eyebrow campaign-eyebrow">{settings.eyebrowIcon && <img class="eyebrow-icon" src={settings.eyebrowIcon} alt="" aria-hidden="true" />}<span>{section.eyebrow}</span></p>}
+        {section.heading && <h2 data-live-section-field="heading" class={`campaign-heading size-${section.headingSize}`}>{section.heading}</h2>}
+        {section.subheading && <p data-live-section-field="subheading" class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
+        {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body campaign-body size-${section.bodySize}`} /></div>}
       </div>
 
       {(section.image || section.image2 || section.image3) && (
@@ -214,8 +214,8 @@ const selectedProducts = (section.productIds || []).length
                   <svg viewBox="0 0 24 24"><path d="M7 2v3M17 2v3M4.5 8.5h15M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/></svg>
                 </span>
                 <div class="campaign-market-copy">
-                  {section.preCountdownLabel && <p class="campaign-pre-countdown-label">{section.preCountdownLabel}</p>}
-                  {section.preCountdownText && <p class="campaign-pre-countdown">{section.preCountdownText}</p>}
+                  {section.preCountdownLabel && <p data-live-section-field="preCountdownLabel" class="campaign-pre-countdown-label">{section.preCountdownLabel}</p>}
+                  {section.preCountdownText && <p data-live-section-field="preCountdownText" class="campaign-pre-countdown">{section.preCountdownText}</p>}
                   {section.countdownDate && (
                     <p class="campaign-countdown" data-countdown-date={section.countdownDate} data-countdown-post={section.postCountdownText || ''}>
                       <strong class="campaign-countdown-value"></strong>
@@ -226,7 +226,7 @@ const selectedProducts = (section.productIds || []).length
               </div>
             )}
           </div>
-          {button && <a class={`button campaign-button button-${section.buttonSize}`} href={section.buttonUrl}><span>{section.buttonText}</span><span class="campaign-button-arrow" aria-hidden="true">→</span></a>}
+          {button && <a data-live-section-button class={`button campaign-button button-${section.buttonSize}`} href={section.buttonUrl}><span>{section.buttonText}</span><span class="campaign-button-arrow" aria-hidden="true">→</span></a>}
         </div>
       )}
     </div>
@@ -234,12 +234,12 @@ const selectedProducts = (section.productIds || []).length
 )}
 
 {type === 'gallery' && (
-  <section class={`content-section gallery-section ${background} ${spaces}`}>
+  <section data-live-section-id={section.id} data-live-section-key={section.key || block.key || ''} class={`content-section gallery-section ${background} ${spaces}`}>
     <div class="section-inner">
       {groupTitle && <h2 class={`group-heading align-${section.alignment} size-${section.headingSize}`}>{groupTitle}</h2>}
       <div class="gallery-grid" style={`--columns:${section.columns}`}>
         {block.items.filter((item) => item.image).map((item) => (
-          <figure class={`gallery-item image-size-${item.imageSize} fit-${item.imageFit}`}>
+          <figure data-live-card-id={item.id} class={`gallery-item image-size-${item.imageSize} fit-${item.imageFit}`}>
             <img src={item.image} alt={item.imageAlt || ''} loading="lazy" />
             {(item.imageCaption || item.heading) && <figcaption>{item.imageCaption || item.heading}</figcaption>}
           </figure>

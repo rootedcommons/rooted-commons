@@ -43,6 +43,15 @@ const mapPoints = points
 
       const initialise=async()=>{
         if(!window.L)return;
+        let livePoints=mapPoints;
+        try{
+          const response=await fetch('/api/public-content',{headers:{accept:'application/json'},cache:'no-store'});
+          if(response.ok){
+            const payload=await response.json();
+            const candidates=(payload.collectionPoints||[]).filter(point=>Number.isFinite(Number(point.latitude))&&Number.isFinite(Number(point.longitude)));
+            if(candidates.length)livePoints=candidates;
+          }
+        }catch{}
         if(!selectionMode){try{memberAuthenticated=(await fetch('/api/member')).ok;}catch{memberAuthenticated=false;}}
         const canSelect=selectionMode||memberAuthenticated;
         const map=L.map(mapEl,{scrollWheelZoom:false});
@@ -54,7 +63,7 @@ const mapPoints = points
 
 
         const escapeHtml=(value)=>String(value||'').replace(/[&<>'"]/g,(char)=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
-        mapPoints.forEach(point=>{
+        livePoints.forEach(point=>{
           const coords=[Number(point.latitude),Number(point.longitude)];
           bounds.push(coords);
           const slots=(point.collectionSlots||[]).map(slot=>`<li><strong>${escapeHtml(slot.day)}</strong> · ${escapeHtml(slot.time)}</li>`).join('');

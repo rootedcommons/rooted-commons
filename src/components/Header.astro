@@ -5,21 +5,21 @@ const links = Array.isArray(settings.navigationLinks) && settings.navigationLink
   ? settings.navigationLinks
   : pages.filter((page) => !['home','checkout'].includes(page.slug)).slice(0,5).map((page, index) => ({ order:index+1, label:page.title, url:`/${page.slug}/` }));
 ---
-<header class={`site-header height-${settings.headerHeight}`}>
-  <a class={`brand logo-${settings.headerLogoSize}`} href="/" aria-label={`${settings.siteTitle} home`}>
+<header data-live-header class={`site-header height-${settings.headerHeight}`}>
+  <a data-live-header-logo class={`brand logo-${settings.headerLogoSize}`} href="/" aria-label={`${settings.siteTitle} home`}>
     {settings.headerLogo ? <img src={settings.headerLogo} alt={settings.siteTitle} /> : <span>{settings.siteTitle}</span>}
   </a>
-  <nav class={`text-${settings.navigationTextSize}`} aria-label="Main navigation">
+  <nav data-live-navigation class={`text-${settings.navigationTextSize}`} aria-label="Main navigation">
     {links.map((link) => <a href={link.url}>{link.label}</a>)}
   </nav>
   <div class="header-actions">
     <a id="auth-header-button" class="header-auth-link" href="/signin/">Sign in</a>
-    <a id="membership-header-button" class={`button header-cta button-${settings.buttonTextSize}`} href={settings.headerButtonUrl || settings.joinButtonUrl || '/volunteering/'}>
+    <a data-live-header-cta id="membership-header-button" class={`button header-cta button-${settings.buttonTextSize}`} href={settings.headerButtonUrl || settings.joinButtonUrl || '/volunteering/'}>
       {settings.headerButtonText || settings.joinButtonText || 'Join our growing network'}
     </a>
   </div>
 </header>
-{settings.headerText && <FormattedText text={settings.headerText} class="header-message" />}
+{settings.headerText && <div data-live-header-text><FormattedText text={settings.headerText} class="header-message" /></div>}
 
 <script is:inline>
   (() => {

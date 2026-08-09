@@ -2,14 +2,14 @@
 import FormattedText from './FormattedText.astro';
 const { settings } = Astro.props;
 ---
-<footer class={`site-footer height-${settings.footerHeight}`}>
+<footer data-live-footer class={`site-footer height-${settings.footerHeight}`}>
   <div class="footer-inner">
     {settings.footerLogo
-      ? <img class={`footer-logo logo-${settings.footerLogoSize}`} src={settings.footerLogo} alt="Roots to Fruits" />
-      : <strong class="footer-wordmark">Roots to Fruits</strong>}
-    {settings.tagline && <p class="footer-tagline">{settings.tagline}</p>}
-    {settings.footerText && <FormattedText text={settings.footerText} class="footer-text" />}
-    {settings.contactEmail && <p><a href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a></p>}
+      ? <img data-live-footer-logo class={`footer-logo logo-${settings.footerLogoSize}`} src={settings.footerLogo} alt="Roots to Fruits" />
+      : <strong data-live-footer-wordmark class="footer-wordmark">Roots to Fruits</strong>}
+    {settings.tagline && <p data-live-footer-tagline class="footer-tagline">{settings.tagline}</p>}
+    {settings.footerText && <div data-live-footer-text><FormattedText text={settings.footerText} class="footer-text" /></div>}
+    {settings.contactEmail && <p data-live-footer-contact><a href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a></p>}
     <p class="footer-legal"><a href="/contact/">Contact</a> · <a href="/privacy/">Privacy notice</a> · <a href="/membership-terms/">Membership terms</a> · <a href="/terms-of-sale/">Terms of Sale</a></p>
   </div>
 </footer>

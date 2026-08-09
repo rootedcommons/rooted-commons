@@ -12,15 +12,15 @@ const imageShape = page.heroImageShape || 'landscape';
 const buttonSize = page.heroButtonSize || 'medium';
 ---
 {!hidden && (
-  <section class={`page-hero layout-${layout} hero-align-${alignment} hero-padding-${padding} hero-width-${width} hero-gap-${gap}`}>
+  <section data-live-page-hero data-page-slug={page.slug} class={`page-hero layout-${layout} hero-align-${alignment} hero-padding-${padding} hero-width-${width} hero-gap-${gap}`}>
   <div class="hero-inner">
     <div class="hero-copy">
-      <h1 class={`size-${page.titleSize}`}>{page.title}</h1>
-      {page.subtitle && <p class={`hero-subtitle size-${page.subtitleSize}`}>{page.subtitle}</p>}
-      {page.intro && <FormattedText text={page.intro} class={`hero-intro size-${page.introSize}`} />}
-      {page.buttonText && page.buttonUrl && <p class="hero-cta"><a class={`button button-${buttonSize}`} href={page.buttonUrl}>{page.buttonText}</a></p>}
+      <h1 data-live-page-field="title" class={`size-${page.titleSize}`}>{page.title}</h1>
+      {page.subtitle && <p data-live-page-field="subtitle" class={`hero-subtitle size-${page.subtitleSize}`}>{page.subtitle}</p>}
+      {page.intro && <div data-live-page-rich="intro"><FormattedText text={page.intro} class={`hero-intro size-${page.introSize}`} /></div>}
+      {page.buttonText && page.buttonUrl && <p class="hero-cta" data-live-page-cta><a class={`button button-${buttonSize}`} href={page.buttonUrl}>{page.buttonText}</a></p>}
     </div>
-    {hasImage && <figure class={`hero-media hero-image-shape-${imageShape} fit-${page.heroImageFit} position-${page.heroImageAlignment}`}>
+    {hasImage && <figure data-live-page-image class={`hero-media hero-image-shape-${imageShape} fit-${page.heroImageFit} position-${page.heroImageAlignment}`}>
       <img src={page.heroImage} alt="" />
     </figure>}
   </div>

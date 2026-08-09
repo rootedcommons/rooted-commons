@@ -262,3 +262,14 @@ The public site theme is supplied by Site Settings and exposed as CSS variables:
 
 ### Live Stats links (v2.9.41)
 Stats sections are hydrated at runtime. The public endpoint reads the current `Metrics` links and `Columns` from the Sections table with `BASEROW_RUNTIME_TOKEN`, so adding/removing linked Metrics does not require a redeploy. Grant the runtime token **Read** permission on Sections, Metrics, and Network Partners. Only a narrow Stats-section projection is returned publicly.
+
+
+## Live public CMS layer (v2.9.42)
+
+`CMS` means **Content Management System**. Baserow is the CMS for editable Rooted Commons website content. The browser never talks to Baserow directly. It requests sanitised JSON from Cloudflare Pages Functions, which hold `BASEROW_RUNTIME_TOKEN` server-side.
+
+`/api/public-content` reads Site Settings, Pages, Sections, Interface Content and Collection Points with strict public-field allowlists. `/api/public-network` independently reads Network Partners, Metrics and the aggregate inputs needed for approved calculated tokens. A failure in one optional table is reported in the endpoint `errors` array and no longer takes unrelated public content down.
+
+Astro still writes the last deployed Baserow content into the HTML as a fallback. On page load the live hydrators refresh existing CMS-controlled content. This preserves a fast first render and useful HTML for search engines while allowing routine Baserow edits to appear without redeploying. A new Section row or a Section type change still requires deployment because it changes the component structure.
+
+The runtime token should have the minimum permissions actually needed. For the live public CMS layer it needs **Read** on Site Settings, Pages, Sections, Interface Content, Collection Points, Metrics and Network Partners, in addition to the narrowly scoped permissions already required by member/order functions. Never expose this token in browser JavaScript.

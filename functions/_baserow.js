@@ -11,7 +11,10 @@ export function envConfig(env) {
     transactions: env.BASEROW_ACCOUNT_TRANSACTIONS_TABLE_ID,
     xeroSyncState: env.BASEROW_XERO_SYNC_STATE_TABLE_ID,
     sessions: env.BASEROW_MEMBER_SESSIONS_TABLE_ID,
+    settings: env.BASEROW_SITE_SETTINGS_TABLE_ID,
+    pages: env.BASEROW_PAGES_TABLE_ID,
     sections: env.BASEROW_SECTIONS_TABLE_ID,
+    interfaceContent: env.BASEROW_INTERFACE_CONTENT_TABLE_ID,
     networkPartners: env.BASEROW_NETWORK_PARTNERS_TABLE_ID,
     metrics: env.BASEROW_METRICS_TABLE_ID || env.BASEROW_IMPACT_METRICS_TABLE_ID
   };

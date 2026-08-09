@@ -2,6 +2,7 @@
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import LiveNetworkHydrator from '../components/LiveNetworkHydrator.astro';
+import LiveContentHydrator from '../components/LiveContentHydrator.astro';
 import '../styles/global.css';
 const { settings, pages, title, description } = Astro.props;
 const pageTitle = title ? `${title} | ${settings.siteTitle}` : settings.siteTitle;
@@ -27,6 +28,7 @@ const pageTitle = title ? `${title} | ${settings.siteTitle}` : settings.siteTitl
     <Header settings={settings} pages={pages} />
     <main><slot /></main>
     <Footer settings={settings} />
+    <LiveContentHydrator />
     <LiveNetworkHydrator />
   </body>
 </html>

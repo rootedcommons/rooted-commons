@@ -1,0 +1,93 @@
+<script>
+(() => {
+  const escapeHtml = (value='') => String(value).replace(/[&<>\'\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  const richHtml = (value='') => escapeHtml(value).replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/\*([^*]+)\*/g,'<em>$1</em>')
+    .split(/\n\s*\n/).filter(Boolean).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
+  const replacePrefixClass=(el,prefix,value)=>{ if(!el||!value)return; [...el.classList].filter(c=>c.startsWith(prefix)).forEach(c=>el.classList.remove(c)); el.classList.add(`${prefix}${value}`); };
+  const setText=(root,selector,value)=>{ const el=root?.querySelector(selector); if(!el)return; if(value){el.textContent=value;el.hidden=false;} else {el.hidden=true;} };
+  const currentSlug=()=> location.pathname==='/'?'home':location.pathname.replace(/^\/+|\/+$/g,'').split('/')[0];
+
+  const hydrateSettings=(settings,pages=[])=>{
+    if(!settings)return;
+    const html=document.documentElement;
+    const vars={primary:settings.primaryColour,background:settings.backgroundColour,surface:settings.surfaceColour,highlight:settings.highlightColour,line:settings.borderColour,accent:settings.accentColour};
+    Object.entries(vars).forEach(([k,v])=>{if(v)html.style.setProperty(`--${k}`,v)});
+    const header=document.querySelector('[data-live-header]');
+    if(header){replacePrefixClass(header,'height-',settings.headerHeight);}
+    const logo=document.querySelector('[data-live-header-logo]');
+    if(logo){replacePrefixClass(logo,'logo-',settings.headerLogoSize); if(settings.headerLogo){logo.innerHTML=`<img src="${escapeHtml(settings.headerLogo)}" alt="${escapeHtml(settings.siteTitle||'')}">`;} else if(settings.siteTitle){logo.textContent=settings.siteTitle;}}
+    const nav=document.querySelector('[data-live-navigation]');
+    if(nav){replacePrefixClass(nav,'text-',settings.navigationTextSize); const links=(settings.navigationLinks||[]).length?settings.navigationLinks:(pages||[]).filter(p=>!['home','checkout'].includes(p.slug)).slice(0,5).map(p=>({label:p.title,url:`/${p.slug}/`})); if(links.length)nav.innerHTML=links.map(x=>`<a href="${escapeHtml(x.url)}">${escapeHtml(x.label)}</a>`).join('');}
+    const cta=document.querySelector('[data-live-header-cta]');
+    if(cta){replacePrefixClass(cta,'button-',settings.buttonTextSize); if(settings.headerButtonText)cta.textContent=settings.headerButtonText;if(settings.headerButtonUrl)cta.setAttribute('href',settings.headerButtonUrl);}
+    const headerText=document.querySelector('[data-live-header-text]'); if(headerText&&settings.headerText!==undefined)headerText.innerHTML=richHtml(settings.headerText);
+    const footer=document.querySelector('[data-live-footer]'); if(footer)replacePrefixClass(footer,'height-',settings.footerHeight);
+    const footerLogo=document.querySelector('[data-live-footer-logo]'); if(footerLogo&&settings.footerLogo){footerLogo.src=settings.footerLogo;replacePrefixClass(footerLogo,'logo-',settings.footerLogoSize);}
+    const wordmark=document.querySelector('[data-live-footer-wordmark]'); if(wordmark&&settings.siteTitle)wordmark.textContent=settings.siteTitle;
+    setText(document,'[data-live-footer-tagline]',settings.tagline);
+    const footerText=document.querySelector('[data-live-footer-text]'); if(footerText&&settings.footerText!==undefined)footerText.innerHTML=richHtml(settings.footerText);
+    const contact=document.querySelector('[data-live-footer-contact] a'); if(contact&&settings.contactEmail){contact.textContent=settings.contactEmail;contact.href=`mailto:${settings.contactEmail}`;}
+  };
+
+  const hydratePage=(pages)=>{
+    const page=(pages||[]).find(p=>p.slug===currentSlug()); if(!page)return;
+    const hero=document.querySelector('[data-live-page-hero]'); if(!hero)return;
+    setText(hero,'[data-live-page-field="title"]',page.title);
+    setText(hero,'[data-live-page-field="subtitle"]',page.subtitle);
+    const intro=hero.querySelector('[data-live-page-rich="intro"]'); if(intro&&page.intro!==undefined){intro.innerHTML=richHtml(page.intro);intro.hidden=!page.intro;}
+    const cta=hero.querySelector('[data-live-page-cta]'); if(cta){const a=cta.querySelector('a'); if(page.buttonText&&page.buttonUrl){cta.hidden=false;a.textContent=page.buttonText;a.href=page.buttonUrl;replacePrefixClass(a,'button-',page.heroButtonSize);}else cta.hidden=true;}
+    replacePrefixClass(hero,'layout-',page.heroLayout); replacePrefixClass(hero,'hero-align-',page.heroAlignment); replacePrefixClass(hero,'hero-padding-',page.heroPadding); replacePrefixClass(hero,'hero-width-',page.heroWidth); replacePrefixClass(hero,'hero-gap-',page.heroGap);
+    const title=hero.querySelector('[data-live-page-field="title"]');replacePrefixClass(title,'size-',page.titleSize);
+    const sub=hero.querySelector('[data-live-page-field="subtitle"]');replacePrefixClass(sub,'size-',page.subtitleSize);
+    const figure=hero.querySelector('[data-live-page-image]'); if(figure){const img=figure.querySelector('img');if(page.heroImage){figure.hidden=false;img.src=page.heroImage;}else figure.hidden=true;replacePrefixClass(figure,'hero-image-shape-',page.heroImageShape);replacePrefixClass(figure,'fit-',page.heroImageFit);replacePrefixClass(figure,'position-',page.heroImageAlignment);}
+    hero.hidden=page.heroLayout==='none';
+    const siteTitle=(document.querySelector('[data-live-header-logo] img')?.alt||'Rooted Commons');
+    document.title=`${page.seoTitle||page.title} | ${siteTitle}`;
+    const meta=document.querySelector('meta[name="description"]');if(meta&&(page.seoDescription||page.intro))meta.setAttribute('content',page.seoDescription||page.intro);
+  };
+
+  const hydrateSections=(sections)=>{
+    if(!Array.isArray(sections))return;
+    const slug=currentSlug();
+    const pageSections=sections.filter(s=>s.page===slug);
+    const byId=new Map(pageSections.map(s=>[String(s.id),s])); const byKey=new Map(pageSections.map(s=>[String(s.key),s]));
+    const nodes=[...document.querySelectorAll('[data-live-section-id]')];
+    nodes.forEach(root=>{
+      const section=byId.get(root.dataset.liveSectionId)||byKey.get(root.dataset.liveSectionKey); if(!section)return;
+      root.hidden=!section.visible;
+      root.dataset.liveOrder=String(section.order||0);
+      ['eyebrow','heading','subheading','preCountdownLabel','preCountdownText'].forEach(field=>setText(root,`[data-live-section-field="${field}"]`,section[field]));
+      const body=root.querySelector('[data-live-section-rich="body"]'); if(body&&section.body!==undefined){body.innerHTML=richHtml(section.body);body.hidden=!section.body;}
+      const button=root.querySelector('[data-live-section-button]'); if(button){if(section.buttonVisible&&section.buttonText&&section.buttonUrl){button.hidden=false; const label=button.querySelector('span')||button; label.textContent=section.buttonText;button.href=section.buttonUrl;replacePrefixClass(button,'button-',section.buttonSize);}else button.hidden=true;}
+      const image=root.querySelector('[data-live-section-image]');const img=root.querySelector('[data-live-section-image-img]');if(image&&img){if(section.image){image.hidden=false;img.src=section.image;img.alt=section.imageAlt||'';}else image.hidden=true;replacePrefixClass(image,'image-size-',section.imageSize);replacePrefixClass(image,'fit-',section.imageFit);}
+      ['background-','space-above-','space-below-','align-'].forEach(prefix=>[...root.classList].filter(c=>c.startsWith(prefix)).forEach(c=>root.classList.remove(c)));
+      root.classList.add(`background-${section.backgroundStyle}`,`space-above-${section.spaceAbove}`,`space-below-${section.spaceBelow}`,`align-${section.alignment}`);
+      const h=root.querySelector('[data-live-section-field="heading"]');replacePrefixClass(h,'size-',section.headingSize);
+      const sh=root.querySelector('[data-live-section-field="subheading"]');replacePrefixClass(sh,'size-',section.subheadingSize);
+      root.querySelectorAll('[data-countdown-date]').forEach(el=>{if(section.countdownDate)el.setAttribute('data-countdown-date',section.countdownDate);if(section.postCountdownText!==undefined)el.setAttribute('data-countdown-post',section.postCountdownText||'');});
+      root.querySelectorAll('.campaign-botanical,.cta-watermark').forEach(w=>{if(section.watermarkImage)w.style.backgroundImage=`url("${section.watermarkImage.replace(/"/g,'\\"')}")`;w.style.setProperty('--watermark-opacity',String((section.watermarkOpacity||8)/100));});
+    });
+
+    document.querySelectorAll('[data-live-card-id]').forEach(card=>{
+      const item=byId.get(String(card.dataset.liveCardId)); if(!item)return;
+      card.hidden=!item.visible;
+      ['eyebrow','heading','subheading'].forEach(field=>setText(card,`[data-live-card-field="${field}"]`,item[field]));
+      const body=card.querySelector('[data-live-card-rich="body"]'); if(body&&item.body!==undefined){body.innerHTML=richHtml(item.body);body.hidden=!item.body;}
+      const button=card.querySelector('[data-live-card-button]'); if(button){if(item.buttonVisible&&item.buttonText&&item.buttonUrl){button.hidden=false;button.textContent=item.buttonText;button.href=item.buttonUrl;replacePrefixClass(button,'button-',item.buttonSize);}else button.hidden=true;}
+      replacePrefixClass(card,'align-',item.alignment);
+      const heading=card.querySelector('[data-live-card-field="heading"]');replacePrefixClass(heading,'size-',item.headingSize);
+      const subheading=card.querySelector('[data-live-card-field="subheading"]');replacePrefixClass(subheading,'size-',item.subheadingSize);
+      const images=[item.image,item.image2,item.image3].filter(Boolean);
+      card.querySelectorAll('img').forEach((img,index)=>{if(images[index])img.src=images[index];});
+    });
+
+    // Existing sections can be reordered live. New section rows still require a deploy so a DOM node exists.
+    const main=document.querySelector('main'); if(main){const ordered=nodes.filter(n=>n.parentElement===main).sort((a,b)=>Number(a.dataset.liveOrder||0)-Number(b.dataset.liveOrder||0));ordered.forEach(n=>main.appendChild(n));}
+  };
+
+  fetch('/api/public-content',{headers:{accept:'application/json'},cache:'no-store'})
+    .then(r=>r.ok?r.json():Promise.reject(new Error(`HTTP ${r.status}`)))
+    .then(data=>{hydrateSettings(data.settings,data.pages);hydratePage(data.pages);hydrateSections(data.sections);window.dispatchEvent(new CustomEvent('rooted:public-content',{detail:data}));})
+    .catch(error=>console.warn('Live public content unavailable; using static fallback.',error));
+})();
+</script>
