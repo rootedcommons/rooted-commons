@@ -106,10 +106,22 @@
       const metrics = data.metrics || [];
       const partners = data.partners || [];
 
+      const statSections = data.statSections || [];
       metricGrids.forEach((grid) => {
-        const ids = String(grid.dataset.metricIds || '').split(',').map(Number).filter(Number.isFinite);
-        const names = String(grid.dataset.metricNames || '').split('|').map((value) => value.trim()).filter(Boolean);
+        const sectionId = Number(grid.dataset.sectionId);
+        const sectionKey = String(grid.dataset.sectionKey || '').trim();
+        const liveSection = statSections.find((section) =>
+          (Number.isFinite(sectionId) && section.id === sectionId) ||
+          (sectionKey && section.key === sectionKey)
+        );
+        const ids = liveSection
+          ? (liveSection.metricIds || []).map(Number).filter(Number.isFinite)
+          : String(grid.dataset.metricIds || '').split(',').map(Number).filter(Number.isFinite);
+        const names = liveSection
+          ? (liveSection.metricNames || []).map((value) => String(value).trim()).filter(Boolean)
+          : String(grid.dataset.metricNames || '').split('|').map((value) => value.trim()).filter(Boolean);
         const selected = metrics.filter((metric) => ids.includes(metric.id) || names.includes(metric.name));
+        if (liveSection?.columns) grid.style.setProperty('--columns', String(liveSection.columns));
         if (!selected.length) return;
         grid.innerHTML = selected.map((metric) => `<article class="stat-tile align-center">${metric.icon ? `<img class="impact-stat-icon" src="${escapeHtml(metric.icon)}" alt="" aria-hidden="true">` : ''}<strong class="stat-number">${escapeHtml(metric.value)}</strong><span class="stat-label">${escapeHtml(metric.name)}</span>${metric.description ? `<small class="stat-description">${escapeHtml(metric.description)}</small>` : ''}</article>`).join('');
       });

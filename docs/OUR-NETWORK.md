@@ -34,3 +34,7 @@ Metrics and Network Partners are runtime data. The static page contains the Sect
 Changes to Metrics values, Network Partner content, Active/Public flags, images and partner modal content therefore appear without rebuilding the Astro site. Changes to Pages/Sections still require the normal static site rebuild.
 
 `BASEROW_RUNTIME_TOKEN` needs Read access to Metrics and Network Partners, plus the existing permissions on any private tables needed for aggregate calculation tokens. `BASEROW_TOKEN` does not need access to Metrics or Network Partners.
+
+
+### Live Stats links (v2.9.41)
+Stats sections are hydrated at runtime. The public endpoint reads the current `Metrics` links and `Columns` from the Sections table with `BASEROW_RUNTIME_TOKEN`, so adding/removing linked Metrics does not require a redeploy. Grant the runtime token **Read** permission on Sections, Metrics, and Network Partners. Only a narrow Stats-section projection is returned publicly.

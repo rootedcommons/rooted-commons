@@ -1,3 +1,11 @@
+# v2.9.41 — Live Stats section links
+
+- Stats sections now read their current `Metrics` links from Baserow at runtime through the public-network Cloudflare endpoint.
+- Changing which Metrics are linked to a Stats section no longer requires a site redeploy.
+- Stats `Columns` is also refreshed live from the current Sections row.
+- The runtime token now requires Read permission on Sections in addition to Metrics and Network Partners.
+- Only the Stats section ID/key, linked Metric IDs/names, and column count are exposed publicly; the endpoint does not expose general Sections content.
+
 ## 2.9.40 - 2026-08-08
 
 - Metrics and Network Partners now load live through `/api/public-network` using `BASEROW_RUNTIME_TOKEN`; changes in Baserow appear without an Astro redeploy.

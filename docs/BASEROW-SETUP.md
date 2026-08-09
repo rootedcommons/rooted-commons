@@ -519,3 +519,7 @@ In **Sections**, the field formerly called `Grid source` is now **Products** (li
 Metrics may use literal values or the supported build-time `{{...}}` tokens. `Placement` is a multiple select (`Home`, `Network`, `Partner`, `Dashboard`) used as metadata; a Stats section's explicit Metrics links control what it displays. Partner modal metrics additionally require `Placement = Partner` and a linked `Network Partner`.
 
 The TOM fields are governance metadata only: `TOM Theme` (`Work`, `Economy`, `Community`, `Planet`), `TOM Outcome`, and `TOM Measure`. Leave outcome/measure blank unless there is a defensible mapping to the current external TOM taxonomy. Record methodology in `Calc method` and evidence provenance in `Evidence / source`.
+
+
+### Live Stats links (v2.9.41)
+Stats sections are hydrated at runtime. The public endpoint reads the current `Metrics` links and `Columns` from the Sections table with `BASEROW_RUNTIME_TOKEN`, so adding/removing linked Metrics does not require a redeploy. Grant the runtime token **Read** permission on Sections, Metrics, and Network Partners. Only a narrow Stats-section projection is returned publicly.

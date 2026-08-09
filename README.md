@@ -34,3 +34,7 @@ The existing `baserow-imports/` and `baserow-table-specification/` folders are r
 ## Access-link email flow
 
 Checkout, signup and the Sign in page post to `/api/request-link`. For a matching active member, Cloudflare reconstructs the current weekly access link from the non-secret Member Sessions record plus the Cloudflare signing secret and sends it directly through mailbox.org SMTP. Baserow never stores a usable bearer link. Opening a weekly link creates a separate 90-day HttpOnly device session. A Wednesday scheduler replaces only the `Weekly access` credential and emails it to active members; existing device sessions are unaffected.
+
+### Our Network data model (v2.9.38+)
+
+The Our Network page can now use two dedicated Baserow tables rather than treating partners as generic page cards: **Network Partners** for profiles and **Metrics** for measurable outcomes. Use `Stats` and `Network` section rows to place those datasets anywhere in the page flow. See `docs/BASEROW-SETUP.md` for the migration steps.

@@ -258,3 +258,7 @@ The public site theme is supplied by Site Settings and exposed as CSS variables:
 ### Network / impact data
 
 `BASEROW_NETWORK_PARTNERS_TABLE_ID` supplies public partner profiles for the `Network` section renderer. `BASEROW_METRICS_TABLE_ID` supplies public aggregate and partner-attributed measures for the `Stats` renderer and partner modals. Both are build-time public-content reads and should use the least-privilege Baserow token.
+
+
+### Live Stats links (v2.9.41)
+Stats sections are hydrated at runtime. The public endpoint reads the current `Metrics` links and `Columns` from the Sections table with `BASEROW_RUNTIME_TOKEN`, so adding/removing linked Metrics does not require a redeploy. Grant the runtime token **Read** permission on Sections, Metrics, and Network Partners. Only a narrow Stats-section projection is returned publicly.

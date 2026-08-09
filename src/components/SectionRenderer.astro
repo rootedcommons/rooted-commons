@@ -102,7 +102,7 @@ const selectedProducts = (section.productIds || []).length
       {(section.heading || groupTitle) && <h2 class={`group-heading ${alignment} size-${section.headingSize}`}>{section.heading || groupTitle}</h2>}
       {section.subheading && <p class={`group-subheading ${alignment} size-${section.subheadingSize}`}>{section.subheading}</p>}
       {section.body && <FormattedText text={section.body} class={`rich-body ${alignment} size-${section.bodySize}`} />}
-      <div class="stats-grid" data-live-metrics data-metric-ids={(section.metricIds || []).join(',')} data-metric-names={(section.metricNames || []).join('|')} style={`--columns:${section.columns}`}>
+      <div class="stats-grid" data-live-metrics data-section-id={section.id} data-section-key={section.key || ''} data-metric-ids={(section.metricIds || []).join(',')} data-metric-names={(section.metricNames || []).join('|')} style={`--columns:${section.columns}`}>
         {selectedMetrics.length > 0 ? selectedMetrics.map((metric) => (
           <article class="stat-tile align-center">
             {metric.icon && <img class="impact-stat-icon" src={metric.icon} alt="" aria-hidden="true" />}
