@@ -89,6 +89,13 @@ const metricHeadline = (metric) => metric.displayValue || (metric.value !== null
       });
     });
   };
+  const openRequestedPartner = () => {
+    const requested = new URLSearchParams(window.location.search).get('partner');
+    if (!requested) return;
+    const dialog = [...document.querySelectorAll('[data-network-dialog]')].find((item) => item.id.endsWith(`-${requested}`));
+    if (dialog && !dialog.open && typeof dialog.showModal === 'function') dialog.showModal();
+  };
   initNetworkDialogs();
-  document.addEventListener('astro:page-load', initNetworkDialogs);
+  openRequestedPartner();
+  document.addEventListener('astro:page-load', () => { initNetworkDialogs(); openRequestedPartner(); });
 </script>

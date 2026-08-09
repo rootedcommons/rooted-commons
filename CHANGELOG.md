@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.9.43 — Transparent product value flows
+
+- Added optional `Source value recipient` (link to Network Partners) and `Source value` fields to Products.
+- Product detail modals now show a simple `Where your money goes` breakdown: source recipient, Commons contribution/subsidy when non-zero, and Member price.
+- Commons contribution/subsidy is calculated at render time as `Member price - Source value`; no duplicate margin field is stored.
+- Added compact `ⓘ` disclosures explaining Commons contribution/subsidy and Member price, with a link from the Commons explanation to FAQs.
+- Source-recipient names link to the corresponding Network Partner profile, and the Our Network page can open a requested partner modal from `?partner=<id>`.
+- Existing Origin and Secondary origin provenance fields are unchanged.
+
 ## 2.9.42 — Live CMS public-content layer + resilient public APIs
 
 - Added `/api/public-content`, a runtime-token-backed, strict allowlist endpoint for Site Settings, Pages, Sections, Interface Content and Collection Points.

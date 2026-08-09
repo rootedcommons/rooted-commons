@@ -1109,3 +1109,24 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 @media(max-width:430px){.campaign-heading.size-large{font-size:2.2rem}.campaign-heading.size-medium{font-size:2rem}.campaign-heading.size-small{font-size:1.8rem}}
 
 .stat-description{display:block;margin-top:.35rem;font-size:.82rem;line-height:1.35;opacity:.72}
+
+
+/* v2.9.43 transparent price breakdown */
+.price-breakdown{margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--line)}
+.price-breakdown h3{margin-top:0}
+.price-breakdown-list{margin:0}
+.price-breakdown-list>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1rem;align-items:start;padding:.55rem 0;border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
+.price-breakdown-list>div:last-child{border-bottom:0}
+.price-breakdown-list dt,.price-breakdown-list dd{margin:0}
+.price-breakdown-list dt{display:flex;align-items:center;gap:.45rem;min-width:0}
+.price-breakdown-list dd{font-weight:700;white-space:nowrap}
+.price-breakdown-total{padding-top:.8rem!important;font-weight:700}
+.price-breakdown-link{font-weight:700;text-underline-offset:.15em}
+.price-info-icon,.price-info-popover summary{display:inline-grid;place-items:center;width:1.25rem;height:1.25rem;flex:0 0 1.25rem;border:0;background:transparent;color:var(--primary);text-decoration:none;cursor:pointer;font-size:1rem;line-height:1}
+.price-info-popover{position:relative;display:inline-block}
+.price-info-popover summary{list-style:none}
+.price-info-popover summary::-webkit-details-marker{display:none}
+.price-info-copy{position:absolute;z-index:8;left:0;top:calc(100% + .45rem);width:min(320px,75vw);padding:.85rem 1rem;border:1px solid var(--line);background:var(--surface);box-shadow:0 8px 28px rgba(0,0,0,.12);font-size:.9rem;font-weight:400;line-height:1.45}
+.price-info-copy p{margin:0 0 .65rem}
+.price-info-copy a{font-weight:700}
+@media(max-width:650px){.price-info-copy{left:auto;right:-1rem;width:min(280px,78vw)}}

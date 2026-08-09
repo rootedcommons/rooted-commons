@@ -60,6 +60,13 @@
     });
   };
 
+  const openRequestedPartner = () => {
+    const requested = new URLSearchParams(window.location.search).get('partner');
+    if (!requested) return;
+    const dialog = [...document.querySelectorAll('[data-network-dialog]')].find((item) => item.id.endsWith(`-${requested}`));
+    if (dialog && !dialog.open) dialog.showModal?.();
+  };
+
   const partnerHtml = (partner, metrics) => {
     const safeKey = `${String(partner.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}-${partner.id}`;
     const modalId = `network-partner-${safeKey}`;
@@ -129,6 +136,7 @@
       networkGrids.forEach((grid) => { grid.innerHTML = partners.map((partner) => partnerHtml(partner, metrics)).join(''); });
       initGalleries();
       initDialogs();
+      openRequestedPartner();
     } catch (error) {
       console.error('Unable to load live Metrics / Network Partners', error);
     }

@@ -534,3 +534,8 @@ Stats sections are hydrated at runtime. The public endpoint reads the current `M
 Astro still writes the last deployed Baserow content into the HTML as a fallback. On page load the live hydrators refresh existing CMS-controlled content. This preserves a fast first render and useful HTML for search engines while allowing routine Baserow edits to appear without redeploying. A new Section row or a Section type change still requires deployment because it changes the component structure.
 
 The runtime token should have the minimum permissions actually needed. For the live public CMS layer it needs **Read** on Site Settings, Pages, Sections, Interface Content, Collection Points, Metrics and Network Partners, in addition to the narrowly scoped permissions already required by member/order functions. Never expose this token in browser JavaScript.
+
+
+### Transparent product price breakdown (v2.9.43)
+
+Products can optionally link `Source value recipient` to one `Network Partners` row and store a numeric `Source value`. When both are present, the product detail modal shows the source recipient, the calculated Commons contribution/subsidy, and the member price. `Commons contribution/subsidy` is not stored: it is always calculated as `Member price - Source value`. A zero result is hidden. The source recipient links to its Network Partner profile. Existing `Origin` and `Secondary origin` fields are unchanged.
