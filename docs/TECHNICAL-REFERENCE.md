@@ -291,3 +291,10 @@ Public Baserow Sections are treated as a constrained component specification. As
 The live renderer owns each supported section as a complete template. It does not mutate arbitrary descendants of the Astro component, which prevents live updates from stripping wrapper classes, eyebrow icons or rich-text structure. Optional content such as CTA images is simply an optional slot in the component template.
 
 Product Grid remains on the Astro renderer because its product cards, cart controls, stock state and product dialogs are stateful. Existing Grid sections are preserved and reordered with the live section stream; creating a brand-new Grid section or converting another type to Grid still requires a deployment.
+
+### v2.9.48 presentation refinements
+
+- Call to action sections support an optional `Icon` file in Sections. This is a compact decorative icon, separate from the main `Image` field.
+- Text-only CTAs use a narrower supporting-strip layout; on mobile the button moves below the icon/text row.
+- CTA, Cards, Campaign and Stats use the same quiet rounded border language. Product cards use matching rounded borders; Network Partner cards are intentionally unchanged.
+- Stats tiles display the Metric value and description only; the Metric name/title is not shown in the tile.

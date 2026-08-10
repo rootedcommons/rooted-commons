@@ -289,6 +289,7 @@ export async function getSiteData() {
     const image2 = fileUrl(row, 'Image 2', row.image2 || '');
     const image3 = fileUrl(row, 'Image 3', row.image3 || '');
     const watermarkImage = fileUrl(row, 'Watermark image', row.watermarkImage || '');
+    const icon = fileUrl(row, 'Icon', row.icon || '');
     const inferredType = groupKey ? 'Cards' : image ? 'Image and text' : 'Text';
     return {
       id: row.id,
@@ -300,6 +301,7 @@ export async function getSiteData() {
       image2,
       image3,
       watermarkImage,
+      icon,
       watermarkOpacity: Math.min(100, Math.max(0, numeric(row, 'Watermark opacity', 8))),
       order: numeric(row, 'Order', row.order || 0),
       visible: boolean(row, 'Visible', row.visible ?? true),

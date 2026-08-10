@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.9.48
+
+- Added an optional `Icon` file field for Call to action sections.
+- Resized CTAs into a narrower, proportionate supporting strip with responsive icon/text/button layout.
+- Standardised the quiet rounded border/shadow treatment across CTA, Cards, Campaign and Stats presentation.
+- Removed Metric titles from Stats tiles, retaining the value and explanatory description.
+- Added rounded corners and matching borders to Product Grid cards without changing Network Partner card styling.
+
+
 
 ## 2.9.47 — Live section component architecture
 

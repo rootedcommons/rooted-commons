@@ -47,7 +47,8 @@ const selectedProducts = (section.productIds || []).length
         {section.heading && <h2 data-live-section-field="heading" class={`size-${section.headingSize}`}>{section.heading}</h2>}
         {section.subheading && <p data-live-section-field="subheading" class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
         {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} /></div>}
-        {button && <a data-live-section-button class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
+        </div>
+        {button && <a data-live-section-button class={`button cta-button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
       </div>
     </div>
   </section>
@@ -107,7 +108,6 @@ const selectedProducts = (section.productIds || []).length
           <article class="stat-tile align-center">
             {metric.icon && <img class="impact-stat-icon" src={metric.icon} alt="" aria-hidden="true" />}
             <strong class="stat-number">{metricHeadline(metric)}</strong>
-            <span class="stat-label">{metric.name}</span>
             {metric.description && <small class="stat-description">{metric.description}</small>}
           </article>
         )) : block.items.map((item) => (
@@ -156,21 +156,24 @@ const selectedProducts = (section.productIds || []).length
         <img data-live-section-image-img src={section.image} alt={section.imageAlt || ''} loading="lazy" />
       </figure>}
       <div class="cta-copy">
-        {section.eyebrow && <p data-live-section-field="eyebrow" class="eyebrow section-eyebrow">{settings.eyebrowIcon && <img class="eyebrow-icon" src={settings.eyebrowIcon} alt="" aria-hidden="true" />}<span>{section.eyebrow}</span></p>}
-        {section.heading && <h2 data-live-section-field="heading" class={`size-${section.headingSize}`}>{section.heading}</h2>}
-        {section.subheading && <p data-live-section-field="subheading" class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
-        {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} /></div>}
-        {section.countdownDate && (
-          <div class="campaign-timing">
-            {section.preCountdownLabel && <p data-live-section-field="preCountdownLabel" class="campaign-pre-countdown-label">{section.preCountdownLabel}</p>}
-            {section.preCountdownText && <p data-live-section-field="preCountdownText" class="campaign-pre-countdown">{section.preCountdownText}</p>}
-            <p class="campaign-countdown" data-countdown-date={section.countdownDate} data-countdown-post={section.postCountdownText || ''}>
-              <strong class="campaign-countdown-value"></strong>
-              <span class="campaign-countdown-post"></span>
-            </p>
-          </div>
-        )}
-        {button && <a data-live-section-button class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
+        {section.icon && <figure class="cta-icon" aria-hidden="true"><img src={section.icon} alt="" loading="lazy" /></figure>}
+        <div class="cta-text">
+          {section.eyebrow && <p data-live-section-field="eyebrow" class="eyebrow section-eyebrow">{settings.eyebrowIcon && <img class="eyebrow-icon" src={settings.eyebrowIcon} alt="" aria-hidden="true" />}<span>{section.eyebrow}</span></p>}
+          {section.heading && <h2 data-live-section-field="heading" class={`size-${section.headingSize}`}>{section.heading}</h2>}
+          {section.subheading && <p data-live-section-field="subheading" class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
+          {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} /></div>}
+          {section.countdownDate && (
+            <div class="campaign-timing">
+              {section.preCountdownLabel && <p data-live-section-field="preCountdownLabel" class="campaign-pre-countdown-label">{section.preCountdownLabel}</p>}
+              {section.preCountdownText && <p data-live-section-field="preCountdownText" class="campaign-pre-countdown">{section.preCountdownText}</p>}
+              <p class="campaign-countdown" data-countdown-date={section.countdownDate} data-countdown-post={section.postCountdownText || ''}>
+                <strong class="campaign-countdown-value"></strong>
+                <span class="campaign-countdown-post"></span>
+              </p>
+            </div>
+          )}
+        </div>
+        {button && <a data-live-section-button class={`button cta-button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
       </div>
     </div>
   </section>

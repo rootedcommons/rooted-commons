@@ -1158,3 +1158,42 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 
 /* v2.9.47: one visual contract for CTA cards, with or without an optional image. */
 .cta-section .section-inner{border-radius:1.2rem}
+
+
+/* v2.9.48: proportionate CTAs + unified section/card framing. */
+:root{--feature-border:color-mix(in srgb,var(--line) 80%,white);--feature-radius:1.45rem;--feature-shadow:0 10px 30px rgba(54,42,30,.06)}
+
+/* Compact supporting CTA: narrower than primary sections, with an optional Baserow icon. */
+.cta-section .section-inner,
+.cta-section .section-inner.prose-width,
+.cta-section .cta-inner{max-width:min(1050px,calc(100vw - 4rem));margin-inline:auto;padding:clamp(1.35rem,3vw,2rem) clamp(1.5rem,4vw,3.25rem);border:1px solid var(--feature-border);border-radius:var(--feature-radius);background:var(--surface);box-shadow:var(--feature-shadow)}
+.cta-section .cta-copy{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:clamp(1rem,2.5vw,2rem);align-items:center;text-align:left}
+.cta-section .cta-text{min-width:0}
+.cta-section .cta-text>:first-child{margin-top:0}.cta-section .cta-text>:last-child{margin-bottom:0}
+.cta-icon{display:grid;place-items:center;width:clamp(3.8rem,6vw,5.2rem);height:clamp(3.8rem,6vw,5.2rem);margin:0;border-radius:999px;flex:0 0 auto}
+.cta-icon img{display:block;width:100%;height:100%;object-fit:contain}
+.cta-section .cta-button{min-width:min(250px,28vw);margin:0}
+.cta-section.cta-with-image .cta-copy{grid-template-columns:minmax(0,1fr) auto}
+.cta-section.cta-with-image .cta-icon{display:none}
+
+/* The same quiet rounded frame used by the founder campaign. */
+.cards-section .content-card,
+.stats-section .section-inner,
+.campaign-section .campaign-inner{border:1px solid var(--feature-border);border-radius:var(--feature-radius);box-shadow:var(--feature-shadow)}
+.cards-section .content-card{overflow:hidden}
+
+/* Metric names are intentionally omitted: value + explanatory copy is cleaner. */
+.stats-section .stat-label{display:none}
+.stats-section .stat-description{margin-top:.55rem}
+
+/* Product cards use the same visual language without touching Network Partner cards. */
+.product-card{border:1px solid var(--feature-border);border-radius:1.2rem;box-shadow:0 7px 20px rgba(54,42,30,.05)}
+.product-card>img,.product-card>.product-image-button,.product-card>.product-image-button img{border-radius:1.15rem 1.15rem 0 0}
+.product-card>.product-image-button{overflow:hidden}
+
+@media(max-width:760px){
+  .cta-section .section-inner,.cta-section .section-inner.prose-width,.cta-section .cta-inner{max-width:calc(100vw - 2rem);padding:1.25rem}
+  .cta-section .cta-copy{grid-template-columns:auto minmax(0,1fr);gap:1rem}
+  .cta-section .cta-button{grid-column:1/-1;width:100%;min-width:0;margin-top:.25rem}
+  .cta-icon{width:3.5rem;height:3.5rem}
+}

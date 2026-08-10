@@ -133,7 +133,7 @@
         const selected = metrics.filter((metric) => ids.includes(metric.id) || names.includes(metric.name));
         if (liveSection?.columns) grid.style.setProperty('--columns', String(liveSection.columns));
         if (!selected.length) return;
-        grid.innerHTML = selected.map((metric) => `<article class="stat-tile align-center">${metric.icon ? `<img class="impact-stat-icon" src="${escapeHtml(metric.icon)}" alt="" aria-hidden="true">` : ''}<strong class="stat-number">${escapeHtml(metric.value)}</strong><span class="stat-label">${escapeHtml(metric.name)}</span>${metric.description ? `<small class="stat-description">${escapeHtml(metric.description)}</small>` : ''}</article>`).join('');
+        grid.innerHTML = selected.map((metric) => `<article class="stat-tile align-center">${metric.icon ? `<img class="impact-stat-icon" src="${escapeHtml(metric.icon)}" alt="" aria-hidden="true">` : ''}<strong class="stat-number">${escapeHtml(metric.value)}</strong>${metric.description ? `<small class="stat-description">${escapeHtml(metric.description)}</small>` : ''}</article>`).join('');
       });
 
       networkGrids.forEach((grid) => { grid.innerHTML = partners.map((partner) => partnerHtml(partner, metrics)).join(''); });
