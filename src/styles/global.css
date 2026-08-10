@@ -1130,3 +1130,28 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .price-help-copy p:last-child{margin-bottom:0}
 .price-help-copy a{font-weight:700}
 @media(max-width:650px){.price-breakdown-card{padding:.75rem .8rem}.price-help-panel{padding:.7rem .75rem}}
+
+/* v2.9.45 price transparency popovers + responsive card treatment */
+.product-card{overflow:visible}
+.price-breakdown-card{position:relative}
+.price-breakdown-list>div:not(.price-help-panel){grid-template-columns:minmax(0,1fr) max-content;gap:.75rem;align-items:center}
+.price-breakdown-list dt{overflow-wrap:normal;word-break:normal}
+.price-breakdown-list dt>span{min-width:0}
+.price-help-panel{position:absolute;z-index:40;left:var(--help-left,8px);top:var(--help-top,100%);width:var(--help-width,300px);max-width:calc(100vw - 2rem);margin:0;padding:.8rem .9rem;border:1px solid var(--line);border-radius:12px;background:var(--surface);box-shadow:0 10px 30px rgba(0,0,0,.18)}
+.price-help-panel::before{content:"";position:absolute;top:-7px;left:50%;width:12px;height:12px;background:var(--surface);border-left:1px solid var(--line);border-top:1px solid var(--line);transform:translateX(-50%) rotate(45deg)}
+.product-detail-image{margin:.25rem 0 1.4rem;max-width:360px;border:1px solid var(--line);background:var(--surface)}
+.product-detail-image img{display:block;width:100%;aspect-ratio:1/1;object-fit:contain}
+
+@media(max-width:650px){
+  #shop-products .product-card[data-price-breakdown-open]{grid-column:1/-1}
+  #shop-products .product-card[data-price-breakdown-open] .product-copy{padding:1rem}
+  #shop-products .product-card[data-price-breakdown-open] .price-breakdown-card{width:100%;max-width:none}
+  .price-breakdown-card h4{font-size:1.05rem}
+  .price-breakdown-list>div:not(.price-help-panel){padding:.55rem 0;gap:.6rem}
+  .price-breakdown-list dt{font-size:.92rem;line-height:1.35}
+  .price-breakdown-list dd{font-size:.92rem}
+  .price-info-icon{width:1.15rem;height:1.15rem;flex-basis:1.15rem;font-size:.92rem}
+  .price-help-panel{position:fixed;left:50%!important;top:50%!important;width:min(320px,calc(100vw - 2rem))!important;transform:translate(-50%,-50%);z-index:1000;max-height:min(70vh,430px);overflow:auto;box-shadow:0 16px 48px rgba(0,0,0,.28)}
+  .price-help-panel::before{display:none}
+  .product-detail-image{max-width:260px;margin-inline:auto}
+}

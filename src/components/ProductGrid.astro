@@ -146,6 +146,7 @@ const displayProducts = filtered.map((product) => {
         <div class="product-detail-layout product-detail-information-layout">
           <div class="product-detail-copy">
             <h2>{product.name}{product.size ? ` – ${product.size}` : ''}</h2>
+            {product.image && <figure class="product-detail-image"><img src={product.image} alt={product.name} /></figure>}
             {product.origin && <p class="product-detail-origin"><strong>Origin</strong><span>{product.origin}</span></p>}
             {product.secondaryOrigin && <p class="product-detail-origin"><strong>Secondary origin</strong><span>{product.secondaryOrigin}</span></p>}
             {(product.expandedDescription || product.description) && <FormattedText text={product.expandedDescription || product.description} class="product-detail-overview rich-body" />}
@@ -178,6 +179,7 @@ const displayProducts = filtered.map((product) => {
     document.querySelectorAll('[data-price-help]').forEach((panel) => {
       const keep = except && panel === except;
       panel.hidden = !keep;
+      if (!keep) delete panel.dataset.open;
     });
     document.querySelectorAll('[data-price-help-toggle]').forEach((button) => {
       const card = button.closest('[data-product-card]');
@@ -196,6 +198,7 @@ const displayProducts = filtered.map((product) => {
       if (!box) return;
       const opening = box.hidden;
       box.hidden = !opening;
+      card?.toggleAttribute('data-price-breakdown-open', opening);
       breakdownToggle.setAttribute('aria-expanded', opening ? 'true' : 'false');
       if (!opening) closeHelpPanels();
       return;
@@ -210,6 +213,24 @@ const displayProducts = filtered.map((product) => {
     if (!panel) return;
     const opening = panel.hidden;
     closeHelpPanels(opening ? panel : null);
+    if (opening) {
+      panel.dataset.open = 'true';
+      const buttonRect = helpToggle.getBoundingClientRect();
+      const cardRect = card.getBoundingClientRect();
+      const panelWidth = Math.min(320, Math.max(220, window.innerWidth - 32));
+      let left = buttonRect.left - cardRect.left + buttonRect.width / 2 - panelWidth / 2;
+      left = Math.max(8, Math.min(left, cardRect.width - panelWidth - 8));
+      panel.style.setProperty('--help-left', `${left}px`);
+      panel.style.setProperty('--help-top', `${buttonRect.bottom - cardRect.top + 8}px`);
+      panel.style.setProperty('--help-width', `${panelWidth}px`);
+    } else {
+      delete panel.dataset.open;
+    }
+  });
+
+  document.addEventListener('click', (event) => {
+    if (event.target.closest('[data-price-help-toggle], [data-price-help]')) return;
+    closeHelpPanels();
   });
 
   const applyPartnerHelp = (data = {}) => {

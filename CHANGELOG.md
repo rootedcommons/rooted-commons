@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.9.45
+
+- Changed price-breakdown help from inline expanding panels to small floating popovers; opening one closes the previous popover.
+- On phones, help popovers float centrally above the page rather than stretching product cards.
+- Improved mobile price-breakdown rendering: a card temporarily spans the full product grid while its breakdown is open, preventing cramped labels and values.
+- Added the product image to the expanded product-information modal.
+
 ## 2.9.44 — Inline price transparency help
 
 - Moved `Where your money goes` out of the expanded product modal and into an expandable highlight panel on each product card, opened from a small `ⓘ` beside the member price.
