@@ -1161,7 +1161,7 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 
 
 /* v2.9.48: proportionate CTAs + unified section/card framing. */
-:root{--feature-border:color-mix(in srgb,var(--line) 80%,white);--feature-radius:1.45rem;--feature-shadow:0 10px 30px rgba(54,42,30,.06)}
+:root{--feature-border:color-mix(in srgb,var(--line) 80%,white);--feature-radius:1.45rem;--feature-shadow:0 10px 30px rgba(54,42,30,.09)}
 
 /* Compact supporting CTA: narrower than primary sections, with an optional Baserow icon. */
 .cta-section .section-inner,
@@ -1173,7 +1173,9 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .cta-icon{display:grid;place-items:center;width:clamp(3.8rem,6vw,5.2rem);height:clamp(3.8rem,6vw,5.2rem);margin:0;border-radius:999px;flex:0 0 auto}
 .cta-icon img{display:block;width:100%;height:100%;object-fit:contain}
 .cta-section .cta-button{min-width:min(250px,28vw);margin:0}
-.cta-section.cta-with-image .cta-copy{grid-template-columns:minmax(0,1fr) auto}
+.cta-section.cta-with-image .cta-copy{display:flex;flex-direction:column;align-items:flex-start;gap:1rem}
+.cta-section.cta-with-image .cta-text{width:100%}
+.cta-section.cta-with-image .cta-button{align-self:flex-start;min-width:min(250px,100%);margin-top:.25rem}
 .cta-section.cta-with-image .cta-icon{display:none}
 
 /* The same quiet rounded frame used by the founder campaign. */
@@ -1197,3 +1199,13 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
   .cta-section .cta-button{grid-column:1/-1;width:100%;min-width:0;margin-top:.25rem}
   .cta-icon{width:3.5rem;height:3.5rem}
 }
+/* v2.9.50 — primary-colour site chrome */
+.site-header-shell{width:100%;background:var(--primary);color:var(--background);border-bottom:1px solid color-mix(in srgb,var(--background) 28%,transparent)}
+.site-header{color:inherit;border-bottom:0;background:transparent}
+.site-header nav a,.site-header .brand,.site-header .header-auth-link{color:var(--background)}
+.site-header nav a:hover,.site-header .header-auth-link:hover{color:var(--background)}
+.header-cta,.site-header .header-cta{background:var(--background);color:var(--primary);border-color:var(--background)}
+.header-cta:hover,.site-header .header-cta:hover{background:color-mix(in srgb,var(--background) 88%,white);color:var(--primary);border-color:color-mix(in srgb,var(--background) 88%,white)}
+.site-footer{background:var(--primary);color:var(--background);border-top:1px solid color-mix(in srgb,var(--background) 28%,transparent)}
+.site-footer a,.site-footer strong,.site-footer p{color:inherit}
+

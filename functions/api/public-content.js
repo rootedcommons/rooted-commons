@@ -54,7 +54,7 @@ function publicSection(row) {
   return {
     id:Number(row.id), key:unwrap(row.Key), page:linkedValues(row.Page)[0] || unwrap(row.Page), visible:truthy(row.Visible,true),
     order:number(row.Order,0), type:norm(row['Section type'],'text'), body:unwrap(row.Body), heading:unwrap(row.Heading), eyebrow:unwrap(row.Eyebrow),
-    subheading:unwrap(row.Subheading), icon:fileUrl(row.Icon), image:fileUrl(row.Image), image2:fileUrl(row['Image 2']), image3:fileUrl(row['Image 3']),
+    subheading:unwrap(row.Subheading), eyebrowIcon:fileUrl(row['Eyebrow icon']), icon:fileUrl(row.Icon), image:fileUrl(row.Image), image2:fileUrl(row['Image 2']), image3:fileUrl(row['Image 3']),
     imageAlt:unwrap(row['Image alt text']), image2Alt:unwrap(row['Image 2 alt text']), image3Alt:unwrap(row['Image 3 alt text']),
     watermarkImage:fileUrl(row['Watermark image']), watermarkOpacity:Math.min(100,Math.max(0,number(row['Watermark opacity'],8))),
     buttonText:unwrap(row['Button text']), buttonUrl:unwrap(row['Button URL']), buttonVisible:truthy(row['Button visible'],Boolean(unwrap(row['Button text']))),

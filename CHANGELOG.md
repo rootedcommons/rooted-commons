@@ -1,5 +1,18 @@
 # Changelog
 
+## v2.9.50
+
+- Changed the site header and footer backgrounds to the live Baserow `Primary colour`.
+- Reused the live Baserow `Background colour` for header/footer text and navigation.
+- Reversed the header membership button so it uses `Background colour` with `Primary colour` text, preserving contrast against the primary-colour header.
+- Added a full-width header colour shell while preserving the existing constrained header layout and live logo/navigation behaviour.
+
+## v2.9.49
+
+- Fixed Campaign eyebrow icons so they can come from either the Section-level `Eyebrow icon` field or the Site Settings fallback.
+- Changed image CTAs so body copy sits above the CTA button instead of being squeezed beside it.
+- Strengthened the unified section/card shadow to match the founder-campaign treatment more closely.
+
 ## v2.9.48
 
 - Added an optional `Icon` file field for Call to action sections.

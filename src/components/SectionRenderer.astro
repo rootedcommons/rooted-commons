@@ -158,7 +158,7 @@ const selectedProducts = (section.productIds || []).length
       <div class="cta-copy">
         {section.icon && <figure class="cta-icon" aria-hidden="true"><img src={section.icon} alt="" loading="lazy" /></figure>}
         <div class="cta-text">
-          {section.eyebrow && <p data-live-section-field="eyebrow" class="eyebrow section-eyebrow">{settings.eyebrowIcon && <img class="eyebrow-icon" src={settings.eyebrowIcon} alt="" aria-hidden="true" />}<span>{section.eyebrow}</span></p>}
+          {section.eyebrow && <p data-live-section-field="eyebrow" class="eyebrow section-eyebrow">{(section.eyebrowIcon || settings.eyebrowIcon) && <img class="eyebrow-icon" src={section.eyebrowIcon || settings.eyebrowIcon} alt="" aria-hidden="true" />}<span>{section.eyebrow}</span></p>}
           {section.heading && <h2 data-live-section-field="heading" class={`size-${section.headingSize}`}>{section.heading}</h2>}
           {section.subheading && <p data-live-section-field="subheading" class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
           {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} /></div>}
@@ -184,7 +184,7 @@ const selectedProducts = (section.productIds || []).length
     <div class="section-inner campaign-inner">
       {section.watermarkImage && <div class="campaign-botanical" style={`background-image:url("${section.watermarkImage}");--watermark-opacity:${section.watermarkOpacity / 100}`} aria-hidden="true"></div>}
       <div class="campaign-copy">
-        {section.eyebrow && <p data-live-section-field="eyebrow" class="eyebrow campaign-eyebrow">{settings.eyebrowIcon && <img class="eyebrow-icon" src={settings.eyebrowIcon} alt="" aria-hidden="true" />}<span>{section.eyebrow}</span></p>}
+        {section.eyebrow && <p data-live-section-field="eyebrow" class="eyebrow campaign-eyebrow">{(section.eyebrowIcon || settings.eyebrowIcon) && <img class="eyebrow-icon" src={section.eyebrowIcon || settings.eyebrowIcon} alt="" aria-hidden="true" />}<span>{section.eyebrow}</span></p>}
         {section.heading && <h2 data-live-section-field="heading" class={`campaign-heading size-${section.headingSize}`}>{section.heading}</h2>}
         {section.subheading && <p data-live-section-field="subheading" class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
         {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body campaign-body size-${section.bodySize}`} /></div>}
