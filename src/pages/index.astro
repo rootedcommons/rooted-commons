@@ -10,5 +10,7 @@ const blocks = buildSectionBlocks(data.sections.filter((section) => section.page
 ---
 <BaseLayout settings={data.settings} pages={data.pages} title={page?.seoTitle || page?.title} description={page?.seoDescription || page?.intro}>
   {page && <PageHero page={page} />}
-  {blocks.map((block) => <SectionRenderer block={block} products={data.products} settings={data.settings} networkPartners={data.networkPartners} metrics={data.metrics} />)}
+  <div data-live-sections-root>
+    {blocks.map((block) => <SectionRenderer block={block} products={data.products} settings={data.settings} networkPartners={data.networkPartners} metrics={data.metrics} />)}
+  </div>
 </BaseLayout>

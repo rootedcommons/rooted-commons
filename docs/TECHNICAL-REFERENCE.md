@@ -283,3 +283,11 @@ Products can optionally link `Source value recipient` to one `Network Partners` 
 
 The product-card price `ⓘ` opens an inline `Where your money goes` panel. Add `Price explanation` (Long text) to Network Partners for partner-specific source-value help. Price help copy is otherwise managed in Interface Content with keys `price_breakdown.source_help`, `price_breakdown.contribution_help`, `price_breakdown.subsidy_help`, `price_breakdown.member_price_help`, `price_breakdown.partner_link_label`, `price_breakdown.commons_link_label`, and `price_breakdown.commons_link_url`. These values are fetched live through the public-content/public-network APIs.
 
+
+## Live CMS section rendering (v2.9.47)
+
+Public Baserow Sections are treated as a constrained component specification. Astro still renders the initial HTML for speed, SEO and fallback, but on pages with `data-live-sections-root` the browser reconciles the current Sections rows from `/api/public-content` against a fixed library of approved section templates. This allows Text, Image and text, Banner, Cards, Gallery, Stats, Network, Call to action and Campaign sections to be added, removed, reordered or changed between those supported types without inventing arbitrary markup.
+
+The live renderer owns each supported section as a complete template. It does not mutate arbitrary descendants of the Astro component, which prevents live updates from stripping wrapper classes, eyebrow icons or rich-text structure. Optional content such as CTA images is simply an optional slot in the component template.
+
+Product Grid remains on the Astro renderer because its product cards, cart controls, stock state and product dialogs are stateful. Existing Grid sections are preserved and reordered with the live section stream; creating a brand-new Grid section or converting another type to Grid still requires a deployment.

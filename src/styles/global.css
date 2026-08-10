@@ -1155,3 +1155,6 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
   .price-help-panel::before{display:none}
   .product-detail-image{max-width:260px;margin-inline:auto}
 }
+
+/* v2.9.47: one visual contract for CTA cards, with or without an optional image. */
+.cta-section .section-inner{border-radius:1.2rem}

@@ -147,4 +147,5 @@
 
   hydrateLiveNetwork();
   document.addEventListener('astro:page-load', hydrateLiveNetwork);
+  window.addEventListener('rooted:sections-rendered', hydrateLiveNetwork);
 </script>

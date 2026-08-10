@@ -1,5 +1,24 @@
 # Changelog
 
+
+## 2.9.47 — Live section component architecture
+
+- Replaced fragile field-by-field section DOM mutation with a constrained client-side renderer for approved section templates.
+- Sections can now be added, removed, reordered, or changed between supported presentation types live from Baserow.
+- CTA and image-and-text templates treat images as optional slots, so adding/removing an image does not require a deployment.
+- Text, rich text, images, image fit/position, spacing, alignment, background, buttons, watermark and campaign timing are rendered from the same live section payload.
+- Live rich text now matches the Baserow Markdown subset used by the static FormattedText component, including lists and links.
+- Campaign/CTA eyebrow icons are preserved because the live renderer owns the complete approved component template rather than overwriting icon-bearing nodes.
+- Live section creation emits an event so Metrics and Network Partners rehydrate after new Stats/Network sections are instantiated.
+- Product Grid remains on the Astro renderer for now because its cart, stock and modal behaviour is substantially stateful; existing Product Grid sections remain intact and can still receive live product data through their existing APIs.
+- Standardised rounded corners on text-only and image CTAs.
+
+## 2.9.46
+- Preserve live CMS body-text size classes during hydration, preventing text from shrinking after page load.
+- Fix desktop price-help popover positioning by anchoring coordinates to the price-breakdown box.
+- Opening a product price breakdown now closes any price breakdown already open on another product card.
+
+
 ## 2.9.45
 
 - Changed price-breakdown help from inline expanding panels to small floating popovers; opening one closes the previous popover.

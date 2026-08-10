@@ -188,6 +188,18 @@ const displayProducts = filtered.map((product) => {
     });
   };
 
+  const closeBreakdowns = (exceptCard = null) => {
+    document.querySelectorAll('[data-product-card]').forEach((card) => {
+      if (exceptCard && card === exceptCard) return;
+      const box = card.querySelector('[data-price-breakdown]');
+      const toggle = card.querySelector('[data-price-breakdown-toggle]');
+      if (box) box.hidden = true;
+      card.removeAttribute('data-price-breakdown-open');
+      if (toggle) toggle.setAttribute('aria-expanded', 'false');
+    });
+    closeHelpPanels();
+  };
+
   document.addEventListener('click', (event) => {
     const breakdownToggle = event.target.closest('[data-price-breakdown-toggle]');
     if (breakdownToggle) {
@@ -197,6 +209,7 @@ const displayProducts = filtered.map((product) => {
       const box = card?.querySelector('[data-price-breakdown]');
       if (!box) return;
       const opening = box.hidden;
+      if (opening) closeBreakdowns(card);
       box.hidden = !opening;
       card?.toggleAttribute('data-price-breakdown-open', opening);
       breakdownToggle.setAttribute('aria-expanded', opening ? 'true' : 'false');
@@ -216,12 +229,13 @@ const displayProducts = filtered.map((product) => {
     if (opening) {
       panel.dataset.open = 'true';
       const buttonRect = helpToggle.getBoundingClientRect();
-      const cardRect = card.getBoundingClientRect();
+      const breakdown = helpToggle.closest('[data-price-breakdown]');
+      const anchorRect = breakdown?.getBoundingClientRect() || card.getBoundingClientRect();
       const panelWidth = Math.min(320, Math.max(220, window.innerWidth - 32));
-      let left = buttonRect.left - cardRect.left + buttonRect.width / 2 - panelWidth / 2;
-      left = Math.max(8, Math.min(left, cardRect.width - panelWidth - 8));
+      let left = buttonRect.left - anchorRect.left + buttonRect.width / 2 - panelWidth / 2;
+      left = Math.max(8, Math.min(left, anchorRect.width - panelWidth - 8));
       panel.style.setProperty('--help-left', `${left}px`);
-      panel.style.setProperty('--help-top', `${buttonRect.bottom - cardRect.top + 8}px`);
+      panel.style.setProperty('--help-top', `${buttonRect.bottom - anchorRect.top + 8}px`);
       panel.style.setProperty('--help-width', `${panelWidth}px`);
     } else {
       delete panel.dataset.open;
