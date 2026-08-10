@@ -107,11 +107,14 @@
   const hydrateLiveNetwork = async () => {
     const metricGrids = [...document.querySelectorAll('[data-live-metrics]')];
     const networkGrids = [...document.querySelectorAll('[data-live-network]')];
-    if (!metricGrids.length && !networkGrids.length) return;
+    const pricePartnerHelp = [...document.querySelectorAll('[data-price-source-help][data-partner-id]')];
+    if (!metricGrids.length && !networkGrids.length && !pricePartnerHelp.length) return;
     try {
       const data = await fetchLiveNetwork();
       const metrics = data.metrics || [];
       const partners = data.partners || [];
+      window.__rootedPublicNetwork = data;
+      window.dispatchEvent(new CustomEvent('rooted:public-network', { detail: data }));
 
       const statSections = data.statSections || [];
       metricGrids.forEach((grid) => {

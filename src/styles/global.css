@@ -1112,21 +1112,21 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 
 
 /* v2.9.43 transparent price breakdown */
-.price-breakdown{margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--line)}
-.price-breakdown h3{margin-top:0}
+.product-price-with-info{display:flex;align-items:center;gap:.35rem}
+.price-card-info-toggle,.price-info-icon{display:inline-grid;place-items:center;width:1.25rem;height:1.25rem;flex:0 0 1.25rem;padding:0;border:0;background:transparent;color:var(--primary);text-decoration:none;cursor:pointer;font-size:1rem;line-height:1}
+.price-card-info-toggle:hover,.price-info-icon:hover{opacity:.72}
+.price-breakdown-card{margin-top:.8rem;padding:.85rem 1rem;border:1px solid var(--line);border-radius:14px;background:var(--highlight)}
+.price-breakdown-card h4{margin:0 0 .45rem;font-size:1rem}
 .price-breakdown-list{margin:0}
-.price-breakdown-list>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1rem;align-items:start;padding:.55rem 0;border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
+.price-breakdown-list>div:not(.price-help-panel){display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1rem;align-items:start;padding:.48rem 0;border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
 .price-breakdown-list>div:last-child{border-bottom:0}
 .price-breakdown-list dt,.price-breakdown-list dd{margin:0}
-.price-breakdown-list dt{display:flex;align-items:center;gap:.45rem;min-width:0}
-.price-breakdown-list dd{font-weight:700;white-space:nowrap}
-.price-breakdown-total{padding-top:.8rem!important;font-weight:700}
-.price-breakdown-link{font-weight:700;text-underline-offset:.15em}
-.price-info-icon,.price-info-popover summary{display:inline-grid;place-items:center;width:1.25rem;height:1.25rem;flex:0 0 1.25rem;border:0;background:transparent;color:var(--primary);text-decoration:none;cursor:pointer;font-size:1rem;line-height:1}
-.price-info-popover{position:relative;display:inline-block}
-.price-info-popover summary{list-style:none}
-.price-info-popover summary::-webkit-details-marker{display:none}
-.price-info-copy{position:absolute;z-index:8;left:0;top:calc(100% + .45rem);width:min(320px,75vw);padding:.85rem 1rem;border:1px solid var(--line);background:var(--surface);box-shadow:0 8px 28px rgba(0,0,0,.12);font-size:.9rem;font-weight:400;line-height:1.45}
-.price-info-copy p{margin:0 0 .65rem}
-.price-info-copy a{font-weight:700}
-@media(max-width:650px){.price-info-copy{left:auto;right:-1rem;width:min(280px,78vw)}}
+.price-breakdown-list dt{display:flex;align-items:center;gap:.4rem;min-width:0;font-weight:400}
+.price-breakdown-list dd{font-weight:400;white-space:nowrap}
+.price-breakdown-total{padding-top:.65rem!important}
+.price-help-panel{margin:.3rem 0 .55rem;padding:.75rem .85rem;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.price-help-copy{font-size:.88rem;font-weight:400;line-height:1.45}
+.price-help-copy p{margin:0 0 .6rem}
+.price-help-copy p:last-child{margin-bottom:0}
+.price-help-copy a{font-weight:700}
+@media(max-width:650px){.price-breakdown-card{padding:.75rem .8rem}.price-help-panel{padding:.7rem .75rem}}

@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.9.44 — Inline price transparency help
+
+- Moved `Where your money goes` out of the expanded product modal and into an expandable highlight panel on each product card, opened from a small `ⓘ` beside the member price.
+- Only the Member price row is bold; source recipient and Commons contribution/subsidy rows use normal weight.
+- Each price line has its own `ⓘ` help panel; opening one closes any previously open price help panel.
+- All help-panel links open in a new tab. The source-value help links to the relevant Network Partner profile, while Commons contribution/subsidy links to the configurable FAQ URL.
+- Price-transparency help copy is editable through Interface Content. Network Partners also gain an optional `Price explanation` field so the source-value explanation can be tailored per producer/wholesaler and reused across all linked products.
+- Price-transparency help copy and partner explanations refresh live from Baserow through the hardened public APIs; no deploy is needed for copy edits.
+
 ## 2.9.43 — Transparent product value flows
 
 - Added optional `Source value recipient` (link to Network Partners) and `Source value` fields to Products.

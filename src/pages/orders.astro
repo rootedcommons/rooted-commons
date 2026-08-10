@@ -89,7 +89,7 @@ const collectionPointsForMemberBar = data.collectionPoints.map((point) => ({ id:
     </div>
     <div class="shop-layout">
       <div id="product-availability-status" class="small-print" role="status">Checking current availability…</div>
-      <div id="shop-products" aria-busy="true" hidden><ProductGrid products={data.products} columns={columns} showControls={true} settings={s} /></div>
+      <div id="shop-products" aria-busy="true" hidden><ProductGrid products={data.products} columns={columns} showControls={true} settings={s} content={data.interfaceContent} /></div>
     </div>
   </section>
 

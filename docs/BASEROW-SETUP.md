@@ -539,3 +539,8 @@ The runtime token should have the minimum permissions actually needed. For the l
 ### Transparent product price breakdown (v2.9.43)
 
 Products can optionally link `Source value recipient` to one `Network Partners` row and store a numeric `Source value`. When both are present, the product detail modal shows the source recipient, the calculated Commons contribution/subsidy, and the member price. `Commons contribution/subsidy` is not stored: it is always calculated as `Member price - Source value`. A zero result is hidden. The source recipient links to its Network Partner profile. Existing `Origin` and `Secondary origin` fields are unchanged.
+
+### Inline price transparency help (v2.9.44)
+
+The product-card price `ⓘ` opens an inline `Where your money goes` panel. Add `Price explanation` (Long text) to Network Partners for partner-specific source-value help. Price help copy is otherwise managed in Interface Content with keys `price_breakdown.source_help`, `price_breakdown.contribution_help`, `price_breakdown.subsidy_help`, `price_breakdown.member_price_help`, `price_breakdown.partner_link_label`, `price_breakdown.commons_link_label`, and `price_breakdown.commons_link_url`. These values are fetched live through the public-content/public-network APIs.
+

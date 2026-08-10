@@ -20,6 +20,7 @@ function publicPartner(row) {
     longDescription: unwrap(row['Long description']),
     whatTheyBring: unwrap(row['What they bring']),
     howWeWorkTogether: unwrap(row['How we work together']),
+    priceExplanation: unwrap(row['Price explanation']),
     address: unwrap(row.Address),
     website: unwrap(row.Website),
     volunteerUrl: unwrap(row['Volunteer URL']),

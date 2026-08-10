@@ -1,6 +1,6 @@
 ---
 import FormattedText from './FormattedText.astro';
-const { products, category = '', columns = 3, showControls = false, settings = {} } = Astro.props;
+const { products, category = '', columns = 3, showControls = false, settings = {}, content = {} } = Astro.props;
 const wanted = String(category || '').trim().toLowerCase();
 const money = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' });
 const filtered = wanted
@@ -44,7 +44,7 @@ const displayProducts = filtered.map((product) => {
   const sourceValue = Number(product.sourceValue || 0);
   const commonsBalance = Number(product.priceNumber || 0) - sourceValue;
   const hasPriceBreakdown = Boolean(product.sourceValueRecipientName && sourceValue > 0);
-  const hasDetails = Boolean(product.expandedDescription || product.description || product.ingredients || product.allergens || product.mayContain || product.storage || product.fboImporter || product.origin || product.secondaryOrigin || nutritionRows.length || hasPriceBreakdown);
+  const hasDetails = Boolean(product.expandedDescription || product.description || product.ingredients || product.allergens || product.mayContain || product.storage || product.fboImporter || product.origin || product.secondaryOrigin || nutritionRows.length);
   return { ...product, categories, subcategories, countries, certifications, availableStock, outOfStock, lowStock, nutritionRows, origin, sourceValue, commonsBalance, hasPriceBreakdown, hasDetails };
 });
 ---
@@ -86,13 +86,61 @@ const displayProducts = filtered.map((product) => {
         </div>}
 
         <div class="product-transaction-row">
-          <strong class="product-price">{money.format(product.priceNumber || 0)}</strong>
+          <div class="product-price-with-info">
+            <strong class="product-price">{money.format(product.priceNumber || 0)}</strong>
+            {product.hasPriceBreakdown && <button class="price-card-info-toggle" type="button" data-price-breakdown-toggle aria-expanded="false" aria-label="See where your money goes" title="Where your money goes">ⓘ</button>}
+          </div>
           {showControls && <div class="quantity-control quantity-control-solid" data-quantity-control hidden={product.outOfStock} aria-label={`Quantity of ${product.name}`}>
             <button type="button" data-quantity-change="-1" aria-label="Remove one">−</button>
             <output data-quantity>0</output>
             <button type="button" data-quantity-change="1" aria-label="Add one">+</button>
           </div>}
         </div>
+        {product.hasPriceBreakdown && <section class="price-breakdown-card" data-price-breakdown hidden aria-label="Where your money goes">
+          <h4>Where your money goes</h4>
+          <dl class="price-breakdown-list">
+            <div>
+              <dt>
+                <span>{product.sourceValueRecipientName}</span>
+                <button class="price-info-icon" type="button" data-price-help-toggle="source" aria-expanded="false" aria-label={`About ${product.sourceValueRecipientName}`}>ⓘ</button>
+              </dt>
+              <dd>{pounds(product.sourceValue)}</dd>
+            </div>
+            <div class="price-help-panel" data-price-help="source" hidden>
+              <div class="price-help-copy">
+                <p data-price-source-help data-partner-id={product.sourceValueRecipientId || ''} data-help-key="price_breakdown.source_help">{content['price_breakdown.source_help'] || 'This is the average price Rooted Commons has paid the producer or wholesaler for the stock currently on our shelves. By pooling members’ purchasing power, we can place larger orders and access better wholesale prices while preserving producer value.'}</p>
+                <a data-price-partner-link href={`/our-network/?partner=${encodeURIComponent(String(product.sourceValueRecipientId || ''))}`} target="_blank" rel="noopener noreferrer">{content['price_breakdown.partner_link_label'] || `Learn more about ${product.sourceValueRecipientName} →`}</a>
+              </div>
+            </div>
+            {Math.abs(product.commonsBalance) >= 0.005 && <div>
+              <dt>
+                <span>{product.commonsBalance > 0 ? 'Commons contribution' : 'Commons subsidy'}</span>
+                <button class="price-info-icon" type="button" data-price-help-toggle="commons" aria-expanded="false" aria-label={`About ${product.commonsBalance > 0 ? 'Commons contribution' : 'Commons subsidy'}`}>ⓘ</button>
+              </dt>
+              <dd>{pounds(product.commonsBalance)}</dd>
+            </div>}
+            {Math.abs(product.commonsBalance) >= 0.005 && <div class="price-help-panel" data-price-help="commons" hidden>
+              <div class="price-help-copy">
+                <p data-help-key={product.commonsBalance > 0 ? 'price_breakdown.contribution_help' : 'price_breakdown.subsidy_help'}>{product.commonsBalance > 0
+                  ? (content['price_breakdown.contribution_help'] || 'The difference between what Rooted Commons pays for this product and its member price. Contributions from across the market help fund the shared storage, packing, administration and distribution behind Rooted Commons.')
+                  : (content['price_breakdown.subsidy_help'] || 'This product costs Rooted Commons more than its member price. The difference is funded by contributions generated elsewhere in the commons, helping us keep selected products affordable.')}</p>
+                <a href={content['price_breakdown.commons_link_url'] || '/faqs/'} target="_blank" rel="noopener noreferrer" data-help-link="commons">{content['price_breakdown.commons_link_label'] || 'Learn more in FAQs →'}</a>
+              </div>
+            </div>}
+            <div class="price-breakdown-total">
+              <dt>
+                <strong>Member price</strong>
+                <button class="price-info-icon" type="button" data-price-help-toggle="member" aria-expanded="false" aria-label="About the member price">ⓘ</button>
+              </dt>
+              <dd><strong>{pounds(product.priceNumber)}</strong></dd>
+            </div>
+            <div class="price-help-panel" data-price-help="member" hidden>
+              <div class="price-help-copy">
+                <p data-help-key="price_breakdown.member_price_help">{content['price_breakdown.member_price_help'] || 'For cupboard staples, member prices are benchmarked against comparable supermarket own-brand organic products. Pooling purchasing power lets Rooted Commons offer organic staples at supermarket prices, or less, while supporting the shared infrastructure behind the commons.'}</p>
+              </div>
+            </div>
+          </dl>
+        </section>}
       </div>
       {product.hasDetails && <template data-product-detail>
         <div class="product-detail-layout product-detail-information-layout">
@@ -101,45 +149,6 @@ const displayProducts = filtered.map((product) => {
             {product.origin && <p class="product-detail-origin"><strong>Origin</strong><span>{product.origin}</span></p>}
             {product.secondaryOrigin && <p class="product-detail-origin"><strong>Secondary origin</strong><span>{product.secondaryOrigin}</span></p>}
             {(product.expandedDescription || product.description) && <FormattedText text={product.expandedDescription || product.description} class="product-detail-overview rich-body" />}
-            {product.hasPriceBreakdown && <section class="price-breakdown" aria-label="Where your money goes">
-              <h3>Where your money goes</h3>
-              <dl class="price-breakdown-list">
-                <div>
-                  <dt>
-                    <a class="price-breakdown-link" href={`/our-network/?partner=${encodeURIComponent(String(product.sourceValueRecipientId || ''))}`}>{product.sourceValueRecipientName}</a>
-                    <a class="price-info-icon" href={`/our-network/?partner=${encodeURIComponent(String(product.sourceValueRecipientId || ''))}`} aria-label={`More about ${product.sourceValueRecipientName}`} title={`More about ${product.sourceValueRecipientName}`}>ⓘ</a>
-                  </dt>
-                  <dd>{pounds(product.sourceValue)}</dd>
-                </div>
-                {Math.abs(product.commonsBalance) >= 0.005 && <div>
-                  <dt>
-                    <span>{product.commonsBalance > 0 ? 'Commons contribution' : 'Commons subsidy'}</span>
-                    <details class="price-info-popover">
-                      <summary aria-label={`About ${product.commonsBalance > 0 ? 'Commons contribution' : 'Commons subsidy'}`} title="More information">ⓘ</summary>
-                      <div class="price-info-copy">
-                        <p>{product.commonsBalance > 0
-                          ? 'The difference between what Rooted Commons pays for this product and its member price. Contributions from across the market help fund the shared storage, packing, administration and distribution behind Rooted Commons.'
-                          : 'This product costs Rooted Commons more than its member price. The difference is funded by contributions generated elsewhere in the commons, helping us keep selected products affordable.'}</p>
-                        <a href="/faqs/">Learn more in FAQs →</a>
-                      </div>
-                    </details>
-                  </dt>
-                  <dd>{pounds(product.commonsBalance)}</dd>
-                </div>}
-                <div class="price-breakdown-total">
-                  <dt>
-                    <span>Member price</span>
-                    <details class="price-info-popover">
-                      <summary aria-label="About the member price" title="More information">ⓘ</summary>
-                      <div class="price-info-copy">
-                        <p>Member price is the price paid by members. For cupboard staples, Rooted Commons benchmarks against comparable supermarket own-brand organic products. Producer goods can instead be offered at the producer's price.</p>
-                      </div>
-                    </details>
-                  </dt>
-                  <dd>{pounds(product.priceNumber)}</dd>
-                </div>
-              </dl>
-            </section>}
             {product.ingredients && <section><h3>Ingredients</h3><p class="rich-body" data-ingredients data-allergens={product.allergens}>{product.ingredients}</p></section>}
             {product.mayContain && <section><h3>May contain</h3><FormattedText text={product.mayContain} class="rich-body" /></section>}
             {product.storage && <section><h3>How to store / once opened</h3><FormattedText text={product.storage} class="rich-body" /></section>}
@@ -159,3 +168,80 @@ const displayProducts = filtered.map((product) => {
   ))}
 </div>
 {displayProducts.length === 0 && <p>No products currently match this section.</p>}
+
+<script>
+(() => {
+  if (window.__rootedPriceBreakdownReady) return;
+  window.__rootedPriceBreakdownReady = true;
+
+  const closeHelpPanels = (except = null) => {
+    document.querySelectorAll('[data-price-help]').forEach((panel) => {
+      const keep = except && panel === except;
+      panel.hidden = !keep;
+    });
+    document.querySelectorAll('[data-price-help-toggle]').forEach((button) => {
+      const card = button.closest('[data-product-card]');
+      const target = card?.querySelector(`[data-price-help="${button.dataset.priceHelpToggle}"]`);
+      button.setAttribute('aria-expanded', target && !target.hidden ? 'true' : 'false');
+    });
+  };
+
+  document.addEventListener('click', (event) => {
+    const breakdownToggle = event.target.closest('[data-price-breakdown-toggle]');
+    if (breakdownToggle) {
+      event.preventDefault();
+      event.stopPropagation();
+      const card = breakdownToggle.closest('[data-product-card]');
+      const box = card?.querySelector('[data-price-breakdown]');
+      if (!box) return;
+      const opening = box.hidden;
+      box.hidden = !opening;
+      breakdownToggle.setAttribute('aria-expanded', opening ? 'true' : 'false');
+      if (!opening) closeHelpPanels();
+      return;
+    }
+
+    const helpToggle = event.target.closest('[data-price-help-toggle]');
+    if (!helpToggle) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const card = helpToggle.closest('[data-product-card]');
+    const panel = card?.querySelector(`[data-price-help="${helpToggle.dataset.priceHelpToggle}"]`);
+    if (!panel) return;
+    const opening = panel.hidden;
+    closeHelpPanels(opening ? panel : null);
+  });
+
+  const applyPartnerHelp = (data = {}) => {
+    const partners = data.partners || [];
+    document.querySelectorAll('[data-price-source-help][data-partner-id]').forEach((element) => {
+      const partner = partners.find((item) => Number(item.id) === Number(element.dataset.partnerId));
+      if (partner?.priceExplanation) {
+        element.textContent = partner.priceExplanation;
+        element.dataset.partnerHelpActive = 'true';
+      }
+    });
+  };
+
+  const applyInterfaceHelp = (content = {}) => {
+    document.querySelectorAll('[data-help-key]').forEach((element) => {
+      if (element.dataset.partnerHelpActive === 'true') return;
+      const value = content[element.dataset.helpKey];
+      if (value) element.textContent = value;
+    });
+    document.querySelectorAll('[data-help-link="commons"]').forEach((link) => {
+      if (content['price_breakdown.commons_link_url']) link.href = content['price_breakdown.commons_link_url'];
+      if (content['price_breakdown.commons_link_label']) link.textContent = content['price_breakdown.commons_link_label'];
+    });
+    document.querySelectorAll('[data-price-partner-link]').forEach((link) => {
+      if (content['price_breakdown.partner_link_label']) link.textContent = content['price_breakdown.partner_link_label'];
+    });
+    if (window.__rootedPublicNetwork) applyPartnerHelp(window.__rootedPublicNetwork);
+  };
+
+  window.addEventListener('rooted:public-content', (event) => applyInterfaceHelp(event.detail?.interfaceContent || {}));
+  window.addEventListener('rooted:public-network', (event) => applyPartnerHelp(event.detail || {}));
+  if (window.__rootedPublicContent) applyInterfaceHelp(window.__rootedPublicContent.interfaceContent || {});
+  if (window.__rootedPublicNetwork) applyPartnerHelp(window.__rootedPublicNetwork);
+})();
+</script>

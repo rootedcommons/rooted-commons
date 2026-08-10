@@ -426,6 +426,7 @@ export async function getSiteData() {
     longDescription: text(row, 'Long description'),
     whatTheyBring: text(row, 'What they bring'),
     howWeWorkTogether: text(row, 'How we work together'),
+    priceExplanation: text(row, 'Price explanation'),
     address: text(row, 'Address'),
     website: text(row, 'Website'),
     volunteerUrl: text(row, 'Volunteer URL'),

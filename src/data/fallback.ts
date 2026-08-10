@@ -88,6 +88,13 @@ export const fallbackProducts = [];
 export const fallbackCollectionPoints = [];
 
 export const fallbackInterfaceContent: Record<string, string> = {
+  "price_breakdown.source_help": "This is the average price Rooted Commons has paid the producer or wholesaler for the stock currently on our shelves. By pooling members’ purchasing power, we can place larger orders and access better wholesale prices while preserving producer value.",
+  "price_breakdown.contribution_help": "The difference between what Rooted Commons pays for this product and its member price. Contributions from across the market help fund the shared storage, packing, administration and distribution behind Rooted Commons.",
+  "price_breakdown.subsidy_help": "This product costs Rooted Commons more than its member price. The difference is funded by contributions generated elsewhere in the commons, helping us keep selected products affordable.",
+  "price_breakdown.member_price_help": "For cupboard staples, member prices are benchmarked against comparable supermarket own-brand organic products. Pooling purchasing power lets Rooted Commons offer organic staples at supermarket prices, or less, while supporting the shared infrastructure behind the commons.",
+  "price_breakdown.partner_link_label": "Learn more about this partner →",
+  "price_breakdown.commons_link_label": "Learn more in FAQs →",
+  "price_breakdown.commons_link_url": "/faqs/",
   "basket.heading": "Your basket",
   "basket.empty": "Your basket is empty.",
   "basket.total_label": "Estimated total",

@@ -87,7 +87,7 @@
 
   fetch('/api/public-content',{headers:{accept:'application/json'},cache:'no-store'})
     .then(r=>r.ok?r.json():Promise.reject(new Error(`HTTP ${r.status}`)))
-    .then(data=>{hydrateSettings(data.settings,data.pages);hydratePage(data.pages);hydrateSections(data.sections);window.dispatchEvent(new CustomEvent('rooted:public-content',{detail:data}));})
+    .then(data=>{window.__rootedPublicContent=data;hydrateSettings(data.settings,data.pages);hydratePage(data.pages);hydrateSections(data.sections);window.dispatchEvent(new CustomEvent('rooted:public-content',{detail:data}));})
     .catch(error=>console.warn('Live public content unavailable; using static fallback.',error));
 })();
 </script>
