@@ -1,5 +1,26 @@
 # Changelog
 
+## 2.9.65 — 2026-08-11
+
+- Replaced the anchored price-transparency popover with a true centred overlay on both desktop and mobile.
+- Price breakdowns are temporarily moved to the document root while open so they render above every product card, basket control and catalogue layer regardless of card position or stacking context.
+- Added a dimmed backdrop behind the open price breakdown; tapping the backdrop or pressing Escape closes it.
+- Preserved the existing `Where your money goes` breakdown and internal explanation / `Back to price breakdown` interaction.
+
+## 2.9.64 — 2026-08-11
+
+- Added Pages → `Hero heading alignment` (Left / Centre / Right), independent of the existing Hero alignment; the Home hero heading defaults to centred until the field is populated.
+- Aligned the Home hero and How it works card section to the same 1240px content grid while preserving their existing responsive padding.
+- Reduced the Founder campaign frame to the same 1050px maximum width and framing language as the compact CTA sections, with tighter internal padding.
+- Updated the Baserow Pages import/specification and current setup/technical documentation for the new hero heading field.
+
+## 2.9.63 — 2026-08-11
+
+- Reworked the mobile site header into a compact two-column layout with the Rooted Commons logo on the left and persistent account actions on the right.
+- Kept the existing Sign in / Sign out text link unchanged, placed the mobile navigation toggle beside it, and placed the membership CTA directly beneath them.
+- Added a true mobile hamburger menu for the main navigation links only; account and membership actions are no longer duplicated inside the expanded menu.
+- Reduced mobile header padding/logo height while leaving desktop navigation and header behaviour unchanged.
+
 ## 2.9.62 — 2026-08-11
 
 - Pinned product certification marks to the bottom content area of each product card so they sit consistently immediately above the purchase divider and price/quantity footer.

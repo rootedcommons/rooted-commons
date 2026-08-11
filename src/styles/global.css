@@ -1452,3 +1452,70 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
     min-height:0;
   }
 }
+
+/* v2.9.63 — compact mobile header with persistent account actions */
+.header-actions-top{display:flex;align-items:center;justify-content:flex-end;gap:.8rem}
+.mobile-nav-toggle{display:none;width:2.45rem;height:2.45rem;padding:.48rem;border:0;background:transparent;color:inherit;cursor:pointer;align-items:center;justify-content:center;flex-direction:column;gap:.3rem}
+.mobile-nav-toggle span{display:block;width:1.35rem;height:2px;border-radius:999px;background:currentColor;transition:transform .16s ease,opacity .16s ease}
+@media(max-width:640px){
+  .site-header,.site-header.height-small,.site-header.height-medium,.site-header.height-large{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;min-height:0;text-align:left;gap:.6rem 1rem;padding-top:.7rem;padding-bottom:.7rem;align-items:center}
+  .site-header .brand{grid-column:1;grid-row:1;justify-self:start;align-self:center;min-width:0}
+  .site-header .brand img{max-height:72px;width:auto}
+  .site-header .header-actions{grid-column:2;grid-row:1;justify-self:end;display:flex;flex-direction:column;align-items:stretch;gap:.35rem;min-width:max-content}
+  .site-header .header-actions-top{min-height:2rem}
+  .site-header .header-auth-link{font-size:.9rem;text-align:right}
+  .site-header .header-cta{justify-self:stretch;padding:.56rem .78rem;font-size:.88rem;line-height:1.15;white-space:nowrap}
+  .mobile-nav-toggle{display:inline-flex}
+  .site-header nav{display:none;grid-column:1/-1;grid-row:2;justify-content:flex-start;align-items:stretch;gap:0;padding:.45rem 0 .15rem;border-top:1px solid color-mix(in srgb,var(--background) 28%,transparent)}
+  .site-header.mobile-nav-open nav{display:flex;flex-direction:column}
+  .site-header nav a{padding:.62rem .1rem;text-align:left}
+  .site-header.mobile-nav-open .mobile-nav-toggle span:nth-child(1){transform:translateY(.4rem) rotate(45deg)}
+  .site-header.mobile-nav-open .mobile-nav-toggle span:nth-child(2){opacity:0}
+  .site-header.mobile-nav-open .mobile-nav-toggle span:nth-child(3){transform:translateY(-.4rem) rotate(-45deg)}
+}
+
+
+/* v2.9.64 — homepage alignment + campaign proportion */
+:root{--homepage-content-width:1240px;--compact-feature-width:1050px}
+/* Hero body alignment remains independent; this class controls the H1 only. */
+.hero-copy h1.hero-heading-align-left{text-align:left}
+.hero-copy h1.hero-heading-align-center{text-align:center}
+.hero-copy h1.hero-heading-align-right{text-align:right}
+/* The homepage hero and How it works cards share one horizontal grid. */
+.page-hero[data-page-slug="home"] .hero-inner,
+.how-it-works-section .section-inner{width:min(100%,var(--homepage-content-width));max-width:var(--homepage-content-width);margin-inline:auto}
+/* Founder campaign uses the same compact framed width and framing as supporting CTAs. */
+.campaign-section .campaign-inner{width:min(100%,var(--compact-feature-width));max-width:min(var(--compact-feature-width),calc(100vw - 4rem));margin-inline:auto;padding:clamp(1.5rem,3vw,2.5rem);border:1px solid var(--feature-border);border-radius:var(--feature-radius);box-shadow:var(--feature-shadow)}
+@media(max-width:760px){.campaign-section .campaign-inner{max-width:calc(100vw - 2rem);padding:1.25rem}}
+
+
+/* v2.9.65: centre price transparency above the entire shop on every viewport. */
+.price-breakdown-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:4998;
+  background:rgba(35,24,31,.28);
+  backdrop-filter:blur(1px);
+}
+.price-breakdown-backdrop[hidden]{display:none!important}
+body.price-breakdown-open{overflow:hidden}
+body>.price-breakdown-card{
+  position:fixed!important;
+  left:50%!important;
+  top:50%!important;
+  width:min(380px,calc(100vw - 2rem))!important;
+  max-width:calc(100vw - 2rem)!important;
+  max-height:min(78vh,560px)!important;
+  overflow:auto!important;
+  transform:translate(-50%,-50%)!important;
+  z-index:5000!important;
+  margin:0!important;
+  box-shadow:0 20px 60px rgba(0,0,0,.30)!important;
+}
+@media(max-width:650px){
+  body>.price-breakdown-card{
+    width:min(350px,calc(100vw - 1.5rem))!important;
+    max-width:calc(100vw - 1.5rem)!important;
+    max-height:min(82vh,560px)!important;
+  }
+}

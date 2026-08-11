@@ -5,6 +5,7 @@ const layout = page.heroLayout || (page.heroImage ? 'text-left' : 'text-only');
 const hidden = layout === 'none';
 const hasImage = Boolean(page.heroImage) && !['text-only','none'].includes(layout);
 const alignment = page.heroAlignment || 'left';
+const headingAlignment = page.heroHeadingAlignment || alignment;
 const padding = page.heroPadding || 'normal';
 const width = page.heroWidth || 'standard';
 const gap = page.heroGap || 'normal';
@@ -16,7 +17,7 @@ const buttonSize = page.heroButtonSize || 'medium';
   <section data-live-page-hero data-page-slug={page.slug} class={`page-hero layout-${layout} hero-align-${alignment} hero-padding-${padding} hero-width-${width} hero-gap-${gap} hero-split-${split}`}>
   <div class="hero-inner">
     <div class="hero-copy">
-      <h1 data-live-page-field="title" class={`size-${page.titleSize}`}>{page.title}</h1>
+      <h1 data-live-page-field="title" class={`hero-heading-align-${headingAlignment} size-${page.titleSize}`}>{page.title}</h1>
       {page.subtitle && <p data-live-page-field="subtitle" class={`hero-subtitle size-${page.subtitleSize}`}>{page.subtitle}</p>}
       {page.intro && <div data-live-page-rich="intro"><FormattedText text={page.intro} class={`hero-intro size-${page.introSize}`} /></div>}
       {page.buttonText && page.buttonUrl && <p class="hero-cta" data-live-page-cta><a class={`button button-${buttonSize}`} href={page.buttonUrl}>{page.buttonText}</a></p>}

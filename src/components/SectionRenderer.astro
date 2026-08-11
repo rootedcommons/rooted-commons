@@ -70,7 +70,7 @@ const selectedProducts = (section.productIds || []).length
 )}
 
 {type === 'cards' && (
-  <section data-live-section-id={section.id} data-live-section-key={section.key || block.key || ''} class={`content-section cards-section ${isHowItWorksCarousel ? 'cards-mobile-carousel' : ''} ${background} ${spaces}`} data-card-carousel={isHowItWorksCarousel ? 'true' : undefined}>
+  <section data-live-section-id={section.id} data-live-section-key={section.key || block.key || ''} class={`content-section cards-section ${isHowItWorksCarousel ? 'cards-mobile-carousel how-it-works-section' : ''} ${background} ${spaces}`} data-card-carousel={isHowItWorksCarousel ? 'true' : undefined}>
     <div class="section-inner">
       {groupTitle && <h2 class={`group-heading group-heading-cms ${headingAlignment} size-${section.headingSize}`}>{groupTitle}</h2>}
       {isHowItWorksCarousel && !groupTitle && <h2 class={`group-heading group-heading-mobile-only ${headingAlignment} size-${section.headingSize}`}>{mobileCarouselTitle}</h2>}

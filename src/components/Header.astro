@@ -10,11 +10,18 @@ const links = Array.isArray(settings.navigationLinks) && settings.navigationLink
     <a data-live-header-logo class={`brand logo-${settings.headerLogoSize}`} href="/" aria-label={`${settings.siteTitle} home`}>
       {settings.headerLogo ? <img src={settings.headerLogo} alt={settings.siteTitle} /> : <span>{settings.siteTitle}</span>}
     </a>
-    <nav data-live-navigation class={`text-${settings.navigationTextSize}`} aria-label="Main navigation">
+    <nav id="site-navigation" data-live-navigation class={`text-${settings.navigationTextSize}`} aria-label="Main navigation">
       {links.map((link) => <a href={link.url}>{link.label}</a>)}
     </nav>
     <div class="header-actions">
-      <a id="auth-header-button" class="header-auth-link" href="/signin/">Sign in</a>
+      <div class="header-actions-top">
+        <a id="auth-header-button" class="header-auth-link" href="/signin/">Sign in</a>
+        <button class="mobile-nav-toggle" type="button" aria-controls="site-navigation" aria-expanded="false" aria-label="Open navigation menu">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
       <a data-live-header-cta id="membership-header-button" class={`button header-cta button-${settings.buttonTextSize}`} href={settings.headerButtonUrl || settings.joinButtonUrl || '/volunteering/'}>
         {settings.headerButtonText || settings.joinButtonText || 'Join our growing network'}
       </a>
@@ -28,13 +35,33 @@ const links = Array.isArray(settings.navigationLinks) && settings.navigationLink
     localStorage.removeItem('rooted-commons-order-token-v1');
     const button=document.querySelector('#membership-header-button');
     const authButton=document.querySelector('#auth-header-button');
-    if(!button||!authButton)return;
-    fetch('/api/member').then(response=>{
-      if(!response.ok)return;
-      button.textContent='My Membership';
-      button.setAttribute('href','/dashboard/');
-      authButton.textContent='Sign out';
-      authButton.setAttribute('href','/api/signout');
-    }).catch(()=>{});
+    if(button&&authButton){
+      fetch('/api/member').then(response=>{
+        if(!response.ok)return;
+        button.textContent='My Membership';
+        button.setAttribute('href','/dashboard/');
+        authButton.textContent='Sign out';
+        authButton.setAttribute('href','/api/signout');
+      }).catch(()=>{});
+    }
+
+    const header=document.querySelector('.site-header');
+    const nav=document.querySelector('#site-navigation');
+    const toggle=document.querySelector('.mobile-nav-toggle');
+    if(!header||!nav||!toggle)return;
+
+    const setOpen=(open)=>{
+      header.classList.toggle('mobile-nav-open',open);
+      toggle.setAttribute('aria-expanded',String(open));
+      toggle.setAttribute('aria-label',open?'Close navigation menu':'Open navigation menu');
+    };
+
+    toggle.addEventListener('click',()=>setOpen(toggle.getAttribute('aria-expanded')!=='true'));
+    nav.addEventListener('click',(event)=>{
+      if(event.target.closest('a'))setOpen(false);
+    });
+    document.addEventListener('keydown',(event)=>{
+      if(event.key==='Escape')setOpen(false);
+    });
   })();
 </script>

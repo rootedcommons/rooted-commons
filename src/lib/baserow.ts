@@ -238,6 +238,7 @@ export async function getSiteData() {
       seoDescription: text(row, 'SEO description', row.seoDescription || ''),
       heroLayout: normalized(choice(row, 'Hero layout'), heroImage ? 'text-left' : 'text-only'),
       heroAlignment: normalized(choice(row, 'Hero alignment'), 'left'),
+      heroHeadingAlignment: normalized(choice(row, 'Hero heading alignment'), text(row, 'Slug', row.slug) === 'home' ? 'center' : normalized(choice(row, 'Hero alignment'), 'left')),
       heroPadding: normalized(choice(row, 'Hero padding'), 'normal'),
       heroWidth: heroWidth(choice(row, 'Hero width')),
       heroSplit: normalized(choice(row, 'Hero split'), '50-50').replace(':', '-'),

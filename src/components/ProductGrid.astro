@@ -187,6 +187,11 @@ const displayProducts = filtered.map((product) => {
   if (window.__rootedPriceBreakdownReady) return;
   window.__rootedPriceBreakdownReady = true;
 
+  let activeBox = null;
+  let activeToggle = null;
+  let activePlaceholder = null;
+  let backdrop = null;
+
   const showBreakdownMain = (box) => {
     if (!box) return;
     const main = box.querySelector('[data-price-breakdown-main]');
@@ -195,35 +200,43 @@ const displayProducts = filtered.map((product) => {
     box.querySelectorAll('[data-price-help-toggle]').forEach((button) => button.setAttribute('aria-expanded', 'false'));
   };
 
-  const closeBreakdowns = (exceptCard = null) => {
-    document.querySelectorAll('[data-product-card]').forEach((card) => {
-      if (exceptCard && card === exceptCard) return;
-      const box = card.querySelector('[data-price-breakdown]');
-      const toggle = card.querySelector('[data-price-breakdown-toggle]');
-      if (box) {
-        box.hidden = true;
-        showBreakdownMain(box);
-      }
-      if (toggle) toggle.setAttribute('aria-expanded', 'false');
-    });
+  const ensureBackdrop = () => {
+    if (backdrop) return backdrop;
+    backdrop = document.createElement('div');
+    backdrop.className = 'price-breakdown-backdrop';
+    backdrop.hidden = true;
+    backdrop.addEventListener('click', () => closeBreakdown());
+    document.body.appendChild(backdrop);
+    return backdrop;
   };
 
-  const positionBreakdown = (toggle, box, card) => {
-    if (!toggle || !box || !card) return;
-    if (window.matchMedia('(max-width:650px)').matches) {
-      box.style.removeProperty('--breakdown-left');
-      box.style.removeProperty('--breakdown-top');
-      return;
-    }
-    const buttonRect = toggle.getBoundingClientRect();
-    const cardRect = card.getBoundingClientRect();
-    const width = Math.min(340, Math.max(250, window.innerWidth - 32));
-    let viewportLeft = buttonRect.left + buttonRect.width / 2 - width / 2;
-    viewportLeft = Math.max(16, Math.min(viewportLeft, window.innerWidth - width - 16));
-    const left = viewportLeft - cardRect.left;
-    box.style.setProperty('--breakdown-left', `${left}px`);
-    box.style.setProperty('--breakdown-top', `${buttonRect.bottom - cardRect.top + 8}px`);
-    box.style.setProperty('--breakdown-width', `${width}px`);
+  const closeBreakdown = () => {
+    if (!activeBox) return;
+    activeBox.hidden = true;
+    showBreakdownMain(activeBox);
+    if (activePlaceholder?.parentNode) activePlaceholder.replaceWith(activeBox);
+    if (activeToggle) activeToggle.setAttribute('aria-expanded', 'false');
+    const layer = ensureBackdrop();
+    layer.hidden = true;
+    document.body.classList.remove('price-breakdown-open');
+    activeBox = null;
+    activeToggle = null;
+    activePlaceholder = null;
+  };
+
+  const openBreakdown = (toggle, box) => {
+    closeBreakdown();
+    showBreakdownMain(box);
+    const placeholder = document.createComment('price-breakdown-placeholder');
+    box.replaceWith(placeholder);
+    document.body.appendChild(box);
+    activeBox = box;
+    activeToggle = toggle;
+    activePlaceholder = placeholder;
+    box.hidden = false;
+    toggle.setAttribute('aria-expanded', 'true');
+    ensureBackdrop().hidden = false;
+    document.body.classList.add('price-breakdown-open');
   };
 
   document.addEventListener('click', (event) => {
@@ -234,14 +247,8 @@ const displayProducts = filtered.map((product) => {
       const card = breakdownToggle.closest('[data-product-card]');
       const box = card?.querySelector('[data-price-breakdown]');
       if (!box) return;
-      const opening = box.hidden;
-      if (opening) {
-        closeBreakdowns(card);
-        showBreakdownMain(box);
-        positionBreakdown(breakdownToggle, box, card);
-      }
-      box.hidden = !opening;
-      breakdownToggle.setAttribute('aria-expanded', opening ? 'true' : 'false');
+      if (activeBox && activeToggle === breakdownToggle) closeBreakdown();
+      else openBreakdown(breakdownToggle, box);
       return;
     }
 
@@ -267,16 +274,11 @@ const displayProducts = filtered.map((product) => {
       showBreakdownMain(back.closest('[data-price-breakdown]'));
       return;
     }
-
-    if (event.target.closest('[data-price-breakdown]')) return;
-    closeBreakdowns();
   });
 
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') closeBreakdowns();
+    if (event.key === 'Escape') closeBreakdown();
   });
-
-  window.addEventListener('resize', () => closeBreakdowns());
 
   const applyPartnerHelp = (data = {}) => {
     const partners = data.partners || [];
