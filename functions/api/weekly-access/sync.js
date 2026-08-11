@@ -1,22 +1,30 @@
-import { envConfig, json, linkedIds, listRows, truthy, updateRow } from '../../_baserow.js';
+import { envConfig, fileUrl, json, linkedIds, listRows, truthy, unwrap, updateRow, orderWeek } from '../../_baserow.js';
 import { buildSessionToken, nextWednesdayExpiry, replaceWeeklyAccessSession } from '../../_auth.js';
 import { sendMail } from '../../_smtp.js';
+import { renderWeeklyEmail, weeklyEmailText, WEEKLY_EMAIL_TEMPLATE_FIELD } from '../../_weekly-email.js';
 
-const escapeHtml=value=>String(value||'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 
-function londonClock(now=new Date()){
-  const parts=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{
-    timeZone:'Europe/London',weekday:'short',hour:'2-digit',minute:'2-digit',hourCycle:'h23'
+function londonParts(now=new Date()){
+  return Object.fromEntries(new Intl.DateTimeFormat('en-GB',{
+    timeZone:'Europe/London',year:'numeric',month:'2-digit',day:'2-digit',weekday:'short',hour:'2-digit',minute:'2-digit',hourCycle:'h23'
   }).formatToParts(now).filter(part=>part.type!=='literal').map(part=>[part.type,part.value]));
-  return {weekday:parts.weekday,hour:Number(parts.hour),minute:Number(parts.minute)};
 }
 function inWeeklyWindow(now=new Date()){
-  const {weekday,hour,minute}=londonClock(now);
-  return weekday==='Wed' && hour===18 && minute>=5 && minute<35;
+  const parts=londonParts(now);
+  return parts.weekday==='Wed' && Number(parts.hour)===18 && Number(parts.minute)>=5 && Number(parts.minute)<35;
 }
 function sameExpiry(a,b){
   const x=new Date(a||0).getTime(),y=new Date(b||0).getTime();
   return Number.isFinite(x)&&Number.isFinite(y)&&Math.abs(x-y)<60_000;
+}
+function justClosedOrderWeek(now=new Date()){
+  const parts=londonParts(now);
+  const localDate=new Date(Date.UTC(Number(parts.year),Number(parts.month)-1,Number(parts.day),12));
+  localDate.setUTCDate(localDate.getUTCDate()+1);
+  return orderWeek(localDate.toISOString().slice(0,10));
+}
+function settingsRow(rows=[]){
+  return rows.find(row=>unwrap(row['Site title'])||fileUrl(row['Header logo']))||rows[0]||{};
 }
 
 export async function onRequestPost({request,env}){
@@ -29,11 +37,30 @@ export async function onRequestPost({request,env}){
 
   try{
     const cfg=envConfig(env);
-    const [members,sessions]=await Promise.all([listRows(cfg,cfg.members),listRows(cfg,cfg.sessions)]);
+    const [members,sessions,orders,points,settingsRows]=await Promise.all([
+      listRows(cfg,cfg.members),
+      listRows(cfg,cfg.sessions),
+      listRows(cfg,cfg.orders),
+      listRows(cfg,cfg.collectionPoints),
+      listRows(cfg,cfg.settings)
+    ]);
+    const settings=settingsRow(settingsRows);
+    const pointsById=new Map(points.map(point=>[Number(point.id),point]));
     const activeMembers=members.filter(member=>truthy(member.Active,false)&&String(member.Email||'').trim());
+    const closedWeek=justClosedOrderWeek(now);
+    const ordersByMember=new Map();
+    for(const order of orders){
+      if(unwrap(order['Order week'])!==closedWeek) continue;
+      if(unwrap(order.Status)!=='Confirmed') continue;
+      for(const memberId of linkedIds(order.Member)){
+        const existing=ordersByMember.get(memberId);
+        if(!existing||new Date(order['Submitted at']||0)>new Date(existing['Submitted at']||0)) ordersByMember.set(memberId,order);
+      }
+    }
+
     const expiresAt=nextWednesdayExpiry(now);
     const origin=new URL(request.url).origin;
-    const results={members:activeMembers.length,created:0,emailed:0,alreadySent:0,failed:0};
+    const results={members:activeMembers.length,created:0,emailed:0,alreadySent:0,failed:0,orderWeek:closedWeek};
     const failures=[];
 
     for(const member of activeMembers){
@@ -62,15 +89,22 @@ export async function onRequestPost({request,env}){
         }
 
         const accessUrl=`${origin}/api/access?token=${encodeURIComponent(token)}&return=${encodeURIComponent('/dashboard/')}`;
-        const firstName=String(member['First name']||'there');
+        const order=ordersByMember.get(Number(member.id))||null;
+        const pointId=order?linkedIds(order['Collection point'])[0]:null;
+        const collectionPoint=pointId?pointsById.get(pointId)||null:null;
+        const content=renderWeeklyEmail({
+          template:settings[WEEKLY_EMAIL_TEMPLATE_FIELD],member,settings,order,collectionPoint,accessUrl,expiresAt
+        });
         await sendMail(env,{
           to:String(member.Email).trim(),
-          subject:'Your Rooted Commons weekly access link',
-          text:`Hi ${firstName},\n\nOrders have closed for this week and your new Rooted Commons access link is ready for the next weekly market:\n${accessUrl}\n\nIf you are already signed in on this device, you can simply visit Rooted Commons as usual.\n\nPlease keep this link private.\n\nRooted Commons`,
-          html:`<p>Hi ${escapeHtml(firstName)},</p><p>Orders have closed for this week and your new Rooted Commons access link is ready for the next weekly market.</p><p><a href="${escapeHtml(accessUrl)}" style="display:inline-block;padding:12px 18px;border-radius:8px;background:#5a2d4d;color:#ded8cc;text-decoration:none;font-weight:700">Open Rooted Commons</a></p><p>If you are already signed in on this device, you can simply visit Rooted Commons as usual.</p><p style="font-size:13px">Please keep this link private.</p>`
+          subject:"Orders are closed — next week's market is open",
+          text:weeklyEmailText(content.data),
+          html:content.html
         });
-        await updateRow(cfg,cfg.sessions,weekly.id,{'Email sent at':new Date().toISOString()});
-        weekly['Email sent at']=new Date().toISOString();
+        if(content.usedFallback) console.warn('weekly email fallback used',{memberId:member.id});
+        const sentAt=new Date().toISOString();
+        await updateRow(cfg,cfg.sessions,weekly.id,{'Email sent at':sentAt});
+        weekly['Email sent at']=sentAt;
         results.emailed+=1;
       }catch(error){
         results.failed+=1;

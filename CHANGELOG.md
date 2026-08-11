@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.9.60 — 2026-08-11
+
+- Added Site Settings → `Weekly orders closed email HTML` (Long text) as the live editable source for the Wednesday orders-closed email.
+- Added a constrained HTML template renderer for the documented member, balance, badge, collection and order placeholders/conditional blocks; values are escaped before insertion.
+- Added a simpler built-in fallback weekly email when the Baserow template is blank, missing its secure-link placeholder or cannot be rendered.
+- Included both the current Baserow HTML template and an exact inspection copy of the fallback under `docs/email-templates/`.
+- Changed user sign-out so the current `Device session` row is deleted from Baserow; the browser cookie is still cleared even if the Baserow deletion fails.
+
+## 2.9.59 — 2026-08-11
+
+- Replaced the plain Wednesday weekly-access message with the full orders-closed member email design.
+- The weekly email now pulls the member name, live balance, founder/member badge, Site Settings logos and bank details, and the just-closed confirmed Web Order.
+- Order collection day/time and item rows come from the immutable Web Orders snapshot (`Collection day`, `Collection time` and `Item JSON`), while the linked Collection Point supplies the saved name/address.
+- Negative balances show the conditional top-up warning; members with no confirmed order in the just-closed week receive the no-collection variant.
+- Preserved the existing weekly session rotation, per-member retry behaviour and `Email sent at` duplicate-send protection.
+
 ## 2.9.58 — 2026-08-11
 
 - Added RFC-compliant `Date` and unique `Message-ID` headers to emails sent through the shared Cloudflare SMTP helper, preventing Gmail from rejecting requested and weekly access-link emails as malformed.

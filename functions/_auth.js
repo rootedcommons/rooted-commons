@@ -1,4 +1,4 @@
-import { createRow, getRow, linkedIds, listRows, listRowsFiltered, truthy, updateRow } from './_baserow.js';
+import { createRow, deleteRow, getRow, linkedIds, listRows, listRowsFiltered, truthy, updateRow } from './_baserow.js';
 
 const SESSION_PREFIX='rcs_';
 const COOKIE_NAME='rc_session';
@@ -170,4 +170,9 @@ export function safeReturnPath(value='/dashboard/'){
 export async function revokeSession(cfg,session){
   if(!session?.id)return;
   await updateRow(cfg,cfg.sessions,session.id,{'Revoked at':new Date().toISOString(),Active:false});
+}
+
+export async function deleteSession(cfg,session){
+  if(!session?.id)return;
+  await deleteRow(cfg,cfg.sessions,session.id);
 }
