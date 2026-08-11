@@ -398,7 +398,7 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .cta-media{margin:0;aspect-ratio:4/3;overflow:hidden}
 .cta-media img{width:100%;height:100%}
 .campaign-timing{margin-top:1.5rem;padding-top:1.1rem;border-top:1px solid var(--line)}
-.campaign-pre-countdown{margin:0 0 .35rem;font-weight:700}
+.campaign-pre-countdown{margin:0 0 .35rem;font-weight:400}
 .campaign-countdown{display:flex;align-items:baseline;gap:.45rem;margin:0}
 .campaign-countdown[hidden]{display:none}
 .campaign-countdown-value{font-size:clamp(1.35rem,3vw,2rem);line-height:1;color:var(--primary)}
@@ -1014,7 +1014,7 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 
 /* v2.9.33 campaign polish + sign-in refinements */
 :root{--campaign-paper:var(--surface);--campaign-panel:var(--highlight);--campaign-panel-line:var(--line)}
-.campaign-section .campaign-inner{position:relative;overflow:hidden;padding:clamp(2rem,4.5vw,4.4rem);border:1px solid color-mix(in srgb,var(--line) 80%,white);border-radius:1.45rem;background:var(--campaign-paper);box-shadow:0 10px 30px rgba(54,42,30,.08)}
+.campaign-section .campaign-inner{position:relative;overflow:hidden;max-width:1180px;padding:clamp(2rem,4.5vw,4.4rem);border:1px solid color-mix(in srgb,var(--line) 80%,white);border-radius:1.45rem;background:var(--campaign-paper);box-shadow:0 10px 30px rgba(54,42,30,.08)}
 .campaign-botanical{position:absolute;z-index:0;top:-1.2rem;right:-1rem;width:min(34vw,420px);aspect-ratio:13/9;background-position:center;background-size:contain;background-repeat:no-repeat;opacity:var(--watermark-opacity,.08);pointer-events:none}
 .campaign-copy,.campaign-images,.campaign-launch-panel{position:relative;z-index:1}
 .campaign-copy{max-width:700px}
@@ -1039,7 +1039,7 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .campaign-calendar-icon{display:grid;place-items:center;width:3.25rem;height:3.25rem;margin-top:0;border-radius:999px;background:color-mix(in srgb,var(--campaign-panel-line) 75%,white);color:var(--primary)}
 .campaign-calendar-icon svg{width:1.7rem;height:1.7rem;fill:none;stroke:currentColor;stroke-width:1.8}
 .campaign-pre-countdown-label{margin:0;font-size:.98rem;font-weight:400;line-height:1.35}
-.campaign-pre-countdown{margin:0;font-size:clamp(1.08rem,1.7vw,1.28rem);font-weight:700;line-height:1.35}
+.campaign-pre-countdown{margin:0;font-size:clamp(1.08rem,1.7vw,1.28rem);font-weight:400;line-height:1.35}
 .campaign-countdown{display:flex;align-items:baseline;gap:.45rem;margin:.5rem 0 0}
 .campaign-countdown-value{font-size:clamp(1.9rem,4vw,3rem);line-height:1;color:var(--primary)}
 .campaign-countdown-post{font-size:1rem;font-weight:700;opacity:.82}

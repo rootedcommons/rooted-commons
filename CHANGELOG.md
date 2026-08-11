@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.9.56 — 2026-08-11
+
+- Reduced the maximum desktop width of Campaign sections to 1180px so the campaign card sits more closely in line with the card grid above it. Mobile sizing is unchanged.
+
+
+## v2.9.55
+
+- Changed Campaign/CTA `Pre-countdown text` to normal body weight by default; inline `**bold**` markup can still be used selectively.
+
 ## v2.9.54
 
 - Added Pages → `Hero split` with 70:30, 60:40, 50:50, 40:60 and 30:70 text:image options; blank remains 50:50 and split heroes still stack on smaller screens.
