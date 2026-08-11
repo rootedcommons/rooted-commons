@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.9.67 — 2026-08-11
+
+- Added the product name as the title of the centred `Where your money goes` modal.
+- Replaced the modal's separate explanation screen / back interaction with inline expandable help directly beneath each price-breakdown row.
+- Each info control now toggles its own explanation while the modal grows naturally; existing Baserow-managed help copy and links are preserved.
+
+## 2.9.66 — 2026-08-11
+
+- Increased the mobile Rooted Commons header logo modestly without increasing the compact header padding.
+- Moved the Weekly Shop basket shortcut out of the top-right viewport overlay and into a shop-specific sticky bar immediately below the global header, restoring unobstructed access to Sign in / Sign out and the mobile navigation toggle.
+- Reduced the mobile basket pill size and shadow while retaining its live item count, total, drawer behaviour and sticky availability while browsing.
+
 ## 2.9.65 — 2026-08-11
 
 - Replaced the anchored price-transparency popover with a true centred overlay on both desktop and mobile.

@@ -30,6 +30,12 @@ const c = (key, fallback = '') => data.interfaceContent[key] || fallback;
 const collectionPointsForMemberBar = data.collectionPoints.map((point) => ({ id: point.id, name: point.name, collectionSlots: point.collectionSlots || [] }));
 ---
 <BaseLayout settings={s} pages={data.pages} title={page.seoTitle || page.title} description={page.seoDescription || page.intro}>
+  <div class="shop-basket-bar" aria-label="Basket shortcut">
+    <button id="floating-basket" class="floating-basket" type="button" aria-controls="basket-drawer" aria-expanded="false">
+      <span>{c('basket.floating_label')}</span><strong><span data-basket-count>0</span> · <span data-basket-total>£0.00</span></strong>
+    </button>
+  </div>
+
   <section class="orders-category-shell">
     <nav class="shop-category-nav" aria-label="Shop categories">
       {broadCategories.map((category, index) => (
@@ -93,9 +99,6 @@ const collectionPointsForMemberBar = data.collectionPoints.map((point) => ({ id:
 
   {sharedBlocks.map((block) => <SectionRenderer block={block} products={data.products} settings={s} />)}
 
-  <button id="floating-basket" class="floating-basket" type="button" aria-controls="basket-drawer" aria-expanded="false">
-    <span>{c('basket.floating_label')}</span><strong><span data-basket-count>0</span> · <span data-basket-total>£0.00</span></strong>
-  </button>
   <dialog id="product-detail-dialog" class="product-detail-dialog">
     <button id="close-product-detail" class="product-detail-close" type="button" aria-label="Close product information">×</button>
     <div id="product-detail-content"></div>

@@ -1519,3 +1519,62 @@ body>.price-breakdown-card{
     max-height:min(82vh,560px)!important;
   }
 }
+
+
+/* v2.9.66 — larger mobile wordmark + shop basket below global navigation */
+.shop-basket-bar{position:sticky;top:0;z-index:79;width:min(100%,var(--max));height:0;margin:0 auto;display:flex;justify-content:flex-end;align-items:flex-start;padding:0 2rem;pointer-events:none}
+.shop-basket-bar .floating-basket{position:relative;top:.7rem;right:auto;z-index:80;pointer-events:auto}
+@media(max-width:640px){
+  .site-header .brand img{max-height:84px}
+  .shop-basket-bar{padding:0 1rem}
+  .shop-basket-bar .floating-basket{top:.55rem;padding:.52rem .72rem;gap:.42rem;box-shadow:0 5px 18px rgba(0,0,0,.18)}
+  .shop-basket-bar .floating-basket span{font-size:.78rem}
+  .shop-basket-bar .floating-basket strong{font-size:.75rem}
+}
+
+/* v2.9.67 — inline-expand price explanations inside the centred modal */
+.price-breakdown-product-name{
+  margin:0 0 .2rem;
+  font-family:var(--heading-font,Georgia,serif);
+  font-size:1.28rem;
+  line-height:1.2;
+  color:var(--primary);
+}
+body>.price-breakdown-card>h4{
+  margin:.15rem 0 .6rem;
+  font-size:.9rem;
+  font-weight:700;
+  opacity:.78;
+}
+.price-breakdown-list{display:block}
+.price-breakdown-item{
+  padding:.58rem 0;
+  border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent);
+}
+.price-breakdown-item:last-child{border-bottom:0}
+.price-breakdown-summary{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) max-content;
+  gap:.8rem;
+  align-items:center;
+}
+.price-breakdown-value{white-space:nowrap}
+.price-breakdown-item .price-help-panel{
+  margin:.5rem 0 .05rem;
+  padding:.6rem .7rem;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--highlight);
+  font-size:.88rem;
+  line-height:1.45;
+}
+.price-breakdown-item .price-help-panel[hidden]{display:none!important}
+.price-breakdown-item .price-help-copy p{margin:0 0 .5rem}
+.price-breakdown-item .price-help-copy p:last-child{margin-bottom:0}
+.price-breakdown-item .price-help-copy a{display:inline-block;margin-top:.1rem}
+@media(max-width:650px){
+  .price-breakdown-product-name{font-size:1.18rem}
+  .price-breakdown-item{padding:.52rem 0}
+  .price-breakdown-item .price-help-panel{padding:.55rem .62rem;font-size:.84rem}
+}
+.price-breakdown-list>.price-breakdown-item{display:block}
