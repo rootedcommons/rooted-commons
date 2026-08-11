@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.9.58 — 2026-08-11
+
+- Added RFC-compliant `Date` and unique `Message-ID` headers to emails sent through the shared Cloudflare SMTP helper, preventing Gmail from rejecting requested and weekly access-link emails as malformed.
+
 ## 2.9.57 — 2026-08-11
 
 - Tightened the mobile product-card buying row so the price information icon no longer collides with the `− 0 +` quantity pill on two-column phone layouts.

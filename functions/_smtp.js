@@ -48,10 +48,13 @@ export async function sendMail(env,{to,subject,html,text}){
     await command(writer,reader,`RCPT TO:<${to}>`,[250,251]);
     await command(writer,reader,'DATA',354);
     const boundary=`rc_${crypto.randomUUID().replace(/-/g,'')}`;
+    const messageId=`<${crypto.randomUUID()}@rootedcommons.uk>`;
     const message=[
       `From: ${fromName} <${from}>`,
       `To: <${to}>`,
       `Subject: ${subject}`,
+      `Date: ${new Date().toUTCString()}`,
+      `Message-ID: ${messageId}`,
       'MIME-Version: 1.0',
       `Content-Type: multipart/alternative; boundary="${boundary}"`,
       '',
