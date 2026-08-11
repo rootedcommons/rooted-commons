@@ -9,8 +9,10 @@ const type = block.type;
 const background = `background-${section.backgroundStyle}`;
 const spaces = `space-above-${section.spaceAbove} space-below-${section.spaceBelow}`;
 const alignment = `align-${section.alignment}`;
+const headingAlignment = `align-${section.headingAlignment || section.alignment}`;
 const button = section.buttonVisible && section.buttonText && section.buttonUrl;
-const groupTitle = block.items.find((item) => item.groupHeading)?.groupHeading || '';
+const groupTitle = block.items.find((item) => item.groupHeading)?.groupHeading || (block.key === 'how-it-works' ? 'How it works' : '');
+const isHowItWorksCarousel = type === 'cards' && block.key === 'how-it-works';
 const inferredGridCategory = section.gridCategory || (section.page === 'cupboard-staples' ? 'Cupboard Staples' : section.page === 'fresh-produce' ? 'Fresh Produce' : section.page === 'refills' ? 'Refills' : '');
 
 const selectedMetrics = metrics.filter((metric) =>
@@ -27,7 +29,7 @@ const selectedProducts = (section.productIds || []).length
   <section data-live-section-id={section.id} data-live-section-key={section.key || block.key || ''} class={`content-section text-section ${background} ${spaces} ${alignment}`}>
     <div class="section-inner prose-width">
       {section.eyebrow && <p data-live-section-field="eyebrow" class="eyebrow">{section.eyebrow}</p>}
-      {section.heading && <h2 data-live-section-field="heading" class={`size-${section.headingSize}`}>{section.heading}</h2>}
+      {section.heading && <h2 data-live-section-field="heading" class={`${headingAlignment} size-${section.headingSize}`}>{section.heading}</h2>}
       {section.subheading && <p data-live-section-field="subheading" class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
       {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} /></div>}
       {button && <a data-live-section-button class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
@@ -44,7 +46,7 @@ const selectedProducts = (section.productIds || []).length
       </figure>}
       <div class="section-copy">
         {section.eyebrow && <p data-live-section-field="eyebrow" class="eyebrow">{section.eyebrow}</p>}
-        {section.heading && <h2 data-live-section-field="heading" class={`size-${section.headingSize}`}>{section.heading}</h2>}
+        {section.heading && <h2 data-live-section-field="heading" class={`${headingAlignment} size-${section.headingSize}`}>{section.heading}</h2>}
         {section.subheading && <p data-live-section-field="subheading" class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
         {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} /></div>}
         </div>
@@ -58,7 +60,7 @@ const selectedProducts = (section.productIds || []).length
   <section data-live-section-id={section.id} data-live-section-key={section.key || block.key || ''} class={`banner-section ${background} ${spaces} ${alignment} image-size-${section.imageSize}`} style={section.image ? `background-image:linear-gradient(rgba(0,0,0,.28),rgba(0,0,0,.28)),url(${section.image})` : undefined}>
     <div class="banner-copy">
       {section.eyebrow && <p data-live-section-field="eyebrow" class="eyebrow">{section.eyebrow}</p>}
-      {section.heading && <h2 data-live-section-field="heading" class={`size-${section.headingSize}`}>{section.heading}</h2>}
+      {section.heading && <h2 data-live-section-field="heading" class={`${headingAlignment} size-${section.headingSize}`}>{section.heading}</h2>}
       {section.subheading && <p data-live-section-field="subheading" class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
       {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} /></div>}
       {button && <a data-live-section-button class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a>}
@@ -67,13 +69,13 @@ const selectedProducts = (section.productIds || []).length
 )}
 
 {type === 'cards' && (
-  <section data-live-section-id={section.id} data-live-section-key={section.key || block.key || ''} class={`content-section cards-section ${background} ${spaces}`}>
+  <section data-live-section-id={section.id} data-live-section-key={section.key || block.key || ''} class={`content-section cards-section ${isHowItWorksCarousel ? 'cards-mobile-carousel' : ''} ${background} ${spaces}`} data-card-carousel={isHowItWorksCarousel ? 'true' : undefined}>
     <div class="section-inner">
-      {groupTitle && <h2 class={`group-heading align-${section.alignment} size-${section.headingSize}`}>{groupTitle}</h2>}
+      {groupTitle && <h2 class={`group-heading ${headingAlignment} size-${section.headingSize}`}>{groupTitle}</h2>}
       {section.subheading && <p class={`group-subheading align-${section.alignment} size-${section.subheadingSize}`}>{section.subheading}</p>}
-      <div class="cards-grid" style={`--columns:${section.columns}`}>
+      <div class="cards-grid" data-card-carousel-track={isHowItWorksCarousel ? 'true' : undefined} style={`--columns:${section.columns}`}>
         {block.items.map((item) => (
-          <article data-live-card-id={item.id} class={`content-card align-${item.alignment}`}>
+          <article data-live-card-id={item.id} data-card-carousel-slide={isHowItWorksCarousel ? 'true' : undefined} class={`content-card align-${item.alignment}`}>
             {(item.image || item.image2 || item.image3) && <CardGallery
               images={[
                 { src: item.image, alt: item.imageAlt },
@@ -92,6 +94,7 @@ const selectedProducts = (section.productIds || []).length
           </article>
         ))}
       </div>
+      {isHowItWorksCarousel && <div class="cards-carousel-dots" aria-hidden="true">{block.items.map((_, index) => <span class={`cards-carousel-dot${index === 0 ? ' active' : ''}`} data-card-carousel-dot></span>)}</div>}
     </div>
   </section>
 )}
@@ -100,7 +103,7 @@ const selectedProducts = (section.productIds || []).length
   <section data-live-section-id={section.id} data-live-section-key={section.key || block.key || ''} class={`content-section stats-section ${background} ${spaces}`}>
     <div class="section-inner">
       {section.eyebrow && <p data-live-section-field="eyebrow" class={`eyebrow ${alignment}`}>{section.eyebrow}</p>}
-      {(section.heading || groupTitle) && <h2 data-live-section-field="heading" class={`group-heading ${alignment} size-${section.headingSize}`}>{section.heading || groupTitle}</h2>}
+      {(section.heading || groupTitle) && <h2 data-live-section-field="heading" class={`group-heading ${headingAlignment} size-${section.headingSize}`}>{section.heading || groupTitle}</h2>}
       {section.subheading && <p data-live-section-field="subheading" class={`group-subheading ${alignment} size-${section.subheadingSize}`}>{section.subheading}</p>}
       {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body ${alignment} size-${section.bodySize}`} /></div>}
       <div class="stats-grid" data-live-metrics data-section-id={section.id} data-section-key={section.key || ''} data-metric-ids={(section.metricIds || []).join(',')} data-metric-names={(section.metricNames || []).join('|')} style={`--columns:${section.columns}`}>
@@ -126,7 +129,7 @@ const selectedProducts = (section.productIds || []).length
   <section data-live-section-id={section.id} data-live-section-key={section.key || block.key || ''} class={`content-section network-section ${background} ${spaces}`}>
     <div class="section-inner">
       {section.eyebrow && <p data-live-section-field="eyebrow" class={`eyebrow ${alignment}`}>{section.eyebrow}</p>}
-      {section.heading && <h2 data-live-section-field="heading" class={`${alignment} size-${section.headingSize}`}>{section.heading}</h2>}
+      {section.heading && <h2 data-live-section-field="heading" class={`${headingAlignment} size-${section.headingSize}`}>{section.heading}</h2>}
       {section.subheading && <p data-live-section-field="subheading" class={`section-subheading ${alignment} size-${section.subheadingSize}`}>{section.subheading}</p>}
       {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body ${alignment} size-${section.bodySize}`} /></div>}
       <NetworkGrid partners={networkPartners} metrics={metrics} columns={section.columns} />
@@ -139,7 +142,7 @@ const selectedProducts = (section.productIds || []).length
   <section data-live-section-id={section.id} data-live-section-key={section.key || block.key || ''} class={`content-section grid-section ${background} ${spaces}`}>
     <div class="section-inner">
       {section.eyebrow && <p data-live-section-field="eyebrow" class={`eyebrow ${alignment}`}>{section.eyebrow}</p>}
-      {section.heading && <h2 data-live-section-field="heading" class={`${alignment} size-${section.headingSize}`}>{section.heading}</h2>}
+      {section.heading && <h2 data-live-section-field="heading" class={`${headingAlignment} size-${section.headingSize}`}>{section.heading}</h2>}
       {section.subheading && <p data-live-section-field="subheading" class={`section-subheading ${alignment} size-${section.subheadingSize}`}>{section.subheading}</p>}
       {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body ${alignment} size-${section.bodySize}`} /></div>}
       <ProductGrid products={selectedProducts} category={inferredGridCategory} columns={section.columns} settings={settings} />
@@ -159,13 +162,13 @@ const selectedProducts = (section.productIds || []).length
         {section.icon && <figure class="cta-icon" aria-hidden="true"><img src={section.icon} alt="" loading="lazy" /></figure>}
         <div class="cta-text">
           {section.eyebrow && <p data-live-section-field="eyebrow" class="eyebrow section-eyebrow">{(section.eyebrowIcon || settings.eyebrowIcon) && <img class="eyebrow-icon" src={section.eyebrowIcon || settings.eyebrowIcon} alt="" aria-hidden="true" />}<span>{section.eyebrow}</span></p>}
-          {section.heading && <h2 data-live-section-field="heading" class={`size-${section.headingSize}`}>{section.heading}</h2>}
+          {section.heading && <h2 data-live-section-field="heading" class={`${headingAlignment} size-${section.headingSize}`}>{section.heading}</h2>}
           {section.subheading && <p data-live-section-field="subheading" class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
           {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body size-${section.bodySize}`} /></div>}
           {section.countdownDate && (
             <div class="campaign-timing">
               {section.preCountdownLabel && <p data-live-section-field="preCountdownLabel" class="campaign-pre-countdown-label">{section.preCountdownLabel}</p>}
-              {section.preCountdownText && <p data-live-section-field="preCountdownText" class="campaign-pre-countdown">{section.preCountdownText}</p>}
+              {section.preCountdownText && <div data-live-section-rich="preCountdownText"><FormattedText text={section.preCountdownText} class="campaign-pre-countdown" /></div>}
               <p class="campaign-countdown" data-countdown-date={section.countdownDate} data-countdown-post={section.postCountdownText || ''}>
                 <strong class="campaign-countdown-value"></strong>
                 <span class="campaign-countdown-post"></span>
@@ -185,7 +188,7 @@ const selectedProducts = (section.productIds || []).length
       {section.watermarkImage && <div class="campaign-botanical" style={`background-image:url("${section.watermarkImage}");--watermark-opacity:${section.watermarkOpacity / 100}`} aria-hidden="true"></div>}
       <div class="campaign-copy">
         {section.eyebrow && <p data-live-section-field="eyebrow" class="eyebrow campaign-eyebrow">{(section.eyebrowIcon || settings.eyebrowIcon) && <img class="eyebrow-icon" src={section.eyebrowIcon || settings.eyebrowIcon} alt="" aria-hidden="true" />}<span>{section.eyebrow}</span></p>}
-        {section.heading && <h2 data-live-section-field="heading" class={`campaign-heading size-${section.headingSize}`}>{section.heading}</h2>}
+        {section.heading && <h2 data-live-section-field="heading" class={`campaign-heading ${headingAlignment} size-${section.headingSize}`}>{section.heading}</h2>}
         {section.subheading && <p data-live-section-field="subheading" class={`section-subheading size-${section.subheadingSize}`}>{section.subheading}</p>}
         {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body campaign-body size-${section.bodySize}`} /></div>}
       </div>
@@ -218,7 +221,7 @@ const selectedProducts = (section.productIds || []).length
                 </span>
                 <div class="campaign-market-copy">
                   {section.preCountdownLabel && <p data-live-section-field="preCountdownLabel" class="campaign-pre-countdown-label">{section.preCountdownLabel}</p>}
-                  {section.preCountdownText && <p data-live-section-field="preCountdownText" class="campaign-pre-countdown">{section.preCountdownText}</p>}
+                  {section.preCountdownText && <div data-live-section-rich="preCountdownText"><FormattedText text={section.preCountdownText} class="campaign-pre-countdown" /></div>}
                   {section.countdownDate && (
                     <p class="campaign-countdown" data-countdown-date={section.countdownDate} data-countdown-post={section.postCountdownText || ''}>
                       <strong class="campaign-countdown-value"></strong>
@@ -239,7 +242,7 @@ const selectedProducts = (section.productIds || []).length
 {type === 'gallery' && (
   <section data-live-section-id={section.id} data-live-section-key={section.key || block.key || ''} class={`content-section gallery-section ${background} ${spaces}`}>
     <div class="section-inner">
-      {groupTitle && <h2 class={`group-heading align-${section.alignment} size-${section.headingSize}`}>{groupTitle}</h2>}
+      {groupTitle && <h2 class={`group-heading ${headingAlignment} size-${section.headingSize}`}>{groupTitle}</h2>}
       <div class="gallery-grid" style={`--columns:${section.columns}`}>
         {block.items.filter((item) => item.image).map((item) => (
           <figure data-live-card-id={item.id} class={`gallery-item image-size-${item.imageSize} fit-${item.imageFit}`}>
@@ -254,6 +257,22 @@ const selectedProducts = (section.productIds || []).length
 
 
 <script>
+  const initCardCarousels = () => {
+    document.querySelectorAll('[data-card-carousel="true"]').forEach((carousel) => {
+      if (carousel.dataset.carouselReady) return;
+      carousel.dataset.carouselReady = 'true';
+      const track = carousel.querySelector('[data-card-carousel-track="true"]');
+      const slides = [...carousel.querySelectorAll('[data-card-carousel-slide="true"]')];
+      const dots = [...carousel.querySelectorAll('[data-card-carousel-dot]')];
+      if (!track || slides.length < 2 || dots.length !== slides.length) return;
+      const currentIndex = () => Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / (track.clientWidth || 1))));
+      const update = () => dots.forEach((dot, index) => dot.classList.toggle('active', index === currentIndex()));
+      let frame = 0;
+      track.addEventListener('scroll', () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(update); }, { passive: true });
+      update();
+    });
+  };
+
   const updateCampaignCountdowns = () => {
     document.querySelectorAll('[data-countdown-date]').forEach((element) => {
       const dateValue = element.getAttribute('data-countdown-date') || '';
@@ -285,6 +304,7 @@ const selectedProducts = (section.productIds || []).length
       }
     });
   };
+  initCardCarousels();
   updateCampaignCountdowns();
-  document.addEventListener('astro:page-load', updateCampaignCountdowns);
+  document.addEventListener('astro:page-load', () => { initCardCarousels(); updateCampaignCountdowns(); });
 </script>

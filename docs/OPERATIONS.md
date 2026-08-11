@@ -1,6 +1,6 @@
 # Operations
 
-This document describes the current operating behaviour of v2.9.15 rather than historical upgrade steps.
+This document describes the current operating behaviour of v2.9.52 rather than historical upgrade steps.
 
 ## Orders and stock
 The browser basket is not authoritative and does not reserve stock. At confirmation the restricted order endpoint reloads the member, product prices, available stock and collection rules from Baserow. It creates one Processing Web Order. A published Baserow automation then creates the stock movements and account debit, confirms the order and sends the confirmation email.

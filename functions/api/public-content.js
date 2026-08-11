@@ -59,7 +59,7 @@ function publicSection(row) {
     watermarkImage:fileUrl(row['Watermark image']), watermarkOpacity:Math.min(100,Math.max(0,number(row['Watermark opacity'],8))),
     buttonText:unwrap(row['Button text']), buttonUrl:unwrap(row['Button URL']), buttonVisible:truthy(row['Button visible'],Boolean(unwrap(row['Button text']))),
     headingSize:norm(row['Heading size'],'large'), subheadingSize:norm(row['Subheading size'],'medium'), bodySize:norm(row['Body size'],'medium'),
-    alignment:norm(row.Alignment,'left'), backgroundStyle:norm(row['Background style'],'default'), columns:Math.min(4,Math.max(1,number(row.Columns,3))),
+    alignment:norm(row.Alignment,'left'), headingAlignment:norm(row['Heading alignment'],norm(row.Alignment,'left')), backgroundStyle:norm(row['Background style'],'default'), columns:Math.min(4,Math.max(1,number(row.Columns,3))),
     imageSize:norm(row['Image size'],'medium'), imageFit:norm(row['Image fit'],'cover'), buttonSize:norm(row['Button size'],'medium'),
     spaceAbove:norm(row['Space above'],'medium'), spaceBelow:norm(row['Space below'],'medium'), imagePosition:norm(row['Image position'],'right'),
     metricIds:linkedIds(row.Metrics), metricNames:linkedValues(row.Metrics), productIds:linkedIds(row.Products), productNames:linkedValues(row.Products),

@@ -1,6 +1,6 @@
 # Getting started
 
-This is the shortest path from a clean download to a working v2.9.15 instance.
+This is the shortest path from a clean download to a working v2.9.52 instance.
 
 ## 1. Requirements
 
@@ -24,7 +24,7 @@ Do not commit `.env` or secrets.
 
 Use `BASEROW-SETUP.md` as the current source of truth for field names, options, token permissions and the order automation. The legacy version-by-version setup notes have deliberately been removed from this package.
 
-The existing import/specification folders are retained for v2.9.15. For v3.0 they are intended to be replaced from clean exports of the live database.
+The existing import/specification folders are retained for v2.9.52. For v3.0 they are intended to be replaced from clean exports of the live database.
 
 ## 4. Configure environment variables
 

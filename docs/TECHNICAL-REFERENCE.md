@@ -1,6 +1,6 @@
 # Technical reference
 
-Developer/reference material for the current v2.9.15 release.
+Developer/reference material for the current v2.9.52 release.
 
 ## Architecture
 
@@ -186,6 +186,10 @@ For each Stats section use:
 
 The linked Metrics render in `Display order`. Legacy grouped Stats rows are still supported temporarily during migration. On screens up to 640px wide the grid becomes two columns.
 
+### Section heading alignment
+
+Sections have a `Heading alignment` single-select with `left`, `center`, and `right`. It controls the section-level heading only; `Alignment` continues to control the rest of the section copy. Leave `Heading alignment` blank to inherit `Alignment`, so existing sections do not change when the field is introduced. Group headings use the same setting.
+
 ## Dynamic values
 
 Metric `Value` / `Display value` and legacy Stats headings can contain these build-time tokens:
@@ -200,13 +204,13 @@ The build-time Baserow token must be able to read the public CMS tables as befor
 
 ## Homepage grouped headings, stats and campaign countdown
 
-Grouped Cards, Stats and Gallery sections use `Group key` only as an internal grouping identifier. `Group heading` is the optional visible heading; leave it blank for no group heading.
+Grouped Cards, Stats and Gallery sections use `Group key` only as an internal grouping identifier. `Group heading` is the optional visible heading. The `how-it-works` Cards group defaults to **How it works** when `Group heading` is blank; other groups remain unheaded when blank. On screens up to 640px, that `how-it-works` group becomes a swipeable, scroll-snapping carousel with position dots; wider screens retain the normal grid.
 
 Public Stats headings support `{{members}}`, `{{network_partners}}`, `{{member_spending}}` and `{{total_commitments}}`. `{{total_commitments}}` is the sum of `Weekly commitment` for active Members.
 
 A `Campaign` section is intended for launch/member campaigns. It uses a single text column, then renders up to three images (`Image`, `Image 2`, `Image 3`) in one responsive row where space allows, followed by optional countdown timing and the CTA button. Add `Campaign` to the **Section type** single-select options in Baserow.
 
-Countdown fields are `Countdown date` (date), `Pre-countdown label` (single-line text), `Pre-countdown text` (single-line text) and `Post-countdown text` (single-line text). For example, label `First online market:`, pre-text `Thursday 3rd – Wednesday 9th September`, date `2026-09-03`, and post-text `to go` renders those three lines beside a single calendar icon in Campaign sections. The day count updates in the visitor's browser and disappears after the target date. Existing Call to action sections can use the same countdown fields.
+Countdown fields are `Countdown date` (date), `Pre-countdown label` (single-line text), `Pre-countdown text` (**long text**) and `Post-countdown text` (single-line text). `Pre-countdown text` uses the same formatted-text renderer as other long-text CMS fields, so entered line breaks are preserved and the supported bold/italic/link/list subset also works. For example, label `First online market:`, pre-text `Thursday 3rd – Wednesday 9th September`, date `2026-09-03`, and post-text `to go` renders those three lines beside a single calendar icon in Campaign sections. The day count updates in the visitor's browser and disappears after the target date. Existing Call to action sections can use the same countdown fields.
 
 
 ## Xero member-payment field mapping (v2.9.23)

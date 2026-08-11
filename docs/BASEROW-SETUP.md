@@ -1,6 +1,6 @@
 # Baserow setup
 
-This is the canonical Baserow setup reference for v2.9.15. Field names used by the API and automations are case-sensitive.
+This is the canonical Baserow setup reference for v2.9.52. Field names used by the API and automations are case-sensitive.
 
 ## Schema
 
@@ -494,7 +494,7 @@ The default Rooted Commons palette uses taupe `#ded8cc` for the page backdrop, w
 
 Site Settings separates the page backdrop from content surfaces: `Background colour` controls the overall page backdrop, `Surface colour` controls normal cards/forms/boxed sections, `Highlight colour` controls emphasized/inset panels, `Primary colour` controls main text and buttons, `Border colour` controls lines/borders, and `Accent colour` controls secondary botanical/decorative details.
 
-`Watermark image` and `Watermark opacity` belong to Sections and are rendered only by `Campaign` and `Call to action` section types. Other section types ignore them. `Watermark opacity` is a percentage from 0 to 100 and defaults to 8 when blank. `Pre-countdown label` provides the small label above `Pre-countdown text` (for example `First online market:`). `Eyebrow icon` belongs to Site Settings and is used beside Campaign and Call to action eyebrows.
+`Watermark image` and `Watermark opacity` belong to Sections and are rendered only by `Campaign` and `Call to action` section types. Other section types ignore them. `Watermark opacity` is a percentage from 0 to 100 and defaults to 8 when blank. `Pre-countdown label` provides the small label above `Pre-countdown text` (for example `First online market:`). Make `Pre-countdown text` a **Long text** field; line breaks and the standard formatted-text subset are preserved. Add `Heading alignment` as a single select with `left`, `center`, and `right`; leave it blank to inherit the existing `Alignment` setting. `Eyebrow icon` belongs to Site Settings and is used beside Campaign and Call to action eyebrows.
 
 
 ## Network and impact tables (v2.9.38+)

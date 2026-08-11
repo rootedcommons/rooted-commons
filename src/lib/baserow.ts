@@ -319,6 +319,7 @@ export async function getSiteData() {
       subheadingSize: normalized(choice(row, 'Subheading size'), 'medium'),
       bodySize: normalized(choice(row, 'Body size'), 'medium'),
       alignment: normalized(choice(row, 'Alignment'), 'left'),
+      headingAlignment: normalized(choice(row, 'Heading alignment'), normalized(choice(row, 'Alignment'), 'left')),
       backgroundStyle: normalized(choice(row, 'Background style'), 'default'),
       columns: Math.min(4, Math.max(1, numeric(row, 'Columns', 3))),
       imageSize: normalized(choice(row, 'Image size'), 'medium'),

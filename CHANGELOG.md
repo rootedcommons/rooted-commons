@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.9.52
+
+- Fixed `Pre-countdown text` so Baserow line breaks and the shared formatted-text subset render consistently in both the Astro build and live CMS hydration.
+- Changed the homepage `how-it-works` Cards group into a swipeable, scroll-snapping carousel with position dots on mobile while retaining the multi-column grid on wider screens.
+- Ensured the `how-it-works` group has a visible **How it works** heading by default; an explicit `Group heading` still overrides the fallback.
+- Added a Sections `Heading alignment` control (`left`, `center`, `right`) that affects section/group headings independently and falls back to the existing `Alignment` value when blank.
+- Updated the current Baserow field specification and canonical setup/technical documentation for these controls.
+
 
 ## 2.9.51
 
