@@ -1028,16 +1028,16 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .campaign-images{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin:clamp(2rem,4.5vw,3.5rem) 0 2rem;align-items:end}
 .campaign-image{position:relative;margin:0;min-width:0;display:flex;flex-direction:column;align-items:center;padding:0 clamp(.75rem,2vw,2rem)}
 .campaign-image+.campaign-image{border-left:1px solid color-mix(in srgb,var(--campaign-panel-line) 90%,transparent)}
-.campaign-image img{width:min(100%,255px);height:auto;max-height:none;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(33,26,21,.10))}
+.campaign-image img{width:min(100%,220px);height:auto;max-height:none;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(33,26,21,.10))}
 .campaign-image figcaption{display:grid;gap:.08rem;margin-top:.75rem;text-align:center;color:var(--primary)}
 .campaign-image figcaption strong{text-transform:uppercase;letter-spacing:.12em;font-size:.92rem}
 .campaign-image figcaption span{font-size:.88rem;color:color-mix(in srgb,var(--primary) 75%,black)}
 .campaign-launch-panel{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,.8fr);gap:clamp(1.5rem,4vw,4rem);align-items:center;margin-top:1rem;padding:clamp(1.25rem,2.8vw,2rem);border:1px solid var(--campaign-panel-line);border-radius:1rem;background:var(--campaign-panel)}
 .campaign-launch-copy{display:grid;gap:.85rem}
-.campaign-market-line{display:grid;grid-template-columns:auto minmax(0,1fr);gap:1rem;align-items:start}
+.campaign-market-line{display:grid;grid-template-columns:auto minmax(0,1fr);gap:1rem;align-items:center}
 .campaign-market-copy{display:grid;gap:.18rem;min-width:0}
-.campaign-calendar-icon{display:grid;place-items:center;width:2.8rem;height:2.8rem;margin-top:.1rem;border-radius:999px;background:color-mix(in srgb,var(--campaign-panel-line) 75%,white);color:var(--primary)}
-.campaign-calendar-icon svg{width:1.45rem;height:1.45rem;fill:none;stroke:currentColor;stroke-width:1.8}
+.campaign-calendar-icon{display:grid;place-items:center;width:3.25rem;height:3.25rem;margin-top:0;border-radius:999px;background:color-mix(in srgb,var(--campaign-panel-line) 75%,white);color:var(--primary)}
+.campaign-calendar-icon svg{width:1.7rem;height:1.7rem;fill:none;stroke:currentColor;stroke-width:1.8}
 .campaign-pre-countdown-label{margin:0;font-size:.98rem;font-weight:400;line-height:1.35}
 .campaign-pre-countdown{margin:0;font-size:clamp(1.08rem,1.7vw,1.28rem);font-weight:700;line-height:1.35}
 .campaign-countdown{display:flex;align-items:baseline;gap:.45rem;margin:.5rem 0 0}
@@ -1066,7 +1066,7 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
   .campaign-image+.campaign-image{border-left:0}
   .campaign-image figcaption span{display:none}
   .campaign-launch-panel{padding:1rem}
-  .campaign-calendar-icon{width:2.3rem;height:2.3rem}
+  .campaign-calendar-icon{width:3rem;height:3rem}
 }
 
 /* v2.9.35 semantic site palette + editable CTA watermark */
@@ -1263,15 +1263,17 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 @media(max-width:650px){.network-grid{grid-template-columns:1fr}}
 
 
-/* v2.9.52 mobile How it works carousel + independent heading alignment */
+/* v2.9.53 mobile How it works carousel + independent heading alignment */
 .campaign-pre-countdown p{margin:0}
 .campaign-pre-countdown p+p{margin-top:.45rem}
 .cards-carousel-dots{display:none}
 @media(max-width:640px){
-  .cards-mobile-carousel .group-heading{margin-bottom:1.15rem}
+  .cards-mobile-carousel .section-inner{padding:1.15rem;border:1px solid var(--line);border-radius:1rem;background:var(--surface)}
+  .cards-mobile-carousel .group-heading{margin:0 0 1rem}
+  .cards-mobile-carousel .group-subheading{margin-top:0}
   .cards-mobile-carousel .cards-grid{display:flex!important;grid-template-columns:none!important;gap:1rem;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:0;overscroll-behavior-x:contain;scrollbar-width:none;padding-bottom:.25rem}
   .cards-mobile-carousel .cards-grid::-webkit-scrollbar{display:none}
-  .cards-mobile-carousel .content-card{flex:0 0 100%;width:100%;scroll-snap-align:start;scroll-snap-stop:always}
+  .cards-mobile-carousel .content-card{flex:0 0 100%;width:100%;padding:0;border:0;border-radius:0;background:transparent;scroll-snap-align:start;scroll-snap-stop:always}
   .cards-mobile-carousel .cards-carousel-dots{display:flex;justify-content:center;gap:.45rem;margin-top:.85rem}
   .cards-mobile-carousel .cards-carousel-dot{width:.46rem;height:.46rem;border-radius:999px;background:color-mix(in srgb,var(--primary) 28%,transparent);transition:transform .16s ease,background-color .16s ease}
   .cards-mobile-carousel .cards-carousel-dot.active{background:var(--primary);transform:scale(1.15)}
