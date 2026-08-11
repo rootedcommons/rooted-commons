@@ -129,7 +129,7 @@ const selectedProducts = (section.productIds || []).length
       {section.heading && <h2 data-live-section-field="heading" class={`${alignment} size-${section.headingSize}`}>{section.heading}</h2>}
       {section.subheading && <p data-live-section-field="subheading" class={`section-subheading ${alignment} size-${section.subheadingSize}`}>{section.subheading}</p>}
       {section.body && <div data-live-section-rich="body"><FormattedText text={section.body} class={`rich-body ${alignment} size-${section.bodySize}`} /></div>}
-      <NetworkGrid partners={networkPartners} metrics={metrics} />
+      <NetworkGrid partners={networkPartners} metrics={metrics} columns={section.columns} />
       {button && <p class={alignment}><a data-live-section-button class={`button button-${section.buttonSize}`} href={section.buttonUrl}>{section.buttonText}</a></p>}
     </div>
   </section>

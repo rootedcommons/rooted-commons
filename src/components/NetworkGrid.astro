@@ -1,11 +1,11 @@
 ---
 import CardGallery from './CardGallery.astro';
 import FormattedText from './FormattedText.astro';
-const { partners = [], metrics = [] } = Astro.props;
+const { partners = [], metrics = [], columns = 2 } = Astro.props;
 const safeId = (value) => String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const metricHeadline = (metric) => metric.displayValue || (metric.value !== null && metric.value !== undefined ? `${metric.value.toLocaleString('en-GB')}${metric.unit ? ` ${metric.unit}` : ''}` : metric.valueText || '');
 ---
-<div class="network-grid" data-network-grid data-live-network>
+<div class="network-grid" data-network-grid data-live-network style={`--columns:${columns}`}>
   {partners.map((partner) => {
     const modalId = `network-partner-${safeId(partner.name)}-${partner.id}`;
     const partnerMetrics = metrics.filter((metric) => metric.networkPartner === partner.name && (metric.placements || []).includes('Partner'));

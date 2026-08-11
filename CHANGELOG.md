@@ -1,5 +1,13 @@
 # Changelog
 
+
+## 2.9.51
+
+- Refined product-card buying rows: price information remains beside the price, the quantity control is slimmer and outlined, and both scale responsively on narrow phones.
+- Separated the divider from the price/quantity controls with consistent vertical clearance.
+- Ensured the Orders membership summary remains completely hidden for signed-out visitors.
+- Made Network section grids honour the Baserow `Columns` field on wide screens, while retaining responsive two- and one-column fallbacks.
+
 ## v2.9.50
 
 - Changed the site header and footer backgrounds to the live Baserow `Primary colour`.
