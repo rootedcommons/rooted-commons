@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.9.62 — 2026-08-11
+
+- Pinned product certification marks to the bottom content area of each product card so they sit consistently immediately above the purchase divider and price/quantity footer.
+- Replaced the in-card expanding price breakdown with a floating “Where your money goes” popover that does not change product-card dimensions.
+- Changed the breakdown’s internal information controls to switch the same popover into an explanation view, with a `Back to price breakdown` control; outside click, Escape and resize close the popover.
+- Rounded the catalogue search field to match the product-card visual language while keeping text search catalogue-wide.
+- Scoped category browsing and subcategory filter options to each product’s primary broad category, and retained the existing reset-to-All behaviour when changing category.
+- Removed the unused collection-points hero from the map page, tightened the space below the site header and made the map Back control smaller and more discreet on mobile.
+
 ## 2.9.61 — 2026-08-11
 
 - Redesigned the dashboard commitment card with a permanent purple `Change` button beside the member’s chosen commitment amount.

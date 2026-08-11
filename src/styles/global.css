@@ -1342,3 +1342,113 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
   }
 }
 
+
+/* v2.9.62 — shop popovers, anchored certifications and collection-map polish */
+#product-search{
+  border-radius:1.2rem;
+}
+
+/* Keep certification marks and the purchase divider together at the foot of every card. */
+.product-copy>.product-certifications{
+  margin-top:auto!important;
+  margin-bottom:.45rem!important;
+  min-height:1.8rem;
+}
+.product-copy>.product-transaction-row,
+.product-copy:has(.product-certifications)>.product-transaction-row{
+  margin-top:0!important;
+}
+.product-copy:not(:has(.product-certifications))>.product-transaction-row{
+  margin-top:auto!important;
+}
+
+/* Price transparency is a floating popover: opening it never changes card dimensions. */
+.price-breakdown-card{
+  position:absolute;
+  z-index:90;
+  left:var(--breakdown-left,8px);
+  top:var(--breakdown-top,calc(100% - 3rem));
+  width:var(--breakdown-width,320px);
+  max-width:calc(100vw - 2rem);
+  margin:0;
+  padding:.9rem 1rem;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--surface);
+  box-shadow:0 14px 38px rgba(0,0,0,.2);
+}
+.price-breakdown-card h4{margin:0 0 .55rem;font-size:1rem}
+.price-breakdown-label{
+  display:inline-flex;
+  align-items:center;
+  gap:.4rem;
+  min-width:0;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:inherit;
+  font:inherit;
+  text-align:left;
+  cursor:pointer;
+}
+.price-breakdown-label:hover{text-decoration:underline}
+.price-breakdown-label .price-info-icon{pointer-events:none}
+.price-help-panel{
+  position:static;
+  width:auto;
+  max-width:none;
+  margin:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+.price-help-panel::before{display:none}
+.price-help-back{
+  display:inline-flex;
+  margin:0 0 .65rem;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:var(--primary);
+  font:inherit;
+  font-size:.78rem;
+  font-weight:700;
+  cursor:pointer;
+}
+.price-help-back:hover{text-decoration:underline}
+
+/* This page intentionally has no hero; keep the map controls close to the header. */
+.collection-map-section{
+  margin-top:clamp(.75rem,2vw,1.35rem);
+}
+.collection-map-back{
+  margin:0 0 .65rem;
+  padding:.48rem .75rem;
+  border-radius:.65rem;
+  font-size:.88rem;
+}
+@media(max-width:650px){
+  .price-breakdown-card{
+    position:fixed;
+    left:50%!important;
+    top:50%!important;
+    width:min(340px,calc(100vw - 1.5rem))!important;
+    max-height:min(78vh,520px);
+    overflow:auto;
+    transform:translate(-50%,-50%);
+    z-index:1000;
+  }
+  .collection-map-section{
+    width:min(100% - 1rem,1180px);
+    margin-top:.55rem;
+  }
+  .collection-map-back{
+    padding:.34rem .58rem;
+    margin-bottom:.5rem;
+    border-radius:.55rem;
+    font-size:.78rem;
+    min-height:0;
+  }
+}

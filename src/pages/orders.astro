@@ -13,7 +13,7 @@ const orderSections = data.sections.filter((section) => section.page === 'orders
 const gridSection = orderSections.find((section) => String(section.type).toLowerCase() === 'grid');
 const sharedSections = orderSections.filter((section) => section !== gridSection && !section.catalogueCategory);
 const sharedBlocks = buildSectionBlocks(sharedSections);
-const broadCategories = [...new Set(data.products.flatMap((product) => product.categories || [product.category]).filter(Boolean))];
+const broadCategories = [...new Set(data.products.map((product) => product.category || product.categories?.[0]).filter(Boolean))];
 const preferredOrder = ['Cupboard Staples', 'Fresh Produce', 'Refills'];
 broadCategories.sort((a, b) => {
   const ai = preferredOrder.indexOf(a); const bi = preferredOrder.indexOf(b);
@@ -230,11 +230,12 @@ const collectionPointsForMemberBar = data.collectionPoints.map((point) => ({ id:
     pointSelectEl?.addEventListener('change',()=>populateSummaryDays(''));
 
     function categoriesFor(card){ return splitValues(card.dataset.categories); }
+    function primaryCategoryFor(card){ return String(card.dataset.primaryCategory || categoriesFor(card)[0] || '').trim(); }
     function subcategoriesFor(card){ return splitValues(card.dataset.subcategories); }
     function matchesValue(values, selected){ return values.some(value => normalise(value) === normalise(selected)); }
 
     function relevantCards(){
-      return cards.filter(card => matchesValue(categoriesFor(card), state.category));
+      return cards.filter(card => normalise(primaryCategoryFor(card)) === normalise(state.category));
     }
 
     function rebuildSubcategories(){
@@ -252,7 +253,7 @@ const collectionPointsForMemberBar = data.collectionPoints.map((point) => ({ id:
       return cards.filter(card => {
         // A search intentionally searches the entire catalogue, irrespective of selected category.
         if (query) return normalise(card.dataset.search || card.textContent).includes(query);
-        if (!matchesValue(categoriesFor(card), state.category)) return false;
+        if (normalise(primaryCategoryFor(card)) !== normalise(state.category)) return false;
         if (state.subcategory !== 'all' && !matchesValue(subcategoriesFor(card), state.subcategory)) return false;
         return true;
       });

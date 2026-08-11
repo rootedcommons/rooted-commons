@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PageHero from '../components/PageHero.astro';
 import CollectionPointMap from '../components/CollectionPointMap.astro';
 import { getSiteData } from '../lib/baserow';
 
@@ -16,6 +15,5 @@ const page={
 ---
 <BaseLayout settings={data.settings} pages={data.pages} title={page.title} description={page.intro}>
   <Fragment slot="head"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" /></Fragment>
-  <PageHero page={page} />
   <CollectionPointMap points={data.collectionPoints} />
 </BaseLayout>
