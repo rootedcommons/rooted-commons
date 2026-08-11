@@ -11,8 +11,9 @@ const spaces = `space-above-${section.spaceAbove} space-below-${section.spaceBel
 const alignment = `align-${section.alignment}`;
 const headingAlignment = `align-${section.headingAlignment || section.alignment}`;
 const button = section.buttonVisible && section.buttonText && section.buttonUrl;
-const groupTitle = block.items.find((item) => item.groupHeading)?.groupHeading || (block.key === 'how-it-works' ? 'How it works' : '');
+const groupTitle = block.items.find((item) => item.groupHeading)?.groupHeading || '';
 const isHowItWorksCarousel = type === 'cards' && block.key === 'how-it-works';
+const mobileCarouselTitle = isHowItWorksCarousel ? (groupTitle || 'How it works') : '';
 const inferredGridCategory = section.gridCategory || (section.page === 'cupboard-staples' ? 'Cupboard Staples' : section.page === 'fresh-produce' ? 'Fresh Produce' : section.page === 'refills' ? 'Refills' : '');
 
 const selectedMetrics = metrics.filter((metric) =>
@@ -71,7 +72,8 @@ const selectedProducts = (section.productIds || []).length
 {type === 'cards' && (
   <section data-live-section-id={section.id} data-live-section-key={section.key || block.key || ''} class={`content-section cards-section ${isHowItWorksCarousel ? 'cards-mobile-carousel' : ''} ${background} ${spaces}`} data-card-carousel={isHowItWorksCarousel ? 'true' : undefined}>
     <div class="section-inner">
-      {groupTitle && <h2 class={`group-heading ${headingAlignment} size-${section.headingSize}`}>{groupTitle}</h2>}
+      {groupTitle && <h2 class={`group-heading group-heading-cms ${headingAlignment} size-${section.headingSize}`}>{groupTitle}</h2>}
+      {isHowItWorksCarousel && !groupTitle && <h2 class={`group-heading group-heading-mobile-only ${headingAlignment} size-${section.headingSize}`}>{mobileCarouselTitle}</h2>}
       {section.subheading && <p class={`group-subheading align-${section.alignment} size-${section.subheadingSize}`}>{section.subheading}</p>}
       <div class="cards-grid" data-card-carousel-track={isHowItWorksCarousel ? 'true' : undefined} style={`--columns:${section.columns}`}>
         {block.items.map((item) => (
@@ -288,12 +290,13 @@ const selectedProducts = (section.productIds || []).length
       const post = element.querySelector('.campaign-countdown-post');
       if (!value || !post) return;
 
+      const suffix = (element.getAttribute('data-countdown-post') || '').trim();
       if (days > 1) {
-        value.textContent = `${days} days`;
-        post.textContent = element.getAttribute('data-countdown-post') || '';
+        value.textContent = `${days} days${suffix ? ` ${suffix}` : ''}`;
+        post.textContent = '';
       } else if (days === 1) {
-        value.textContent = '1 day';
-        post.textContent = element.getAttribute('data-countdown-post') || '';
+        value.textContent = `1 day${suffix ? ` ${suffix}` : ''}`;
+        post.textContent = '';
       } else if (days === 0) {
         value.textContent = 'Today';
         post.textContent = '';

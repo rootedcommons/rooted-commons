@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.9.54
+
+- Added Pages → `Hero split` with 70:30, 60:40, 50:50, 40:60 and 30:70 text:image options; blank remains 50:50 and split heroes still stack on smaller screens.
+- Anchored the product-card divider, price and quantity control to the bottom of every card for consistent row alignment.
+- Removed the hard-coded `How it works` heading from desktop/laptop while retaining a mobile-only heading inside the How it works carousel panel when no CMS group heading is supplied.
+- Removed the residual card shadow/fade from the mobile How it works carousel slides.
+- Folded `Post-countdown text` (for example `to go`) into the main dynamic countdown phrase so it renders as `23 days to go`.
+
+
 ## v2.9.53
 
 - On mobile, moved the How it works heading visually inside the shared carousel panel, with Join / Choose / Collect swiping beneath it in the same rounded frame.

@@ -360,6 +360,7 @@ Make these minimal schema changes in Baserow before using the new controls:
 6. Expand **Title size**, **Subtitle size** and **Intro size** to: Very small, Small, Medium, Large, Very large.
 7. Set **Hero width** options to: Narrow, Standard, Wide, Full. Legacy Normal and Medium are treated as Standard.
 8. Add **Hero button size** as a single-select field with: Small, Medium, Large.
+9. Add **Hero split** as a single-select field with: 70:30, 60:40, 50:50, 40:60, 30:70. The first number is the text column; blank defaults to 50:50.
 
 The current `baserow-imports/02-pages.csv` and `baserow-table-specification/02-pages-fields.csv` reflect this schema.
 
@@ -385,6 +386,11 @@ The current `baserow-imports/02-pages.csv` and `baserow-table-specification/02-p
 | Full | Full available width with no maximum |
 
 Legacy `Normal` and `Medium` values are treated as `Standard`. The shared site maximum is now `1400px`, matching the Orders product grid. Hero, Sections, navigation wrappers and the member summary use the same inner-wrapper alignment.
+
+
+### Hero split
+
+For `Text left` and `Text right` heroes, **Hero split** controls the text:image column ratio. Options are `70:30`, `60:40`, `50:50`, `40:60`, and `30:70`; blank defaults to `50:50`. The first number always refers to the text column, even when `Text right` places the image visually first. The setting is ignored for Text only, Banner and None layouts, and all split heroes stack to one column below 900px.
 
 ### Hero button size
 

@@ -204,7 +204,7 @@ The build-time Baserow token must be able to read the public CMS tables as befor
 
 ## Homepage grouped headings, stats and campaign countdown
 
-Grouped Cards, Stats and Gallery sections use `Group key` only as an internal grouping identifier. `Group heading` is the optional visible heading. The `how-it-works` Cards group defaults to **How it works** when `Group heading` is blank; other groups remain unheaded when blank. On screens up to 640px, that `how-it-works` group becomes a swipeable, scroll-snapping carousel with position dots; wider screens retain the normal grid.
+Grouped Cards, Stats and Gallery sections use `Group key` only as an internal grouping identifier. `Group heading` is the optional visible heading. For the `how-it-works` Cards group, a blank `Group heading` produces no automatic heading on desktop/laptop. On screens up to 640px, the group becomes a swipeable, scroll-snapping carousel with position dots and a mobile-only **How it works** heading inside the shared carousel panel. An explicit `Group heading` remains CMS-controlled. Wider screens retain the normal grid.
 
 Public Stats headings support `{{members}}`, `{{network_partners}}`, `{{member_spending}}` and `{{total_commitments}}`. `{{total_commitments}}` is the sum of `Weekly commitment` for active Members.
 
@@ -302,3 +302,5 @@ Product Grid remains on the Astro renderer because its product cards, cart contr
 - Text-only CTAs use a narrower supporting-strip layout; on mobile the button moves below the icon/text row.
 - CTA, Cards, Campaign and Stats use the same quiet rounded border language. Product cards use matching rounded borders; Network Partner cards are intentionally unchanged.
 - Stats tiles display the Metric value and description only; the Metric name/title is not shown in the tile.
+
+Hero split is read from Pages → `Hero split` with options 70:30, 60:40, 50:50, 40:60 and 30:70. The first number is the text share; blank defaults to 50:50. It applies only to split hero layouts and collapses to one column below 900px.

@@ -1278,3 +1278,30 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
   .cards-mobile-carousel .cards-carousel-dot{width:.46rem;height:.46rem;border-radius:999px;background:color-mix(in srgb,var(--primary) 28%,transparent);transition:transform .16s ease,background-color .16s ease}
   .cards-mobile-carousel .cards-carousel-dot.active{background:var(--primary);transform:scale(1.15)}
 }
+
+
+/* v2.9.54 — hero split, anchored product buying row and carousel cleanup */
+/* Hero split is text:image for text-left, and still text:image for text-right even though the image is visually first. */
+.page-hero.hero-split-70-30.layout-text-left .hero-inner,.page-hero.hero-split-70-30.layout-text-left-image-right .hero-inner,.page-hero.hero-split-70-30.layout-split .hero-inner,.page-hero.hero-split-70-30.layout-image-right .hero-inner{grid-template-columns:minmax(0,7fr) minmax(220px,3fr)}
+.page-hero.hero-split-60-40.layout-text-left .hero-inner,.page-hero.hero-split-60-40.layout-text-left-image-right .hero-inner,.page-hero.hero-split-60-40.layout-split .hero-inner,.page-hero.hero-split-60-40.layout-image-right .hero-inner{grid-template-columns:minmax(0,3fr) minmax(260px,2fr)}
+.page-hero.hero-split-50-50.layout-text-left .hero-inner,.page-hero.hero-split-50-50.layout-text-left-image-right .hero-inner,.page-hero.hero-split-50-50.layout-split .hero-inner,.page-hero.hero-split-50-50.layout-image-right .hero-inner{grid-template-columns:minmax(0,1fr) minmax(300px,1fr)}
+.page-hero.hero-split-40-60.layout-text-left .hero-inner,.page-hero.hero-split-40-60.layout-text-left-image-right .hero-inner,.page-hero.hero-split-40-60.layout-split .hero-inner,.page-hero.hero-split-40-60.layout-image-right .hero-inner{grid-template-columns:minmax(260px,2fr) minmax(0,3fr)}
+.page-hero.hero-split-30-70.layout-text-left .hero-inner,.page-hero.hero-split-30-70.layout-text-left-image-right .hero-inner,.page-hero.hero-split-30-70.layout-split .hero-inner,.page-hero.hero-split-30-70.layout-image-right .hero-inner{grid-template-columns:minmax(220px,3fr) minmax(0,7fr)}
+.page-hero.hero-split-70-30.layout-text-right .hero-inner,.page-hero.hero-split-70-30.layout-image-left-text-right .hero-inner,.page-hero.hero-split-70-30.layout-image-left .hero-inner{grid-template-columns:minmax(220px,3fr) minmax(0,7fr)}
+.page-hero.hero-split-60-40.layout-text-right .hero-inner,.page-hero.hero-split-60-40.layout-image-left-text-right .hero-inner,.page-hero.hero-split-60-40.layout-image-left .hero-inner{grid-template-columns:minmax(260px,2fr) minmax(0,3fr)}
+.page-hero.hero-split-50-50.layout-text-right .hero-inner,.page-hero.hero-split-50-50.layout-image-left-text-right .hero-inner,.page-hero.hero-split-50-50.layout-image-left .hero-inner{grid-template-columns:minmax(300px,1fr) minmax(0,1fr)}
+.page-hero.hero-split-40-60.layout-text-right .hero-inner,.page-hero.hero-split-40-60.layout-image-left-text-right .hero-inner,.page-hero.hero-split-40-60.layout-image-left .hero-inner{grid-template-columns:minmax(0,3fr) minmax(260px,2fr)}
+.page-hero.hero-split-30-70.layout-text-right .hero-inner,.page-hero.hero-split-30-70.layout-image-left-text-right .hero-inner,.page-hero.hero-split-30-70.layout-image-left .hero-inner{grid-template-columns:minmax(0,7fr) minmax(220px,3fr)}
+
+/* The purchase divider, price and quantity control form a true card footer. */
+.product-copy>.product-certifications{margin:.55rem 0 .2rem!important;min-height:1.8rem}
+.product-copy>.product-transaction-row,.product-copy:has(.product-certifications)>.product-transaction-row{margin-top:auto!important;padding-top:.9rem!important;border-top:1px solid color-mix(in srgb,var(--line) 72%,transparent)!important}
+
+.group-heading-mobile-only{display:none}
+@media(max-width:900px){
+  .page-hero[class*="hero-split-"] .hero-inner{grid-template-columns:1fr!important}
+}
+@media(max-width:640px){
+  .cards-mobile-carousel .group-heading-mobile-only{display:block}
+  .cards-mobile-carousel .content-card{box-shadow:none!important}
+}

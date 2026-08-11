@@ -45,7 +45,7 @@ function publicPage(row) {
     introSize:norm(row['Intro size'],'medium'), heroImageShape:norm(row['Hero image shape'],'landscape'),
     heroImageFit:['show-whole-image','contain'].includes(norm(row['Hero image fit'],'fill-frame'))?'contain':'cover',
     heroImageAlignment:norm(row['Hero image alignment'],'center'), heroAlignment:norm(row['Hero alignment'],'left'),
-    heroPadding:norm(row['Hero padding'],'normal'), heroWidth:norm(row['Hero width'],'standard'), heroGap:norm(row['Hero gap'],'normal'),
+    heroPadding:norm(row['Hero padding'],'normal'), heroWidth:norm(row['Hero width'],'standard'), heroSplit:norm(row['Hero split'],'50-50').replace(':','-'), heroGap:norm(row['Hero gap'],'normal'),
     heroButtonSize:norm(row['Hero button size'],'medium')
   };
 }

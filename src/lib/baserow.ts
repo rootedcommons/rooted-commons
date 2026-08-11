@@ -242,6 +242,7 @@ export async function getSiteData() {
       heroAlignment: normalized(choice(row, 'Hero alignment'), 'left'),
       heroPadding: normalized(choice(row, 'Hero padding'), 'normal'),
       heroWidth: heroWidth(choice(row, 'Hero width')),
+      heroSplit: normalized(choice(row, 'Hero split'), '50-50').replace(':', '-'),
       heroGap: normalized(choice(row, 'Hero gap'), 'normal'),
       heroButtonSize: normalized(choice(row, 'Hero button size'), 'medium'),
       titleSize: normalized(choice(row, 'Title size'), 'large'),

@@ -8,11 +8,12 @@ const alignment = page.heroAlignment || 'left';
 const padding = page.heroPadding || 'normal';
 const width = page.heroWidth || 'standard';
 const gap = page.heroGap || 'normal';
+const split = page.heroSplit || '50-50';
 const imageShape = page.heroImageShape || 'landscape';
 const buttonSize = page.heroButtonSize || 'medium';
 ---
 {!hidden && (
-  <section data-live-page-hero data-page-slug={page.slug} class={`page-hero layout-${layout} hero-align-${alignment} hero-padding-${padding} hero-width-${width} hero-gap-${gap}`}>
+  <section data-live-page-hero data-page-slug={page.slug} class={`page-hero layout-${layout} hero-align-${alignment} hero-padding-${padding} hero-width-${width} hero-gap-${gap} hero-split-${split}`}>
   <div class="hero-inner">
     <div class="hero-copy">
       <h1 data-live-page-field="title" class={`size-${page.titleSize}`}>{page.title}</h1>
