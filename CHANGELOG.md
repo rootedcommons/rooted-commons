@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.9.57 — 2026-08-11
+
+- Tightened the mobile product-card buying row so the price information icon no longer collides with the `− 0 +` quantity pill on two-column phone layouts.
+- Removed the automatic category-name fallback heading on Orders categories with no configured intro section.
+- Removed the empty intro spacing for those categories so the search/filter toolbar sits directly beneath the category buttons.
+
 ## 2.9.56 — 2026-08-11
 
 - Reduced the maximum desktop width of Campaign sections to 1180px so the campaign card sits more closely in line with the card grid above it. Mobile sizing is unchanged.

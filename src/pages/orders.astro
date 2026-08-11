@@ -40,10 +40,8 @@ const collectionPointsForMemberBar = data.collectionPoints.map((point) => ({ id:
     </nav>
 
     {broadCategories.map((category, index) => (
-      <div class="catalogue-panel" data-catalogue-panel={category} hidden={index !== 0}>
-        {(categoryBlocks[category] || []).length
-          ? categoryBlocks[category].map((block) => <SectionRenderer block={block} products={data.products} settings={s} />)
-          : <section class="content-section text-section space-above-medium space-below-small"><div class="section-inner prose-width"><h1>{category}</h1></div></section>}
+      <div class={`catalogue-panel ${(categoryBlocks[category] || []).length ? 'has-intro' : 'no-intro'}`} data-catalogue-panel={category} hidden={index !== 0}>
+        {(categoryBlocks[category] || []).map((block) => <SectionRenderer block={block} products={data.products} settings={s} />)}
       </div>
     ))}
   </section>
