@@ -204,8 +204,6 @@ export async function getSiteData() {
         .sort((a: any, b: any) => a.unlockWeeks - b.unlockWeeks || a.order - b.order);
       return configured.length ? configured : fallbackSettings.membershipPerks;
     })(),
-    increaseCommitmentButtonText: text(validSettingsRow, 'Increase commitment button text', 'Increase my weekly BACS amount'),
-    increaseCommitmentButtonUrl: text(validSettingsRow, 'Increase commitment button URL', ''),
     bankAccountName: text(validSettingsRow, 'Bank account name', fallbackSettings.bankAccountName),
     bankSortCode: text(validSettingsRow, 'Bank sort code', fallbackSettings.bankSortCode),
     bankAccountNumber: text(validSettingsRow, 'Bank account number', fallbackSettings.bankAccountNumber),

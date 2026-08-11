@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.9.61 — 2026-08-11
+
+- Redesigned the dashboard commitment card with a permanent purple `Change` button beside the member’s chosen commitment amount.
+- Added inline Weekly/Monthly commitment editing using the existing Members fields: `Weekly commitment`, `Monthly equivalent` and `Contribution frequency`. Weekly commitments have a £10 minimum; monthly commitments have a £43.33 minimum; manual penny amounts remain valid and the `+`/`−` controls step to whole-pound values in £1 increments.
+- Existing members now see regular-payment bank details only while changing a commitment (and after saving); new members with no payments still see the setup details automatically.
+- Delayed `Average weekly orders` and the increase-commitment nudge until membership week 8. The nudge retains the existing spend threshold but no longer checks whether commitment is above zero.
+- Updated the nudge copy to compare average weekly orders with the member’s weekly-equivalent commitment and open the same commitment editor.
+- Restricted `Recent payments` to Account Transactions where `Type = Payment`, so Opening Balance and other positive ledger entries no longer appear there. Full account activity remains available separately.
+- Removed the obsolete Site Settings fields `Increase commitment button text` and `Increase commitment button URL` from runtime settings, imports and the coded-field specification.
+
 ## 2.9.60 — 2026-08-11
 
 - Added Site Settings → `Weekly orders closed email HTML` (Long text) as the live editable source for the Wednesday orders-closed email.

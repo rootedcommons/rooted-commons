@@ -39,7 +39,7 @@ function summariseTransactions(rows, member) {
     .sort((a,b) => new Date(b.date || 0) - new Date(a.date || 0));
 
   const included = mine.filter(item => item.includedInCredit);
-  const allPayments = included.filter(item => item.amount > 0 && !/refund|reversal/i.test(item.type));
+  const allPayments = included.filter(item => item.amount > 0 && item.type.trim().toLowerCase() === 'payment');
   const payments = allPayments.slice(0,4);
   const totalPaymentsReceived = allPayments.reduce((sum,item)=>sum+Math.abs(item.amount),0);
   const recentOrders = included.filter(item => /order/i.test(item.type) && !/reversal|refund/i.test(item.type));
@@ -99,13 +99,35 @@ export async function onRequestPatch({ request, env }) {
   try {
     const body = await request.json();
     const token = String(body.token || '');
+    const cfg = envConfig(env);
+    const auth=await authenticatedMember(cfg,request,env,token);
+    if(!auth)return json({ok:false,message:'This secure link is invalid or has expired.'},401);
+    const member=auth.member;
+
+    if(String(body.action||'')==='commitment'){
+      const contributionFrequency=String(body.contributionFrequency||'').trim();
+      const contributionAmount=Number(body.contributionAmount);
+      const minimum=contributionFrequency==='Monthly'?43.33:10;
+      const validFrequency=['Weekly','Monthly'].includes(contributionFrequency);
+      const validAmount=Number.isFinite(contributionAmount) && Math.abs(contributionAmount*100-Math.round(contributionAmount*100))<0.000001 && contributionAmount>=minimum;
+      if(!validFrequency||!validAmount){
+        return json({ok:false,message:contributionFrequency==='Monthly'?'Monthly commitments must be at least £43.33.':'Weekly commitments must be at least £10.00.'},400);
+      }
+      const money=value=>Math.round((Number(value)+Number.EPSILON)*100)/100;
+      const weeklyCommitment=contributionFrequency==='Weekly'?money(contributionAmount):money(contributionAmount*12/52);
+      const monthlyEquivalent=contributionFrequency==='Monthly'?money(contributionAmount):money(contributionAmount*52/12);
+      await updateRow(cfg,cfg.members,member.id,{
+        'Weekly commitment':weeklyCommitment,
+        'Monthly equivalent':monthlyEquivalent,
+        'Contribution frequency':contributionFrequency
+      });
+      return json({ok:true,weeklyCommitment,monthlyEquivalent,contributionFrequency,contributionAmount:money(contributionAmount)});
+    }
+
     const collectionPointId = Number(body.collectionPointId || 0);
     const preferredCollectionDay = String(body.preferredCollectionDay || '').trim();
     if (!collectionPointId) return json({ ok:false, message:'Choose a collection point.' }, 400);
-    const cfg = envConfig(env);
-    const [auth,points]=await Promise.all([authenticatedMember(cfg,request,env,token),listRows(cfg,cfg.collectionPoints)]);
-    if(!auth)return json({ok:false,message:'This secure link is invalid or has expired.'},401);
-    const member=auth.member;
+    const points=await listRows(cfg,cfg.collectionPoints);
     const point = points.find(row => Number(row.id) === collectionPointId && truthy(row.Active, true));
     if (!point) return json({ ok:false, message:'That collection point is not currently available.' }, 409);
     const publicPoint = publicCollectionPoint(point);
@@ -115,6 +137,6 @@ export async function onRequestPatch({ request, env }) {
     return json({ ok:true, collectionPoint:publicPoint, preferredCollectionDay:savedDay });
   } catch (error) {
     console.error('member update failed',error);
-    return json({ok:false,message:'The collection point could not be updated.'},500);
+    return json({ok:false,message:'Your membership could not be updated.'},500);
   }
 }

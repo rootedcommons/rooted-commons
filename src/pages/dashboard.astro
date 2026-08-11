@@ -54,7 +54,7 @@ const copy={
   collectionSaving:c('dashboard.collection_saving','Saving…'),
   collectionUpdated:c('dashboard.collection_updated','Collection point updated.'),
   collectionFailed:c('dashboard.collection_failed','The collection point could not be updated.'),
-  commitmentEyebrow:c('dashboard.commitment_eyebrow','Your weekly commitment'),
+  commitmentEyebrow:c('dashboard.commitment_eyebrow','Your commitment'),
   commitmentBody:c('dashboard.commitment_body','Your regular contribution creates predictable demand that local producers can plan around.'),
 
   regularPaymentHeading:c('dashboard.regular_payment_heading','Your regular payment'),
@@ -64,7 +64,20 @@ const copy={
   recentPayments:c('dashboard.recent_payments','Recent payments'),
   noPayments:c('dashboard.no_payments','No recent payments found.'),
   accountActivity:c('dashboard.account_activity','View full account activity'),
-  increasePrompt:c('dashboard.increase_prompt','Your recent orders average {average} a week, around {difference} more than your current commitment.'),
+  increasePrompt:c('dashboard.commitment_increase_prompt','Your average weekly orders are {average}, above your {commitment}/week commitment. If that reflects what you expect to spend most weeks, consider increasing your commitment.'),
+  changeCommitment:c('dashboard.change_commitment','Change'),
+  changeCommitmentPrompt:c('dashboard.change_commitment_prompt','Change commitment'),
+  commitmentFrequency:c('dashboard.commitment_frequency','Payment frequency'),
+  weeklyFrequency:c('dashboard.commitment_weekly','Weekly'),
+  monthlyFrequency:c('dashboard.commitment_monthly','Monthly'),
+  commitmentAmount:c('dashboard.commitment_amount','Commitment amount'),
+  weeklyMinimum:c('dashboard.commitment_weekly_minimum','Minimum £10.00/week.'),
+  monthlyMinimum:c('dashboard.commitment_monthly_minimum','Minimum £43.33/month (equivalent to £10/week).'),
+  saveCommitment:c('dashboard.save_commitment','Save commitment'),
+  commitmentSaving:c('dashboard.commitment_saving','Saving…'),
+  commitmentUpdated:c('dashboard.commitment_updated','Commitment updated. Please update your standing order to match.'),
+  commitmentFailed:c('dashboard.commitment_failed','Your commitment could not be updated.'),
+  updateRegularPaymentHeading:c('dashboard.update_regular_payment_heading','Update your regular payment'),
   loading:c('dashboard.loading','Loading your membership…'),
   invalidHeading:c('dashboard.invalid_link_heading','This secure link is no longer valid'),
   invalidBody:c('dashboard.invalid_link_body','Request a new link from checkout or use the latest weekly email.'),
@@ -160,9 +173,35 @@ const copy={
 
       <article class="dashboard-card dashboard-commitment-card">
           <p class="eyebrow">{copy.commitmentEyebrow}</p>
-          <p class="commitment-amount"><strong id="dashboard-commitment">£0</strong><span>/week</span></p>
+          <div class="commitment-heading-row">
+            <p class="commitment-amount"><strong id="dashboard-commitment">£0</strong><span id="dashboard-commitment-suffix">/week</span></p>
+            <button id="dashboard-change-commitment" class="button commitment-change-button" type="button">{copy.changeCommitment}</button>
+          </div>
           <FormattedText text={copy.commitmentBody} class="rich-body" />
-          <section class="regular-payment-details">
+
+          <form id="dashboard-commitment-form" class="commitment-editor" hidden>
+            <fieldset>
+              <legend>{copy.commitmentFrequency}</legend>
+              <label><input type="radio" name="commitmentFrequency" value="Weekly" /> <span>{copy.weeklyFrequency}</span></label>
+              <label><input type="radio" name="commitmentFrequency" value="Monthly" /> <span>{copy.monthlyFrequency}</span></label>
+            </fieldset>
+            <label class="commitment-editor-amount">
+              <span>{copy.commitmentAmount}</span>
+              <span class="commitment-stepper">
+                <button type="button" data-commitment-step="-1" aria-label="Reduce commitment">−</button>
+                <span class="commitment-input-wrap"><span>£</span><input id="dashboard-commitment-input" name="commitmentAmount" type="number" inputmode="decimal" step="0.01" min="10" required /></span>
+                <button type="button" data-commitment-step="1" aria-label="Increase commitment">+</button>
+              </span>
+              <small id="dashboard-commitment-help">{copy.weeklyMinimum}</small>
+            </label>
+            <div class="dashboard-point-actions">
+              <button class="button" type="submit">{copy.saveCommitment}</button>
+              <button id="dashboard-cancel-commitment" class="button button-secondary" type="button">{copy.cancel}</button>
+            </div>
+            <p id="dashboard-commitment-message" class="small-print" aria-live="polite"></p>
+          </form>
+
+          <section id="dashboard-regular-payment-details" class="regular-payment-details" hidden>
             <h3 id="dashboard-regular-payment-heading">{copy.regularPaymentHeading}</h3>
             <FormattedText text={copy.regularPaymentBody} class="rich-body" />
             <dl class="bank-details">
@@ -175,8 +214,12 @@ const copy={
           </section>
 
           <div id="dashboard-existing-commitment-detail">
-            <div class="commitment-metrics">
+            <div id="dashboard-commitment-metrics" class="commitment-metrics" hidden>
               <div><span>{copy.averageOrders}</span><strong id="dashboard-average-spend">£0.00</strong></div>
+            </div>
+            <div id="dashboard-increase-prompt" class="commitment-prompt" hidden>
+              <p id="dashboard-increase-copy"></p>
+              <button id="dashboard-prompt-change-commitment" class="button" type="button">{copy.changeCommitmentPrompt}</button>
             </div>
             <div class="recent-topups">
               <h3>{copy.recentPayments}</h3>
@@ -185,10 +228,6 @@ const copy={
                 <summary>{copy.accountActivity}</summary>
                 <div id="dashboard-activity"></div>
               </details>
-            </div>
-            <div id="dashboard-increase-prompt" class="commitment-prompt" hidden>
-              <p id="dashboard-increase-copy"></p>
-              {s.increaseCommitmentButtonUrl && <a class="button" href={s.increaseCommitmentButtonUrl}>{s.increaseCommitmentButtonText}</a>}
             </div>
           </div>
       </article>
@@ -344,6 +383,120 @@ const copy={
       }).join('');
     };
 
+    const commitmentForm=document.querySelector('#dashboard-commitment-form');
+    const commitmentInput=document.querySelector('#dashboard-commitment-input');
+    const commitmentHelp=document.querySelector('#dashboard-commitment-help');
+    const commitmentMessage=document.querySelector('#dashboard-commitment-message');
+    const regularPaymentDetails=document.querySelector('#dashboard-regular-payment-details');
+    const changeCommitmentButton=document.querySelector('#dashboard-change-commitment');
+    const promptChangeCommitmentButton=document.querySelector('#dashboard-prompt-change-commitment');
+    let currentMember=null;
+    let currentCommitment={weekly:10,monthly:43.33,frequency:'Weekly'};
+    let currentIsNew=false;
+
+    const selectedCommitmentFrequency=()=>commitmentForm?.querySelector('input[name="commitmentFrequency"]:checked')?.value||'Weekly';
+    const enteredCommitmentAmount=()=>Number(commitmentInput?.value||0);
+    const displayMoney=value=>money.format(Number(value)||0).replace(/\.00$/,'');
+    const setCommitmentDisplay=()=>{
+      const frequency=currentCommitment.frequency==='Monthly'?'Monthly':'Weekly';
+      const amount=frequency==='Monthly'?currentCommitment.monthly:currentCommitment.weekly;
+      document.querySelector('#dashboard-commitment').textContent=displayMoney(amount);
+      document.querySelector('#dashboard-commitment-suffix').textContent=frequency==='Monthly'?'/month':'/week';
+    };
+    const refreshCommitmentEditor=(frequency=selectedCommitmentFrequency(),previousFrequency='')=>{
+      const monthly=frequency==='Monthly';
+      const minimum=monthly?43.33:10;
+      if(commitmentInput){
+        commitmentInput.min=String(minimum);
+        commitmentInput.step='0.01';
+        let desired=monthly?currentCommitment.monthly:currentCommitment.weekly;
+        const entered=Number(commitmentInput.value);
+        if(previousFrequency&&previousFrequency!==frequency&&Number.isFinite(entered)){
+          desired=monthly?entered*52/12:entered*12/52;
+        }
+        commitmentInput.value=Math.max(minimum,Math.round((desired+Number.EPSILON)*100)/100).toFixed(2);
+      }
+      if(commitmentHelp)commitmentHelp.textContent=monthly?copy.monthlyMinimum:copy.weeklyMinimum;
+    };
+    const openCommitmentEditor=()=>{
+      if(!commitmentForm)return;
+      const frequency=currentCommitment.frequency==='Monthly'?'Monthly':'Weekly';
+      const radio=commitmentForm.querySelector(`input[name="commitmentFrequency"][value="${frequency}"]`);
+      if(radio)radio.checked=true;
+      editorFrequency=frequency;
+      refreshCommitmentEditor(frequency);
+      commitmentMessage.textContent='';
+      commitmentForm.hidden=false;
+      regularPaymentDetails.hidden=false;
+      document.querySelector('#dashboard-regular-payment-heading').textContent=currentIsNew?copy.setupRegularPaymentHeading:copy.regularPaymentHeading;
+      commitmentInput?.focus();
+    };
+    const closeCommitmentEditor=()=>{
+      if(commitmentForm)commitmentForm.hidden=true;
+      if(commitmentMessage)commitmentMessage.textContent='';
+      if(!currentIsNew)regularPaymentDetails.hidden=true;
+    };
+    changeCommitmentButton?.addEventListener('click',openCommitmentEditor);
+    promptChangeCommitmentButton?.addEventListener('click',openCommitmentEditor);
+    document.querySelector('#dashboard-cancel-commitment')?.addEventListener('click',closeCommitmentEditor);
+    let editorFrequency='Weekly';
+    commitmentForm?.querySelectorAll('input[name="commitmentFrequency"]').forEach(input=>input.addEventListener('change',()=>{
+      const previous=editorFrequency;
+      editorFrequency=input.value;
+      refreshCommitmentEditor(input.value,previous);
+    }));
+    commitmentForm?.querySelectorAll('[data-commitment-step]').forEach(button=>button.addEventListener('click',()=>{
+      const delta=Number(button.dataset.commitmentStep||0);
+      const min=selectedCommitmentFrequency()==='Monthly'?43.33:10;
+      const current=Number(commitmentInput?.value||min);
+      let next=min;
+      if(delta>0)next=Math.abs(current-Math.round(current))<0.000001?current+1:Math.ceil(current);
+      else if(delta<0)next=Math.abs(current-Math.round(current))<0.000001?current-1:Math.floor(current);
+      next=Math.max(min,next);
+      if(commitmentInput)commitmentInput.value=Number(next).toFixed(2);
+    }));
+    commitmentForm?.addEventListener('submit',async event=>{
+      event.preventDefault();
+      const frequency=selectedCommitmentFrequency();
+      const amount=enteredCommitmentAmount();
+      const minimum=frequency==='Monthly'?43.33:10;
+      if(!Number.isFinite(amount)||amount<minimum){
+        commitmentMessage.textContent=frequency==='Monthly'?copy.monthlyMinimum:copy.weeklyMinimum;
+        return;
+      }
+      const button=commitmentForm.querySelector('button[type="submit"]');
+      button.disabled=true;
+      commitmentMessage.textContent=copy.commitmentSaving;
+      try{
+        const response=await fetch('/api/member',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({action:'commitment',contributionFrequency:frequency,contributionAmount:amount})});
+        const payload=await response.json();
+        if(!response.ok||!payload.ok)throw new Error(payload.message||copy.commitmentFailed);
+        currentCommitment={weekly:Number(payload.weeklyCommitment)||10,monthly:Number(payload.monthlyEquivalent)||43.33,frequency:payload.contributionFrequency||frequency};
+        if(currentMember){currentMember.weeklyCommitment=currentCommitment.weekly;currentMember.monthlyEquivalent=currentCommitment.monthly;currentMember.contributionFrequency=currentCommitment.frequency;}
+        setCommitmentDisplay();
+        document.querySelector('#dashboard-regular-payment-heading').textContent=copy.updateRegularPaymentHeading;
+        regularPaymentDetails.hidden=false;
+        commitmentMessage.textContent=copy.commitmentUpdated;
+        updateCommitmentPrompt();
+      }catch(error){commitmentMessage.textContent=error?.message||copy.commitmentFailed;}
+      button.disabled=false;
+    });
+
+    const updateCommitmentPrompt=()=>{
+      const weeks=Number(currentMember?.membershipWeeks)||0;
+      const metrics=document.querySelector('#dashboard-commitment-metrics');
+      const prompt=document.querySelector('#dashboard-increase-prompt');
+      if(weeks<8){metrics.hidden=true;prompt.hidden=true;return;}
+      const average=Number(currentMember?.account?.averageWeeklySpend)||0;
+      metrics.hidden=false;
+      document.querySelector('#dashboard-average-spend').textContent=money.format(average);
+      const weekly=Number(currentCommitment.weekly)||0;
+      const threshold=Math.max(2,weekly*.15);
+      const show=average>=weekly+threshold;
+      prompt.hidden=!show;
+      if(show)document.querySelector('#dashboard-increase-copy').textContent=interpolate(copy.increasePrompt,{average:money.format(average),commitment:displayMoney(weekly)});
+    };
+
     document.querySelectorAll('input[name="dashboard-payment-method"]').forEach(input=>input.addEventListener('change',()=>{
       if(!input.checked)return;
       document.querySelector('#dashboard-payment-bank').hidden=input.value!=='bank';
@@ -397,14 +550,22 @@ const copy={
       shop.href='/orders/';
       shop.textContent=copy.browseMarket;
 
-      const commitment=Number(member.weeklyCommitment)||0;
-      document.querySelector('#dashboard-commitment').textContent=money.format(commitment).replace('.00','');
+      currentMember=member;
+      currentIsNew=isNew;
+      const contributionFrequency=member.contributionFrequency==='Monthly'?'Monthly':'Weekly';
+      currentCommitment={
+        weekly:Number(member.weeklyCommitment)||10,
+        monthly:Number(member.monthlyEquivalent)||(Number(member.weeklyCommitment)||10)*52/12,
+        frequency:contributionFrequency
+      };
+      setCommitmentDisplay();
 
       document.querySelector('#dashboard-regular-bank-name').textContent=bankAccountName||'—';
       document.querySelector('#dashboard-regular-sort-code').textContent=bankSortCode||'—';
       document.querySelector('#dashboard-regular-account-number').textContent=bankAccountNumber||'—';
       document.querySelector('#dashboard-regular-payment-reference').textContent=member.paymentReference||`RC-${member.id}`;
       document.querySelector('#dashboard-regular-payment-heading').textContent=isNew?copy.setupRegularPaymentHeading:copy.regularPaymentHeading;
+      regularPaymentDetails.hidden=!isNew;
 
       document.querySelector('#dashboard-topup-bank-name').textContent=bankAccountName||'—';
       document.querySelector('#dashboard-topup-sort-code').textContent=bankSortCode||'—';
@@ -414,15 +575,9 @@ const copy={
       const existingDetail=document.querySelector('#dashboard-existing-commitment-detail');
       existingDetail.hidden=isNew;
       if(!isNew){
-        const average=Number(member.account?.averageWeeklySpend)||0;
-        document.querySelector('#dashboard-average-spend').textContent=money.format(average);
         renderTopups(member.account?.payments||[]);
         renderActivity(member.account?.activity||[]);
-        const threshold=Math.max(2,commitment*.15);
-        if(commitment>0&&average>=commitment+threshold){
-          document.querySelector('#dashboard-increase-prompt').hidden=false;
-          document.querySelector('#dashboard-increase-copy').textContent=interpolate(copy.increasePrompt,{average:money.format(average),difference:money.format(average-commitment)});
-        }
+        updateCommitmentPrompt();
       }
 
       const credit=Number(member.credit)||0;
