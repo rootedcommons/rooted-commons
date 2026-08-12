@@ -1,4 +1,5 @@
 import { fallbackCollectionPoints, fallbackInterfaceContent, fallbackPages, fallbackProducts, fallbackSections, fallbackSettings } from '../data/fallback';
+import { normalizePageRow } from '../../functions/_page-normalizer.js';
 
 const API_URL = import.meta.env.BASEROW_API_URL || 'https://api.baserow.io';
 const TOKEN = import.meta.env.BASEROW_TOKEN;
@@ -222,36 +223,7 @@ export async function getSiteData() {
   } : fallbackSettings;
 
   const sourcePages = pageRows?.length ? pageRows : fallbackPages;
-  const pages = sourcePages.map((row: any) => {
-    const heroImage = fileUrl(row, 'Hero image', row.heroImage || '');
-    return {
-      id: row.id,
-      slug: text(row, 'Slug', row.slug),
-      title: text(row, 'Title', row.title),
-      subtitle: text(row, 'Subtitle', row.subtitle || ''),
-      intro: text(row, 'Intro', row.intro || ''),
-      buttonText: text(row, 'Button text', row.buttonText || ''),
-      buttonUrl: text(row, 'Button URL', row.buttonUrl || ''),
-      heroImage,
-      visible: boolean(row, 'Visible', row.visible ?? true),
-      seoTitle: text(row, 'SEO title', row.seoTitle || ''),
-      seoDescription: text(row, 'SEO description', row.seoDescription || ''),
-      heroLayout: normalized(choice(row, 'Hero layout'), heroImage ? 'text-left' : 'text-only'),
-      heroAlignment: normalized(choice(row, 'Hero alignment'), 'left'),
-      heroHeadingAlignment: normalized(choice(row, 'Hero heading alignment'), text(row, 'Slug', row.slug) === 'home' ? 'center' : normalized(choice(row, 'Hero alignment'), 'left')),
-      heroPadding: normalized(choice(row, 'Hero padding'), 'normal'),
-      heroWidth: heroWidth(choice(row, 'Hero width')),
-      heroSplit: normalized(choice(row, 'Hero split'), '50-50').replace(':', '-'),
-      heroGap: normalized(choice(row, 'Hero gap'), 'normal'),
-      heroButtonSize: normalized(choice(row, 'Hero button size'), 'medium'),
-      titleSize: normalized(choice(row, 'Title size'), 'large'),
-      subtitleSize: normalized(choice(row, 'Subtitle size'), 'medium'),
-      introSize: normalized(choice(row, 'Intro size'), 'medium'),
-      heroImageShape: normalized(choice(row, 'Hero image shape'), 'landscape'),
-      heroImageFit: heroImageFit(choice(row, 'Hero image fit')),
-      heroImageAlignment: heroImageAlignment(choice(row, 'Hero image alignment'))
-    };
-  }).filter((page: any) => page.slug && page.visible);
+  const pages = sourcePages.map((row: any) => normalizePageRow(row)).filter((page: any) => page.slug && page.visible);
 
   const sourceSections = sectionRows?.length ? sectionRows : fallbackSections;
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.9.68 — 2026-08-12
+
+- Added a shared Pages normaliser used by both Astro initial rendering and `/api/public-content`, removing duplicate Pages field mapping and fixing live hero-heading alignment snap-back.
+- Fixed mobile header auth state so `Sign out` and `Become a member` cannot be shown together after live-content hydration.
+- Price-breakdown help now expands as ordinary inline content directly beneath the tapped row inside the single centred product modal; no nested popup positioning remains.
+- Reserved mobile vertical space for the sticky basket shortcut so it no longer overlaps the shop category tabs.
+
 ## 2.9.67 — 2026-08-11
 
 - Added the product name as the title of the centred `Where your money goes` modal.

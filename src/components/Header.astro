@@ -35,14 +35,29 @@ const links = Array.isArray(settings.navigationLinks) && settings.navigationLink
     localStorage.removeItem('rooted-commons-order-token-v1');
     const button=document.querySelector('#membership-header-button');
     const authButton=document.querySelector('#auth-header-button');
-    if(button&&authButton){
-      fetch('/api/member').then(response=>{
-        if(!response.ok)return;
+    const setMemberHeaderState=(signedIn)=>{
+      if(!button||!authButton)return;
+      document.documentElement.dataset.memberAuth=signedIn?'in':'out';
+      if(signedIn){
         button.textContent='My Membership';
         button.setAttribute('href','/dashboard/');
         authButton.textContent='Sign out';
         authButton.setAttribute('href','/api/signout');
-      }).catch(()=>{});
+      }else{
+        button.textContent=button.dataset.loggedOutText||button.textContent||'Become a member';
+        button.setAttribute('href',button.dataset.loggedOutUrl||button.getAttribute('href')||'/signup/');
+        authButton.textContent='Sign in';
+        authButton.setAttribute('href','/signin/');
+      }
+    };
+    if(button&&authButton){
+      button.dataset.loggedOutText=button.textContent.trim();
+      button.dataset.loggedOutUrl=button.getAttribute('href')||'/signup/';
+      window.__rootedMemberStatePromise=window.__rootedMemberStatePromise||fetch('/api/member').then(response=>response.ok).catch(()=>false);
+      window.__rootedMemberStatePromise.then(setMemberHeaderState);
+      window.addEventListener('rooted:public-content',()=>{
+        if(document.documentElement.dataset.memberAuth==='in')setMemberHeaderState(true);
+      });
     }
 
     const header=document.querySelector('.site-header');

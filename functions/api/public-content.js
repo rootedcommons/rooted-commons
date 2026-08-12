@@ -1,4 +1,5 @@
 import { envConfig, fileUrl, json, linkedIds, linkedValues, listRows, number, truthy, unwrap } from '../_baserow.js';
+import { normalizePageRow } from '../_page-normalizer.js';
 
 const norm = (value, fallback='') => (unwrap(value) || fallback).trim().toLowerCase().replace(/\s+/g,'-').replace('centre','center');
 
@@ -36,19 +37,7 @@ function publicSettings(row = {}) {
   };
 }
 
-function publicPage(row) {
-  return {
-    id:Number(row.id), slug:unwrap(row.Slug), title:unwrap(row.Title), intro:unwrap(row.Intro), subtitle:unwrap(row.Subtitle),
-    buttonText:unwrap(row['Button text']), buttonUrl:unwrap(row['Button URL']), heroImage:fileUrl(row['Hero image']),
-    visible:truthy(row.Visible,true), seoTitle:unwrap(row['SEO title']), seoDescription:unwrap(row['SEO description']),
-    heroLayout:norm(row['Hero layout'],'text-only'), titleSize:norm(row['Title size'],'large'), subtitleSize:norm(row['Subtitle size'],'medium'),
-    introSize:norm(row['Intro size'],'medium'), heroImageShape:norm(row['Hero image shape'],'landscape'),
-    heroImageFit:['show-whole-image','contain'].includes(norm(row['Hero image fit'],'fill-frame'))?'contain':'cover',
-    heroImageAlignment:norm(row['Hero image alignment'],'center'), heroAlignment:norm(row['Hero alignment'],'left'),
-    heroPadding:norm(row['Hero padding'],'normal'), heroWidth:norm(row['Hero width'],'standard'), heroSplit:norm(row['Hero split'],'50-50').replace(':','-'), heroGap:norm(row['Hero gap'],'normal'),
-    heroButtonSize:norm(row['Hero button size'],'medium')
-  };
-}
+const publicPage = (row) => normalizePageRow(row);
 
 function publicSection(row) {
   return {

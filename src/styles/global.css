@@ -1578,3 +1578,23 @@ body>.price-breakdown-card>h4{
   .price-breakdown-item .price-help-panel{padding:.55rem .62rem;font-size:.84rem}
 }
 .price-breakdown-list>.price-breakdown-item{display:block}
+
+
+/* v2.9.68 — regression fixes + inline price help + mobile basket clearance */
+.price-breakdown-item .price-help-panel{
+  position:static!important;
+  inset:auto!important;
+  left:auto!important;
+  top:auto!important;
+  width:auto!important;
+  max-width:none!important;
+  min-width:0!important;
+  transform:none!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+  max-height:none!important;
+}
+.price-breakdown-item .price-help-panel::before{display:none!important}
+@media(max-width:640px){
+  .shop-basket-bar{height:3.45rem;min-height:3.45rem}
+}
