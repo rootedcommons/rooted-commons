@@ -53,11 +53,29 @@ const links = Array.isArray(settings.navigationLinks) && settings.navigationLink
     if(button&&authButton){
       button.dataset.loggedOutText=button.textContent.trim();
       button.dataset.loggedOutUrl=button.getAttribute('href')||'/signup/';
-      window.__rootedMemberStatePromise=window.__rootedMemberStatePromise||fetch('/api/member').then(response=>response.ok).catch(()=>false);
-      window.__rootedMemberStatePromise.then(setMemberHeaderState);
+
+      const publishAuthState=(signedIn)=>{
+        window.dispatchEvent(new CustomEvent('rooted:auth-state',{detail:{authenticated:Boolean(signedIn)}}));
+      };
+      const refreshAuthState=async()=>{
+        try{
+          const response=await fetch('/api/auth-status',{headers:{accept:'application/json'},cache:'no-store'});
+          if(response.ok)publishAuthState(true);
+          else if(response.status===401)publishAuthState(false);
+        }catch(error){
+          console.warn('Unable to refresh member header state',error);
+        }
+      };
+
+      window.__rootedSetAuthState=publishAuthState;
+      window.__rootedRefreshAuthState=refreshAuthState;
+      window.addEventListener('rooted:auth-state',(event)=>setMemberHeaderState(Boolean(event.detail?.authenticated)));
       window.addEventListener('rooted:public-content',()=>{
-        if(document.documentElement.dataset.memberAuth==='in')setMemberHeaderState(true);
+        const state=document.documentElement.dataset.memberAuth;
+        if(state==='in'||state==='out')setMemberHeaderState(state==='in');
       });
+      window.addEventListener('pageshow',(event)=>{if(event.persisted)refreshAuthState();});
+      refreshAuthState();
     }
 
     const header=document.querySelector('.site-header');

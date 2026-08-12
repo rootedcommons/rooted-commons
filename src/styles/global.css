@@ -1124,12 +1124,10 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .price-breakdown-list dt{display:flex;align-items:center;gap:.4rem;min-width:0;font-weight:400}
 .price-breakdown-list dd{font-weight:400;white-space:nowrap}
 .price-breakdown-total{padding-top:.65rem!important}
-.price-help-panel{margin:.3rem 0 .55rem;padding:.75rem .85rem;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
 .price-help-copy{font-size:.88rem;font-weight:400;line-height:1.45}
 .price-help-copy p{margin:0 0 .6rem}
 .price-help-copy p:last-child{margin-bottom:0}
 .price-help-copy a{font-weight:700}
-@media(max-width:650px){.price-breakdown-card{padding:.75rem .8rem}.price-help-panel{padding:.7rem .75rem}}
 
 /* v2.9.45 price transparency popovers + responsive card treatment */
 .product-card{overflow:visible}
@@ -1137,8 +1135,6 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .price-breakdown-list>div:not(.price-help-panel){grid-template-columns:minmax(0,1fr) max-content;gap:.75rem;align-items:center}
 .price-breakdown-list dt{overflow-wrap:normal;word-break:normal}
 .price-breakdown-list dt>span{min-width:0}
-.price-help-panel{position:absolute;z-index:40;left:var(--help-left,8px);top:var(--help-top,100%);width:var(--help-width,300px);max-width:calc(100vw - 2rem);margin:0;padding:.8rem .9rem;border:1px solid var(--line);border-radius:12px;background:var(--surface);box-shadow:0 10px 30px rgba(0,0,0,.18)}
-.price-help-panel::before{content:"";position:absolute;top:-7px;left:50%;width:12px;height:12px;background:var(--surface);border-left:1px solid var(--line);border-top:1px solid var(--line);transform:translateX(-50%) rotate(45deg)}
 .product-detail-image{margin:.25rem 0 1.4rem;max-width:360px;border:1px solid var(--line);background:var(--surface)}
 .product-detail-image img{display:block;width:100%;aspect-ratio:1/1;object-fit:contain}
 
@@ -1151,8 +1147,6 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
   .price-breakdown-list dt{font-size:.92rem;line-height:1.35}
   .price-breakdown-list dd{font-size:.92rem}
   .price-info-icon{width:1.15rem;height:1.15rem;flex-basis:1.15rem;font-size:.92rem}
-  .price-help-panel{position:fixed;left:50%!important;top:50%!important;width:min(320px,calc(100vw - 2rem))!important;transform:translate(-50%,-50%);z-index:1000;max-height:min(70vh,430px);overflow:auto;box-shadow:0 16px 48px rgba(0,0,0,.28)}
-  .price-help-panel::before{display:none}
   .product-detail-image{max-width:260px;margin-inline:auto}
 }
 
@@ -1393,32 +1387,6 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 }
 .price-breakdown-label:hover{text-decoration:underline}
 .price-breakdown-label .price-info-icon{pointer-events:none}
-.price-help-panel{
-  position:static;
-  width:auto;
-  max-width:none;
-  margin:0;
-  padding:0;
-  border:0;
-  border-radius:0;
-  background:transparent;
-  box-shadow:none;
-}
-.price-help-panel::before{display:none}
-.price-help-back{
-  display:inline-flex;
-  margin:0 0 .65rem;
-  padding:0;
-  border:0;
-  background:transparent;
-  color:var(--primary);
-  font:inherit;
-  font-size:.78rem;
-  font-weight:700;
-  cursor:pointer;
-}
-.price-help-back:hover{text-decoration:underline}
-
 /* This page intentionally has no hero; keep the map controls close to the header. */
 .collection-map-section{
   margin-top:clamp(.75rem,2vw,1.35rem);
@@ -1532,7 +1500,7 @@ body>.price-breakdown-card{
   .shop-basket-bar .floating-basket strong{font-size:.75rem}
 }
 
-/* v2.9.67 — inline-expand price explanations inside the centred modal */
+/* v2.9.69 — canonical inline price explanations + compact mobile basket clearance */
 .price-breakdown-product-name{
   margin:0 0 .2rem;
   font-family:var(--heading-font,Georgia,serif);
@@ -1541,13 +1509,14 @@ body>.price-breakdown-card{
   color:var(--primary);
 }
 body>.price-breakdown-card>h4{
-  margin:.15rem 0 .6rem;
+  margin:.15rem 0 .65rem;
   font-size:.9rem;
   font-weight:700;
   opacity:.78;
 }
 .price-breakdown-list{display:block}
 .price-breakdown-item{
+  display:block;
   padding:.58rem 0;
   border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent);
 }
@@ -1559,42 +1528,35 @@ body>.price-breakdown-card>h4{
   align-items:center;
 }
 .price-breakdown-value{white-space:nowrap}
+/* Explanations are ordinary content in the main product modal: no nested panel. */
 .price-breakdown-item .price-help-panel{
-  margin:.5rem 0 .05rem;
-  padding:.6rem .7rem;
-  border:1px solid var(--line);
-  border-radius:10px;
-  background:var(--highlight);
-  font-size:.88rem;
-  line-height:1.45;
+  position:static;
+  width:auto;
+  max-width:none;
+  margin:.38rem 0 .02rem;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  transform:none;
+  overflow:visible;
+  max-height:none;
+  font-size:.86rem;
+  line-height:1.48;
 }
+.price-breakdown-item .price-help-panel::before{display:none}
 .price-breakdown-item .price-help-panel[hidden]{display:none!important}
-.price-breakdown-item .price-help-copy p{margin:0 0 .5rem}
+.price-breakdown-item .price-help-copy p{margin:0 0 .38rem}
 .price-breakdown-item .price-help-copy p:last-child{margin-bottom:0}
-.price-breakdown-item .price-help-copy a{display:inline-block;margin-top:.1rem}
+.price-breakdown-item .price-help-copy a{display:inline-block;margin-top:.05rem;font-weight:700}
 @media(max-width:650px){
   .price-breakdown-product-name{font-size:1.18rem}
   .price-breakdown-item{padding:.52rem 0}
-  .price-breakdown-item .price-help-panel{padding:.55rem .62rem;font-size:.84rem}
+  .price-breakdown-item .price-help-panel{font-size:.84rem}
 }
-.price-breakdown-list>.price-breakdown-item{display:block}
-
-
-/* v2.9.68 — regression fixes + inline price help + mobile basket clearance */
-.price-breakdown-item .price-help-panel{
-  position:static!important;
-  inset:auto!important;
-  left:auto!important;
-  top:auto!important;
-  width:auto!important;
-  max-width:none!important;
-  min-width:0!important;
-  transform:none!important;
-  box-shadow:none!important;
-  overflow:visible!important;
-  max-height:none!important;
-}
-.price-breakdown-item .price-help-panel::before{display:none!important}
 @media(max-width:640px){
-  .shop-basket-bar{height:3.45rem;min-height:3.45rem}
+  .shop-basket-bar{height:2.75rem;min-height:2.75rem;padding:0 1rem}
+  .shop-basket-bar .floating-basket{top:.35rem}
+  .orders-category-shell{margin-top:.45rem}
 }

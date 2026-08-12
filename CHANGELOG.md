@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.9.69 — 2026-08-12
+
+- Replaced the global header's cached full `/api/member` probe with a lightweight, no-store `/api/auth-status` endpoint and shared `rooted:auth-state` event, so header account state can recover from transient member-data failures and stays in sync with pages that successfully load member data.
+- Updated Weekly Shop, Dashboard and Checkout member loads to publish definitive authentication state, and moved the Collection Point map's boolean auth check to `/api/auth-status`.
+- Removed legacy nested price-help positioning/framing so price explanations now render as plain inline content immediately beneath the selected price row inside the single centred product breakdown modal.
+- Tightened the mobile basket clearance and category-nav spacing while preserving the sticky basket control.
+
 ## 2.9.68 — 2026-08-12
 
 - Added a shared Pages normaliser used by both Astro initial rendering and `/api/public-content`, removing duplicate Pages field mapping and fixing live hero-heading alignment snap-back.

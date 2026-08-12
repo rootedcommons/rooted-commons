@@ -52,7 +52,7 @@ const mapPoints = points
             if(candidates.length)livePoints=candidates;
           }
         }catch{}
-        if(!selectionMode){try{memberAuthenticated=(await fetch('/api/member')).ok;}catch{memberAuthenticated=false;}}
+        if(!selectionMode){try{memberAuthenticated=(await fetch('/api/auth-status',{cache:'no-store'})).ok;}catch{memberAuthenticated=false;}}
         const canSelect=selectionMode||memberAuthenticated;
         const map=L.map(mapEl,{scrollWheelZoom:false});
         const bounds=[];

@@ -315,8 +315,9 @@ const collectionPointsForMemberBar = data.collectionPoints.map((point) => ({ id:
     });
 
     async function loadMember(){
-      const response=await fetch('/api/member');
-      if(!response.ok)return;
+      const response=await fetch('/api/member',{cache:'no-store'});
+      if(!response.ok){if(response.status===401)window.__rootedSetAuthState?.(false);return;}
+      window.__rootedSetAuthState?.(true);
       const payload=await response.json();
       member=payload.member;
       const box=document.querySelector('#member-summary');

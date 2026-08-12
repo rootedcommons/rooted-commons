@@ -505,11 +505,13 @@ const copy={
     }));
 
     async function load(){
-      const response=await fetch('/api/member');
+      const response=await fetch('/api/member',{cache:'no-store'});
       if(!response.ok){
+        if(response.status===401)window.__rootedSetAuthState?.(false);
         document.querySelector('#dashboard-loading').innerHTML=`<h2>${copy.invalidHeading}</h2><p>${copy.invalidBody}</p>`;
         return;
       }
+      window.__rootedSetAuthState?.(true);
       const {member}=await response.json();
       const totalPayments=Number(member.account?.totalPaymentsReceived)||0;
       const isNew=totalPayments<=0;

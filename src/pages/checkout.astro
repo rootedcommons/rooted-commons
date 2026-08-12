@@ -371,8 +371,9 @@ const formatCollectionDeadline = (value) => {
     }
 
     async function verifyMember(){
-      const response=await fetch('/api/member');
-      if(!response.ok)return;
+      const response=await fetch('/api/member',{cache:'no-store'});
+      if(!response.ok){if(response.status===401)window.__rootedSetAuthState?.(false);return;}
+      window.__rootedSetAuthState?.(true);
       const payload=await response.json();
       member=payload.member;
       document.querySelector('#unverified-member-panel').hidden=true;
