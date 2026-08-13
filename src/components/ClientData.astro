@@ -1,0 +1,26 @@
+<script is:inline>
+  (() => {
+    if (window.RootedData) return;
+    const requests = new Map();
+    const fetchOnce = (key, url, options = {}) => {
+      let pending = requests.get(key);
+      if (!pending) {
+        pending = fetch(url, options).catch((error) => {
+          requests.delete(key);
+          throw error;
+        });
+        requests.set(key, pending);
+      }
+      return pending.then((response) => response.clone());
+    };
+    window.RootedData = {
+      authStatus: () => fetchOnce('auth-status', '/api/auth-status', { headers: { accept: 'application/json' }, cache: 'no-store' }),
+      member: () => fetchOnce('member', '/api/member', { headers: { accept: 'application/json' }, cache: 'no-store' }),
+      products: () => fetchOnce('products', '/api/products', { headers: { accept: 'application/json' } }),
+      publicNetwork: () => fetchOnce('public-network', '/api/public-network', { headers: { accept: 'application/json' } }),
+      partnerHelp: (id) => fetchOnce(`partner-help:${Number(id) || 0}`, `/api/partner-help?id=${encodeURIComponent(String(Number(id) || 0))}`, { headers: { accept: 'application/json' } }),
+      invalidate: (...keys) => keys.forEach((key) => requests.delete(key)),
+      clear: () => requests.clear()
+    };
+  })();
+</script>

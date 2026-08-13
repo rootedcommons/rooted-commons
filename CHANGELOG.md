@@ -1,5 +1,25 @@
 # Changelog
 
+## 2.9.71 — 2026-08-12
+
+- Pass 2 performance/scalability refactor: `/api/member` now asks Baserow only for the authenticated member’s linked Web Orders and Account Transactions and fetches only their linked Collection Point, rather than downloading whole operational tables and filtering them in Cloudflare. Filtered Baserow reads can now paginate safely for members with more than 200 historical rows.
+- Added optional Metrics → `Computed value` caching for token-based public statistics. `/api/public-network` no longer reads Account Transactions unless a displayed metric actually requires `{{member_spending}}`; once `Computed value` exists, member-count/commitment metrics are resolved and stored so public Stats requests can avoid scanning Members. Signup and commitment changes refresh the member-derived cache, and Xero imports refresh transaction-derived metrics when needed.
+- Moved the large Weekly Shop, Checkout, Dashboard and Signup browser programs out of inline HTML into cacheable module files under `public/scripts/`, leaving only small page-specific JSON configuration in the document.
+- Replaced every product card’s hidden product-detail template and hidden price-breakdown UI with one lightweight JSON data payload per Product Grid plus lazily-created shared product and price dialogs. This removes dozens of hidden modal DOM trees from the Weekly Shop.
+- Rebuilt `Where your money goes` on the shared native dialog: help text is normal-flow content directly beneath the clicked row inside the same cream modal, and partner-specific copy still loads only on first use.
+- Kept product-card/search/basket behaviour and authoritative order-time stock validation unchanged while reducing HTML/DOM duplication and making the main interaction scripts browser-cacheable across visits.
+
+## 2.9.70 — 2026-08-12
+
+- Retired the general live public-content hydrator and `/api/public-content`; Site Settings, Pages, Sections, Interface Content, Products and Collection Points now publish only through the Astro/Cloudflare Pages build, eliminating the second Baserow read and DOM reconstruction on every page load.
+- Memoised `getSiteData()` so one build shares one Baserow CMS snapshot across generated pages, and stopped static builds reading private Members / Account Transactions merely for public Metrics placeholders.
+- Added a small shared browser request cache (`RootedData`) for auth status, member data, product availability, live Network data and partner price help to deduplicate same-page requests.
+- Weekly Shop now renders product cards immediately while live availability is checked; quantity buttons remain disabled until current stock has been confirmed.
+- Added short public caching for `/api/products` and `/api/public-network`, while authoritative stock validation on order submission remains unchanged.
+- Removed the full `/api/public-network` fetch from ordinary Weekly Shop loads. Partner-specific `Price explanation` is now fetched only when that source-row help is opened, through cached `/api/partner-help`.
+- Product cards now prefer Baserow `card_cover` thumbnails while the detailed product view uses the larger image variant, reducing catalogue image transfer.
+- Rebuilt the `Where your money goes` CSS as one canonical modal implementation and removed all legacy price-popover/grid rules. Help text is structurally and visually part of the same centred product modal, directly beneath the clicked row, with no nested panel or positioned overlay.
+
 ## 2.9.69 — 2026-08-12
 
 - Replaced the global header's cached full `/api/member` probe with a lightweight, no-store `/api/auth-status` endpoint and shared `rooted:auth-state` event, so header account state can recover from transient member-data failures and stays in sync with pages that successfully load member data.
@@ -250,6 +270,15 @@
 - Limited current weekly-access session lookup to the member's linked session rows instead of scanning the full Member Sessions table.
 
 # Changelog
+
+## 2.9.71 — 2026-08-12
+
+- Pass 2 performance/scalability refactor: `/api/member` now asks Baserow only for the authenticated member’s linked Web Orders and Account Transactions and fetches only their linked Collection Point, rather than downloading whole operational tables and filtering them in Cloudflare. Filtered Baserow reads can now paginate safely for members with more than 200 historical rows.
+- Added optional Metrics → `Computed value` caching for token-based public statistics. `/api/public-network` no longer reads Account Transactions unless a displayed metric actually requires `{{member_spending}}`; once `Computed value` exists, member-count/commitment metrics are resolved and stored so public Stats requests can avoid scanning Members. Signup and commitment changes refresh the member-derived cache, and Xero imports refresh transaction-derived metrics when needed.
+- Moved the large Weekly Shop, Checkout, Dashboard and Signup browser programs out of inline HTML into cacheable module files under `public/scripts/`, leaving only small page-specific JSON configuration in the document.
+- Replaced every product card’s hidden product-detail template and hidden price-breakdown UI with one lightweight JSON data payload per Product Grid plus lazily-created shared product and price dialogs. This removes dozens of hidden modal DOM trees from the Weekly Shop.
+- Rebuilt `Where your money goes` on the shared native dialog: help text is normal-flow content directly beneath the clicked row inside the same cream modal, and partner-specific copy still loads only on first use.
+- Kept product-card/search/basket behaviour and authoritative order-time stock validation unchanged while reducing HTML/DOM duplication and making the main interaction scripts browser-cacheable across visits.
 
 ## 2.9.35
 
@@ -538,6 +567,15 @@ The restructured v2.9.14 download contains no runtime code changes. Historical s
 
 # Changelog
 
+## 2.9.71 — 2026-08-12
+
+- Pass 2 performance/scalability refactor: `/api/member` now asks Baserow only for the authenticated member’s linked Web Orders and Account Transactions and fetches only their linked Collection Point, rather than downloading whole operational tables and filtering them in Cloudflare. Filtered Baserow reads can now paginate safely for members with more than 200 historical rows.
+- Added optional Metrics → `Computed value` caching for token-based public statistics. `/api/public-network` no longer reads Account Transactions unless a displayed metric actually requires `{{member_spending}}`; once `Computed value` exists, member-count/commitment metrics are resolved and stored so public Stats requests can avoid scanning Members. Signup and commitment changes refresh the member-derived cache, and Xero imports refresh transaction-derived metrics when needed.
+- Moved the large Weekly Shop, Checkout, Dashboard and Signup browser programs out of inline HTML into cacheable module files under `public/scripts/`, leaving only small page-specific JSON configuration in the document.
+- Replaced every product card’s hidden product-detail template and hidden price-breakdown UI with one lightweight JSON data payload per Product Grid plus lazily-created shared product and price dialogs. This removes dozens of hidden modal DOM trees from the Weekly Shop.
+- Rebuilt `Where your money goes` on the shared native dialog: help text is normal-flow content directly beneath the clicked row inside the same cream modal, and partner-specific copy still loads only on first use.
+- Kept product-card/search/basket behaviour and authoritative order-time stock validation unchanged while reducing HTML/DOM duplication and making the main interaction scripts browser-cacheable across visits.
+
 ## v2.9.21
 
 - Added a protected, read-only Xero bank-transaction diagnostic at `/api/xero/diagnostic` for testing the first reconciled member payment before ledger writes are enabled.
@@ -583,6 +621,15 @@ The restructured v2.9.14 download contains no runtime code changes. Historical s
 - Checkout now shows the existing collection choice first and reveals the full chooser only when Change collection point is selected.
 
 # Changelog
+
+## 2.9.71 — 2026-08-12
+
+- Pass 2 performance/scalability refactor: `/api/member` now asks Baserow only for the authenticated member’s linked Web Orders and Account Transactions and fetches only their linked Collection Point, rather than downloading whole operational tables and filtering them in Cloudflare. Filtered Baserow reads can now paginate safely for members with more than 200 historical rows.
+- Added optional Metrics → `Computed value` caching for token-based public statistics. `/api/public-network` no longer reads Account Transactions unless a displayed metric actually requires `{{member_spending}}`; once `Computed value` exists, member-count/commitment metrics are resolved and stored so public Stats requests can avoid scanning Members. Signup and commitment changes refresh the member-derived cache, and Xero imports refresh transaction-derived metrics when needed.
+- Moved the large Weekly Shop, Checkout, Dashboard and Signup browser programs out of inline HTML into cacheable module files under `public/scripts/`, leaving only small page-specific JSON configuration in the document.
+- Replaced every product card’s hidden product-detail template and hidden price-breakdown UI with one lightweight JSON data payload per Product Grid plus lazily-created shared product and price dialogs. This removes dozens of hidden modal DOM trees from the Weekly Shop.
+- Rebuilt `Where your money goes` on the shared native dialog: help text is normal-flow content directly beneath the clicked row inside the same cream modal, and partner-specific copy still loads only on first use.
+- Kept product-card/search/basket behaviour and authoritative order-time stock validation unchanged while reducing HTML/DOM duplication and making the main interaction scripts browser-cacheable across visits.
 
 ## v2.9.21
 
@@ -733,6 +780,15 @@ The restructured v2.9.14 download contains no runtime code changes. Historical s
 - New Baserow product information fields and import CSV.
 
 # Changelog
+
+## 2.9.71 — 2026-08-12
+
+- Pass 2 performance/scalability refactor: `/api/member` now asks Baserow only for the authenticated member’s linked Web Orders and Account Transactions and fetches only their linked Collection Point, rather than downloading whole operational tables and filtering them in Cloudflare. Filtered Baserow reads can now paginate safely for members with more than 200 historical rows.
+- Added optional Metrics → `Computed value` caching for token-based public statistics. `/api/public-network` no longer reads Account Transactions unless a displayed metric actually requires `{{member_spending}}`; once `Computed value` exists, member-count/commitment metrics are resolved and stored so public Stats requests can avoid scanning Members. Signup and commitment changes refresh the member-derived cache, and Xero imports refresh transaction-derived metrics when needed.
+- Moved the large Weekly Shop, Checkout, Dashboard and Signup browser programs out of inline HTML into cacheable module files under `public/scripts/`, leaving only small page-specific JSON configuration in the document.
+- Replaced every product card’s hidden product-detail template and hidden price-breakdown UI with one lightweight JSON data payload per Product Grid plus lazily-created shared product and price dialogs. This removes dozens of hidden modal DOM trees from the Weekly Shop.
+- Rebuilt `Where your money goes` on the shared native dialog: help text is normal-flow content directly beneath the clicked row inside the same cream modal, and partner-specific copy still loads only on first use.
+- Kept product-card/search/basket behaviour and authoritative order-time stock validation unchanged while reducing HTML/DOM duplication and making the main interaction scripts browser-cacheable across visits.
 
 ## v2.9.21
 

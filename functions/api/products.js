@@ -1,4 +1,4 @@
-import { envConfig, json, listRows, number, truthy } from '../_baserow.js';
+import { cachedPublicGet, envConfig, json, jsonCached, listRows, number, truthy } from '../_baserow.js';
 
 function stockPayload(row) {
   return {
@@ -10,13 +10,15 @@ function stockPayload(row) {
   };
 }
 
-export async function onRequestGet({ env }) {
+export async function onRequestGet(context) {
+  return cachedPublicGet(context, async () => {
   try {
-    const cfg = envConfig(env);
+    const cfg = envConfig(context.env);
     const rows = await listRows(cfg, cfg.products);
-    return json({ ok: true, products: rows.map(stockPayload) });
+    return jsonCached({ ok: true, products: rows.map(stockPayload) }, 200, 'public, max-age=5, s-maxage=10, stale-while-revalidate=20');
   } catch (error) {
     console.error('product availability failed',error);
     return json({ok:false,message:'Product availability could not be loaded.'},500);
   }
+  });
 }

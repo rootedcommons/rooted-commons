@@ -43,16 +43,8 @@ const mapPoints = points
 
       const initialise=async()=>{
         if(!window.L)return;
-        let livePoints=mapPoints;
-        try{
-          const response=await fetch('/api/public-content',{headers:{accept:'application/json'},cache:'no-store'});
-          if(response.ok){
-            const payload=await response.json();
-            const candidates=(payload.collectionPoints||[]).filter(point=>Number.isFinite(Number(point.latitude))&&Number.isFinite(Number(point.longitude)));
-            if(candidates.length)livePoints=candidates;
-          }
-        }catch{}
-        if(!selectionMode){try{memberAuthenticated=(await fetch('/api/auth-status',{cache:'no-store'})).ok;}catch{memberAuthenticated=false;}}
+        const livePoints=mapPoints;
+        if(!selectionMode){try{memberAuthenticated=(await (window.RootedData?.authStatus?.() || fetch('/api/auth-status',{cache:'no-store'}))).ok;}catch{memberAuthenticated=false;}}
         const canSelect=selectionMode||memberAuthenticated;
         const map=L.map(mapEl,{scrollWheelZoom:false});
         const bounds=[];
@@ -88,9 +80,10 @@ const mapPoints = points
                 return;
               }
               if(memberAuthenticated){
-                const current=await fetch('/api/member').then(r=>r.json());
+                const current=await (window.RootedData?.member?.() || fetch('/api/member',{cache:'no-store'})).then(r=>r.json());
                 const preferred=current?.member?.preferredCollectionDay||'Thursday';
                 const response=await fetch('/api/member',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({collectionPointId:pointId,preferredCollectionDay:preferred})});
+                window.RootedData?.invalidate?.('member');
                 const payload=await response.json();
                 if(!response.ok)throw new Error(payload.message||'Could not update collection point.');
                 if(status){status.hidden=false;status.textContent='Collection point updated.';}

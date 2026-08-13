@@ -1,5 +1,5 @@
-import { envConfig, fileUrl, json, linkedIds, linkedValues, listRows, number, truthy, unwrap } from '../_baserow.js';
-
+import { cachedPublicGet, envConfig, fileUrl, json, jsonCached, linkedIds, linkedValues, listRows, truthy, unwrap, updateRow } from '../_baserow.js';
+import { hasComputedValueField, memberStats, metricTemplate, needsMemberStats, needsTransactionStats, resolveMetricTemplate, transactionStats } from '../_public-metrics.js';
 
 function publicStatsSection(row) {
   return {
@@ -7,7 +7,7 @@ function publicStatsSection(row) {
     key: unwrap(row.Key),
     metricIds: linkedIds(row.Metrics),
     metricNames: linkedValues(row.Metrics),
-    columns: Math.min(4, Math.max(1, number(row.Columns, 3)))
+    columns: Math.min(4, Math.max(1, Number(unwrap(row.Columns) || 3)))
   };
 }
 
@@ -33,39 +33,24 @@ function publicPartner(row) {
     imageAlt: unwrap(row['Image alt text']),
     image2Alt: unwrap(row['Image 2 alt text']),
     image3Alt: unwrap(row['Image 3 alt text']),
-    order: number(row['Display order'] || row.Order, 9999)
+    order: Number(unwrap(row['Display order'] || row.Order) || 9999)
   };
 }
 
-function tokenResolver({ members, partners, transactions, availability = {} }) {
-  const activeMembers = members.filter(row => truthy(row.Active, true));
-  const totalMembers = activeMembers.length;
-  const totalCommitments = activeMembers.reduce((sum, row) => sum + number(row['Weekly commitment'], 0), 0);
-  const totalNetworkPartners = partners.length;
-  const orderChargeTotal = Math.abs(transactions
-    .filter(row => ['order-charge', 'order-charges'].includes(unwrap(row.Type).trim().toLowerCase().replace(/\s+/g, '-')))
-    .reduce((sum, row) => sum + number(row.Amount, 0), 0));
-  const tokens = {
-    '{{members}}': availability.members ? totalMembers.toLocaleString('en-GB') : '—',
-    '{{total_members}}': availability.members ? totalMembers.toLocaleString('en-GB') : '—',
-    '{{network_partners}}': availability.partners ? totalNetworkPartners.toLocaleString('en-GB') : '—',
-    '{{total_commitments}}': availability.members ? totalCommitments.toLocaleString('en-GB', { maximumFractionDigits: 2 }) : '—',
-    '{{member_spending}}': availability.transactions ? orderChargeTotal.toLocaleString('en-GB', { maximumFractionDigits: 0 }) : '—'
-  };
-  return value => Object.entries(tokens).reduce((result, [token, replacement]) => result.replaceAll(token, replacement), String(value || ''));
-}
-
-function publicMetric(row, resolveTokens) {
+function publicMetric(row, { members = null, transactions = null, partnerCount = 0 } = {}) {
   const partnerNames = linkedValues(row['Network Partner'] || row['Network partner']);
+  const computed = unwrap(row['Computed value']);
+  const template = computed || metricTemplate(row);
+  const value = computed || resolveMetricTemplate(template, { members, transactions, partnerCount });
   return {
     id: Number(row.id),
     name: unwrap(row.Name),
-    value: resolveTokens(unwrap(row.Value)),
+    value,
     description: unwrap(row.Description),
     icon: fileUrl(row.Icon),
     placements: linkedValues(row.Placement),
     networkPartner: partnerNames[0] || '',
-    order: number(row['Display order'] || row.Order, 9999)
+    order: Number(unwrap(row['Display order'] || row.Order) || 9999)
   };
 }
 
@@ -76,36 +61,65 @@ async function safeTable(cfg, tableId, label) {
 }
 
 export async function onRequestGet(context) {
-  const cfg = envConfig(context.env);
-  const [partnersResult, metricsResult, sectionsResult, membersResult, transactionsResult] = await Promise.all([
-    safeTable(cfg, cfg.networkPartners, 'networkPartners'),
-    safeTable(cfg, cfg.metrics, 'metrics'),
-    safeTable(cfg, cfg.sections, 'sections'),
-    safeTable(cfg, cfg.members, 'members'),
-    safeTable(cfg, cfg.transactions, 'transactions')
-  ]);
+  return cachedPublicGet(context, async () => {
+    const cfg = envConfig(context.env);
+    const [partnersResult, metricsResult, sectionsResult] = await Promise.all([
+      safeTable(cfg, cfg.networkPartners, 'networkPartners'),
+      safeTable(cfg, cfg.metrics, 'metrics'),
+      safeTable(cfg, cfg.sections, 'sections')
+    ]);
 
-  const partners = partnersResult.rows
-    .filter(row => truthy(row.Active, true) && unwrap(row.Name))
-    .map(publicPartner)
-    .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
+    const partners = partnersResult.rows
+      .filter(row => truthy(row.Active, true) && unwrap(row.Name))
+      .map(publicPartner)
+      .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
 
-  const statSections = sectionsResult.rows
-    .filter(row => truthy(row.Visible, true) && unwrap(row['Section type']).trim().toLowerCase() === 'stats')
-    .map(publicStatsSection);
+    const metricRows = metricsResult.rows.filter(row => truthy(row.Active, true) && truthy(row.Public, true) && unwrap(row.Name));
+    const unresolvedMemberRows = metricRows.filter(row => needsMemberStats(row) && !unwrap(row['Computed value']));
+    const unresolvedTransactionRows = metricRows.filter(row => needsTransactionStats(row) && !unwrap(row['Computed value']));
 
-  const resolveTokens = tokenResolver({ members:membersResult.rows, partners, transactions:transactionsResult.rows, availability:{members:membersResult.ok,partners:partnersResult.ok,transactions:transactionsResult.ok} });
-  const metrics = metricsResult.rows
-    .filter(row => truthy(row.Active, true) && truthy(row.Public, true) && unwrap(row.Name))
-    .map(row => publicMetric(row, resolveTokens))
-    .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
+    let members = null;
+    let transactions = null;
+    const extraErrors = [];
+    if (unresolvedMemberRows.length && cfg.members) {
+      const result = await safeTable(cfg, cfg.members, 'members');
+      if (result.ok) members = memberStats(result.rows); else extraErrors.push(result.label);
+    }
+    if (unresolvedTransactionRows.length && cfg.transactions) {
+      const result = await safeTable(cfg, cfg.transactions, 'transactions');
+      if (result.ok) transactions = transactionStats(result.rows); else extraErrors.push(result.label);
+    }
 
-  const coreOk = partnersResult.ok || metricsResult.ok;
-  return json({
-    ok: coreOk,
-    partners,
-    metrics,
-    statSections,
-    errors:[partnersResult, metricsResult, sectionsResult, membersResult, transactionsResult].filter(result => !result.ok).map(result => result.label)
-  }, coreOk ? 200 : 503);
+    // Backward-compatible bootstrap: once the optional Computed value field exists,
+    // fill it from the fallback calculation so future public requests do not scan Members.
+    const canPersist = metricRows.some(hasComputedValueField);
+    if (canPersist && unresolvedMemberRows.length && members) {
+      const writes = unresolvedMemberRows
+        .filter(hasComputedValueField)
+        .map(row => updateRow(cfg,cfg.metrics,row.id,{
+          'Computed value':resolveMetricTemplate(metricTemplate(row),{members,partnerCount:partners.length})
+        }).catch(error => console.warn('Unable to cache public metric', error)));
+      if (writes.length && typeof context.waitUntil === 'function') context.waitUntil(Promise.all(writes));
+    }
+
+    const statSections = sectionsResult.rows
+      .filter(row => truthy(row.Visible, true) && unwrap(row['Section type']).trim().toLowerCase() === 'stats')
+      .map(publicStatsSection);
+
+    const metrics = metricRows
+      .map(row => publicMetric(row, { members, transactions, partnerCount:partners.length }))
+      .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
+
+    const coreOk = partnersResult.ok || metricsResult.ok;
+    const payload = {
+      ok: coreOk,
+      partners,
+      metrics,
+      statSections,
+      errors:[partnersResult, metricsResult, sectionsResult].filter(result => !result.ok).map(result => result.label).concat(extraErrors)
+    };
+    return coreOk
+      ? jsonCached(payload, 200, 'public, max-age=60, s-maxage=300, stale-while-revalidate=600')
+      : json(payload, 503);
+  });
 }

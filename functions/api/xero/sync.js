@@ -1,4 +1,5 @@
-import { json } from '../../_baserow.js';
+import { envConfig, json } from '../../_baserow.js';
+import { refreshTransactionMetricCache } from '../../_public-metrics.js';
 import { syncMemberPayments } from './_sync.js';
 
 function constantTimeEqual(expected, supplied) {
@@ -26,7 +27,8 @@ export async function onRequestGet() {
   }, 405);
 }
 
-export async function onRequestPost({ request, env }) {
+export async function onRequestPost(context) {
+  const {request,env}=context;
   try {
     const expected = String(env.XERO_SYNC_KEY || '').trim();
     if (!expected) return json({ ok:false, error:'XERO_SYNC_KEY is not configured' }, 503);
@@ -35,6 +37,10 @@ export async function onRequestPost({ request, env }) {
     }
 
     const result = await syncMemberPayments(env);
+    if((result.imported?.length||0)>0){
+      const metricRefresh=refreshTransactionMetricCache(envConfig(env)).catch(error=>console.warn('Unable to refresh public transaction metrics',error));
+      if(typeof context.waitUntil==='function')context.waitUntil(metricRefresh);
+    }
     return json(result, 200);
   } catch (error) {
     return json({ ok:false, error:String(error?.message || error) }, 500);

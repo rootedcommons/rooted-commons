@@ -1,14 +1,6 @@
-import { envConfig, json, listRows, updateRow, publicMember, publicCollectionPoint, linkedIds, linkedValues, unwrap, number, truthy, ukMarketCycle } from '../_baserow.js';
+import { envConfig, getRow, json, listRowsFiltered, updateRow, publicMember, publicCollectionPoint, linkedIds, unwrap, number, truthy, ukMarketCycle } from '../_baserow.js';
 import { authenticatedMember } from '../_auth.js';
-
-function belongsToMember(row, member) {
-  const memberId = Number(member.id);
-  return ['Member', 'Members'].some(field => linkedIds(row[field]).includes(memberId));
-}
-
-function orderBelongsToMember(order, member) {
-  return belongsToMember(order, member);
-}
+import { refreshMemberMetricCache } from '../_public-metrics.js';
 
 function transactionDate(row) {
   return row.Date || row['Transaction date'] || row['Created on'] || '';
@@ -22,11 +14,10 @@ function transactionAmount(row) {
   return number(row.Amount, 0);
 }
 
-function summariseTransactions(rows, member) {
+function summariseTransactions(rows) {
   const now = Date.now();
   const eightWeeksAgo = now - (8 * 7 * 86400000);
   const mine = rows
-    .filter(row => belongsToMember(row, member))
     .map(row => ({
       id: Number(row.id),
       date: transactionDate(row),
@@ -57,17 +48,17 @@ export async function onRequestGet({ request, env }) {
     const auth=await authenticatedMember(cfg,request,env,new URL(request.url).searchParams.get('token')||'');
     if(!auth)return json({authenticated:false},401);
     const member=auth.member;
-    const [orders, points, transactions] = await Promise.all([
-      cfg.orders ? listRows(cfg, cfg.orders) : Promise.resolve([]),
-      cfg.collectionPoints ? listRows(cfg, cfg.collectionPoints) : Promise.resolve([]),
-      cfg.transactions ? listRows(cfg, cfg.transactions) : Promise.resolve([])
-    ]);
+    const memberId=Number(member.id);
     const pointId = linkedIds(member['Collection point'])[0];
-    const point = points.find(row => Number(row.id) === Number(pointId));
+    const [orders, transactions, point] = await Promise.all([
+      cfg.orders ? listRowsFiltered(cfg, cfg.orders, { Member:{ operator:'link_row_has', value:memberId } }, { size:200, all:true }) : Promise.resolve([]),
+      cfg.transactions ? listRowsFiltered(cfg, cfg.transactions, { Member:{ operator:'link_row_has', value:memberId } }, { size:200, all:true }) : Promise.resolve([]),
+      cfg.collectionPoints && pointId ? getRow(cfg, cfg.collectionPoints, pointId).catch(() => null) : Promise.resolve(null)
+    ]);
     const memberOrders = orders
-      .filter(order => orderBelongsToMember(order, member) && String(order.Status || '') !== 'Cancelled')
+      .filter(order => String(order.Status || '') !== 'Cancelled')
       .sort((a,b) => new Date(b['Submitted at'] || 0) - new Date(a['Submitted at'] || 0));
-    const account = summariseTransactions(transactions, member);
+    const account = summariseTransactions(transactions);
     const currentWeek = ukMarketCycle().orderWeek;
     const currentOrder = memberOrders.find(order =>
       String(unwrap(order['Order week'])) === currentWeek &&
@@ -95,7 +86,8 @@ export async function onRequestGet({ request, env }) {
 }
 
 
-export async function onRequestPatch({ request, env }) {
+export async function onRequestPatch(context) {
+  const {request,env}=context;
   try {
     const body = await request.json();
     const token = String(body.token || '');
@@ -121,15 +113,16 @@ export async function onRequestPatch({ request, env }) {
         'Monthly equivalent':monthlyEquivalent,
         'Contribution frequency':contributionFrequency
       });
+      const metricRefresh=refreshMemberMetricCache(cfg).catch(error=>console.warn('Unable to refresh public member metrics',error));
+      if(typeof context.waitUntil==='function')context.waitUntil(metricRefresh);
       return json({ok:true,weeklyCommitment,monthlyEquivalent,contributionFrequency,contributionAmount:money(contributionAmount)});
     }
 
     const collectionPointId = Number(body.collectionPointId || 0);
     const preferredCollectionDay = String(body.preferredCollectionDay || '').trim();
     if (!collectionPointId) return json({ ok:false, message:'Choose a collection point.' }, 400);
-    const points=await listRows(cfg,cfg.collectionPoints);
-    const point = points.find(row => Number(row.id) === collectionPointId && truthy(row.Active, true));
-    if (!point) return json({ ok:false, message:'That collection point is not currently available.' }, 409);
+    const point=await getRow(cfg,cfg.collectionPoints,collectionPointId).catch(()=>null);
+    if (!point || !truthy(point.Active, true)) return json({ ok:false, message:'That collection point is not currently available.' }, 409);
     const publicPoint = publicCollectionPoint(point);
     const validDays = (publicPoint.collectionSlots || []).map(slot => slot.day);
     const savedDay = validDays.includes(preferredCollectionDay) ? preferredCollectionDay : (validDays[0] || 'Thursday');

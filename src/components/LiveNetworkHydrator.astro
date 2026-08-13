@@ -101,14 +101,13 @@
   };
 
   let liveNetworkPromise;
-  const fetchLiveNetwork = () => liveNetworkPromise ||= fetch('/api/public-network', { headers: { accept: 'application/json' } })
+  const fetchLiveNetwork = () => liveNetworkPromise ||= (window.RootedData?.publicNetwork?.() || fetch('/api/public-network', { headers: { accept: 'application/json' } }))
     .then((response) => { if (!response.ok) throw new Error(`Public network request failed (${response.status})`); return response.json(); });
 
   const hydrateLiveNetwork = async () => {
     const metricGrids = [...document.querySelectorAll('[data-live-metrics]')];
     const networkGrids = [...document.querySelectorAll('[data-live-network]')];
-    const pricePartnerHelp = [...document.querySelectorAll('[data-price-source-help][data-partner-id]')];
-    if (!metricGrids.length && !networkGrids.length && !pricePartnerHelp.length) return;
+    if (!metricGrids.length && !networkGrids.length) return;
     try {
       const data = await fetchLiveNetwork();
       const metrics = data.metrics || [];
@@ -147,5 +146,4 @@
 
   hydrateLiveNetwork();
   document.addEventListener('astro:page-load', hydrateLiveNetwork);
-  window.addEventListener('rooted:sections-rendered', hydrateLiveNetwork);
 </script>

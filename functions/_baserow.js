@@ -12,9 +12,7 @@ export function envConfig(env) {
     xeroSyncState: env.BASEROW_XERO_SYNC_STATE_TABLE_ID,
     sessions: env.BASEROW_MEMBER_SESSIONS_TABLE_ID,
     settings: env.BASEROW_SITE_SETTINGS_TABLE_ID,
-    pages: env.BASEROW_PAGES_TABLE_ID,
     sections: env.BASEROW_SECTIONS_TABLE_ID,
-    interfaceContent: env.BASEROW_INTERFACE_CONTENT_TABLE_ID,
     networkPartners: env.BASEROW_NETWORK_PARTNERS_TABLE_ID,
     metrics: env.BASEROW_METRICS_TABLE_ID || env.BASEROW_IMPACT_METRICS_TABLE_ID
   };
@@ -22,6 +20,26 @@ export function envConfig(env) {
 
 export function json(data, status = 200) {
   return new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+}
+
+export function jsonCached(data, status = 200, cacheControl = 'public, max-age=60, s-maxage=300, stale-while-revalidate=600') {
+  return new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cacheControl } });
+}
+
+export async function cachedPublicGet(context, producer) {
+  const cache = typeof caches !== 'undefined' ? caches.default : null;
+  const cacheKey = new Request(context.request.url, { method:'GET' });
+  if (cache) {
+    const hit = await cache.match(cacheKey);
+    if (hit) return hit;
+  }
+  const response = await producer();
+  if (cache && response.ok && /(?:^|,)\s*public\b/i.test(response.headers.get('cache-control') || '')) {
+    const write = cache.put(cacheKey, response.clone());
+    if (typeof context.waitUntil === 'function') context.waitUntil(write);
+    else await write;
+  }
+  return response;
 }
 
 export function normaliseEmail(value = '') { return String(value).trim().toLowerCase(); }
@@ -72,9 +90,10 @@ export async function getRow(cfg, tableId, rowId) {
   return apiRequest(cfg, `/api/database/rows/table/${tableId}/${rowId}/?user_field_names=true`);
 }
 
-export async function listRowsFiltered(cfg, tableId, filters = {}, { size = 20 } = {}) {
+export async function listRowsFiltered(cfg, tableId, filters = {}, { size = 20, all = false } = {}) {
   if (!tableId) throw new Error('A required Baserow table ID is missing');
-  const params=new URLSearchParams({user_field_names:'true',size:String(Math.min(200,Math.max(1,size)))});
+  const pageSize=Math.min(200,Math.max(1,size));
+  const baseParams=new URLSearchParams({user_field_names:'true',size:String(pageSize)});
   for(const [field,raw] of Object.entries(filters)){
     const spec=(raw && typeof raw==='object' && !Array.isArray(raw) && Object.prototype.hasOwnProperty.call(raw,'value'))
       ? raw
@@ -82,10 +101,22 @@ export async function listRowsFiltered(cfg, tableId, filters = {}, { size = 20 }
     const value=spec.value;
     const operator=String(spec.operator||'equal');
     if(value===undefined||value===null||value==='') continue;
-    params.set(`filter__${field}__${operator}`,String(value));
+    baseParams.set(`filter__${field}__${operator}`,String(value));
   }
-  const payload=await apiRequest(cfg, `/api/database/rows/table/${tableId}/?${params.toString()}`);
-  return payload.results||[];
+  if(!all){
+    const payload=await apiRequest(cfg, `/api/database/rows/table/${tableId}/?${baseParams.toString()}`);
+    return payload.results||[];
+  }
+  const rows=[];
+  let page=1;
+  while(true){
+    const params=new URLSearchParams(baseParams);
+    params.set('page',String(page));
+    const payload=await apiRequest(cfg, `/api/database/rows/table/${tableId}/?${params.toString()}`);
+    rows.push(...(payload.results||[]));
+    if(!payload.next)return rows;
+    page+=1;
+  }
 }
 
 export async function createRow(cfg, tableId, fields) {

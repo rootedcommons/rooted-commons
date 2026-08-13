@@ -1,5 +1,6 @@
 import { createRow, envConfig, json, listRows, listRowsFiltered, normaliseEmail, publicCollectionPoint, truthy } from '../_baserow.js';
 import { createSignedSession, nextWednesdayExpiry } from '../_auth.js';
+import { refreshMemberMetricCache } from '../_public-metrics.js';
 
 const clean=value=>String(value||'').trim();
 const attempts=new Map();
@@ -29,7 +30,8 @@ async function verifyTurnstile(secret,response,ip){
   return verification.json();
 }
 
-export async function onRequestPost({request,env}){
+export async function onRequestPost(context){
+  const {request,env}=context;
   try{
     const ip=clientIp(request);
     if(rateLimited(ip))return json({ok:false,message:'Too many signup attempts. Please wait a little while and try again.'},429);
@@ -96,6 +98,8 @@ export async function onRequestPost({request,env}){
       ...(founderBadge?{'Founder badge':founderBadge}:{})
     };
     const member=await createRow(cfg,cfg.members,fields);
+    const metricRefresh=refreshMemberMetricCache(cfg,{memberRows:[...members,member]}).catch(error=>console.warn('Unable to refresh public member metrics',error));
+    if(typeof context.waitUntil==='function')context.waitUntil(metricRefresh);
     const {token:orderToken}=await createSignedSession(cfg,member.id,env,{purpose:'Weekly access',expiresAt:nextWednesdayExpiry(now)});
     const memberNumber=String(member['Member number']||`RC-${member.id}`);
     const origin=new URL(request.url).origin;

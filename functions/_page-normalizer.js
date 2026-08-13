@@ -54,7 +54,7 @@ const normalizeHeroImageAlignment = (value) => {
   return aliases[result] || result;
 };
 
-/** Canonical Pages row used by both Astro's initial render and /api/public-content. */
+/** Canonical Pages row used by the Astro build. CMS page changes now publish on redeploy rather than through a client hydrator. */
 export function normalizePageRow(row={}) {
   const slug = textValue(row,['Slug','slug']);
   const heroImage = fileValue(row,['Hero image','heroImage']);

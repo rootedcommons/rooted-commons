@@ -11,13 +11,9 @@ const TABLES = {
   products: import.meta.env.BASEROW_PRODUCTS_TABLE_ID,
   collectionPoints: import.meta.env.BASEROW_COLLECTION_POINTS_TABLE_ID,
   interfaceContent: import.meta.env.BASEROW_INTERFACE_CONTENT_TABLE_ID,
-  members: import.meta.env.BASEROW_MEMBERS_TABLE_ID,
-  accountTransactions: import.meta.env.BASEROW_ACCOUNT_TRANSACTIONS_TABLE_ID,
   networkPartners: import.meta.env.BASEROW_NETWORK_PARTNERS_TABLE_ID,
   metrics: import.meta.env.BASEROW_METRICS_TABLE_ID || import.meta.env.BASEROW_IMPACT_METRICS_TABLE_ID
 };
-
-const RUNTIME_TOKEN = import.meta.env.BASEROW_RUNTIME_TOKEN;
 
 type Row = Record<string, any>;
 
@@ -56,12 +52,21 @@ const linkedValues = (value: any): string[] => Array.isArray(value)
 const linkedIds = (value: any): number[] => Array.isArray(value)
   ? value.map((item) => Number(item?.id ?? item)).filter(Number.isFinite)
   : [];
-const fileUrl = (row: Row | undefined, key: string, fallback = '') => {
+const fileValue = (row: Row | undefined, key: string) => {
   const value = raw(row, key);
-  if (Array.isArray(value) && value.length) {
-    return value[0]?.url || value[0]?.thumbnails?.large?.url || value[0]?.thumbnails?.card_cover?.url || fallback;
-  }
-  return fallback;
+  return Array.isArray(value) && value.length ? value[0] : null;
+};
+const fileUrl = (row: Row | undefined, key: string, fallback = '') => {
+  const file = fileValue(row, key);
+  return file?.url || file?.thumbnails?.large?.url || file?.thumbnails?.card_cover?.url || fallback;
+};
+const fileLargeUrl = (row: Row | undefined, key: string, fallback = '') => {
+  const file = fileValue(row, key);
+  return file?.thumbnails?.large?.url || file?.url || file?.thumbnails?.card_cover?.url || fallback;
+};
+const fileCardUrl = (row: Row | undefined, key: string, fallback = '') => {
+  const file = fileValue(row, key);
+  return file?.thumbnails?.card_cover?.url || file?.thumbnails?.large?.url || file?.url || fallback;
 };
 
 async function listRows(tableId?: string, token = TOKEN): Promise<Row[] | null> {
@@ -140,18 +145,23 @@ function heroWidth(value: string) {
 }
 
 
-export async function getSiteData() {
-  const [settingsRows, pageRows, sectionRows, productRows, collectionRows, interfaceRows, memberRows, accountTransactionRows, networkPartnerRows, metricRows] = await Promise.all([
+let siteDataPromise: Promise<any> | null = null;
+
+export function getSiteData() {
+  siteDataPromise ||= loadSiteData();
+  return siteDataPromise;
+}
+
+async function loadSiteData() {
+  const [settingsRows, pageRows, sectionRows, productRows, collectionRows, interfaceRows, networkPartnerRows, metricRows] = await Promise.all([
     listRows(TABLES.settings),
     listRows(TABLES.pages),
     listRows(TABLES.sections),
     listRows(TABLES.products),
     listRows(TABLES.collectionPoints),
     listRows(TABLES.interfaceContent),
-    listRows(TABLES.members, RUNTIME_TOKEN),
-    listRows(TABLES.accountTransactions, RUNTIME_TOKEN),
-    // Network Partners and Metrics are hydrated live through /api/public-network
-    // using BASEROW_RUNTIME_TOKEN, so the static build token does not need access.
+    // Network Partners and Metrics are hydrated only where their live grids are present,
+    // so the static build token does not need access to those runtime tables.
     Promise.resolve([]),
     Promise.resolve([])
   ]);
@@ -227,29 +237,17 @@ export async function getSiteData() {
 
   const sourceSections = sectionRows?.length ? sectionRows : fallbackSections;
 
-  // Public Stats tokens are resolved at build time from Baserow. Only aggregate
-  // values are exposed to the rendered site; member/transaction rows remain private.
-  const totalMembers = (memberRows || []).filter((row: any) => boolean(row, 'Active', true)).length;
+  // Aggregate Metrics are runtime-only. Static CMS builds never read private Members
+  // or Account Transactions merely to resolve public stat tokens.
   const totalNetworkPartners = networkPartnerRows?.length
     ? networkPartnerRows.filter((row: any) => boolean(row, 'Active', true) && text(row, 'Name')).length
-    : sourceSections.filter((row: any) => {
-        const page = linkedValues(raw(row, 'Page') ?? row.page)[0] || text(row, 'Page', row.page || '');
-        const type = normalized(choice(row, 'Section type', row.type || ''), '');
-        return ['our-partners', 'our-network'].includes(page) && boolean(row, 'Visible', row.visible ?? true) && type === 'cards';
-      }).length;
-  const orderChargeTotal = Math.abs((accountTransactionRows || [])
-    .filter((row: any) => ['order-charge', 'order-charges'].includes(normalized(choice(row, 'Type'), '')))
-    .reduce((sum: number, row: any) => sum + numeric(row, 'Amount', 0), 0));
-  const totalMemberSpending = numeric(validSettingsRow, 'Historic total member spending', 0) + orderChargeTotal;
-  const totalCommitments = (memberRows || [])
-    .filter((row: any) => boolean(row, 'Active', true))
-    .reduce((sum: number, row: any) => sum + numeric(row, 'Weekly commitment', 0), 0);
+    : 0;
   const statTokens: Record<string, string> = {
-    '{{members}}': totalMembers.toLocaleString('en-GB'),
-    '{{total_members}}': totalMembers.toLocaleString('en-GB'),
-    '{{network_partners}}': totalNetworkPartners.toLocaleString('en-GB'),
-    '{{member_spending}}': totalMemberSpending.toLocaleString('en-GB', { maximumFractionDigits: 0 }),
-    '{{total_commitments}}': totalCommitments.toLocaleString('en-GB', { maximumFractionDigits: 2 })
+    '{{members}}': '—',
+    '{{total_members}}': '—',
+    '{{network_partners}}': totalNetworkPartners ? totalNetworkPartners.toLocaleString('en-GB') : '—',
+    '{{member_spending}}': '—',
+    '{{total_commitments}}': '—'
   };
   const resolveStatTokens = (value: string) => Object.entries(statTokens)
     .reduce((result, [token, replacement]) => result.replaceAll(token, replacement), value || '');
@@ -355,7 +353,8 @@ export async function getSiteData() {
     suggestedUses: text(row, 'Suggested uses'),
     whyWeStockIt: text(row, 'Why we stock it'),
     sourceUrl: text(row, 'Source URL'),
-    image: fileUrl(row, 'Image', '/images/placeholder.svg'),
+    image: fileLargeUrl(row, 'Image', '/images/placeholder.svg'),
+    cardImage: fileCardUrl(row, 'Image', '/images/placeholder.svg'),
     link: text(row, 'Product Link', text(row, 'Link')),
     popularity: numeric(row, 'Popularity', numeric(row, 'Display order', numeric(row, 'Order', 9999))),
     order: numeric(row, 'Popularity', numeric(row, 'Display order', numeric(row, 'Order', 9999))),

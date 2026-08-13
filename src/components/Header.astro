@@ -59,7 +59,7 @@ const links = Array.isArray(settings.navigationLinks) && settings.navigationLink
       };
       const refreshAuthState=async()=>{
         try{
-          const response=await fetch('/api/auth-status',{headers:{accept:'application/json'},cache:'no-store'});
+          const response=await (window.RootedData?.authStatus?.() || fetch('/api/auth-status',{headers:{accept:'application/json'},cache:'no-store'}));
           if(response.ok)publishAuthState(true);
           else if(response.status===401)publishAuthState(false);
         }catch(error){
@@ -70,10 +70,6 @@ const links = Array.isArray(settings.navigationLinks) && settings.navigationLink
       window.__rootedSetAuthState=publishAuthState;
       window.__rootedRefreshAuthState=refreshAuthState;
       window.addEventListener('rooted:auth-state',(event)=>setMemberHeaderState(Boolean(event.detail?.authenticated)));
-      window.addEventListener('rooted:public-content',()=>{
-        const state=document.documentElement.dataset.memberAuth;
-        if(state==='in'||state==='out')setMemberHeaderState(state==='in');
-      });
       window.addEventListener('pageshow',(event)=>{if(event.persisted)refreshAuthState();});
       refreshAuthState();
     }

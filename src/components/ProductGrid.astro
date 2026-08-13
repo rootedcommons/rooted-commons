@@ -1,5 +1,4 @@
 ---
-import FormattedText from './FormattedText.astro';
 const { products, category = '', columns = 3, showControls = false, settings = {}, content = {} } = Astro.props;
 const wanted = String(category || '').trim().toLowerCase();
 const money = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' });
@@ -15,7 +14,6 @@ const certificationLogos = {
 };
 const cleanValues = (values = []) => values.map((value) => String(value || '').trim()).filter(Boolean);
 const hasValue = (value) => value !== null && value !== undefined && String(value).trim() !== '';
-const pounds = (value) => money.format(Math.abs(Number(value || 0)));
 const nutritionRowsFor = (product) => [
   ['Energy', [
     hasValue(product.energyKj) ? `${product.energyKj} kJ` : '',
@@ -40,13 +38,49 @@ const displayProducts = filtered.map((product) => {
   const outOfStock = product.available === false || availableStock < 1;
   const lowStock = !outOfStock && availableStock <= lowStockThreshold;
   const nutritionRows = nutritionRowsFor(product);
-  const origin = String(product.origin || '').trim();
   const sourceValue = Number(product.sourceValue || 0);
   const commonsBalance = Number(product.priceNumber || 0) - sourceValue;
   const hasPriceBreakdown = Boolean(product.sourceValueRecipientName && sourceValue > 0);
   const hasDetails = Boolean(product.expandedDescription || product.description || product.ingredients || product.allergens || product.mayContain || product.storage || product.fboImporter || product.origin || product.secondaryOrigin || nutritionRows.length);
-  return { ...product, categories, subcategories, countries, certifications, availableStock, outOfStock, lowStock, nutritionRows, origin, sourceValue, commonsBalance, hasPriceBreakdown, hasDetails };
+  return { ...product, categories, subcategories, countries, certifications, availableStock, outOfStock, lowStock, nutritionRows, sourceValue, commonsBalance, hasPriceBreakdown, hasDetails };
 });
+
+const interactionPayload = {
+  priceHelp: {
+    source: content['price_breakdown.source_help'] || 'This is the average price Rooted Commons has paid the producer or wholesaler for the stock currently on our shelves. By pooling members’ purchasing power, we can place larger orders and access better wholesale prices while preserving producer value.',
+    contribution: content['price_breakdown.contribution_help'] || 'The difference between what Rooted Commons paid for this product and the member price contributes to the storage, packing, administration and distribution behind Rooted Commons.',
+    subsidy: content['price_breakdown.subsidy_help'] || 'This product costs Rooted Commons more than its member price. The difference is funded by contributions generated elsewhere in the commons, helping us keep selected products affordable.',
+    member: content['price_breakdown.member_price_help'] || 'For cupboard staples, member prices are benchmarked against comparable supermarket own-brand organic products. Pooling purchasing power lets Rooted Commons offer organic staples at supermarket prices, or less, while supporting the shared infrastructure behind the commons.',
+    partnerLinkLabel: content['price_breakdown.partner_link_label'] || '',
+    commonsLinkLabel: content['price_breakdown.commons_link_label'] || 'Learn more in FAQs →',
+    commonsLinkUrl: content['price_breakdown.commons_link_url'] || '/faqs/'
+  },
+  products: displayProducts.map((product) => ({
+    id: product.id,
+    name: product.name,
+    size: product.size,
+    image: product.image,
+    origin: product.origin,
+    secondaryOrigin: product.secondaryOrigin,
+    expandedDescription: product.expandedDescription,
+    description: product.description,
+    ingredients: product.ingredients,
+    allergens: product.allergens,
+    mayContain: product.mayContain,
+    storage: product.storage,
+    fboImporter: product.fboImporter,
+    nutritionBasis: product.nutritionBasis,
+    nutritionRows: product.nutritionRows,
+    hasDetails: product.hasDetails,
+    hasPriceBreakdown: product.hasPriceBreakdown,
+    sourceValue: product.sourceValue,
+    sourceValueRecipientId: product.sourceValueRecipientId,
+    sourceValueRecipientName: product.sourceValueRecipientName,
+    commonsBalance: product.commonsBalance,
+    priceNumber: product.priceNumber
+  }))
+};
+const interactionJson = JSON.stringify(interactionPayload).replace(/</g, '\\u003c');
 ---
 <div class="product-grid" style={`--columns:${columns}`}>
   {displayProducts.map((product) => (
@@ -66,8 +100,8 @@ const displayProducts = filtered.map((product) => {
       data-out-of-stock={product.outOfStock ? 'true' : 'false'}
     >
       {product.hasDetails
-        ? <button class="product-image-button" type="button" data-open-product aria-label={`More information about ${product.name}`}><img src={product.image || '/images/placeholder.svg'} alt="" loading="lazy" /></button>
-        : <img src={product.image || '/images/placeholder.svg'} alt="" loading="lazy" />}
+        ? <button class="product-image-button" type="button" data-open-product aria-label={`More information about ${product.name}`}><img src={product.cardImage || product.image || '/images/placeholder.svg'} alt="" loading="lazy" /></button>
+        : <img src={product.cardImage || product.image || '/images/placeholder.svg'} alt="" loading="lazy" />}
       <div class="product-copy">
         <div class="product-title-row">
           <h3>{product.hasDetails ? <button type="button" class="product-title-button" data-open-product>{product.name}</button> : product.name}</h3>
@@ -92,205 +126,15 @@ const displayProducts = filtered.map((product) => {
             {product.hasPriceBreakdown && <button class="price-card-info-toggle" type="button" data-price-breakdown-toggle aria-expanded="false" aria-label="See where your money goes" title="Where your money goes">ⓘ</button>}
           </div>
           {showControls && <div class="quantity-control quantity-control-solid" data-quantity-control hidden={product.outOfStock} aria-label={`Quantity of ${product.name}`}>
-            <button type="button" data-quantity-change="-1" aria-label="Remove one">−</button>
+            <button type="button" data-quantity-change="-1" aria-label="Remove one" disabled>−</button>
             <output data-quantity>0</output>
-            <button type="button" data-quantity-change="1" aria-label="Add one">+</button>
+            <button type="button" data-quantity-change="1" aria-label="Add one" disabled>+</button>
           </div>}
         </div>
-        {product.hasPriceBreakdown && <section class="price-breakdown-card" data-price-breakdown hidden aria-label={`Price breakdown for ${product.name}`}>
-          <h3 class="price-breakdown-product-name">{product.name}</h3>
-          <h4>Where your money goes</h4>
-          <div class="price-breakdown-list">
-            <div class="price-breakdown-item">
-              <div class="price-breakdown-summary">
-                <button class="price-breakdown-label" type="button" data-price-help-toggle="source" aria-expanded="false">
-                  <span>{product.sourceValueRecipientName}</span><span class="price-info-icon" aria-hidden="true">ⓘ</span>
-                </button>
-                <strong class="price-breakdown-value">{pounds(product.sourceValue)}</strong>
-              </div>
-              <div class="price-help-panel" data-price-help="source" hidden>
-                <div class="price-help-copy">
-                  <p data-price-source-help data-partner-id={product.sourceValueRecipientId || ''} data-help-key="price_breakdown.source_help">{content['price_breakdown.source_help'] || 'This is the average price Rooted Commons has paid the producer or wholesaler for the stock currently on our shelves. By pooling members’ purchasing power, we can place larger orders and access better wholesale prices while preserving producer value.'}</p>
-                  <a data-price-partner-link href={`/our-network/?partner=${encodeURIComponent(String(product.sourceValueRecipientId || ''))}`} target="_blank" rel="noopener noreferrer">{content['price_breakdown.partner_link_label'] || `Learn more about ${product.sourceValueRecipientName} →`}</a>
-                </div>
-              </div>
-            </div>
-            {Math.abs(product.commonsBalance) >= 0.005 && <div class="price-breakdown-item">
-              <div class="price-breakdown-summary">
-                <button class="price-breakdown-label" type="button" data-price-help-toggle="commons" aria-expanded="false">
-                  <span>{product.commonsBalance > 0 ? 'Commons contribution' : 'Commons subsidy'}</span><span class="price-info-icon" aria-hidden="true">ⓘ</span>
-                </button>
-                <strong class="price-breakdown-value">{pounds(product.commonsBalance)}</strong>
-              </div>
-              <div class="price-help-panel" data-price-help="commons" hidden>
-                <div class="price-help-copy">
-                  <p data-help-key={product.commonsBalance > 0 ? 'price_breakdown.contribution_help' : 'price_breakdown.subsidy_help'}>{product.commonsBalance > 0
-                    ? (content['price_breakdown.contribution_help'] || 'The difference between what Rooted Commons paid for this product and the member price contributes to the storage, packing, administration and distribution behind Rooted Commons.')
-                    : (content['price_breakdown.subsidy_help'] || 'This product costs Rooted Commons more than its member price. The difference is funded by contributions generated elsewhere in the commons, helping us keep selected products affordable.')}</p>
-                  <a href={content['price_breakdown.commons_link_url'] || '/faqs/'} target="_blank" rel="noopener noreferrer" data-help-link="commons">{content['price_breakdown.commons_link_label'] || 'Learn more in FAQs →'}</a>
-                </div>
-              </div>
-            </div>}
-            <div class="price-breakdown-item price-breakdown-total">
-              <div class="price-breakdown-summary">
-                <button class="price-breakdown-label" type="button" data-price-help-toggle="member" aria-expanded="false">
-                  <strong>Member price</strong><span class="price-info-icon" aria-hidden="true">ⓘ</span>
-                </button>
-                <strong class="price-breakdown-value">{pounds(product.priceNumber)}</strong>
-              </div>
-              <div class="price-help-panel" data-price-help="member" hidden>
-                <div class="price-help-copy">
-                  <p data-help-key="price_breakdown.member_price_help">{content['price_breakdown.member_price_help'] || 'For cupboard staples, member prices are benchmarked against comparable supermarket own-brand organic products. Pooling purchasing power lets Rooted Commons offer organic staples at supermarket prices, or less, while supporting the shared infrastructure behind the commons.'}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>}
       </div>
-      {product.hasDetails && <template data-product-detail>
-        <div class="product-detail-layout product-detail-information-layout">
-          <div class="product-detail-copy">
-            <h2>{product.name}{product.size ? ` – ${product.size}` : ''}</h2>
-            {product.image && <figure class="product-detail-image"><img src={product.image} alt={product.name} /></figure>}
-            {product.origin && <p class="product-detail-origin"><strong>Origin</strong><span>{product.origin}</span></p>}
-            {product.secondaryOrigin && <p class="product-detail-origin"><strong>Secondary origin</strong><span>{product.secondaryOrigin}</span></p>}
-            {(product.expandedDescription || product.description) && <FormattedText text={product.expandedDescription || product.description} class="product-detail-overview rich-body" />}
-            {product.ingredients && <section><h3>Ingredients</h3><p class="rich-body" data-ingredients data-allergens={product.allergens}>{product.ingredients}</p></section>}
-            {product.mayContain && <section><h3>May contain</h3><FormattedText text={product.mayContain} class="rich-body" /></section>}
-            {product.storage && <section><h3>How to store / once opened</h3><FormattedText text={product.storage} class="rich-body" /></section>}
-            {product.fboImporter && <section><h3>FBO / importer</h3><FormattedText text={product.fboImporter} class="rich-body" /></section>}
-            <p class="product-detail-note">Product information can change. Always check the pack before use, particularly for allergens.</p>
-          </div>
-          {product.nutritionRows.length > 0 && <aside class="nutrition-section product-detail-nutrition">
-            <h3>Nutrition</h3>
-            <table class="nutrition-table">
-              <thead><tr><th scope="col">Typical values</th><th scope="col">{product.nutritionBasis || 'Per 100 g'}</th></tr></thead>
-              <tbody>{product.nutritionRows.map(([label, value]) => <tr><th scope="row">{label}</th><td>{value}</td></tr>)}</tbody>
-            </table>
-          </aside>}
-        </div>
-      </template>}
     </article>
   ))}
 </div>
 {displayProducts.length === 0 && <p>No products currently match this section.</p>}
-
-<script>
-(() => {
-  if (window.__rootedPriceBreakdownReady) return;
-  window.__rootedPriceBreakdownReady = true;
-
-  let activeBox = null;
-  let activeToggle = null;
-  let activePlaceholder = null;
-  let backdrop = null;
-
-  const collapsePriceHelp = (box) => {
-    if (!box) return;
-    box.querySelectorAll('[data-price-help]').forEach((panel) => { panel.hidden = true; });
-    box.querySelectorAll('[data-price-help-toggle]').forEach((button) => button.setAttribute('aria-expanded', 'false'));
-  };
-
-  const ensureBackdrop = () => {
-    if (backdrop) return backdrop;
-    backdrop = document.createElement('div');
-    backdrop.className = 'price-breakdown-backdrop';
-    backdrop.hidden = true;
-    backdrop.addEventListener('click', () => closeBreakdown());
-    document.body.appendChild(backdrop);
-    return backdrop;
-  };
-
-  const closeBreakdown = () => {
-    if (!activeBox) return;
-    activeBox.hidden = true;
-    collapsePriceHelp(activeBox);
-    if (activePlaceholder?.parentNode) activePlaceholder.replaceWith(activeBox);
-    if (activeToggle) activeToggle.setAttribute('aria-expanded', 'false');
-    const layer = ensureBackdrop();
-    layer.hidden = true;
-    document.body.classList.remove('price-breakdown-open');
-    activeBox = null;
-    activeToggle = null;
-    activePlaceholder = null;
-  };
-
-  const openBreakdown = (toggle, box) => {
-    closeBreakdown();
-    collapsePriceHelp(box);
-    const placeholder = document.createComment('price-breakdown-placeholder');
-    box.replaceWith(placeholder);
-    document.body.appendChild(box);
-    activeBox = box;
-    activeToggle = toggle;
-    activePlaceholder = placeholder;
-    box.hidden = false;
-    toggle.setAttribute('aria-expanded', 'true');
-    ensureBackdrop().hidden = false;
-    document.body.classList.add('price-breakdown-open');
-  };
-
-  document.addEventListener('click', (event) => {
-    const breakdownToggle = event.target.closest('[data-price-breakdown-toggle]');
-    if (breakdownToggle) {
-      event.preventDefault();
-      event.stopPropagation();
-      const card = breakdownToggle.closest('[data-product-card]');
-      const box = card?.querySelector('[data-price-breakdown]');
-      if (!box) return;
-      if (activeBox && activeToggle === breakdownToggle) closeBreakdown();
-      else openBreakdown(breakdownToggle, box);
-      return;
-    }
-
-    const helpToggle = event.target.closest('[data-price-help-toggle]');
-    if (helpToggle) {
-      event.preventDefault();
-      event.stopPropagation();
-      const box = helpToggle.closest('[data-price-breakdown]');
-      const panel = box?.querySelector(`[data-price-help="${helpToggle.dataset.priceHelpToggle}"]`);
-      if (!panel) return;
-      const willOpen = panel.hidden;
-      panel.hidden = !willOpen;
-      helpToggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
-      return;
-    }
-  });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') closeBreakdown();
-  });
-
-  const applyPartnerHelp = (data = {}) => {
-    const partners = data.partners || [];
-    document.querySelectorAll('[data-price-source-help][data-partner-id]').forEach((element) => {
-      const partner = partners.find((item) => Number(item.id) === Number(element.dataset.partnerId));
-      if (partner?.priceExplanation) {
-        element.textContent = partner.priceExplanation;
-        element.dataset.partnerHelpActive = 'true';
-      }
-    });
-  };
-
-  const applyInterfaceHelp = (content = {}) => {
-    document.querySelectorAll('[data-help-key]').forEach((element) => {
-      if (element.dataset.partnerHelpActive === 'true') return;
-      const value = content[element.dataset.helpKey];
-      if (value) element.textContent = value;
-    });
-    document.querySelectorAll('[data-help-link="commons"]').forEach((link) => {
-      if (content['price_breakdown.commons_link_url']) link.href = content['price_breakdown.commons_link_url'];
-      if (content['price_breakdown.commons_link_label']) link.textContent = content['price_breakdown.commons_link_label'];
-    });
-    document.querySelectorAll('[data-price-partner-link]').forEach((link) => {
-      if (content['price_breakdown.partner_link_label']) link.textContent = content['price_breakdown.partner_link_label'];
-    });
-    if (window.__rootedPublicNetwork) applyPartnerHelp(window.__rootedPublicNetwork);
-  };
-
-  window.addEventListener('rooted:public-content', (event) => applyInterfaceHelp(event.detail?.interfaceContent || {}));
-  window.addEventListener('rooted:public-network', (event) => applyPartnerHelp(event.detail || {}));
-  if (window.__rootedPublicContent) applyInterfaceHelp(window.__rootedPublicContent.interfaceContent || {});
-  if (window.__rootedPublicNetwork) applyPartnerHelp(window.__rootedPublicNetwork);
-})();
-</script>
+<script type="application/json" data-product-grid-data set:html={interactionJson}></script>
+<script type="module" src="/scripts/product-interactions.js?v=2.9.71"></script>
