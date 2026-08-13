@@ -66,7 +66,7 @@ const fileLargeUrl = (row: Row | undefined, key: string, fallback = '') => {
 };
 const fileCardUrl = (row: Row | undefined, key: string, fallback = '') => {
   const file = fileValue(row, key);
-  return file?.thumbnails?.card_cover?.url || file?.thumbnails?.large?.url || file?.url || fallback;
+  return file?.thumbnails?.large?.url || file?.url || file?.thumbnails?.card_cover?.url || fallback;
 };
 
 async function listRows(tableId?: string, token = TOKEN): Promise<Row[] | null> {
@@ -349,6 +349,10 @@ async function loadSiteData() {
     allergens: text(row, 'Allergens'),
     mayContain: text(row, 'May contain'),
     storage: text(row, 'Storage'),
+    onceOpened: text(row, 'Once opened'),
+    howToCook: text(row, 'How to cook', text(row, 'Suggested uses')),
+    packaging: text(row, 'Packaging'),
+    disposal: text(row, 'Disposal', text(row, 'Packaging and disposal')),
     fboImporter: text(row, 'FBO / importer', text(row, 'FBO/importer')),
     suggestedUses: text(row, 'Suggested uses'),
     whyWeStockIt: text(row, 'Why we stock it'),

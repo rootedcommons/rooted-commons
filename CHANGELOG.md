@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.9.72
+
+- Restored the How it works card width to 1400px and increased the founder campaign maximum width to 1240px.
+- Switched product-card images from cropped `card_cover` thumbnails to Baserow `large` thumbnails.
+- Restyled FAQs as bordered Surface-colour boxes with Highlight-colour answer panels.
+- Reworked the detailed product modal: centred Product – amount title, image in the left column, nutrition aligned to the image in the right column, conditional provenance/ingredients/may-contain/storage/cooking/FBO/packaging fields, automatic bolding of all-caps allergen terms, and trimmed nutrition decimals.
+- Added optional Products fields: Once opened, How to cook, Packaging and Disposal.
+- Reworked checkout collection selection to use a dashboard-style summary card plus a compact eligible-options chooser instead of a grid of collection-point cards.
+- Preserved basket-wide point/day eligibility and added explicit Highlight warnings when the member’s preferred point or day is unavailable, with expandable reasons.
+- Matched the checkout vertical card gap to the horizontal grid gap.
+
 ## 2.9.71 — 2026-08-12
 
 - Pass 2 performance/scalability refactor: `/api/member` now asks Baserow only for the authenticated member’s linked Web Orders and Account Transactions and fetches only their linked Collection Point, rather than downloading whole operational tables and filtering them in Cloudflare. Filtered Baserow reads can now paginate safely for members with more than 200 historical rows.

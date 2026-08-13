@@ -19,19 +19,12 @@ const checkoutProducts = data.products.map((product) => ({
   size: product.size,
   price: product.priceNumber,
   categories: product.categories || [product.category],
+  collectionPointIds: product.collectionPointIds || [],
   lateCollection: product.lateCollection || 'thursday-only'
 }));
 const checkoutPoints = data.collectionPoints;
 const checkoutConfigJson = JSON.stringify({ products: checkoutProducts, points: checkoutPoints, checkoutEmptyHeading: c('checkout.empty_heading'), checkoutEmptyText: c('checkout.empty_text'), checkoutConfirmButton: c('checkout.confirm_button'), checkoutSuccessHeading: c('checkout.success_heading'), checkoutFreshnessWarning: c('checkout.freshness_warning', 'Fresh produce is packed on Thursday and may not be at its best by Friday.') }).replace(/</g, '\\u003c');
 
-const formatCollectionDeadline = (value) => {
-  if (!value) return '';
-  const raw = String(value).trim();
-  const match = raw.match(/^(?:\d{4}-\d{2}-\d{2}[T\s])?(\d{1,2})[:.](\d{2})/);
-  if (!match) return raw;
-  const hour = Number(match[1]);
-  return `${hour % 12 || 12}:${match[2]}${hour >= 12 ? 'pm' : 'am'}`;
-};
 ---
 <BaseLayout settings={s} pages={data.pages} title={page.seoTitle || page.title} description={page.seoDescription || page.intro}>
   <PageHero page={page} />
@@ -40,14 +33,14 @@ const formatCollectionDeadline = (value) => {
     <div class="checkout-top-grid">
       <section class="checkout-card checkout-collection-summary dashboard-collection" aria-labelledby="collection-heading">
         <p class="eyebrow" id="collection-heading">Your collection point</p>
-        <img id="checkout-point-image" class="dashboard-point-image" src="" alt="" hidden />
-        <h2 id="checkout-point-name">Loading…</h2>
-        <p id="checkout-point-time"></p>
-        <p id="checkout-point-preference" class="small-print"></p>
-        <p id="checkout-point-address"></p>
-        <p id="checkout-point-deadline" class="collection-deadline-readable"></p>
-        <a id="checkout-point-link" class="text-link" hidden>View collection point →</a>
-        <button id="checkout-change-collection" class="button dashboard-change-point" type="button">Change collection point</button>
+        <div id="checkout-point-details">
+          <img id="checkout-point-image" class="dashboard-point-image" src="" alt="" hidden />
+          <h2 id="checkout-point-name">Loading…</h2>
+          <p id="checkout-point-time"></p>
+          <p id="checkout-point-address"></p>
+        </div>
+        <div id="checkout-collection-warning" class="checkout-collection-warning" hidden aria-live="polite"></div>
+        <button id="checkout-change-collection" class="button dashboard-change-point" type="button">Change collection options</button>
       </section>
 
       <section class="checkout-card checkout-review" aria-labelledby="checkout-order-heading">
@@ -57,35 +50,21 @@ const formatCollectionDeadline = (value) => {
       </section>
     </div>
 
-    <section id="checkout-collection-picker" class="checkout-stage" aria-label="Change collection point" hidden>
-      <div id="collection-point-grid" class="collection-point-grid">
-        {checkoutPoints.map((point) => (
-          <button
-            class="collection-point-card"
-            type="button"
-            data-collection-point
-            data-point-id={point.id}
-            data-available-categories={(point.availableCategories || []).join('|')}
-          >
-            {point.image && <img src={point.image} alt="" loading="lazy" />}
-            <span class="collection-point-copy">
-              <strong>{point.name}</strong>
-              {(point.collectionSlots || []).length > 0 && <span>{(point.collectionSlots || []).map((slot) => `${slot.day} ${slot.time}`).join(' · ')}</span>}
-              {point.address && <span>{point.address}</span>}
-              {point.description && <span>{point.description}</span>}
-              {point.ordersClose && <span class="collection-deadline">Orders close Wednesday 18.00</span>}
-              {(point.availableCategories || []).length > 0 && <span class="collection-categories">{point.availableCategories.join(' · ')}</span>}
-            </span>
-            <span class="collection-select-label">Select</span>
-          </button>
-        ))}
-      </div>
-      <p id="collection-message" class="small-print"></p>
-      <div id="collection-slot-panel" class="collection-slot-panel" hidden>
-        <h3>When would you like to collect?</h3>
-        <div id="collection-slot-options" class="collection-slot-options"></div>
-        <p class="small-print">Thursday is recommended for the freshest produce. Later collection is only offered when everything in your basket can be held until then.</p>
-        <p id="collection-freshness-warning" class="collection-freshness-warning" hidden></p>
+    <section id="checkout-collection-picker" class="checkout-stage checkout-collection-picker" aria-label="Change collection options" hidden>
+      <p class="checkout-collection-explainer"><strong>Collection options depend on what’s in your basket.</strong><br>We only show places and days where every item in your order can be collected.</p>
+      <div class="checkout-collection-form">
+        <label for="checkout-point-select">Collection point</label>
+        <select id="checkout-point-select"></select>
+        <div id="collection-slot-panel" class="collection-slot-panel" hidden>
+          <h3>When would you like to collect?</h3>
+          <div id="collection-slot-options" class="collection-slot-options"></div>
+          <p id="collection-freshness-warning" class="collection-freshness-warning" hidden></p>
+        </div>
+        <div class="checkout-collection-actions">
+          <button id="checkout-use-collection" class="button" type="button">Use this collection option</button>
+          <button id="checkout-cancel-collection" class="button button-secondary" type="button">Cancel</button>
+        </div>
+        <p id="collection-message" class="small-print" aria-live="polite"></p>
       </div>
     </section>
 
@@ -122,5 +101,5 @@ const formatCollectionDeadline = (value) => {
   {ordinaryBlocks.map((block) => <SectionRenderer block={block} products={data.products} settings={data.settings} />)}
 
   <script id="checkout-config" type="application/json" set:html={checkoutConfigJson}></script>
-  <script type="module" src="/scripts/checkout.js?v=2.9.71"></script>
+  <script type="module" src="/scripts/checkout.js?v=2.9.72"></script>
 </BaseLayout>

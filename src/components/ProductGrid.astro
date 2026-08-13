@@ -14,18 +14,24 @@ const certificationLogos = {
 };
 const cleanValues = (values = []) => values.map((value) => String(value || '').trim()).filter(Boolean);
 const hasValue = (value) => value !== null && value !== undefined && String(value).trim() !== '';
+const nutritionNumber = (value) => {
+  if (!hasValue(value)) return '';
+  const raw = String(value).trim();
+  const numericValue = Number(raw);
+  return Number.isFinite(numericValue) ? String(numericValue) : raw;
+};
 const nutritionRowsFor = (product) => [
   ['Energy', [
-    hasValue(product.energyKj) ? `${product.energyKj} kJ` : '',
-    hasValue(product.energyKcal) ? `${product.energyKcal} kcal` : ''
+    hasValue(product.energyKj) ? `${nutritionNumber(product.energyKj)} kJ` : '',
+    hasValue(product.energyKcal) ? `${nutritionNumber(product.energyKcal)} kcal` : ''
   ].filter(Boolean).join(' / ')],
-  ['Fat', hasValue(product.fat) ? `${product.fat} g` : ''],
-  ['of which saturates', hasValue(product.saturates) ? `${product.saturates} g` : ''],
-  ['Carbohydrate', hasValue(product.carbohydrate) ? `${product.carbohydrate} g` : ''],
-  ['of which sugars', hasValue(product.sugars) ? `${product.sugars} g` : ''],
-  ['Fibre', hasValue(product.fibre) ? `${product.fibre} g` : ''],
-  ['Protein', hasValue(product.protein) ? `${product.protein} g` : ''],
-  ['Salt', hasValue(product.salt) ? `${product.salt} g` : '']
+  ['Fat', hasValue(product.fat) ? `${nutritionNumber(product.fat)} g` : ''],
+  ['of which saturates', hasValue(product.saturates) ? `${nutritionNumber(product.saturates)} g` : ''],
+  ['Carbohydrate', hasValue(product.carbohydrate) ? `${nutritionNumber(product.carbohydrate)} g` : ''],
+  ['of which sugars', hasValue(product.sugars) ? `${nutritionNumber(product.sugars)} g` : ''],
+  ['Fibre', hasValue(product.fibre) ? `${nutritionNumber(product.fibre)} g` : ''],
+  ['Protein', hasValue(product.protein) ? `${nutritionNumber(product.protein)} g` : ''],
+  ['Salt', hasValue(product.salt) ? `${nutritionNumber(product.salt)} g` : '']
 ].filter(([, value]) => value);
 
 const displayProducts = filtered.map((product) => {
@@ -41,7 +47,7 @@ const displayProducts = filtered.map((product) => {
   const sourceValue = Number(product.sourceValue || 0);
   const commonsBalance = Number(product.priceNumber || 0) - sourceValue;
   const hasPriceBreakdown = Boolean(product.sourceValueRecipientName && sourceValue > 0);
-  const hasDetails = Boolean(product.expandedDescription || product.description || product.ingredients || product.allergens || product.mayContain || product.storage || product.fboImporter || product.origin || product.secondaryOrigin || nutritionRows.length);
+  const hasDetails = Boolean(product.expandedDescription || product.description || product.ingredients || product.allergens || product.mayContain || product.storage || product.onceOpened || product.howToCook || product.packaging || product.disposal || product.fboImporter || product.origin || product.secondaryOrigin || nutritionRows.length);
   return { ...product, categories, subcategories, countries, certifications, availableStock, outOfStock, lowStock, nutritionRows, sourceValue, commonsBalance, hasPriceBreakdown, hasDetails };
 });
 
@@ -68,6 +74,10 @@ const interactionPayload = {
     allergens: product.allergens,
     mayContain: product.mayContain,
     storage: product.storage,
+    onceOpened: product.onceOpened,
+    howToCook: product.howToCook,
+    packaging: product.packaging,
+    disposal: product.disposal,
     fboImporter: product.fboImporter,
     nutritionBasis: product.nutritionBasis,
     nutritionRows: product.nutritionRows,
@@ -137,4 +147,4 @@ const interactionJson = JSON.stringify(interactionPayload).replace(/</g, '\\u003
 </div>
 {displayProducts.length === 0 && <p>No products currently match this section.</p>}
 <script type="application/json" data-product-grid-data set:html={interactionJson}></script>
-<script type="module" src="/scripts/product-interactions.js?v=2.9.71"></script>
+<script type="module" src="/scripts/product-interactions.js?v=2.9.72"></script>

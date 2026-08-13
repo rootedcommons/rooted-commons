@@ -326,18 +326,18 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 
 /* v2.6.3 FAQ accordion */
 .faq-section{max-width:var(--max);margin:0 auto;padding:0 2rem clamp(4rem,8vw,7rem)}
-.faq-list{border-top:1px solid var(--line)}
-.faq-item{border-bottom:1px solid var(--line)}
-.faq-item summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;padding:1.15rem 0;cursor:pointer;font-weight:700;font-size:clamp(1rem,1.2vw,1.15rem)}
+.faq-list{display:grid;gap:.85rem}
+.faq-item{overflow:hidden;border:1px solid var(--line);border-radius:.85rem;background:var(--surface)}
+.faq-item summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;padding:1.15rem 1.25rem;cursor:pointer;font-weight:700;font-size:clamp(1rem,1.2vw,1.15rem)}
 .faq-item summary::-webkit-details-marker{display:none}
 .faq-item summary:focus-visible{outline:2px solid var(--primary);outline-offset:.35rem}
 .faq-icon{position:relative;flex:0 0 1rem;width:1rem;height:1rem}
 .faq-icon::before,.faq-icon::after{content:"";position:absolute;left:0;top:50%;width:100%;height:1px;background:currentColor;transition:transform .18s ease}
 .faq-icon::after{transform:rotate(90deg)}
 .faq-item[open] .faq-icon::after{transform:rotate(0deg)}
-.faq-answer{max-width:840px;padding:0 3rem 1.35rem 0}
+.faq-answer{max-width:none;padding:1.15rem 1.25rem;background:var(--highlight);border-top:1px solid var(--line)}
 .faq-answer p:last-child{margin-bottom:0}
-@media(max-width:640px){.faq-section{padding-inline:1rem}.faq-item summary{padding:1rem 0}.faq-answer{padding-right:1.5rem}}
+@media(max-width:640px){.faq-section{padding-inline:1rem}.faq-item summary{padding:1rem}.faq-answer{padding:1rem}}
 
 /* Optional swipeable image gallery for grouped content cards. */
 .card-gallery-shell{position:relative;margin:0 0 1.2rem}
@@ -1357,14 +1357,14 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 
 
 /* v2.9.64 — homepage alignment + campaign proportion */
-:root{--homepage-content-width:1240px;--compact-feature-width:1050px}
+:root{--homepage-content-width:1240px;--compact-feature-width:1240px}
 /* Hero body alignment remains independent; this class controls the H1 only. */
 .hero-copy h1.hero-heading-align-left{text-align:left}
 .hero-copy h1.hero-heading-align-center{text-align:center}
 .hero-copy h1.hero-heading-align-right{text-align:right}
 /* The homepage hero and How it works cards share one horizontal grid. */
-.page-hero[data-page-slug="home"] .hero-inner,
-.how-it-works-section .section-inner{width:min(100%,var(--homepage-content-width));max-width:var(--homepage-content-width);margin-inline:auto}
+.page-hero[data-page-slug="home"] .hero-inner{width:min(100%,var(--homepage-content-width));max-width:var(--homepage-content-width);margin-inline:auto}
+.how-it-works-section .section-inner{width:min(100%,1400px);max-width:1400px;margin-inline:auto}
 /* Founder campaign uses the same compact framed width and framing as supporting CTAs. */
 .campaign-section .campaign-inner{width:min(100%,var(--compact-feature-width));max-width:min(var(--compact-feature-width),calc(100vw - 4rem));margin-inline:auto;padding:clamp(1.5rem,3vw,2.5rem);border:1px solid var(--feature-border);border-radius:var(--feature-radius);box-shadow:var(--feature-shadow)}
 @media(max-width:760px){.campaign-section .campaign-inner{max-width:calc(100vw - 2rem);padding:1.25rem}}
@@ -1420,4 +1420,50 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
   .price-breakdown-item{padding:.62rem 0}
   .price-breakdown-explanation{font-size:.85rem}
   .product-detail-image{max-width:260px;margin-inline:auto}
+}
+
+
+/* v2.9.72 — canonical checkout collection chooser and product information layout */
+.checkout-paths{margin-top:1.25rem}
+.checkout-collection-picker{margin:1.25rem 0 0;padding:clamp(1.25rem,3vw,2rem);border:1px solid var(--border);border-radius:1rem;background:var(--surface)}
+.checkout-collection-picker + .checkout-paths{margin-top:1.25rem}
+.checkout-collection-explainer{margin:0 0 1.2rem;padding:1rem 1.1rem;border:1px solid var(--border);border-radius:.75rem;background:var(--highlight)}
+.checkout-collection-form{display:grid;gap:.85rem}
+.checkout-collection-form>label{font-weight:700}
+.checkout-collection-form select{width:100%;padding:.78rem .9rem;border:1px solid var(--border);border-radius:.6rem;background:var(--surface);color:inherit;font:inherit}
+.checkout-collection-actions{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:.35rem}
+.checkout-collection-warning{margin:.55rem 0 .8rem;padding:1rem 1.05rem;border:1px solid var(--border);border-radius:.75rem;background:var(--highlight)}
+.checkout-collection-warning strong{display:block;margin-bottom:.35rem}
+.checkout-collection-warning p{margin:.25rem 0}
+.checkout-why-toggle{display:inline;padding:0;border:0;background:transparent;color:inherit;font:inherit;font-weight:700;text-decoration:underline;cursor:pointer}
+.checkout-why-detail{margin:.65rem 0 0;padding-top:.65rem;border-top:1px solid var(--border);font-size:.9rem}
+.checkout-collection-summary #checkout-point-details[hidden]{display:none!important}
+.checkout-collection-summary .dashboard-point-image{margin:.35rem 0 .8rem}
+.checkout-collection-summary #checkout-point-time,.checkout-collection-summary #checkout-point-address{margin:.08rem 0;line-height:1.3}
+.checkout-collection-summary #checkout-point-deadline{margin:.55rem 0}
+.checkout-collection-summary .dashboard-change-point{margin-top:.65rem}
+
+.product-detail-dialog{width:min(980px,calc(100% - 2rem))}
+.product-detail-information{padding:clamp(1.25rem,3.5vw,2.5rem)}
+.product-detail-title{text-align:center;margin:.15rem 3rem 1.6rem;font-size:clamp(1.7rem,3.5vw,2.6rem)}
+.product-detail-columns{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.82fr);gap:clamp(1.5rem,4vw,3rem);align-items:start}
+.product-detail-left,.product-detail-right{min-width:0}
+.product-detail-left .product-detail-image{margin:0 0 1.3rem;max-width:100%;width:100%;position:static}
+.product-detail-provenance{margin:.25rem 0 .8rem;font-weight:700}
+.product-detail-provenance p{margin:.12rem 0}
+.product-detail-left section,.product-detail-right section{margin-top:1.15rem}
+.product-detail-left h3,.product-detail-right h3{margin:0 0 .35rem;font-size:1rem}
+.product-detail-left p,.product-detail-right p{margin:.18rem 0;line-height:1.55}
+.product-detail-may-contain{margin-top:.8rem!important}
+.product-detail-packaging{margin-top:1.35rem!important;padding-top:1rem;border-top:1px solid var(--border)}
+.product-detail-nutrition{position:static;margin:0;padding:0;border:0;border-radius:0;background:transparent}
+.product-detail-nutrition h3{margin:0 0 .45rem}
+.product-detail-practical{margin-top:1.2rem}
+.product-detail-practical .product-detail-group{margin-top:1rem}
+.product-detail-fbo{margin-top:1.35rem!important;padding-top:1rem;border-top:1px solid var(--border)}
+.product-detail-note{grid-column:1/-1;margin:1.4rem 0 0!important;padding-top:.9rem;border-top:1px solid var(--border)}
+@media(max-width:700px){
+  .product-detail-title{margin-right:2.5rem}
+  .product-detail-columns{grid-template-columns:1fr}
+  .product-detail-left .product-detail-image{max-width:360px;margin-inline:auto}
 }
