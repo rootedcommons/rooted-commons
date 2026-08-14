@@ -62,18 +62,25 @@ function practicalLine(label,text,prefix=''){
   const body=richText(text);
   return `<div class="product-detail-group"><p><strong>${escapeHtml(label)}:</strong> ${prefix}${body.replace(/^<p>|<\/p>$/g,'')}</p></div>`;
 }
+function sentence(value=''){
+  const text=String(value||'').trim().replace(/[.\s]+$/,'');
+  return text?`${text}.`:'';
+}
 function productDetailHtml(product){
   const provenance=[product.origin,product.secondaryOrigin].filter(Boolean).map((value)=>`<p>${escapeHtml(value)}</p>`).join('');
   const description=product.expandedDescription||product.description||'';
   const ingredients=product.ingredients?`<section><h3>Ingredients</h3><p>${boldAllCaps(product.ingredients)}</p></section>`:'';
   const mayContain=product.mayContain?`<p class="product-detail-may-contain">${mayContainHtml(product.mayContain)}</p>`:'';
-  const packaging=(product.packaging||product.disposal)?`<section class="product-detail-packaging">${product.packaging?`<p><strong>Packaging:</strong> ${escapeHtml(product.packaging)}</p>`:''}${product.disposal?`<p>${escapeHtml(product.disposal)}</p>`:''}</section>`:'';
+  const packagingText=[product.packaging?`<strong>Packaging:</strong> ${escapeHtml(sentence(product.packaging))}`:'',product.disposal?escapeHtml(sentence(product.disposal)):'' ].filter(Boolean).join(' ');
+  const packaging=packagingText?`<section class="product-detail-packaging"><p>${packagingText}</p></section>`:'';
   const nutrition=(product.nutritionRows||[]).length?`<section class="nutrition-section product-detail-nutrition"><h3>Nutrition</h3><table class="nutrition-table"><thead><tr><th scope="col">Typical values</th><th scope="col">${escapeHtml(product.nutritionBasis||'Per 100 g')}</th></tr></thead><tbody>${product.nutritionRows.map(([label,value])=>`<tr><th scope="row">${escapeHtml(label)}</th><td>${escapeHtml(value)}</td></tr>`).join('')}</tbody></table></section>`:'';
-  const storageBlock=(product.storage||product.onceOpened)?`<div class="product-detail-group">${product.storage?`<p><strong>How to store:</strong> ${escapeHtml(product.storage)}</p>`:''}${product.onceOpened?`<p>Once opened, ${escapeHtml(String(product.onceOpened).replace(/^once\s+opened\s*[,.:;-]?\s*/i,''))}</p>`:''}</div>`:'';
+  const storageText=product.storage?sentence(product.storage):'';
+  const openedText=product.onceOpened?String(product.onceOpened).trim().replace(/^once\s+opened\s*[,.:;-]?\s*/i,'').replace(/[.\s]+$/,''):'';
+  const storageBlock=(storageText||openedText)?`<div class="product-detail-group"><p>${storageText?`<strong>How to store:</strong> ${escapeHtml(storageText)}`:''}${storageText&&openedText?' ':''}${openedText?`Once opened, ${escapeHtml(openedText)}.`:''}</p></div>`:'';
   const cookBlock=product.howToCook?`<div class="product-detail-group"><p><strong>How to cook:</strong> ${escapeHtml(product.howToCook)}</p></div>`:'';
   const fbo=product.fboImporter?`<section class="product-detail-fbo"><div class="rich-body">${richText(product.fboImporter)}</div></section>`:'';
-  const right=(nutrition||storageBlock||cookBlock||fbo)?`<div class="product-detail-right">${nutrition}<div class="product-detail-practical">${storageBlock}${cookBlock}${fbo}</div></div>`:'';
-  return `<div class="product-detail-information"><h2 class="product-detail-title">${escapeHtml(product.name)}${product.size?` – ${escapeHtml(product.size)}`:''}</h2><div class="product-detail-columns"><div class="product-detail-left">${product.image?`<figure class="product-detail-image"><img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.name)}"></figure>`:''}${provenance?`<div class="product-detail-provenance">${provenance}</div>`:''}${description?`<div class="product-detail-overview rich-body">${richText(description)}</div>`:''}${ingredients}${mayContain}${packaging}</div>${right}<p class="product-detail-note">Product information can change. Always check the pack before use, particularly for allergens.</p></div></div>`;
+  const right=(nutrition||storageBlock||cookBlock||packaging||fbo)?`<div class="product-detail-right">${nutrition}<div class="product-detail-practical">${storageBlock}${cookBlock}${packaging}${fbo}</div></div>`:'';
+  return `<div class="product-detail-information"><h2 class="product-detail-title">${escapeHtml(product.name)}${product.size?` – ${escapeHtml(product.size)}`:''}</h2><div class="product-detail-columns"><div class="product-detail-left">${product.image?`<figure class="product-detail-image"><img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.name)}"></figure>`:''}${provenance?`<div class="product-detail-provenance">${provenance}</div>`:''}${description?`<div class="product-detail-overview rich-body">${richText(description)}</div>`:''}${ingredients}${mayContain}</div>${right}<p class="product-detail-note">Product information can change. Always check the pack before use, particularly for allergens.</p></div></div>`;
 }
 function openProductDetail(product){
   const dialog=ensureDetailDialog();

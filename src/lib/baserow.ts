@@ -461,7 +461,7 @@ async function loadSiteData() {
   const interfaceContent = { ...fallbackInterfaceContent };
   for (const row of interfaceRows || []) {
     const key = text(row, 'Key');
-    const content = text(row, 'Content');
+    const content = resolveStatTokens(text(row, 'Content'));
     if (key && content) interfaceContent[key] = content;
   }
 

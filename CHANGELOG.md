@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.9.77 — 2026-08-14
+
+- Added an editable signup welcome email from Site Settings → `Welcome email HTML`, sent directly through the existing SMTP connection with safe placeholders for member, commitment, access-link and bank details; included the full editable template under `docs/email-templates/`.
+- Added the passwordless-sign-in FAQ at stable anchor `/faqs/#passwords` and simplified the signup-success explanation to link to it.
+- FAQ anchor links now automatically open the targeted question and scroll it into view, so `/faqs/#passwords` lands on the actual answer.
+- Added lightweight Interface Content authoring guidance: `Content` should be Long text, formatted prose supports line breaks, `**bold**`, `*italic*` and Markdown links, and the existing public stat tokens are resolved before rendering.
+- Added the Terms of Sale acknowledgement directly above checkout confirmation.
+- Refined the product modal: Packaging/disposal now sits in the right column below How to cook and renders as one sentence; How to store and Once opened render as one continuous sentence.
+- Tightened expanded FAQ answer top spacing.
+
 ## 2.9.76 — 2026-08-14
 
 - Collection-point map selections now return to dashboard/checkout with `?collection_point=ID#collection-point`; dashboard previews the unsaved point, including its image, and reopens the editor at that card.

@@ -1518,3 +1518,9 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .checkout-collection-form .collection-slot-panel{display:grid;gap:.45rem;margin-top:.25rem}
 .checkout-collection-form .collection-slot-panel>label{font-weight:700}
 .checkout-collection-actions{margin-top:.55rem}
+
+
+/* v2.9.77 — tighter FAQ answers and checkout terms acknowledgement */
+.faq-answer{justify-content:flex-start;min-height:0;padding:.55rem 1.25rem 1rem}
+.checkout-terms-confirmation{margin:1rem 0 .7rem;font-size:.9rem;line-height:1.5}
+@media(max-width:640px){.faq-answer{padding:.5rem 1rem .85rem}}

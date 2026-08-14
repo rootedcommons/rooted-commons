@@ -92,10 +92,10 @@ const signupConfigJson=JSON.stringify({collectionPoints}).replace(/</g,'\\u003c'
         <h2>{c('signup.success_heading','Welcome to Rooted Commons')}</h2>
         <FormattedText text={c('signup.success_message','Your membership has been created successfully.')} class="rich-body" />
         <p><a id="signup-dashboard-link" class="button" href="/dashboard/">{c('signup.dashboard_button','Your new member dashboard')}</a></p>
-        <FormattedText text={c('signup.dashboard_security',"**Keep your access link private.** It can be used to sign in to your membership on a new device. Once signed in, you'll normally stay signed in on that device for up to 90 days.\n\nWe'll send you a new weekly access link each Wednesday after orders close. Each new weekly link replaces the previous link for new sign-ins, but devices that are already signed in remain signed in.")} class="rich-body" />
+        <FormattedText text={c('signup.dashboard_security',"**No password needed.** Click **Your new member dashboard** to securely sign in on this device. We’ll also include a sign-in link in your welcome email, and send you a fresh link each week. Keep your sign-in links private.\n\n[Why don’t we use passwords?](/faqs/#passwords)")} class="rich-body" />
       </div>
     </section>
   </main>
   <script id="signup-config" type="application/json" set:html={signupConfigJson}></script>
-  <script type="module" src="/scripts/signup.js?v=2.9.76"></script>
+  <script type="module" src="/scripts/signup.js?v=2.9.77"></script>
 </BaseLayout>

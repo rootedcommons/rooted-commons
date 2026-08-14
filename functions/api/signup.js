@@ -1,6 +1,8 @@
 import { createRow, envConfig, json, listRows, listRowsFiltered, normaliseEmail, publicCollectionPoint, truthy } from '../_baserow.js';
 import { createSignedSession, nextWednesdayExpiry } from '../_auth.js';
 import { refreshMemberMetricCache } from '../_public-metrics.js';
+import { sendMail } from '../_smtp.js';
+import { renderWelcomeEmail, welcomeEmailText, WELCOME_EMAIL_TEMPLATE_FIELD } from '../_welcome-email.js';
 
 const clean=value=>String(value||'').trim();
 const money=value=>Math.round((Number(value)+Number.EPSILON)*100)/100;
@@ -64,7 +66,8 @@ export async function onRequestPost(context){
     const monthlyEquivalent=contributionFrequency==='Monthly'?money(contributionAmount):money(contributionAmount*52/12);
 
     const cfg=envConfig(env);
-    const [existingMembers,points,members]=await Promise.all([listRowsFiltered(cfg,cfg.members,{Email:email},{size:2}),listRows(cfg,cfg.collectionPoints),listRows(cfg,cfg.members)]);
+    const [existingMembers,points,members,settingsRows]=await Promise.all([listRowsFiltered(cfg,cfg.members,{Email:email},{size:2}),listRows(cfg,cfg.collectionPoints),listRows(cfg,cfg.members),cfg.settings?listRows(cfg,cfg.settings):Promise.resolve([])]);
+    const settings=settingsRows.find(row=>clean(row['Site title']))||settingsRows[0]||{};
     if(existingMembers.some(row=>normaliseEmail(row.Email)===email))return json({ok:false,code:'existing_member',message:'It looks like you’re already a Rooted Commons member.'},409);
     const point=points.find(row=>Number(row.id)===collectionPointId && truthy(row.Active,true));
     if(!point)return json({ok:false,message:'That collection point is not currently available.'},409);
@@ -108,33 +111,26 @@ export async function onRequestPost(context){
     const dashboardUrl=`/api/access?token=${encodeURIComponent(orderToken)}&return=${encodeURIComponent('/dashboard/')}`;
     const verificationUrl=`${origin}/api/verify-email?token=${encodeURIComponent(orderToken)}`;
     let welcomeEmailSent=false;
-    const welcomeWebhook=env.WELCOME_EMAIL_WEBHOOK_URL||env.MAGIC_LINK_WEBHOOK_URL;
-    if(welcomeWebhook){
-      try{
-        const response=await fetch(welcomeWebhook,{
-          method:'POST',
-          headers:{'content-type':'application/json'},
-          body:JSON.stringify({
-            event:'member_signup_confirmation',
-            email,
-            link:verificationUrl,
-            verificationLink:verificationUrl,
-            dashboardLink:`${origin}${dashboardUrl}`,
-            member:{firstName,lastName,memberNumber},
-            contribution:{frequency:contributionFrequency,amount:money(contributionAmount)},
-            emailContent:{
-              subject:'Welcome to Rooted Commons – confirm your email',
-              heading:'Welcome to Rooted Commons',
-              intro:'Your membership has been created successfully.',
-              confirmationText:'Please confirm that this email address belongs to you by opening your weekly access link.',
-              buttonText:'Confirm my email and open my dashboard',
-              securityText:'Keep this access link private. It can be used to sign in to your membership on a new device. Once signed in, you will normally stay signed in on that device for up to 90 days.',
-              rotationText:'We will send you a new weekly access link each Wednesday after orders close. Each new weekly link replaces the previous link for new sign-ins, but devices that are already signed in remain signed in.'
-            }
-          })
-        });
-        welcomeEmailSent=response.ok;
-      }catch{}
+    try{
+      const rendered=renderWelcomeEmail({
+        template:settings[WELCOME_EMAIL_TEMPLATE_FIELD],
+        firstName,
+        memberRef:memberNumber,
+        contributionFrequency,
+        contributionAmount,
+        loginUrl:verificationUrl,
+        settings
+      });
+      await sendMail(env,{
+        to:email,
+        subject:'Welcome to Rooted Commons',
+        html:rendered.html,
+        text:welcomeEmailText(rendered.data)
+      });
+      welcomeEmailSent=true;
+      if(rendered.usedFallback)console.warn('welcome email fallback used',{memberId:member.id});
+    }catch(error){
+      console.error('welcome email send failed',error);
     }
     return json({ok:true,memberId:member.id,memberNumber,dashboardUrl,welcomeEmailSent},201);
   }catch(error){console.error('signup failed',error);return json({ok:false,message:'We could not create your membership. Please try again.'},500);}

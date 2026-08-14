@@ -83,6 +83,7 @@ const checkoutConfigJson = JSON.stringify({ products: checkoutProducts, points: 
         <div id="verified-member-panel" hidden>
           <h2>{c('checkout.member_order_heading')}</h2>
           <div id="verified-member"></div>
+          <FormattedText text={c('checkout.terms_confirmation','By confirming your order, you agree to our [Terms of Sale](/terms-of-sale/).')} class="checkout-terms-confirmation" />
           <button id="submit-order" class="button" type="button" disabled>{c('checkout.confirm_button')}</button>
           <p id="submit-message" class="small-print" aria-live="polite"></p>
         </div>
@@ -101,5 +102,5 @@ const checkoutConfigJson = JSON.stringify({ products: checkoutProducts, points: 
   {ordinaryBlocks.map((block) => <SectionRenderer block={block} products={data.products} settings={data.settings} />)}
 
   <script id="checkout-config" type="application/json" set:html={checkoutConfigJson}></script>
-  <script type="module" src="/scripts/checkout.js?v=2.9.76"></script>
+  <script type="module" src="/scripts/checkout.js?v=2.9.77"></script>
 </BaseLayout>

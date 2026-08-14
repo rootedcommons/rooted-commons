@@ -11,7 +11,8 @@ const items = Object.entries(content)
     const question = String(value || '').trim();
     const answer = String(content[`faq.${number}.answer`] || '').trim();
     const order = Number(number);
-    return question && answer ? { number, order, question, answer } : null;
+    const anchor = String(content[`faq.${number}.anchor`] || `faq-${number}`).trim().replace(/^#/, '') || `faq-${number}`;
+    return question && answer ? { number, order, question, answer, anchor } : null;
   })
   .filter(Boolean)
   .sort((a, b) => a.order - b.order);
@@ -21,7 +22,7 @@ const items = Object.entries(content)
   <section class="faq-section" aria-label="Frequently asked questions">
     <div class="faq-list" data-faq-accordion>
       {items.map((item) => (
-        <details class="faq-item">
+        <details class="faq-item" id={item.anchor}>
           <summary>
             <span>{item.question}</span>
             <span class="faq-icon" aria-hidden="true"></span>
@@ -34,15 +35,37 @@ const items = Object.entries(content)
 )}
 
 <script>
-  document.querySelectorAll('[data-faq-accordion]').forEach((accordion) => {
-    const items = Array.from(accordion.querySelectorAll('details'));
-    items.forEach((item) => {
-      item.addEventListener('toggle', () => {
-        if (!item.open) return;
-        items.forEach((other) => {
-          if (other !== item) other.open = false;
+  const initialiseFaqAccordions = () => {
+    document.querySelectorAll('[data-faq-accordion]').forEach((accordion) => {
+      const items = Array.from(accordion.querySelectorAll('details'));
+      items.forEach((item) => {
+        if (item.dataset.faqReady === 'true') return;
+        item.dataset.faqReady = 'true';
+        item.addEventListener('toggle', () => {
+          if (!item.open) return;
+          items.forEach((other) => {
+            if (other !== item) other.open = false;
+          });
         });
       });
+
+      const openHashTarget = () => {
+        const id = decodeURIComponent(window.location.hash.replace(/^#/, ''));
+        if (!id) return;
+        const target = items.find((item) => item.id === id);
+        if (!target) return;
+        items.forEach((item) => { item.open = item === target; });
+        requestAnimationFrame(() => target.scrollIntoView({ block: 'start' }));
+      };
+
+      openHashTarget();
+      if (accordion.dataset.hashReady !== 'true') {
+        accordion.dataset.hashReady = 'true';
+        window.addEventListener('hashchange', openHashTarget);
+      }
     });
-  });
+  };
+
+  initialiseFaqAccordions();
+  document.addEventListener('astro:page-load', initialiseFaqAccordions);
 </script>
