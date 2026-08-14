@@ -1,4 +1,4 @@
-import { cachedPublicGet, envConfig, json, jsonCached, linkedIds, linkedValues, listRows, truthy, unwrap, updateRow } from '../_baserow.js';
+import { cachedPublicGet, envConfig, fileUrl, json, jsonCached, linkedIds, linkedValues, listRows, truthy, unwrap, updateRow } from '../_baserow.js';
 
 function originalFileUrl(value) {
   return Array.isArray(value) && value.length ? String(value[0]?.url || '') : '';

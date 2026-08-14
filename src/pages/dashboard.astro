@@ -48,7 +48,7 @@ const copy={
   changeCollection:c('dashboard.change_collection','Change collection preferences'),
   chooseCollection:c('dashboard.choose_collection','Choose your collection point'),
   collectionMapLink:c('dashboard.collection_map_link','see our map'),
-  preferredCollectionDay:c('dashboard.preferred_collection_day','Preferred collection day'),
+  preferredCollectionDay:c('dashboard.preferred_collection_day','and collection day'),
   saveCollection:c('dashboard.save_collection','Save collection point'),
   cancel:c('dashboard.cancel','Cancel'),
   collectionSaving:c('dashboard.collection_saving','Saving…'),
@@ -249,7 +249,7 @@ const dashboardConfigJson = JSON.stringify({ badgeLogos, memberBadge, membership
           <form id="dashboard-point-form" class="dashboard-point-form" hidden>
             <div class="dashboard-point-label-row">
               <label for="dashboard-point-select">{copy.chooseCollection}</label>
-              <a class="dashboard-map-link" href="/collection-points/">({copy.collectionMapLink})</a>
+              <a class="dashboard-map-link" href="/collection-points/?return=/dashboard/&select=1">({copy.collectionMapLink})</a>
             </div>
             <select id="dashboard-point-select" required></select>
             <label for="dashboard-day-select">{copy.preferredCollectionDay}</label>
@@ -294,5 +294,5 @@ const dashboardConfigJson = JSON.stringify({ badgeLogos, memberBadge, membership
   {blocks.map((block)=><SectionRenderer block={block} products={data.products} settings={s} />)}
 
   <script id="dashboard-config" type="application/json" set:html={dashboardConfigJson}></script>
-  <script type="module" src="/scripts/dashboard.js?v=2.9.73"></script>
+  <script type="module" src="/scripts/dashboard.js?v=2.9.74"></script>
 </BaseLayout>

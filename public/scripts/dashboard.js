@@ -254,8 +254,12 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
       document.querySelector('#dashboard-credit-value').textContent=money.format(member.credit||0);
 
       const point=member.collectionPoint||{};
-      populatePointSelect(point.id);
-      populateDaySelect(member.preferredCollectionDay||'Thursday');
+      const mappedPointId=Number(localStorage.getItem('rooted-commons-dashboard-collection-point')||0);
+      if(mappedPointId)localStorage.removeItem('rooted-commons-dashboard-collection-point');
+      const mappedPoint=(collectionPoints||[]).find(item=>Number(item.id)===mappedPointId);
+      populatePointSelect(mappedPoint?.id||point.id);
+      populateDaySelect(mappedPoint ? '' : (member.preferredCollectionDay||'Thursday'));
+      if(mappedPoint){pointForm.hidden=false;pointMessage.textContent='';}
       document.querySelector('#dashboard-point-name').textContent=point.name||copy.collectionNotSelected;
       const preferredSlot=(point.collectionSlots||[]).find(item=>item.day===member.preferredCollectionDay)||(point.collectionSlots||[])[0];
       document.querySelector('#dashboard-point-time').textContent=preferredSlot?`${preferredSlot.day} · ${preferredSlot.time}`:(point.collectionTime||'');

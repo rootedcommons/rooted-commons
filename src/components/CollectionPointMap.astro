@@ -75,8 +75,14 @@ const mapPoints = points
             button.disabled=true;
             try{
               if(selectionMode){
-                localStorage.setItem('rooted-commons-signup-collection-point',String(pointId));
-                window.location.href=returnPath||'/signup/';
+                const target=returnPath||'/signup/';
+                const selectionKey=target.startsWith('/checkout/')
+                  ? 'rooted-commons-checkout-collection-point'
+                  : target.startsWith('/dashboard/')
+                    ? 'rooted-commons-dashboard-collection-point'
+                    : 'rooted-commons-signup-collection-point';
+                localStorage.setItem(selectionKey,String(pointId));
+                window.location.href=target;
                 return;
               }
               if(memberAuthenticated){

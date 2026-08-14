@@ -37,7 +37,7 @@ const cancelCollectionButton=document.querySelector('#checkout-cancel-collection
 const useCollectionButton=document.querySelector('#checkout-use-collection');
 const pointSelect=document.querySelector('#checkout-point-select');
 const slotPanel=document.querySelector('#collection-slot-panel');
-const slotOptions=document.querySelector('#collection-slot-options');
+const daySelect=document.querySelector('#checkout-day-select');
 const collectionMessage=document.querySelector('#collection-message');
 const freshnessWarning=document.querySelector('#collection-freshness-warning');
 const checkoutPointDetails=document.querySelector('#checkout-point-details');
@@ -131,7 +131,7 @@ function renderBasket(){
   if(!items.length)basketLines.innerHTML=`<h3>${escapeHtml(checkoutEmptyHeading||'Your basket is empty')}</h3><p>${escapeHtml(checkoutEmptyText||'Return to the shop to add something.')}</p>`;
   else{
     const trash='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-.7 11H7.7L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z"/></svg>';
-    basketLines.innerHTML=items.map(item=>`<div class="checkout-line"><div><strong>${escapeHtml(item.product.name)}${item.product.size?` – ${escapeHtml(item.product.size)}`:''}</strong><span>${money.format(item.product.price)} each</span></div><div class="checkout-line-controls"><button type="button" data-checkout-action="decrease" data-product-id="${item.productId}" aria-label="Decrease ${escapeHtml(item.product.name)}">−</button><span>${item.quantity}</span><button type="button" data-checkout-action="increase" data-product-id="${item.productId}" aria-label="Increase ${escapeHtml(item.product.name)}">+</button><button type="button" class="checkout-trash" data-checkout-action="remove" data-product-id="${item.productId}" aria-label="Remove ${escapeHtml(item.product.name)}">${trash}</button></div><strong>${money.format(item.product.price*item.quantity)}</strong></div>`).join('');
+    basketLines.innerHTML=items.map(item=>`<div class="checkout-line"><div><strong>${escapeHtml(item.product.name)}${item.product.size?` – ${escapeHtml(item.product.size)}`:''}</strong><span>${money.format(item.product.price)} each</span></div><div class="checkout-line-controls"><span class="checkout-quantity-stepper"><button type="button" data-checkout-action="decrease" data-product-id="${item.productId}" aria-label="Decrease ${escapeHtml(item.product.name)}">−</button><span>${item.quantity}</span><button type="button" data-checkout-action="increase" data-product-id="${item.productId}" aria-label="Increase ${escapeHtml(item.product.name)}">+</button></span><button type="button" class="checkout-trash" data-checkout-action="remove" data-product-id="${item.productId}" aria-label="Remove ${escapeHtml(item.product.name)}">${trash}</button></div><strong>${money.format(item.product.price*item.quantity)}</strong></div>`).join('');
   }
   totalElement.textContent=money.format(basketTotal());
   refreshCollectionState();
@@ -192,13 +192,9 @@ function pendingPoint(){return pointMap.get(Number(pendingPointId));}
 function renderPendingSlots(){
   const point=pendingPoint();
   const slots=availableSlots(point);
-  if(!slots.length){slotOptions.innerHTML='';slotPanel.hidden=true;pendingDay='';useCollectionButton.disabled=true;return;}
+  if(!slots.length){daySelect.innerHTML='';slotPanel.hidden=true;pendingDay='';useCollectionButton.disabled=true;return;}
   if(!slots.some(slot=>slot.day===pendingDay))pendingDay=(member?.preferredCollectionDay&&slots.some(slot=>slot.day===member.preferredCollectionDay))?member.preferredCollectionDay:(slots[0]?.day||'');
-  const cycle=marketCycle();
-  slotOptions.innerHTML=slots.map(slot=>{
-    const d=new Date(cycle.marketThursday);d.setDate(d.getDate()+(dayRank[slot.day]||0));
-    return `<label class="collection-slot-option"><input type="radio" name="collection-slot" value="${escapeHtml(slot.day)}" ${slot.day===pendingDay?'checked':''}><span>${dateLabel(d)} · ${escapeHtml(slot.time)}${slot.day==='Thursday'?' <strong>— recommended</strong>':''}</span></label>`;
-  }).join('');
+  daySelect.innerHTML=slots.map(slot=>`<option value="${escapeHtml(slot.day)}" ${slot.day===pendingDay?'selected':''}>${escapeHtml(slot.day)} — ${escapeHtml(slot.time)}</option>`).join('');
   slotPanel.hidden=false;
   useCollectionButton.disabled=!pendingDay;
   const hasFridaySensitive=selectedItems().some(item=>restrictionFor(item.product)===1);
@@ -218,9 +214,9 @@ function renderCollectionPicker(){
   collectionMessage.textContent='';
   renderPendingSlots();
 }
-function openCollectionPicker(){
-  pendingPointId=selectionConfirmed?selectedPointId:(preferenceIssue?.point&&validPoints().some(point=>Number(point.id)===Number(preferenceIssue.point.id))?Number(preferenceIssue.point.id):0);
-  pendingDay=selectionConfirmed?selectedCollectionDay:'';
+function openCollectionPicker(mappedPointId=0){
+  pendingPointId=mappedPointId||(selectionConfirmed?selectedPointId:(preferenceIssue?.point&&validPoints().some(point=>Number(point.id)===Number(preferenceIssue.point.id))?Number(preferenceIssue.point.id):0));
+  pendingDay=mappedPointId?'':(selectionConfirmed?selectedCollectionDay:'');
   collectionPicker.hidden=false;
   renderCollectionPicker();
   document.querySelector('.checkout-collection-summary')?.scrollIntoView({behavior:'smooth',block:'start'});
@@ -228,7 +224,7 @@ function openCollectionPicker(){
 changeCollectionButton?.addEventListener('click',()=>{if(collectionPicker.hidden)openCollectionPicker();else collectionPicker.hidden=true;});
 cancelCollectionButton?.addEventListener('click',()=>{collectionPicker.hidden=true;});
 pointSelect?.addEventListener('change',()=>{pendingPointId=Number(pointSelect.value||0);pendingDay='';renderPendingSlots();});
-slotOptions?.addEventListener('change',event=>{if(event.target.matches('input[name="collection-slot"]')){pendingDay=event.target.value;renderPendingSlots();}});
+daySelect?.addEventListener('change',()=>{pendingDay=daySelect.value;renderPendingSlots();});
 useCollectionButton?.addEventListener('click',()=>{
   const point=pendingPoint();
   if(!point||!pointCompatible(point)||!availableSlots(point).some(slot=>slot.day===pendingDay))return;
@@ -306,6 +302,8 @@ async function verifyMember(){
   document.querySelector('#unverified-member-panel').hidden=true;document.querySelector('#verified-member-panel').hidden=false;
   const joinCard=document.querySelector('#checkout-join-card');if(joinCard)joinCard.hidden=true;
   renderBasket();
+  const mappedPointId=Number(localStorage.getItem('rooted-commons-checkout-collection-point')||0);
+  if(mappedPointId){localStorage.removeItem('rooted-commons-checkout-collection-point');openCollectionPicker(mappedPointId);}
 }
 
 document.querySelector('#email-form').addEventListener('submit',async event=>{

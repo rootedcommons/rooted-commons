@@ -3,6 +3,8 @@ import { createSignedSession, nextWednesdayExpiry } from '../_auth.js';
 import { refreshMemberMetricCache } from '../_public-metrics.js';
 
 const clean=value=>String(value||'').trim();
+const money=value=>Math.round((Number(value)+Number.EPSILON)*100)/100;
+const hasPennyPrecision=value=>Number.isFinite(Number(value))&&Math.abs(Number(value)*100-Math.round(Number(value)*100))<1e-7;
 const attempts=new Map();
 const RATE_WINDOW_MS=15*60*1000;
 const RATE_MAX=5;
