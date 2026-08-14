@@ -261,7 +261,7 @@ async function loadSiteData() {
   const sections = sourceSections.map((row: any) => {
     const groupKey = text(row, 'Group key', row.groupKey || '');
     const explicitType = choice(row, 'Section type', row.type || '');
-    const useOriginalCardImages = normalized(groupKey) === 'how-it-works';
+    const useOriginalCardImages = String(groupKey || '').trim().toLowerCase() === 'how-it-works';
     const image = useOriginalCardImages ? originalFileUrl(row, 'Image', row.image || '') : fileUrl(row, 'Image', row.image || '');
     const image2 = useOriginalCardImages ? originalFileUrl(row, 'Image 2', row.image2 || '') : fileUrl(row, 'Image 2', row.image2 || '');
     const image3 = useOriginalCardImages ? originalFileUrl(row, 'Image 3', row.image3 || '') : fileUrl(row, 'Image 3', row.image3 || '');

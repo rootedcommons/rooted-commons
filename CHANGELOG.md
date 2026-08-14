@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.9.75 — 2026-08-14
+
+- Fixed the static-build regression introduced by the How it works original-image change: empty Section `Group key` values no longer reach `normalized()` without a fallback, preventing the `Cannot read properties of undefined (reading 'trim')` build failure.
+
 ## 2.9.74 — 2026-08-14
 
 - Fixed signup commitment validation by restoring the missing penny-precision and money helpers.
