@@ -60,6 +60,10 @@ const fileUrl = (row: Row | undefined, key: string, fallback = '') => {
   const file = fileValue(row, key);
   return file?.url || file?.thumbnails?.large?.url || file?.thumbnails?.card_cover?.url || fallback;
 };
+const originalFileUrl = (row: Row | undefined, key: string, fallback = '') => {
+  const file = fileValue(row, key);
+  return file?.url || fallback;
+};
 const fileLargeUrl = (row: Row | undefined, key: string, fallback = '') => {
   const file = fileValue(row, key);
   return file?.thumbnails?.large?.url || file?.url || file?.thumbnails?.card_cover?.url || fallback;
@@ -219,6 +223,8 @@ async function loadSiteData() {
     bankSortCode: text(validSettingsRow, 'Bank sort code', fallbackSettings.bankSortCode),
     bankAccountNumber: text(validSettingsRow, 'Bank account number', fallbackSettings.bankAccountNumber),
     historicTotalMemberSpending: numeric(validSettingsRow, 'Historic total member spending', 0),
+    ordersTemporarilyClosed: boolean(validSettingsRow, 'Orders temporarily closed', false),
+    ordersClosedMessage: text(validSettingsRow, 'Orders closed message', 'Orders are currently closed. Please check back when the next market opens.'),
     navigationLinks: Object.keys(validSettingsRow)
       .map((key) => {
         const match = key.match(/^Navigation label\s*(\d+)$/i);
@@ -382,7 +388,7 @@ async function loadSiteData() {
     name: text(row, 'Name'),
     address: text(row, 'Address'),
     active: boolean(row, 'Active', true),
-    image: fileUrl(row, 'Image'),
+    image: originalFileUrl(row, 'Image'),
     link: text(row, 'Link', text(row, 'Website', text(row, 'URL'))),
     description: text(row, 'Description'),
     latitude: numeric(row, 'Latitude', NaN),
@@ -413,9 +419,9 @@ async function loadSiteData() {
     socialUrl: text(row, 'Social URL'),
     getInvolvedLabel: text(row, 'Get involved label', 'Get involved'),
     getInvolvedUrl: text(row, 'Get involved URL'),
-    image: fileUrl(row, 'Image'),
-    image2: fileUrl(row, 'Image 2'),
-    image3: fileUrl(row, 'Image 3'),
+    image: originalFileUrl(row, 'Image'),
+    image2: originalFileUrl(row, 'Image 2'),
+    image3: originalFileUrl(row, 'Image 3'),
     imageAlt: text(row, 'Image alt text'),
     image2Alt: text(row, 'Image 2 alt text'),
     image3Alt: text(row, 'Image 3 alt text'),

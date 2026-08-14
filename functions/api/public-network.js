@@ -1,4 +1,8 @@
-import { cachedPublicGet, envConfig, fileUrl, json, jsonCached, linkedIds, linkedValues, listRows, truthy, unwrap, updateRow } from '../_baserow.js';
+import { cachedPublicGet, envConfig, json, jsonCached, linkedIds, linkedValues, listRows, truthy, unwrap, updateRow } from '../_baserow.js';
+
+function originalFileUrl(value) {
+  return Array.isArray(value) && value.length ? String(value[0]?.url || '') : '';
+}
 import { hasComputedValueField, memberStats, metricTemplate, needsMemberStats, needsTransactionStats, resolveMetricTemplate, transactionStats } from '../_public-metrics.js';
 
 function publicStatsSection(row) {
@@ -27,9 +31,9 @@ function publicPartner(row) {
     socialUrl: unwrap(row['Social URL']),
     getInvolvedLabel: unwrap(row['Get involved label']) || 'Get involved',
     getInvolvedUrl: unwrap(row['Get involved URL']),
-    image: fileUrl(row.Image),
-    image2: fileUrl(row['Image 2']),
-    image3: fileUrl(row['Image 3']),
+    image: originalFileUrl(row.Image),
+    image2: originalFileUrl(row['Image 2']),
+    image3: originalFileUrl(row['Image 3']),
     imageAlt: unwrap(row['Image alt text']),
     image2Alt: unwrap(row['Image 2 alt text']),
     image3Alt: unwrap(row['Image 3 alt text']),

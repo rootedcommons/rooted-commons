@@ -77,7 +77,8 @@ const copy={
   commitmentSaving:c('dashboard.commitment_saving','Saving…'),
   commitmentUpdated:c('dashboard.commitment_updated','Commitment updated. Please update your standing order to match.'),
   commitmentFailed:c('dashboard.commitment_failed','Your commitment could not be updated.'),
-  updateRegularPaymentHeading:c('dashboard.update_regular_payment_heading','Update your regular payment'),
+  updateRegularPaymentHeading:c('dashboard.update_regular_payment_heading','Please update your standing order'),
+  commitmentPaymentReminder:c('dashboard.commitment_payment_reminder','You recently changed your {frequency} commitment to {amount}/{period}. Please remember to change your standing order accordingly. This message will disappear once we receive a payment that matches your new commitment amount.'),
   loading:c('dashboard.loading','Loading your membership…'),
   invalidHeading:c('dashboard.invalid_link_heading','This secure link is no longer valid'),
   invalidBody:c('dashboard.invalid_link_body','Request a new link from checkout or use the latest weekly email.'),
@@ -204,7 +205,8 @@ const dashboardConfigJson = JSON.stringify({ badgeLogos, memberBadge, membership
 
           <section id="dashboard-regular-payment-details" class="regular-payment-details" hidden>
             <h3 id="dashboard-regular-payment-heading">{copy.regularPaymentHeading}</h3>
-            <FormattedText text={copy.regularPaymentBody} class="rich-body" />
+            <p id="dashboard-regular-payment-reminder" class="dashboard-regular-payment-reminder" hidden></p>
+            <div id="dashboard-regular-payment-body"><FormattedText text={copy.regularPaymentBody} class="rich-body" /></div>
             <dl class="bank-details">
               <div><dt>{copy.bankAccountName}</dt><dd id="dashboard-regular-bank-name"></dd></div>
               <div><dt>{copy.bankSortCode}</dt><dd id="dashboard-regular-sort-code"></dd></div>
@@ -292,5 +294,5 @@ const dashboardConfigJson = JSON.stringify({ badgeLogos, memberBadge, membership
   {blocks.map((block)=><SectionRenderer block={block} products={data.products} settings={s} />)}
 
   <script id="dashboard-config" type="application/json" set:html={dashboardConfigJson}></script>
-  <script type="module" src="/scripts/dashboard.js?v=2.9.71"></script>
+  <script type="module" src="/scripts/dashboard.js?v=2.9.73"></script>
 </BaseLayout>

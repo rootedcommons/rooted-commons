@@ -108,14 +108,17 @@ export async function onRequestPatch(context) {
       const money=value=>Math.round((Number(value)+Number.EPSILON)*100)/100;
       const weeklyCommitment=contributionFrequency==='Weekly'?money(contributionAmount):money(contributionAmount*12/52);
       const monthlyEquivalent=contributionFrequency==='Monthly'?money(contributionAmount):money(contributionAmount*52/12);
+      const commitmentChangedAt=new Date().toISOString();
       await updateRow(cfg,cfg.members,member.id,{
         'Weekly commitment':weeklyCommitment,
         'Monthly equivalent':monthlyEquivalent,
-        'Contribution frequency':contributionFrequency
+        'Contribution frequency':contributionFrequency,
+        'Commitment changed at':commitmentChangedAt,
+        'Commitment payment pending':true
       });
       const metricRefresh=refreshMemberMetricCache(cfg).catch(error=>console.warn('Unable to refresh public member metrics',error));
       if(typeof context.waitUntil==='function')context.waitUntil(metricRefresh);
-      return json({ok:true,weeklyCommitment,monthlyEquivalent,contributionFrequency,contributionAmount:money(contributionAmount)});
+      return json({ok:true,weeklyCommitment,monthlyEquivalent,contributionFrequency,contributionAmount:money(contributionAmount),commitmentChangedAt,commitmentPaymentPending:true});
     }
 
     const collectionPointId = Number(body.collectionPointId || 0);

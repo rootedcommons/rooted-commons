@@ -24,6 +24,8 @@ let usingCustomSelection=false;
 let preferenceIssue=null;
 let pendingPointId=0;
 let pendingDay='';
+let ordersTemporarilyClosed=false;
+let ordersClosedMessage='';
 
 const basketLines=document.querySelector('#checkout-basket-lines');
 const totalElement=document.querySelector('#checkout-total');
@@ -221,7 +223,7 @@ function openCollectionPicker(){
   pendingDay=selectionConfirmed?selectedCollectionDay:'';
   collectionPicker.hidden=false;
   renderCollectionPicker();
-  collectionPicker.scrollIntoView({behavior:'smooth',block:'start'});
+  document.querySelector('.checkout-collection-summary')?.scrollIntoView({behavior:'smooth',block:'start'});
 }
 changeCollectionButton?.addEventListener('click',()=>{if(collectionPicker.hidden)openCollectionPicker();else collectionPicker.hidden=true;});
 cancelCollectionButton?.addEventListener('click',()=>{collectionPicker.hidden=true;});
@@ -251,7 +253,22 @@ function renderMemberSummary(){
 }
 function updateSubmitState(){
   const point=selectedPoint();
-  submitButton.disabled=!(member&&selectedItems().length&&selectionConfirmed&&point&&pointCompatible(point)&&selectedCollectionDay&&availableSlots(point).some(slot=>slot.day===selectedCollectionDay));
+  const otherwiseReady=Boolean(member&&selectedItems().length&&selectionConfirmed&&point&&pointCompatible(point)&&selectedCollectionDay&&availableSlots(point).some(slot=>slot.day===selectedCollectionDay));
+  submitButton.disabled=ordersTemporarilyClosed||!otherwiseReady;
+  submitButton.textContent=ordersTemporarilyClosed?'Orders currently closed':checkoutConfirmButton;
+  if(ordersTemporarilyClosed)submitMessage.textContent=ordersClosedMessage;
+  else if(submitMessage.textContent===ordersClosedMessage)submitMessage.textContent='';
+}
+
+async function loadOrderStatus(){
+  try{
+    const response=await fetch('/api/order-status',{cache:'no-store',headers:{accept:'application/json'}});
+    const payload=await response.json();
+    if(!response.ok||!payload.ok)return;
+    ordersTemporarilyClosed=payload.closed===true;
+    ordersClosedMessage=String(payload.message||'Orders are currently closed.');
+    updateSubmitState();
+  }catch(error){console.warn('Order status could not be loaded',error);}
 }
 
 document.addEventListener('click',event=>{
@@ -310,5 +327,6 @@ submitButton.addEventListener('click',async()=>{
 });
 
 renderBasket();
+loadOrderStatus();
 loadLiveProducts();
 verifyMember();

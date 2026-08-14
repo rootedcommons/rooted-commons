@@ -1,4 +1,4 @@
-import { envConfig, listRows, createRow, linkedIds, updateRow } from '../../_baserow.js';
+import { envConfig, listRows, createRow, linkedIds, number, truthy, unwrap, updateRow } from '../../_baserow.js';
 import { refreshedConnection } from './_oauth.js';
 import { fetchRecentReceives, isImportableMemberPayment, paymentReference, xeroDate } from './_payments.js';
 
@@ -115,6 +115,19 @@ export async function syncMemberPayments(env, { maxPages = 5 } = {}) {
         'Source': 'Xero'
       });
       existingIds.add(txId);
+
+      if (truthy(member['Commitment payment pending'], false)) {
+        const frequency=unwrap(member['Contribution frequency']) === 'Monthly' ? 'Monthly' : 'Weekly';
+        const expected=frequency === 'Monthly' ? number(member['Monthly equivalent']) : number(member['Weekly commitment']);
+        const received=Math.round(Number(tx.Total) * 100) / 100;
+        const changedDate=member['Commitment changed at'] ? new Date(member['Commitment changed at']).toISOString().slice(0,10) : '';
+        const paymentDate=xeroDate(tx).slice(0,10);
+        if (expected > 0 && Math.abs(received-expected) < 0.005 && (!changedDate || paymentDate >= changedDate)) {
+          await updateRow(cfg,cfg.members,member.id,{ 'Commitment payment pending':false });
+          member['Commitment payment pending']=false;
+        }
+      }
+
       imported.push({
         id: txId,
         reference,

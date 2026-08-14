@@ -41,6 +41,24 @@ const checkoutConfigJson = JSON.stringify({ products: checkoutProducts, points: 
         </div>
         <div id="checkout-collection-warning" class="checkout-collection-warning" hidden aria-live="polite"></div>
         <button id="checkout-change-collection" class="button dashboard-change-point" type="button">Change collection options</button>
+
+        <div id="checkout-collection-picker" class="checkout-collection-picker checkout-collection-picker-inline" aria-label="Change collection options" hidden>
+          <p class="checkout-collection-explainer"><strong>Collection options depend on what’s in your basket.</strong><br>We only show places and days where every item in your order can be collected.</p>
+          <div class="checkout-collection-form">
+            <div class="checkout-collection-label-row"><label for="checkout-point-select">Choose your collection point</label> <a href="/collection-points/">(see our map)</a></div>
+            <select id="checkout-point-select"></select>
+            <div id="collection-slot-panel" class="collection-slot-panel" hidden>
+              <h3>Collection day</h3>
+              <div id="collection-slot-options" class="collection-slot-options"></div>
+              <p id="collection-freshness-warning" class="collection-freshness-warning" hidden></p>
+            </div>
+            <div class="checkout-collection-actions">
+              <button id="checkout-use-collection" class="button" type="button">Use this collection option</button>
+              <button id="checkout-cancel-collection" class="button button-secondary" type="button">Cancel</button>
+            </div>
+            <p id="collection-message" class="small-print" aria-live="polite"></p>
+          </div>
+        </div>
       </section>
 
       <section class="checkout-card checkout-review" aria-labelledby="checkout-order-heading">
@@ -49,24 +67,6 @@ const checkoutConfigJson = JSON.stringify({ products: checkoutProducts, points: 
         <div class="checkout-total-row"><span>{c('basket.total_label')}</span><strong id="checkout-total">£0.00</strong></div>
       </section>
     </div>
-
-    <section id="checkout-collection-picker" class="checkout-stage checkout-collection-picker" aria-label="Change collection options" hidden>
-      <p class="checkout-collection-explainer"><strong>Collection options depend on what’s in your basket.</strong><br>We only show places and days where every item in your order can be collected.</p>
-      <div class="checkout-collection-form">
-        <label for="checkout-point-select">Collection point</label>
-        <select id="checkout-point-select"></select>
-        <div id="collection-slot-panel" class="collection-slot-panel" hidden>
-          <h3>When would you like to collect?</h3>
-          <div id="collection-slot-options" class="collection-slot-options"></div>
-          <p id="collection-freshness-warning" class="collection-freshness-warning" hidden></p>
-        </div>
-        <div class="checkout-collection-actions">
-          <button id="checkout-use-collection" class="button" type="button">Use this collection option</button>
-          <button id="checkout-cancel-collection" class="button button-secondary" type="button">Cancel</button>
-        </div>
-        <p id="collection-message" class="small-print" aria-live="polite"></p>
-      </div>
-    </section>
 
     <div class="checkout-paths">
       <section id="member-path" class="checkout-card checkout-path-card">
@@ -91,7 +91,7 @@ const checkoutConfigJson = JSON.stringify({ products: checkoutProducts, points: 
       <section id="checkout-join-card" class="checkout-card checkout-path-card checkout-join-card">
         <h2>{c('checkout.join_heading')}</h2>
         <FormattedText text={c('checkout.join_body')} class="rich-body" />
-        <a class="button" href={s.joinButtonUrl || '/become-a-member/'}>{c('checkout.join_button')}</a>
+        <a class="button" href="/signup/">{c('checkout.join_button')}</a>
       </section>
     </div>
 
@@ -101,5 +101,5 @@ const checkoutConfigJson = JSON.stringify({ products: checkoutProducts, points: 
   {ordinaryBlocks.map((block) => <SectionRenderer block={block} products={data.products} settings={data.settings} />)}
 
   <script id="checkout-config" type="application/json" set:html={checkoutConfigJson}></script>
-  <script type="module" src="/scripts/checkout.js?v=2.9.72"></script>
+  <script type="module" src="/scripts/checkout.js?v=2.9.73"></script>
 </BaseLayout>

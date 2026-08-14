@@ -89,7 +89,7 @@ const selectedProducts = (section.productIds || []).length
               caption={item.imageCaption}
             />}
             {item.eyebrow && <p data-live-card-field="eyebrow" class="eyebrow">{item.eyebrow}</p>}
-            {item.heading && <h3 data-live-card-field="heading" class={`size-${item.headingSize}`}>{item.heading}</h3>}
+            {item.heading && <h3 data-live-card-field="heading" class={`align-${item.headingAlignment || item.alignment} size-${item.headingSize}`}>{item.heading}</h3>}
             {item.subheading && <p data-live-card-field="subheading" class={`section-subheading size-${item.subheadingSize}`}>{item.subheading}</p>}
             {item.body && <div data-live-card-rich="body"><FormattedText text={item.body} class={`rich-body size-${item.bodySize}`} /></div>}
             {item.buttonVisible && item.buttonText && item.buttonUrl && <a data-live-card-button class={`text-link button-${item.buttonSize}`} href={item.buttonUrl}>{item.buttonText}</a>}

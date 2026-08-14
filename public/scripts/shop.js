@@ -25,7 +25,16 @@ const {basketEmptyText='',basketNotice='',broadCategories=[],collectionPointsFor
     const shortDate=d=>`${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d.getDay()]} ${ordinal(d.getDate())} ${d.toLocaleDateString('en-GB',{month:'long'})}`;
     const cycle=marketCycle();
     const rolloverNotice=document.querySelector('#market-rollover-notice');
-    if(cycle.rollover&&rolloverNotice){rolloverNotice.innerHTML=`<strong>Orders for collection this week have closed. This order is for collection from ${shortDate(cycle.marketThursday)}.</strong>`;rolloverNotice.hidden=false;}
+    const showNormalRollover=()=>{if(cycle.rollover&&rolloverNotice){rolloverNotice.innerHTML=`<strong>Orders for collection this week have closed. This order is for collection from ${shortDate(cycle.marketThursday)}.</strong>`;rolloverNotice.hidden=false;}};
+    if(rolloverNotice){
+      fetch('/api/order-status',{cache:'no-store',headers:{accept:'application/json'}})
+        .then(response=>response.ok?response.json():null)
+        .then(payload=>{
+          if(payload?.closed){rolloverNotice.innerHTML=`<strong>${String(payload.message||'Orders are currently closed.').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]))}</strong>`;rolloverNotice.hidden=false;}
+          else showNormalRollover();
+        })
+        .catch(showNormalRollover);
+    }
 
     let basket = {};
     try { basket = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {}; } catch { basket = {}; }

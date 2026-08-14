@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.9.73 — 2026-08-14
+
+- Added a live Baserow-controlled temporary ordering lock with a reusable closure message, overriding the normal /orders rollover notice while active and preventing checkout confirmation in both the browser and authoritative order API.
+- Fixed Cards `Heading alignment` so individual card headings, including How it works, honour the CMS field.
+- Reworked FAQs into one continuous accordion with thin dividers and a clearer pale-sage expanded answer state derived from the existing Accent colour.
+- Made the checkout collection chooser expand inside the existing collection card; changed the checkout label to `Collection day`, placed `(see our map)` immediately after the collection-point label, retained basket-eligibility warnings, and aligned the dashboard map-link placement.
+- Changed the checkout `Become a member` action to `/signup/`.
+- Applied the existing Cloudy Day/page-background colour to interactive fields and inset utility panels, with nested controls returning to Surface where useful for contrast.
+- Changed /our-network partner galleries to request original uploaded Baserow file URLs only, never generated thumbnails.
+- Added persistent standing-order update reminders after commitment changes, cleared automatically by the Xero sync only when a matching weekly/monthly payment is received on or after the change.
+
 ## 2.9.72
 
 - Restored the How it works card width to 1400px and increased the founder campaign maximum width to 1240px.

@@ -46,11 +46,12 @@ export async function onRequestPost({ request, env }) {
       return json({ ok: false, message: 'Choose a collection point before confirming your order.' }, 400);
     }
 
-    const [auth, productRows, orders, points] = await Promise.all([
+    const [auth, productRows, orders, points, settingsRows] = await Promise.all([
       authenticatedMember(cfg,request,env,token),
       listRows(cfg, cfg.products),
       listRows(cfg, cfg.orders),
-      listRows(cfg, cfg.collectionPoints)
+      listRows(cfg, cfg.collectionPoints),
+      cfg.settings ? listRows(cfg, cfg.settings) : Promise.resolve([])
     ]);
 
     const member=auth?.member;
@@ -77,6 +78,14 @@ export async function onRequestPost({ request, env }) {
         duplicate: true,
         message: 'Your order has already been received.'
       });
+    }
+
+    const settingsRow = settingsRows.find(row => unwrap(row['Site title']) || row['Header logo']) || settingsRows[0];
+    if (settingsRow && truthy(settingsRow['Orders temporarily closed'], false)) {
+      return json({
+        ok:false,
+        message:unwrap(settingsRow['Orders closed message']) || 'Orders are currently closed. Please check back when the next market opens.'
+      },409);
     }
 
     const selectedPoint = points.find(row => Number(row.id) === selectedPointId && truthy(row.Active, true));

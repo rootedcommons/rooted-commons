@@ -144,7 +144,7 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
     const closeCommitmentEditor=()=>{
       if(commitmentForm)commitmentForm.hidden=true;
       if(commitmentMessage)commitmentMessage.textContent='';
-      if(!currentIsNew)regularPaymentDetails.hidden=true;
+      renderRegularPaymentState();
     };
     changeCommitmentButton?.addEventListener('click',openCommitmentEditor);
     promptChangeCommitmentButton?.addEventListener('click',openCommitmentEditor);
@@ -183,15 +183,36 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
         if(!response.ok||!payload.ok)throw new Error(payload.message||copy.commitmentFailed);
         window.RootedData?.invalidate?.('member');
         currentCommitment={weekly:Number(payload.weeklyCommitment)||10,monthly:Number(payload.monthlyEquivalent)||43.33,frequency:payload.contributionFrequency||frequency};
-        if(currentMember){currentMember.weeklyCommitment=currentCommitment.weekly;currentMember.monthlyEquivalent=currentCommitment.monthly;currentMember.contributionFrequency=currentCommitment.frequency;}
+        if(currentMember){currentMember.weeklyCommitment=currentCommitment.weekly;currentMember.monthlyEquivalent=currentCommitment.monthly;currentMember.contributionFrequency=currentCommitment.frequency;currentMember.commitmentPaymentPending=true;currentMember.commitmentChangedAt=payload.commitmentChangedAt||new Date().toISOString();}
         setCommitmentDisplay();
         document.querySelector('#dashboard-regular-payment-heading').textContent=copy.updateRegularPaymentHeading;
         regularPaymentDetails.hidden=false;
+        renderRegularPaymentState();
         commitmentMessage.textContent=copy.commitmentUpdated;
         updateCommitmentPrompt();
       }catch(error){commitmentMessage.textContent=error?.message||copy.commitmentFailed;}
       button.disabled=false;
     });
+
+    const renderRegularPaymentState=()=>{
+      const pending=Boolean(currentMember?.commitmentPaymentPending);
+      const reminder=document.querySelector('#dashboard-regular-payment-reminder');
+      const body=document.querySelector('#dashboard-regular-payment-body');
+      if(pending){
+        const frequency=currentCommitment.frequency==='Monthly'?'monthly':'weekly';
+        const amount=currentCommitment.frequency==='Monthly'?currentCommitment.monthly:currentCommitment.weekly;
+        document.querySelector('#dashboard-regular-payment-heading').textContent=copy.updateRegularPaymentHeading;
+        reminder.textContent=interpolate(copy.commitmentPaymentReminder,{frequency,amount:displayMoney(amount),period:frequency==='monthly'?'month':'week'});
+        reminder.hidden=false;
+        if(body)body.hidden=true;
+        regularPaymentDetails.hidden=false;
+      }else{
+        reminder.hidden=true;
+        if(body)body.hidden=false;
+        document.querySelector('#dashboard-regular-payment-heading').textContent=currentIsNew?copy.setupRegularPaymentHeading:copy.regularPaymentHeading;
+        regularPaymentDetails.hidden=!currentIsNew;
+      }
+    };
 
     const updateCommitmentPrompt=()=>{
       const weeks=Number(currentMember?.membershipWeeks)||0;
@@ -277,8 +298,7 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
       document.querySelector('#dashboard-regular-sort-code').textContent=bankSortCode||'—';
       document.querySelector('#dashboard-regular-account-number').textContent=bankAccountNumber||'—';
       document.querySelector('#dashboard-regular-payment-reference').textContent=member.paymentReference||`RC-${member.id}`;
-      document.querySelector('#dashboard-regular-payment-heading').textContent=isNew?copy.setupRegularPaymentHeading:copy.regularPaymentHeading;
-      regularPaymentDetails.hidden=!isNew;
+      renderRegularPaymentState();
 
       document.querySelector('#dashboard-topup-bank-name').textContent=bankAccountName||'—';
       document.querySelector('#dashboard-topup-sort-code').textContent=bankSortCode||'—';
