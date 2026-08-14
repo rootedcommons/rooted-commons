@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.9.76 — 2026-08-14
+
+- Collection-point map selections now return to dashboard/checkout with `?collection_point=ID#collection-point`; dashboard previews the unsaved point, including its image, and reopens the editor at that card.
+- Checkout uses the same targeted return pattern and reopens the collection editor with the selected point.
+- Dashboard collection editor label is fixed to `and collection day`.
+- `/orders/` no longer flashes the build-time product grid before live availability is applied; the catalogue is revealed only after the live availability pass finishes.
+- FAQ page top and bottom spacing is balanced with simple fixed padding rather than viewport-height centring.
+
 ## 2.9.75 — 2026-08-14
 
 - Fixed the static-build regression introduced by the How it works original-image change: empty Section `Group key` values no longer reach `normalized()` without a fallback, preventing the `Cannot read properties of undefined (reading 'trim')` build failure.

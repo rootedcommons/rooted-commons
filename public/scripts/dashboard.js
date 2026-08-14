@@ -28,6 +28,15 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
       daySelect.innerHTML=slots.map(slot=>`<option value="${slot.day}">${slot.day} — ${slot.time}</option>`).join('');
       if(slots.some(slot=>slot.day===selectedDay))daySelect.value=selectedDay;
     };
+    const renderPointPreview=(point,selectedDay='')=>{
+      point=point||{};
+      document.querySelector('#dashboard-point-name').textContent=point.name||copy.collectionNotSelected;
+      const slot=(point.collectionSlots||[]).find(item=>item.day===selectedDay)||(point.collectionSlots||[])[0];
+      document.querySelector('#dashboard-point-time').textContent=slot?`${slot.day} · ${slot.time}`:(point.collectionTime||'');
+      document.querySelector('#dashboard-point-address').textContent=point.address||'';
+      const pointImage=document.querySelector('#dashboard-point-image');
+      if(point.image){pointImage.src=point.image;pointImage.alt=point.name?interpolate(copy.collectionImageAlt,{name:point.name}):'';pointImage.hidden=false;}else{pointImage.hidden=true;pointImage.removeAttribute('src');}
+    };
     pointSelect.addEventListener('change',()=>populateDaySelect(''));
     document.querySelector('#dashboard-change-point').addEventListener('click',()=>{pointForm.hidden=false;pointMessage.textContent='';pointSelect.focus();});
     document.querySelector('#dashboard-cancel-point').addEventListener('click',()=>{pointForm.hidden=true;pointMessage.textContent='';});
@@ -42,12 +51,7 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
       if(response.ok&&payload.ok){
         window.RootedData?.invalidate?.('member');
         const point=payload.collectionPoint||{};
-        document.querySelector('#dashboard-point-name').textContent=point.name||copy.collectionNotSelected;
-        const slot=(point.collectionSlots||[]).find(item=>item.day===payload.preferredCollectionDay)||(point.collectionSlots||[])[0];
-        document.querySelector('#dashboard-point-time').textContent=slot?`${slot.day} · ${slot.time}`:(point.collectionTime||'');
-        document.querySelector('#dashboard-point-address').textContent=point.address||'';
-        const pointImage=document.querySelector('#dashboard-point-image');
-        if(point.image){pointImage.src=point.image;pointImage.alt=point.name?interpolate(copy.collectionImageAlt,{name:point.name}):'';pointImage.hidden=false;}else{pointImage.hidden=true;pointImage.removeAttribute('src');}
+        renderPointPreview(point,payload.preferredCollectionDay);
         pointMessage.textContent=copy.collectionUpdated;
         setTimeout(()=>{pointForm.hidden=true;pointMessage.textContent='';},900);
       }else pointMessage.textContent=payload.message||copy.collectionFailed;
@@ -254,18 +258,18 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
       document.querySelector('#dashboard-credit-value').textContent=money.format(member.credit||0);
 
       const point=member.collectionPoint||{};
-      const mappedPointId=Number(localStorage.getItem('rooted-commons-dashboard-collection-point')||0);
-      if(mappedPointId)localStorage.removeItem('rooted-commons-dashboard-collection-point');
+      const legacyMappedPointId=Number(localStorage.getItem('rooted-commons-dashboard-collection-point')||0);
+      if(legacyMappedPointId)localStorage.removeItem('rooted-commons-dashboard-collection-point');
+      const mappedPointId=Number(params.get('collection_point')||legacyMappedPointId||0);
       const mappedPoint=(collectionPoints||[]).find(item=>Number(item.id)===mappedPointId);
       populatePointSelect(mappedPoint?.id||point.id);
       populateDaySelect(mappedPoint ? '' : (member.preferredCollectionDay||'Thursday'));
-      if(mappedPoint){pointForm.hidden=false;pointMessage.textContent='';}
-      document.querySelector('#dashboard-point-name').textContent=point.name||copy.collectionNotSelected;
-      const preferredSlot=(point.collectionSlots||[]).find(item=>item.day===member.preferredCollectionDay)||(point.collectionSlots||[])[0];
-      document.querySelector('#dashboard-point-time').textContent=preferredSlot?`${preferredSlot.day} · ${preferredSlot.time}`:(point.collectionTime||'');
-      document.querySelector('#dashboard-point-address').textContent=point.address||'';
-      const pointImage=document.querySelector('#dashboard-point-image');
-      if(point.image){pointImage.src=point.image;pointImage.alt=point.name?interpolate(copy.collectionImageAlt,{name:point.name}):'';pointImage.hidden=false;}else{pointImage.hidden=true;pointImage.removeAttribute('src');}
+      if(mappedPoint){
+        pointForm.hidden=false;
+        pointMessage.textContent='';
+        renderPointPreview(mappedPoint,daySelect.value);
+        requestAnimationFrame(()=>document.querySelector('#collection-point')?.scrollIntoView({block:'start'}));
+      }else renderPointPreview(point,member.preferredCollectionDay||'Thursday');
 
       const logo=member.founderBadge?badgeLogos[member.founderBadge]:memberBadge;
       const badgeLabel=member.founderBadge||copy.defaultMemberLevel;

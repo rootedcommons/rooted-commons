@@ -302,8 +302,10 @@ async function verifyMember(){
   document.querySelector('#unverified-member-panel').hidden=true;document.querySelector('#verified-member-panel').hidden=false;
   const joinCard=document.querySelector('#checkout-join-card');if(joinCard)joinCard.hidden=true;
   renderBasket();
-  const mappedPointId=Number(localStorage.getItem('rooted-commons-checkout-collection-point')||0);
-  if(mappedPointId){localStorage.removeItem('rooted-commons-checkout-collection-point');openCollectionPicker(mappedPointId);}
+  const legacyMappedPointId=Number(localStorage.getItem('rooted-commons-checkout-collection-point')||0);
+  if(legacyMappedPointId)localStorage.removeItem('rooted-commons-checkout-collection-point');
+  const mappedPointId=Number(new URLSearchParams(location.search).get('collection_point')||legacyMappedPointId||0);
+  if(mappedPointId){openCollectionPicker(mappedPointId);requestAnimationFrame(()=>document.querySelector('#collection-point')?.scrollIntoView({block:'start'}));}
 }
 
 document.querySelector('#email-form').addEventListener('submit',async event=>{

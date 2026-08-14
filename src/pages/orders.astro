@@ -94,7 +94,7 @@ const shopConfigJson = JSON.stringify({ basketEmptyText: c('basket.empty'), bask
     </div>
     <div class="shop-layout">
       <div id="product-availability-status" class="small-print" role="status">Checking current availability…</div>
-      <div id="shop-products" aria-busy="true"><ProductGrid products={data.products} columns={columns} showControls={true} settings={s} content={data.interfaceContent} /></div>
+      <div id="shop-products" aria-busy="true" hidden><ProductGrid products={data.products} columns={columns} showControls={true} settings={s} content={data.interfaceContent} /></div>
     </div>
   </section>
 
@@ -109,5 +109,5 @@ const shopConfigJson = JSON.stringify({ basketEmptyText: c('basket.empty'), bask
   </aside>
 
   <script id="shop-config" type="application/json" set:html={shopConfigJson}></script>
-  <script type="module" src="/scripts/shop.js?v=2.9.74"></script>
+  <script type="module" src="/scripts/shop.js?v=2.9.76"></script>
 </BaseLayout>

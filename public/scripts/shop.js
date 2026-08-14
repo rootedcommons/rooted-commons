@@ -263,6 +263,7 @@ const {basketEmptyText='',basketNotice='',broadCategories=[],collectionPointsFor
         console.error(error);
       } finally {
         productShell?.setAttribute('aria-busy', 'false');
+        if(productShell)productShell.hidden=false;
       }
     }
     function renderBasket(){

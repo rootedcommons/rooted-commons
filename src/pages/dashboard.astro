@@ -238,7 +238,7 @@ const dashboardConfigJson = JSON.stringify({ badgeLogos, memberBadge, membership
       </div>
 
       <div class="dashboard-secondary-grid">
-        <article class="dashboard-card dashboard-collection">
+        <article id="collection-point" class="dashboard-card dashboard-collection">
           <p class="eyebrow">{copy.collectionEyebrow}</p>
           <img id="dashboard-point-image" class="dashboard-point-image" src="" alt="" hidden />
           <h2 id="dashboard-point-name">{copy.collectionNotSelected}</h2>
@@ -252,7 +252,7 @@ const dashboardConfigJson = JSON.stringify({ badgeLogos, memberBadge, membership
               <a class="dashboard-map-link" href="/collection-points/?return=/dashboard/&select=1">({copy.collectionMapLink})</a>
             </div>
             <select id="dashboard-point-select" required></select>
-            <label for="dashboard-day-select">{copy.preferredCollectionDay}</label>
+            <label for="dashboard-day-select">and collection day</label>
             <select id="dashboard-day-select" required></select>
             <div class="dashboard-point-actions">
               <button class="button" type="submit">{copy.saveCollection}</button>
@@ -294,5 +294,5 @@ const dashboardConfigJson = JSON.stringify({ badgeLogos, memberBadge, membership
   {blocks.map((block)=><SectionRenderer block={block} products={data.products} settings={s} />)}
 
   <script id="dashboard-config" type="application/json" set:html={dashboardConfigJson}></script>
-  <script type="module" src="/scripts/dashboard.js?v=2.9.74"></script>
+  <script type="module" src="/scripts/dashboard.js?v=2.9.76"></script>
 </BaseLayout>

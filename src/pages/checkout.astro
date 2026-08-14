@@ -31,7 +31,7 @@ const checkoutConfigJson = JSON.stringify({ products: checkoutProducts, points: 
 
   <main class="checkout-shell checkout-shell-wide">
     <div class="checkout-top-grid">
-      <section class="checkout-card checkout-collection-summary dashboard-collection" aria-labelledby="collection-heading">
+      <section id="collection-point" class="checkout-card checkout-collection-summary dashboard-collection" aria-labelledby="collection-heading">
         <p class="eyebrow" id="collection-heading">Your collection point</p>
         <div id="checkout-point-details">
           <img id="checkout-point-image" class="dashboard-point-image" src="" alt="" hidden />
@@ -101,5 +101,5 @@ const checkoutConfigJson = JSON.stringify({ products: checkoutProducts, points: 
   {ordinaryBlocks.map((block) => <SectionRenderer block={block} products={data.products} settings={data.settings} />)}
 
   <script id="checkout-config" type="application/json" set:html={checkoutConfigJson}></script>
-  <script type="module" src="/scripts/checkout.js?v=2.9.74"></script>
+  <script type="module" src="/scripts/checkout.js?v=2.9.76"></script>
 </BaseLayout>

@@ -76,12 +76,14 @@ const mapPoints = points
             try{
               if(selectionMode){
                 const target=returnPath||'/signup/';
-                const selectionKey=target.startsWith('/checkout/')
-                  ? 'rooted-commons-checkout-collection-point'
-                  : target.startsWith('/dashboard/')
-                    ? 'rooted-commons-dashboard-collection-point'
-                    : 'rooted-commons-signup-collection-point';
-                localStorage.setItem(selectionKey,String(pointId));
+                if(target.startsWith('/dashboard/')||target.startsWith('/checkout/')){
+                  const targetUrl=new URL(target,window.location.origin);
+                  targetUrl.searchParams.set('collection_point',String(pointId));
+                  targetUrl.hash='collection-point';
+                  window.location.href=targetUrl.pathname+targetUrl.search+targetUrl.hash;
+                  return;
+                }
+                localStorage.setItem('rooted-commons-signup-collection-point',String(pointId));
                 window.location.href=target;
                 return;
               }
