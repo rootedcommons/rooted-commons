@@ -1,5 +1,38 @@
 # Changelog
 
+## 2.9.80 — 2026-08-16
+
+- Converted membership policy/lifecycle dates to date-only values: `Regular payment expected at`, `Regular payment overdue since`, `Membership inactive at`, `Membership closed at`, and `Data minimisation due at`. Pause start/end were already date-only.
+- Overdue detection now allows the entire expected calendar day to pass; a payment expected on 7 September can first be marked overdue on 8 September.
+- One-calendar-month streak protection now expires only after the matching calendar date has fully elapsed (for example 7 September → inactive from 8 October).
+- Kept email idempotency fields as Date/time audit timestamps.
+- Removed the redundant `Data minimisation due` boolean. `Data minimisation due at` is now the sole retention-review marker and remains blank until the 12-month review becomes due.
+- Updated signup, commitment changes, Xero payment matching, pause progression, Baserow specifications/imports and operations documentation to use the date-only model.
+- Calendar-date lifecycle calculations now use Europe/London for current-date decisions, avoiding time-of-day and BST/GMT boundary effects.
+
+## 2.9.79 — 2026-08-16
+
+- Replaced all member-level uses of the legacy `Active` boolean with the `Membership status` single-select.
+- `Active` is now the only status eligible for the weekly market email; `Paused`, `Inactive`, and `Closed` are suppressed.
+- Authentication and manually requested sign-in links remain available to `Active`, `Paused`, and `Inactive` members; `Closed` members are blocked.
+- Member metrics/founder counts treat any membership other than `Closed` as an existing member, preserving the previous boolean semantics.
+- Removed writes to the obsolete Members `Active` field from signup, Xero reactivation, and closure logic.
+
+
+## 2.9.78 — Membership pauses, consecutive streaks and inactivity lifecycle
+
+- Replaced membership-age perk progression with an explicit `Consecutive weeks` streak driven by matching regular payments: weekly payments add 1 week and monthly payments add 4.
+- Added editable self-service notified pauses on the dashboard, using fields on the Members row rather than a separate pause table. Pauses freeze the streak and regular commitment for up to 8 weeks per calendar year while keeping unlocked perks and ordering available.
+- Added `Active`, `Paused`, `Inactive` and `Closed` membership lifecycle states plus separate `Active`, `Frozen` and `Ended` streak states.
+- Added a one-calendar-month missed-payment grace period. The streak freezes immediately; unresolved memberships become Inactive after one calendar month, receive a gentle two-calendar-month follow-up, and close after six calendar months from the first missed expected payment.
+- Added a 12-month data-minimisation review flag. No automatic destructive erasure is performed because financial/legal retention and outstanding Member Credit require a case-specific review.
+- Added editable dashboard Highlight copy for pause, overdue-payment and inactive states in Interface Content.
+- Added `#pauses` and `#member-streaks` FAQs and linked the consecutive-weeks wording from the dashboard/welcome email.
+- Scheduled weekly market emails now send only to Active members. Active-but-overdue members receive the normal weekly email with the missed-payment Highlight block; Paused, Inactive and Closed members do not receive the weekly market email.
+- Added editable Site Settings HTML fields and paste-ready templates for pause confirmation, pause ending, payment overdue, inactive, still-inactive and closure emails.
+- Updated the welcome email renderer to support the member badge/balance placeholders used by the latest welcome template, retained the `Let us know` pause FAQ link, added the streak FAQ link, and corrected the passwordless-login copy to reflect 90-day device sessions.
+- Updated Membership Terms and Privacy Notice copy to describe pauses, streaks, grace/inactivity/closure and the retention review lifecycle.
+
 ## 2.9.77 — 2026-08-14
 
 - Added an editable signup welcome email from Site Settings → `Welcome email HTML`, sent directly through the existing SMTP connection with safe placeholders for member, commitment, access-link and bank details; included the full editable template under `docs/email-templates/`.

@@ -1,6 +1,9 @@
-import { envConfig, getRow, json, listRowsFiltered, updateRow, publicMember, publicCollectionPoint, linkedIds, unwrap, number, truthy, ukMarketCycle } from '../_baserow.js';
+import { envConfig, getRow, json, listRows, listRowsFiltered, updateRow, publicMember, publicCollectionPoint, linkedIds, unwrap, number, truthy, ukMarketCycle } from '../_baserow.js';
 import { authenticatedMember } from '../_auth.js';
 import { refreshMemberMetricCache } from '../_public-metrics.js';
+import { pauseAllowance, pauseWeeksBetween, advanceExpectedPastPause, nextExpectedPayment, ukDate } from '../_membership-lifecycle.js';
+import { sendMail } from '../_smtp.js';
+import { LIFECYCLE_EMAIL_FIELDS, renderLifecycleEmail, lifecycleEmailText } from '../_membership-emails.js';
 
 function transactionDate(row) {
   return row.Date || row['Transaction date'] || row['Created on'] || '';
@@ -96,6 +99,61 @@ export async function onRequestPatch(context) {
     if(!auth)return json({ok:false,message:'This secure link is invalid or has expired.'},401);
     const member=auth.member;
 
+    if(String(body.action||'')==='pause'){
+      const status=unwrap(member['Membership status']) || 'Active';
+      if(status!=='Active') return json({ok:false,message:'Only an active membership can be paused from the dashboard.'},409);
+      const start=String(body.pauseStart||'').slice(0,10);
+      const end=String(body.pauseEnd||'').slice(0,10);
+      const startDate=new Date(`${start}T00:00:00Z`);
+      const endDate=new Date(`${end}T00:00:00Z`);
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(start)||!/^\d{4}-\d{2}-\d{2}$/.test(end)||!Number.isFinite(startDate.getTime())||!Number.isFinite(endDate.getTime())||endDate<=startDate){
+        return json({ok:false,message:'Choose a valid pause start and end date.'},400);
+      }
+      if(startDate.getUTCFullYear()!==endDate.getUTCFullYear()) return json({ok:false,message:'For now, a pause must start and finish within the same calendar year. You can arrange another pause after New Year if needed.'},400);
+      const weeks=pauseWeeksBetween(start,end);
+      const allowance=pauseAllowance(member,startDate.getUTCFullYear());
+      if(weeks<1||weeks>allowance.remaining) return json({ok:false,message:`That pause would use ${weeks} weeks, but you have ${allowance.remaining} of your 8 pause weeks remaining this calendar year.`},409);
+      const today=ukDate();
+      const activeNow=today>=start&&today<end;
+      const patch={
+        'Pause starts':start,
+        'Pause ends':end,
+        'Current pause weeks':weeks,
+        'Pause allowance year':startDate.getUTCFullYear(),
+        'Pause weeks used':allowance.used+weeks,
+        'Pause ending email sent at':'',
+        ...(activeNow?{'Membership status':'Paused','Streak status':'Frozen','Regular payment overdue since':'','Payment overdue email sent at':''}:{})
+      };
+      await updateRow(cfg,cfg.members,member.id,patch);
+      Object.assign(member,patch);
+      let emailSent=false;
+      try{
+        const settingsRows=cfg.settings?await listRows(cfg,cfg.settings):[];
+        const settings=settingsRows.find(row=>unwrap(row['Site title']))||settingsRows[0]||{};
+        const rendered=renderLifecycleEmail({kind:'pauseConfirmation',template:settings[LIFECYCLE_EMAIL_FIELDS.pauseConfirmation],member,settings,pauseWeeksRemaining:Math.max(0,8-(allowance.used+weeks)),pauseStart:start,pauseEnd:end});
+        await sendMail(env,{to:String(member.Email||'').trim(),subject:'Your Rooted Commons membership pause is confirmed',html:rendered.html,text:lifecycleEmailText('pauseConfirmation',rendered.data)});
+        emailSent=true;
+      }catch(error){console.error('pause confirmation email failed',error);}
+      return json({ok:true,membershipStatus:activeNow?'Paused':'Active',streakStatus:activeNow?'Frozen':unwrap(member['Streak status'])||'Active',pauseStarts:start,pauseEnds:end,currentPauseWeeks:weeks,pauseWeeksUsed:allowance.used+weeks,pauseWeeksRemaining:Math.max(0,8-(allowance.used+weeks)),emailSent});
+    }
+
+    if(String(body.action||'')==='end-pause'){
+      const start=String(member['Pause starts']||'').slice(0,10);
+      const plannedEnd=String(member['Pause ends']||'').slice(0,10);
+      if(!start||!plannedEnd)return json({ok:false,message:'There is no current pause to end.'},409);
+      const today=ukDate();
+      const actualEnd=today<start?start:today;
+      const plannedWeeks=Math.max(0,Math.trunc(number(member['Current pause weeks']))||pauseWeeksBetween(start,plannedEnd));
+      const actualWeeks=today<=start?0:pauseWeeksBetween(start,actualEnd);
+      const allowance=pauseAllowance(member,new Date(`${start}T00:00:00Z`).getUTCFullYear());
+      const adjustedUsed=Math.max(0,allowance.used-Math.max(0,plannedWeeks-actualWeeks));
+      const frequency=unwrap(member['Contribution frequency'])==='Monthly'?'Monthly':'Weekly';
+      const expected=today<=start ? (member['Regular payment expected at']||'') : advanceExpectedPastPause(member['Regular payment expected at'],actualEnd,frequency);
+      const patch={'Membership status':'Active','Streak status':'Active','Pause starts':'','Pause ends':'','Current pause weeks':0,'Pause weeks used':adjustedUsed,'Pause ending email sent at':'','Regular payment overdue since':'','Payment overdue email sent at':'','Regular payment expected at':expected};
+      await updateRow(cfg,cfg.members,member.id,patch);
+      return json({ok:true,membershipStatus:'Active',streakStatus:'Active',pauseWeeksUsed:adjustedUsed,pauseWeeksRemaining:Math.max(0,8-adjustedUsed)});
+    }
+
     if(String(body.action||'')==='commitment'){
       const contributionFrequency=String(body.contributionFrequency||'').trim();
       const contributionAmount=Number(body.contributionAmount);
@@ -114,7 +172,10 @@ export async function onRequestPatch(context) {
         'Monthly equivalent':monthlyEquivalent,
         'Contribution frequency':contributionFrequency,
         'Commitment changed at':commitmentChangedAt,
-        'Commitment payment pending':true
+        'Commitment payment pending':true,
+        'Regular payment expected at':nextExpectedPayment(commitmentChangedAt,contributionFrequency),
+        'Regular payment overdue since':'',
+        'Payment overdue email sent at':''
       });
       const metricRefresh=refreshMemberMetricCache(cfg).catch(error=>console.warn('Unable to refresh public member metrics',error));
       if(typeof context.waitUntil==='function')context.waitUntil(metricRefresh);

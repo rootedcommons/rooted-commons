@@ -1,4 +1,4 @@
-import { createRow, deleteRow, getRow, linkedIds, listRows, listRowsFiltered, truthy, updateRow } from './_baserow.js';
+import { createRow, deleteRow, getRow, linkedIds, listRows, listRowsFiltered, truthy, unwrap, updateRow } from './_baserow.js';
 
 const SESSION_PREFIX='rcs_';
 const COOKIE_NAME='rc_session';
@@ -149,7 +149,7 @@ export async function authenticatedMember(cfg,request,env,explicitToken=''){
   const memberId=linkedIds(session.Member)[0];
   if(!memberId) return null;
   const member=await getRow(cfg,cfg.members,memberId);
-  if(!member||!truthy(member.Active,false)) return null;
+  if(!member||unwrap(member['Membership status'])==='Closed') return null;
   return {member,session,token};
 }
 

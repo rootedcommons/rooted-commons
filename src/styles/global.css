@@ -1524,3 +1524,21 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .faq-answer{justify-content:flex-start;min-height:0;padding:.55rem 1.25rem 1rem}
 .checkout-terms-confirmation{margin:1rem 0 .7rem;font-size:.9rem;line-height:1.5}
 @media(max-width:640px){.faq-answer{padding:.5rem 1rem .85rem}}
+
+/* v2.9.78 — membership streak, pause and lifecycle states */
+.dashboard-streak-line{display:flex;align-items:baseline;gap:.45rem;flex-wrap:wrap}
+.dashboard-streak-line strong,.dashboard-streak-line a{font-size:clamp(1.55rem,3.2vw,2.3rem);line-height:1.05;font-family:Georgia,serif;font-weight:700}
+.dashboard-streak-line a{color:inherit;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.14em}
+.dashboard-pause-area{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+.dashboard-pause-intro{display:grid;gap:.5rem}
+.dashboard-pause-intro>.rich-body p{margin:.1rem 0}
+.dashboard-pause-intro .button{justify-self:start;margin-top:.2rem}
+.dashboard-pause-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem;margin-top:.25rem;padding:1rem;border:1px solid var(--border);border-radius:.8rem;background:var(--highlight)}
+.dashboard-pause-form label{display:grid;gap:.35rem;font-weight:700}
+.dashboard-pause-form input{width:100%;padding:.72rem .8rem;border:1px solid var(--border);border-radius:.6rem;background:var(--surface);color:inherit;font:inherit}
+.dashboard-pause-form .small-print,.dashboard-pause-form .dashboard-point-actions{grid-column:1/-1}
+.dashboard-status-highlight{margin:.55rem 0 1rem;padding:1rem 1.05rem;border:1px solid var(--border);border-left:4px solid var(--primary);border-radius:.75rem;background:var(--highlight)}
+.dashboard-status-highlight h3,.dashboard-status-highlight h4{margin:0 0 .45rem;color:var(--primary)}
+.dashboard-status-highlight .rich-body p{margin:.25rem 0}
+.dashboard-pause-active .button{margin-top:.8rem}
+@media(max-width:640px){.dashboard-pause-form{grid-template-columns:1fr}.dashboard-pause-form .small-print,.dashboard-pause-form .dashboard-point-actions{grid-column:auto}}

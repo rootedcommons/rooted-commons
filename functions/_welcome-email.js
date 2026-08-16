@@ -1,4 +1,4 @@
-import { unwrap } from './_baserow.js';
+import { fileUrl, number, unwrap } from './_baserow.js';
 
 const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const currency=value=>`£${Number(value||0).toFixed(2)}`;
@@ -14,7 +14,7 @@ export const FALLBACK_WELCOME_EMAIL_HTML=`<!doctype html>
 <tr><td style="padding:0 40px 34px;"><p style="margin:0;font-size:16px;line-height:1.6;"><strong>Thank you for joining Rooted Commons.</strong> Your regular commitment helps create the reliable demand that makes a stronger local food network possible.</p></td></tr>
 </table></td></tr></table></body></html>`;
 
-export function welcomeEmailData({firstName,memberRef,contributionFrequency,contributionAmount,loginUrl,settings={}}){
+export function welcomeEmailData({firstName,memberRef,contributionFrequency,contributionAmount,loginUrl,settings={},member={}}){
   return {
     first_name:String(firstName||'').trim()||'there',
     member_ref:String(memberRef||'').trim(),
@@ -23,7 +23,11 @@ export function welcomeEmailData({firstName,memberRef,contributionFrequency,cont
     login_url:String(loginUrl||'').trim(),
     bank_account_name:unwrap(settings['Bank account name']),
     bank_sort_code:unwrap(settings['Bank sort code']),
-    bank_account_number:unwrap(settings['Bank account number'])
+    bank_account_number:unwrap(settings['Bank account number']),
+    balance:Number(number(member['Current credit'])||0).toFixed(2),
+    membership_tier:unwrap(member['Founder badge']||member['Founder level']||member['Membership badge'])||'Rooted Commons member',
+    badge_image_url:(()=>{const founder=unwrap(member['Founder badge']||member['Founder level']||member['Membership badge']);const images={'Founder 10':fileUrl(settings['Founder 10 badge']),'Founder 25':fileUrl(settings['Founder 25 badge']),'Founder 50':fileUrl(settings['Founder 50 badge'])};return images[founder]||fileUrl(settings['Member badge'])||'';})(),
+    badge_url:String(loginUrl||'').trim()
   };
 }
 

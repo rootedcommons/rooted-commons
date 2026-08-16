@@ -13,11 +13,27 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
     const money=new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'});
     const formatDate=value=>value?new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',year:'numeric'}).format(new Date(value)):'';
     const interpolate=(template,values={})=>String(template||'').replace(/\{(\w+)\}/g,(_,key)=>values[key]??'');
+    const escapeHtml=value=>String(value??'').replace(/[&<>\"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[ch]));
+    const safeHref=value=>/^(?:\/|#|https?:\/\/|mailto:|tel:)/i.test(String(value||'').trim())?String(value).trim():'#';
+    const richHtml=(template,values={})=>{
+      let out=escapeHtml(interpolate(template,values));
+      out=out.replace(/\[([^\]]+)\]\(([^)]+)\)/g,(_m,label,href)=>`<a href=\"${escapeHtml(safeHref(href))}\">${label}</a>`);
+      out=out.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+      out=out.replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g,'<em>$1</em>');
+      return out.replace(/\r?\n/g,'<br>');
+    };
 
     const pointSelect=document.querySelector('#dashboard-point-select');
     const pointForm=document.querySelector('#dashboard-point-form');
     const daySelect=document.querySelector('#dashboard-day-select');
     const pointMessage=document.querySelector('#dashboard-point-message');
+    const pauseArea=document.querySelector('#dashboard-pause-area');
+    const pauseIntro=document.querySelector('#dashboard-pause-intro');
+    const pauseActive=document.querySelector('#dashboard-pause-active');
+    const pauseForm=document.querySelector('#dashboard-pause-form');
+    const pauseStart=document.querySelector('#dashboard-pause-start');
+    const pauseEnd=document.querySelector('#dashboard-pause-end');
+    const pauseMessage=document.querySelector('#dashboard-pause-message');
 
     const populatePointSelect=(selectedId)=>{
       pointSelect.innerHTML=(collectionPoints||[]).map(point=>`<option value="${point.id}" ${Number(point.id)===Number(selectedId)?'selected':''}>${point.name}</option>`).join('');
@@ -56,6 +72,65 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
         setTimeout(()=>{pointForm.hidden=true;pointMessage.textContent='';},900);
       }else pointMessage.textContent=payload.message||copy.collectionFailed;
       button.disabled=false;
+    });
+
+    const pauseRemaining=member=>{
+      const year=new Date().getFullYear();
+      return Number(member?.pauseAllowanceYear)===year?Math.max(0,8-(Number(member?.pauseWeeksUsed)||0)):8;
+    };
+    const renderPauseState=member=>{
+      if(!pauseArea)return;
+      const status=member?.membershipStatus||'Active';
+      const remaining=pauseRemaining(member);
+      if(status==='Inactive'||status==='Closed'){
+        pauseArea.hidden=true;return;
+      }
+      pauseArea.hidden=false;
+      const paused=status==='Paused';
+      const futurePause=status==='Active'&&member?.pauseStarts&&new Date(`${String(member.pauseStarts).slice(0,10)}T23:59:59Z`).getTime()>Date.now();
+      const showPauseState=paused||futurePause;
+      pauseIntro.hidden=showPauseState;
+      pauseActive.hidden=!showPauseState;
+      pauseForm.hidden=true;
+      if(paused){
+        const date=formatDate(member.pauseEnds);
+        document.querySelector('#dashboard-pause-active-heading').textContent=interpolate(copy.pauseActiveHeading,{date});
+        document.querySelector('#dashboard-pause-active-body').innerHTML=richHtml(copy.pauseActiveBody,{weeks:Number(member.consecutiveWeeks)||0,remaining});
+        document.querySelector('#dashboard-pause-end').textContent=copy.pauseEndEarly;
+      }else if(futurePause){
+        document.querySelector('#dashboard-pause-active-heading').textContent=copy.pauseScheduledHeading;
+        document.querySelector('#dashboard-pause-active-body').innerHTML=richHtml(copy.pauseScheduledBody,{start:formatDate(member.pauseStarts),end:formatDate(member.pauseEnds),remaining});
+        document.querySelector('#dashboard-pause-end').textContent=copy.pauseCancelScheduled;
+      }else{
+        document.querySelector('#dashboard-pause-allowance').textContent=interpolate(copy.pauseAllowance,{weeks:remaining});
+      }
+    };
+    document.querySelector('#dashboard-pause-open')?.addEventListener('click',()=>{
+      if(!currentMember)return;
+      const today=new Date().toISOString().slice(0,10);
+      pauseStart.min=today;pauseEnd.min=today;pauseStart.value=today;
+      const defaultEnd=new Date(`${today}T12:00:00Z`);defaultEnd.setUTCDate(defaultEnd.getUTCDate()+7);pauseEnd.value=defaultEnd.toISOString().slice(0,10);
+      pauseIntro.hidden=true;pauseForm.hidden=false;pauseMessage.textContent='';pauseStart.focus();
+    });
+    pauseStart?.addEventListener('change',()=>{if(pauseStart.value){pauseEnd.min=pauseStart.value;if(pauseEnd.value<=pauseStart.value){const d=new Date(`${pauseStart.value}T12:00:00Z`);d.setUTCDate(d.getUTCDate()+7);pauseEnd.value=d.toISOString().slice(0,10);}}});
+    document.querySelector('#dashboard-pause-form-cancel')?.addEventListener('click',()=>{pauseForm.hidden=true;pauseIntro.hidden=false;pauseMessage.textContent='';});
+    pauseForm?.addEventListener('submit',async event=>{
+      event.preventDefault();
+      const button=pauseForm.querySelector('button[type="submit"]');button.disabled=true;pauseMessage.textContent=copy.pauseSaving;
+      try{
+        const response=await fetch('/api/member',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({action:'pause',pauseStart:pauseStart.value,pauseEnd:pauseEnd.value})});
+        const payload=await response.json();if(!response.ok||!payload.ok)throw new Error(payload.message||copy.pauseFailed);
+        window.RootedData?.invalidate?.('member');location.reload();
+      }catch(error){pauseMessage.textContent=error?.message||copy.pauseFailed;button.disabled=false;}
+    });
+    document.querySelector('#dashboard-pause-end')?.addEventListener('click',async()=>{
+      if(!window.confirm(copy.pauseEndConfirm||'End pause'))return;
+      const button=document.querySelector('#dashboard-pause-end');button.disabled=true;
+      try{
+        const response=await fetch('/api/member',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({action:'end-pause'})});
+        const payload=await response.json();if(!response.ok||!payload.ok)throw new Error(payload.message||copy.pauseFailed);
+        window.RootedData?.invalidate?.('member');location.reload();
+      }catch(error){button.disabled=false;alert(error?.message||copy.pauseFailed);}
     });
 
     const renderPerks=(weeks,isNew)=>{
@@ -187,7 +262,7 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
         if(!response.ok||!payload.ok)throw new Error(payload.message||copy.commitmentFailed);
         window.RootedData?.invalidate?.('member');
         currentCommitment={weekly:Number(payload.weeklyCommitment)||10,monthly:Number(payload.monthlyEquivalent)||43.33,frequency:payload.contributionFrequency||frequency};
-        if(currentMember){currentMember.weeklyCommitment=currentCommitment.weekly;currentMember.monthlyEquivalent=currentCommitment.monthly;currentMember.contributionFrequency=currentCommitment.frequency;currentMember.commitmentPaymentPending=true;currentMember.commitmentChangedAt=payload.commitmentChangedAt||new Date().toISOString();}
+        if(currentMember){currentMember.weeklyCommitment=currentCommitment.weekly;currentMember.monthlyEquivalent=currentCommitment.monthly;currentMember.contributionFrequency=currentCommitment.frequency;currentMember.commitmentPaymentPending=true;currentMember.commitmentChangedAt=payload.commitmentChangedAt||new Date().toISOString();currentMember.regularPaymentOverdueSince='';}
         setCommitmentDisplay();
         document.querySelector('#dashboard-regular-payment-heading').textContent=copy.updateRegularPaymentHeading;
         regularPaymentDetails.hidden=false;
@@ -200,16 +275,28 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
 
     const renderRegularPaymentState=()=>{
       const pending=Boolean(currentMember?.commitmentPaymentPending);
+      const status=currentMember?.membershipStatus||'Active';
+      const overdue=Boolean(currentMember?.regularPaymentOverdueSince)&&status==='Active';
+      const inactive=status==='Inactive';
+      const paused=status==='Paused';
       const reminder=document.querySelector('#dashboard-regular-payment-reminder');
+      const reminderHeading=document.querySelector('#dashboard-regular-payment-reminder-heading');
+      const reminderBody=document.querySelector('#dashboard-regular-payment-reminder-body');
       const body=document.querySelector('#dashboard-regular-payment-body');
-      if(pending){
+      const showReminder=(heading,content)=>{reminderHeading.textContent=heading;reminderBody.innerHTML=richHtml(content);reminder.hidden=false;if(body)body.hidden=true;regularPaymentDetails.hidden=false;};
+      if(paused){
+        reminder.hidden=true;if(body)body.hidden=false;regularPaymentDetails.hidden=true;
+      }else if(inactive){
+        document.querySelector('#dashboard-regular-payment-heading').textContent=copy.regularPaymentHeading;
+        showReminder(copy.inactiveHeading,copy.inactiveBody);
+      }else if(overdue){
+        document.querySelector('#dashboard-regular-payment-heading').textContent=copy.regularPaymentHeading;
+        showReminder(copy.paymentOverdueHeading,copy.paymentOverdueBody);
+      }else if(pending){
         const frequency=currentCommitment.frequency==='Monthly'?'monthly':'weekly';
         const amount=currentCommitment.frequency==='Monthly'?currentCommitment.monthly:currentCommitment.weekly;
         document.querySelector('#dashboard-regular-payment-heading').textContent=copy.updateRegularPaymentHeading;
-        reminder.textContent=interpolate(copy.commitmentPaymentReminder,{frequency,amount:displayMoney(amount),period:frequency==='monthly'?'month':'week'});
-        reminder.hidden=false;
-        if(body)body.hidden=true;
-        regularPaymentDetails.hidden=false;
+        showReminder(copy.updateRegularPaymentHeading,interpolate(copy.commitmentPaymentReminder,{frequency,amount:displayMoney(amount),period:frequency==='monthly'?'month':'week'}));
       }else{
         reminder.hidden=true;
         if(body)body.hidden=false;
@@ -219,7 +306,7 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
     };
 
     const updateCommitmentPrompt=()=>{
-      const weeks=Number(currentMember?.membershipWeeks)||0;
+      const weeks=Number(currentMember?.consecutiveWeeks)||0;
       const metrics=document.querySelector('#dashboard-commitment-metrics');
       const prompt=document.querySelector('#dashboard-increase-prompt');
       if(weeks<8){metrics.hidden=true;prompt.hidden=true;return;}
@@ -276,8 +363,8 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
       const badge=document.querySelector('#dashboard-badge');
       if(logo){badge.innerHTML=`<img src="${logo}" alt="${badgeLabel}">`;badge.hidden=false;}else{badge.innerHTML='';badge.hidden=true;}
 
-      const weeks=Number(member.membershipWeeks)||0;
-      document.querySelector('#dashboard-member-weeks').textContent=`${weeks} ${weeks===1?copy.weekUnit:copy.weeksUnit}`;
+      const weeks=Number(member.consecutiveWeeks)||0;
+      document.querySelector('#dashboard-member-weeks').textContent=String(weeks);
       const totalImpact=Number(member.account?.totalOrderSpend)||0;
       document.querySelector('#dashboard-impact').textContent=money.format(totalImpact).replace('.00','');
       const volunteerDays=Number(member.volunteerDays)||0;
@@ -287,6 +374,7 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
       const events=Number(member.eventsAttended)||0;
       document.querySelector('#dashboard-events-attended').textContent=String(events);
       renderPerks(weeks,isNew);
+      renderPauseState(member);
 
       const shop=document.querySelector('#dashboard-shop-link');
       shop.href='/orders/';

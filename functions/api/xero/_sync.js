@@ -1,6 +1,7 @@
 import { envConfig, listRows, createRow, linkedIds, number, truthy, unwrap, updateRow } from '../../_baserow.js';
 import { refreshedConnection } from './_oauth.js';
 import { fetchRecentReceives, isImportableMemberPayment, paymentReference, xeroDate } from './_payments.js';
+import { expectedAmount, nextExpectedPayment } from '../../_membership-lifecycle.js';
 
 function memberReference(member) {
   const explicit = String(member?.['Member number'] || '').trim().toUpperCase();
@@ -116,15 +117,32 @@ export async function syncMemberPayments(env, { maxPages = 5 } = {}) {
       });
       existingIds.add(txId);
 
-      if (truthy(member['Commitment payment pending'], false)) {
-        const frequency=unwrap(member['Contribution frequency']) === 'Monthly' ? 'Monthly' : 'Weekly';
-        const expected=frequency === 'Monthly' ? number(member['Monthly equivalent']) : number(member['Weekly commitment']);
-        const received=Math.round(Number(tx.Total) * 100) / 100;
-        const changedDate=member['Commitment changed at'] ? new Date(member['Commitment changed at']).toISOString().slice(0,10) : '';
-        const paymentDate=xeroDate(tx).slice(0,10);
-        if (expected > 0 && Math.abs(received-expected) < 0.005 && (!changedDate || paymentDate >= changedDate)) {
-          await updateRow(cfg,cfg.members,member.id,{ 'Commitment payment pending':false });
-          member['Commitment payment pending']=false;
+      const regular=expectedAmount(member);
+      const received=Math.round(Number(tx.Total) * 100) / 100;
+      const isRegular=regular.amount > 0 && Math.abs(received-regular.amount) < 0.005;
+      if(isRegular){
+        const status=unwrap(member['Membership status']) || 'Active';
+        const memberPatch={};
+        if(status!=='Paused'&&status!=='Closed'){
+          const base=status==='Inactive'?0:Math.max(0,Math.trunc(number(member['Consecutive weeks'])));
+          memberPatch['Consecutive weeks']=base+regular.weeks;
+          memberPatch['Streak status']='Active';
+          memberPatch['Membership status']='Active';
+          memberPatch['Regular payment expected at']=nextExpectedPayment(xeroDate(tx),regular.frequency);
+          memberPatch['Regular payment overdue since']='';
+          memberPatch['Membership inactive at']='';
+          memberPatch['Payment overdue email sent at']='';
+          memberPatch['Membership inactive email sent at']='';
+          memberPatch['Membership follow-up email sent at']='';
+        }
+        if (truthy(member['Commitment payment pending'], false)) {
+          const changedDate=member['Commitment changed at'] ? new Date(member['Commitment changed at']).toISOString().slice(0,10) : '';
+          const paymentDate=xeroDate(tx).slice(0,10);
+          if(!changedDate || paymentDate >= changedDate) memberPatch['Commitment payment pending']=false;
+        }
+        if(Object.keys(memberPatch).length){
+          await updateRow(cfg,cfg.members,member.id,memberPatch);
+          Object.assign(member,memberPatch);
         }
       }
 

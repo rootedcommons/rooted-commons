@@ -3,6 +3,7 @@ import { createSignedSession, nextWednesdayExpiry } from '../_auth.js';
 import { refreshMemberMetricCache } from '../_public-metrics.js';
 import { sendMail } from '../_smtp.js';
 import { renderWelcomeEmail, welcomeEmailText, WELCOME_EMAIL_TEMPLATE_FIELD } from '../_welcome-email.js';
+import { nextExpectedPayment } from '../_membership-lifecycle.js';
 
 const clean=value=>String(value||'').trim();
 const money=value=>Math.round((Number(value)+Number.EPSILON)*100)/100;
@@ -74,7 +75,7 @@ export async function onRequestPost(context){
     const validDays=(publicCollectionPoint(point).collectionSlots||[]).map(slot=>slot.day);
     if(!validDays.includes(preferredCollectionDay))return json({ok:false,message:`That collection point is not available on ${preferredCollectionDay}. Please choose another location.`},409);
 
-    const currentTotalMembers=members.filter(row=>truthy(row.Active,true)).length;
+    const currentTotalMembers=members.filter(row=>(String(row['Membership status']?.value ?? row['Membership status'] ?? 'Active').trim()||'Active')!=='Closed').length;
     const founderBadge=currentTotalMembers<10
       ? 'Founder 10'
       : currentTotalMembers<25
@@ -89,7 +90,6 @@ export async function onRequestPost(context){
       'Last name':lastName,
       'Email':email,
       'Phone':phone,
-      'Active':true,
       'Weekly commitment':weeklyCommitment,
       'Monthly equivalent':monthlyEquivalent,
       'Contribution frequency':contributionFrequency,
@@ -100,6 +100,14 @@ export async function onRequestPost(context){
       'Weekly newsletter':body.weeklyNewsletter===true,
       'Email verified':false,
       'Product requests':productRequests,
+      'Membership status':'Active',
+      'Consecutive weeks':0,
+      'Streak status':'Active',
+      'Previous streak weeks':0,
+      'Pause weeks used':0,
+      'Pause allowance year':now.getUTCFullYear(),
+      'Current pause weeks':0,
+      'Regular payment expected at':nextExpectedPayment(now.toISOString(),contributionFrequency),
       ...(founderBadge?{'Founder badge':founderBadge}:{})
     };
     const member=await createRow(cfg,cfg.members,fields);
@@ -119,7 +127,8 @@ export async function onRequestPost(context){
         contributionFrequency,
         contributionAmount,
         loginUrl:verificationUrl,
-        settings
+        settings,
+        member
       });
       await sendMail(env,{
         to:email,

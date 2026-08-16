@@ -1,4 +1,4 @@
-import { envConfig, json, listRowsFiltered, normaliseEmail, updateRow } from '../_baserow.js';
+import { envConfig, json, listRowsFiltered, normaliseEmail, unwrap, updateRow } from '../_baserow.js';
 import { getOrCreateCurrentAccessSession, safeReturnPath } from '../_auth.js';
 import { sendMail } from '../_smtp.js';
 
@@ -17,7 +17,7 @@ export async function onRequestPost({request,env}){
     if(!email)return json({ok:false,message:'Enter a valid email address.'},400);
     const cfg=envConfig(env);
     const members=await listRowsFiltered(cfg,cfg.members,{Email:email},{size:2});
-    const member=members.find(row=>normaliseEmail(row.Email)===email&&row.Active!==false);
+    const member=members.find(row=>normaliseEmail(row.Email)===email&&(unwrap(row['Membership status'])||'Active')!=='Closed');
     if(member){
       const requestedAt=new Date();
       if(!recentlyRequested(member,requestedAt)){

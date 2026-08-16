@@ -37,16 +37,18 @@ export async function onRequestPost({request,env}){
 
   try{
     const cfg=envConfig(env);
-    const [members,sessions,orders,points,settingsRows]=await Promise.all([
+    const [members,sessions,orders,points,settingsRows,interfaceRows]=await Promise.all([
       listRows(cfg,cfg.members),
       listRows(cfg,cfg.sessions),
       listRows(cfg,cfg.orders),
       listRows(cfg,cfg.collectionPoints),
-      listRows(cfg,cfg.settings)
+      listRows(cfg,cfg.settings),
+      cfg.interfaceContent?listRows(cfg,cfg.interfaceContent):Promise.resolve([])
     ]);
     const settings=settingsRow(settingsRows);
+    const interfaceContent=Object.fromEntries(interfaceRows.map(row=>[unwrap(row.Key),String(row.Content??'')]).filter(([key])=>key));
     const pointsById=new Map(points.map(point=>[Number(point.id),point]));
-    const activeMembers=members.filter(member=>truthy(member.Active,false)&&String(member.Email||'').trim());
+    const activeMembers=members.filter(member=>(unwrap(member['Membership status'])||'Active')==='Active'&&String(member.Email||'').trim());
     const closedWeek=justClosedOrderWeek(now);
     const ordersByMember=new Map();
     for(const order of orders){
@@ -93,7 +95,7 @@ export async function onRequestPost({request,env}){
         const pointId=order?linkedIds(order['Collection point'])[0]:null;
         const collectionPoint=pointId?pointsById.get(pointId)||null:null;
         const content=renderWeeklyEmail({
-          template:settings[WEEKLY_EMAIL_TEMPLATE_FIELD],member,settings,order,collectionPoint,accessUrl,expiresAt
+          template:settings[WEEKLY_EMAIL_TEMPLATE_FIELD],member,settings,interfaceContent,order,collectionPoint,accessUrl,expiresAt
         });
         await sendMail(env,{
           to:String(member.Email).trim(),

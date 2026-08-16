@@ -1,6 +1,7 @@
 import { envConfig, json } from '../../_baserow.js';
 import { refreshTransactionMetricCache } from '../../_public-metrics.js';
 import { syncMemberPayments } from './_sync.js';
+import { processMembershipLifecycle } from '../../_membership-lifecycle.js';
 
 function constantTimeEqual(expected, supplied) {
   expected = String(expected || '');
@@ -37,6 +38,8 @@ export async function onRequestPost(context) {
     }
 
     const result = await syncMemberPayments(env);
+    const lifecycle = await processMembershipLifecycle(env);
+    result.lifecycle=lifecycle;
     if((result.imported?.length||0)>0){
       const metricRefresh=refreshTransactionMetricCache(envConfig(env)).catch(error=>console.warn('Unable to refresh public transaction metrics',error));
       if(typeof context.waitUntil==='function')context.waitUntil(metricRefresh);

@@ -14,7 +14,8 @@ export function envConfig(env) {
     settings: env.BASEROW_SITE_SETTINGS_TABLE_ID,
     sections: env.BASEROW_SECTIONS_TABLE_ID,
     networkPartners: env.BASEROW_NETWORK_PARTNERS_TABLE_ID,
-    metrics: env.BASEROW_METRICS_TABLE_ID || env.BASEROW_IMPACT_METRICS_TABLE_ID
+    metrics: env.BASEROW_METRICS_TABLE_ID || env.BASEROW_IMPACT_METRICS_TABLE_ID,
+    interfaceContent: env.BASEROW_INTERFACE_CONTENT_TABLE_ID
   };
 }
 
@@ -206,6 +207,20 @@ export function publicMember(member, { collectionPoint = null, lastOrder = null,
     founderBadge,
     memberSince: memberSince || '',
     membershipWeeks,
+    membershipStatus: unwrap(member['Membership status']) || 'Active',
+    consecutiveWeeks: Object.prototype.hasOwnProperty.call(member,'Consecutive weeks') ? Math.max(0,Math.trunc(number(member['Consecutive weeks']))) : (membershipWeeks ?? 0),
+    streakStatus: unwrap(member['Streak status']) || 'Active',
+    previousStreakWeeks: Math.max(0,Math.trunc(number(member['Previous streak weeks']))),
+    pauseStarts: member['Pause starts'] || '',
+    pauseEnds: member['Pause ends'] || '',
+    pauseWeeksUsed: Math.max(0,Math.trunc(number(member['Pause weeks used']))),
+    pauseAllowanceYear: Math.trunc(number(member['Pause allowance year'])),
+    currentPauseWeeks: Math.max(0,Math.trunc(number(member['Current pause weeks']))),
+    regularPaymentExpectedAt: member['Regular payment expected at'] || '',
+    regularPaymentOverdueSince: member['Regular payment overdue since'] || '',
+    membershipInactiveAt: member['Membership inactive at'] || '',
+    membershipClosedAt: member['Membership closed at'] || '',
+    dataMinimisationDueAt: member['Data minimisation due at'] || '',
     volunteerDays: number(member['Volunteer days']),
     workshopsAttended: number(member['Workshops attended']),
     eventsAttended: number(member['Events attended']),

@@ -18,7 +18,7 @@ export function needsTransactionStats(row){
   return TRANSACTION_TOKENS.some(token=>template.includes(token));
 }
 export function memberStats(rows=[]){
-  const active=rows.filter(row=>truthy(row.Active,true));
+  const active=rows.filter(row=>(unwrap(row['Membership status'])||'Active')!=='Closed');
   return {
     totalMembers:active.length,
     totalCommitments:active.reduce((sum,row)=>sum+number(row['Weekly commitment'],0),0)
