@@ -103,6 +103,8 @@ export async function onRequestPost(context){
       'Membership status':'Active',
       'Consecutive weeks':0,
       'Streak status':'Active',
+      'Streak credited through':null,
+      'Streak frozen since':null,
       'Previous streak weeks':0,
       'Pause weeks used':0,
       'Pause allowance year':now.getUTCFullYear(),

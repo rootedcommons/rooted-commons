@@ -1,4 +1,4 @@
-import { fileUrl, number, unwrap } from './_baserow.js';
+import { fileUrl, number, unwrap, truthy } from './_baserow.js';
 
 const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const decimal=value=>(Number(value)||0).toFixed(2);
@@ -69,6 +69,7 @@ export function weeklyEmailData({member,settings,interfaceContent={},order,colle
     first_name:unwrap(member['First name'])||'there',
     balance:decimal(balance),
     balance_negative:balance<0,
+    weekly_newsletter:truthy(member['Weekly newsletter'],false),
     payment_overdue:Boolean(member['Regular payment overdue since']) && (unwrap(member['Membership status'])||'Active')==='Active',
     payment_overdue_heading:interfaceContent['dashboard.payment_overdue_heading']||'Your regular payment hasn’t arrived',
     payment_overdue_body_html:limitedMarkdown(interfaceContent['dashboard.payment_overdue_body']||"We haven’t received the regular payment we were expecting. If you’re taking a break, [let us know](/faqs/#pauses) and you can pause your regular commitment for up to 8 weeks in each calendar year without losing your [consecutive-weeks streak](/faqs/#member-streaks). Your streak is protected for one calendar month from the missed payment date."),
@@ -122,6 +123,7 @@ export function renderWeeklyEmailTemplate(template,data){
   html=html.replace(/{{#if\s+bank_details}}([\s\S]*?){{\/if}}/g,(_match,inner)=>data.bank_details?inner:'');
   html=html.replace(/{{#if\s+balance_negative}}([\s\S]*?){{\/if}}/g,(_match,inner)=>data.balance_negative?inner:'');
   html=html.replace(/{{#if\s+payment_overdue}}([\s\S]*?){{\/if}}/g,(_match,inner)=>data.payment_overdue?inner:'');
+  html=html.replace(/{{#if\s+weekly_newsletter}}([\s\S]*?){{\/if}}/g,(_match,inner)=>data.weekly_newsletter?inner:'');
   html=html.replace(/{{#if\s+order}}([\s\S]*?){{\/if}}/g,(_match,inner)=>data.order?inner:'');
   html=html.replace(/{{#unless\s+order}}([\s\S]*?){{\/unless}}/g,(_match,inner)=>data.order?'':inner);
   html=renderVariables(html,data);

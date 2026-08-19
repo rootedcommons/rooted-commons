@@ -1,5 +1,33 @@
 # Changelog
 
+## 2.9.83 — 2026-08-19
+
+- Reworked member-requested closure so non-zero Member Credit must be resolved before an account can close.
+- Positive Member Credit now starts with the recommended spend-down route: members can stop future regular commitment expectations, cancel the standing order at their bank, remain Active, keep receiving the weekly market email and continue ordering until their credit reaches £0.
+- Added an immediate voluntary donation-and-close route for the full remaining balance, with Rooted Commons or an explicitly opted-in active Network Partner as recipient. Added `Accepts Member Credit donations` to Network Partners so only agreed recipients appear. The donation is recorded as an auditable negative Account Transactions `Adjustment` before the membership is closed and sessions are revoked.
+- Removed the partner-voucher option and routine refund option from the self-service closure flow. Members can instead contact Rooted Commons to resolve remaining credit another way; statutory remedies remain preserved in the Membership Terms.
+- Added `Regular commitment stopped at` so intentional spend-down is distinct from missed-payment inactivity. Lifecycle overdue/streak accrual is suppressed while it is set, and matching incoming payments do not silently restart the commitment. Saving a new commitment clears the stop marker.
+- Self-service closure now refuses positive or negative unresolved balances; effectively-zero balances can close normally.
+
+## 2.9.82 - 2026-08-19
+
+- Added **Manage your membership** from the dashboard with editable name, email (double entry + verification before switching), phone number and weekly-email newsletter preference.
+- Added member-initiated account closure with a styled confirmation dialog, session revocation, preserved Member Credit/order records and explicit Closed status.
+- Changed consecutive-week progression to elapsed supported time: regular payments no longer add `+1`/`+4` directly; each full funded seven-day period adds one week for both weekly and monthly payers.
+- Added `Streak credited through` to anchor elapsed-week calculation and `Streak frozen since` to represent one continuous freeze interval without double-counting overlapping pauses and overdue periods. The credit anchor is blank until the first qualifying commitment payment, so new members can order immediately while remaining at 0 weeks.
+- Pauses and unresolved missed payments freeze the streak without crediting the frozen period; resumption shifts the streak anchor so skipped time is not added later.
+
+## 2.9.81 — 2026-08-19
+
+- Rebuilt checkout collection selection around the dashboard collection-card styling, removed the generic basket-dependency explainer, retained basket-specific point/day warnings, and made map-return selections immediately authoritative for the current checkout.
+- Fixed dashboard pause editor visibility so it is collapsed by default, opens only from `Pause your membership`, closes and clears unsaved dates on Cancel, and no longer leaves an empty gap below the action buttons.
+- Replaced the native browser pause-cancellation confirmation with a Rooted Commons-styled dialog; future pauses are cancelled, while active pauses are ended early.
+- Preserved genuine pre-pause overdue state, excused payment dates that fall inside an approved pause, and keep the streak frozen after an early/automatic resume when a payment date was skipped until the next qualifying regular payment arrives.
+- Corrected pause cadence boundaries so a payment due on the day membership resumes is not treated as having fallen inside the pause.
+- Changed nullable lifecycle Date/Date-time clears from empty strings to `null` across member updates, lifecycle processing and Xero matching, preventing Baserow typed-field validation failures when changing commitments or lifecycle state.
+- Removed the duplicated `Please update your standing order` heading.
+- If a pending commitment change is changed back to the last payment-confirmed contribution amount before a new matching contribution arrives, the pending state is cancelled and the regular-payment card returns to normal.
+
 ## 2.9.80 — 2026-08-16
 
 - Converted membership policy/lifecycle dates to date-only values: `Regular payment expected at`, `Regular payment overdue since`, `Membership inactive at`, `Membership closed at`, and `Data minimisation due at`. Pause start/end were already date-only.

@@ -1,9 +1,10 @@
-import { envConfig, getRow, json, listRows, listRowsFiltered, updateRow, publicMember, publicCollectionPoint, linkedIds, unwrap, number, truthy, ukMarketCycle } from '../_baserow.js';
+import { envConfig, createRow, getRow, json, listRows, listRowsFiltered, updateRow, publicMember, publicCollectionPoint, linkedIds, unwrap, number, truthy, ukMarketCycle, normaliseEmail } from '../_baserow.js';
 import { authenticatedMember } from '../_auth.js';
 import { refreshMemberMetricCache } from '../_public-metrics.js';
-import { pauseAllowance, pauseWeeksBetween, advanceExpectedPastPause, nextExpectedPayment, ukDate } from '../_membership-lifecycle.js';
+import { pauseAllowance, pauseWeeksBetween, advanceExpectedPastPause, nextExpectedPayment, ukDate, shiftStreakAnchorForGap } from '../_membership-lifecycle.js';
 import { sendMail } from '../_smtp.js';
 import { LIFECYCLE_EMAIL_FIELDS, renderLifecycleEmail, lifecycleEmailText } from '../_membership-emails.js';
+import { createEmailChangeToken, hashEmailChangeToken } from '../_email-change.js';
 
 function transactionDate(row) {
   return row.Date || row['Transaction date'] || row['Created on'] || '';
@@ -99,6 +100,137 @@ export async function onRequestPatch(context) {
     if(!auth)return json({ok:false,message:'This secure link is invalid or has expired.'},401);
     const member=auth.member;
 
+
+    if(String(body.action||'')==='details'){
+      const clean=value=>String(value||'').trim();
+      const firstName=clean(body.firstName);
+      const lastName=clean(body.lastName);
+      const phone=clean(body.phone);
+      const requestedEmail=normaliseEmail(body.email);
+      const confirmEmail=normaliseEmail(body.confirmEmail);
+      if(!firstName||!lastName||!phone||!requestedEmail)return json({ok:false,message:'Please complete your name, email address and phone number.'},400);
+      if(requestedEmail!==confirmEmail)return json({ok:false,message:'The two email addresses do not match.'},400);
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(requestedEmail))return json({ok:false,message:'Enter a valid email address.'},400);
+      const currentEmail=normaliseEmail(member.Email);
+      const emailChanged=requestedEmail!==currentEmail;
+      if(emailChanged){
+        const duplicates=await listRowsFiltered(cfg,cfg.members,{Email:requestedEmail},{size:5});
+        if(duplicates.some(row=>Number(row.id)!==Number(member.id)&&normaliseEmail(row.Email)===requestedEmail))return json({ok:false,message:'That email address is already used by another membership.'},409);
+      }
+      const basePatch={'First name':firstName,'Last name':lastName,'Phone':phone,'Weekly newsletter':body.weeklyNewsletter===true};
+      let emailVerificationSent=false;
+      if(emailChanged){
+        const changeToken=createEmailChangeToken();
+        const tokenHash=await hashEmailChangeToken(changeToken);
+        const expiresAt=new Date(Date.now()+24*60*60*1000).toISOString();
+        await updateRow(cfg,cfg.members,member.id,{...basePatch,'Pending email':requestedEmail,'Email change token hash':tokenHash,'Email change expires at':expiresAt});
+        try{
+          const verifyUrl=`${new URL(request.url).origin}/api/confirm-email-change?token=${encodeURIComponent(changeToken)}`;
+          const html=`<!doctype html><html><body style="margin:0;background:#faf8f1;font-family:Arial,sans-serif;color:#2d2a32"><div style="max-width:620px;margin:0 auto;padding:32px 20px"><div style="background:#fff;border:1px solid #ddd6ce;border-radius:18px;padding:28px"><h1 style="margin:0 0 14px;font-size:24px">Confirm your new email address</h1><p>You asked to change the email address for your Rooted Commons membership.</p><p><a href="${verifyUrl}" style="display:inline-block;padding:12px 18px;border-radius:999px;background:#5f3b78;color:#fff;text-decoration:none;font-weight:700">Confirm new email address</a></p><p style="font-size:14px">This link expires in 24 hours. Your existing email address will stay on the account until you confirm the new one.</p></div></div></body></html>`;
+          await sendMail(env,{to:requestedEmail,subject:'Confirm your new Rooted Commons email address',html,text:`Confirm your new Rooted Commons email address: ${verifyUrl}\n\nThis link expires in 24 hours. Your existing email address will stay on the account until you confirm the new one.`});
+          emailVerificationSent=true;
+        }catch(error){console.error('email change verification send failed',error);await updateRow(cfg,cfg.members,member.id,{'Pending email':null,'Email change token hash':'','Email change expires at':null}).catch(()=>{});}
+      }else{
+        await updateRow(cfg,cfg.members,member.id,{...basePatch,'Pending email':null,'Email change token hash':'','Email change expires at':null});
+      }
+      return json({ok:true,emailChanged,emailVerificationSent,email:currentEmail,firstName,lastName,phone,weeklyNewsletter:body.weeklyNewsletter===true,message:emailChanged?(emailVerificationSent?'Your details were saved. Check your new email address to confirm the change.':'Your other details were saved, but we could not send the email-change confirmation. Your current email address has not changed.'):'Your details were saved.'});
+    }
+
+    const closeMembership=async()=>{
+      const today=ukDate();
+      const weeks=Math.max(0,Math.trunc(number(member['Consecutive weeks'])));
+      const patch={
+        'Membership status':'Closed','Streak status':'Ended',
+        'Previous streak weeks':Math.max(Math.trunc(number(member['Previous streak weeks'])),weeks),
+        'Consecutive weeks':0,'Streak frozen since':null,'Membership closed at':today,
+        'Regular commitment stopped at':member['Regular commitment stopped at']||today,
+        'Regular payment expected at':null,'Regular payment overdue since':null,
+        'Commitment payment pending':false,
+        'Pause starts':null,'Pause ends':null,'Current pause weeks':0
+      };
+      await updateRow(cfg,cfg.members,member.id,patch);
+      Object.assign(member,patch);
+      if(cfg.sessions){
+        const sessions=await listRowsFiltered(cfg,cfg.sessions,{Member:{operator:'link_row_has',value:Number(member.id)}},{size:100,all:true});
+        const revokedAt=new Date().toISOString();
+        for(const session of sessions){if(truthy(session.Active,true)&&!session['Revoked at'])await updateRow(cfg,cfg.sessions,session.id,{'Revoked at':revokedAt,Active:false});}
+      }
+      const metricRefresh=refreshMemberMetricCache(cfg).catch(error=>console.warn('Unable to refresh public member metrics',error));
+      if(typeof context.waitUntil==='function')context.waitUntil(metricRefresh);
+    };
+
+    const currentMemberCredit=()=>number(member['Current credit'],0);
+    const hasProcessingOrder=async()=>{
+      if(!cfg.orders)return false;
+      const rows=await listRowsFiltered(cfg,cfg.orders,{Member:{operator:'link_row_has',value:Number(member.id)}},{size:50,all:true});
+      return rows.some(row=>String(unwrap(row.Status)).toLowerCase()==='processing');
+    };
+
+    if(String(body.action||'')==='stop-commitment'){
+      if(unwrap(member['Membership status'])==='Closed')return json({ok:false,message:'This membership is already closed.'},409);
+      const today=ukDate();
+      const patch={
+        'Regular commitment stopped at':today,
+        'Regular payment expected at':null,
+        'Regular payment overdue since':null,
+        'Payment overdue email sent at':null,
+        'Membership inactive at':null,
+        'Membership inactive email sent at':null,
+        'Membership follow-up email sent at':null,
+        'Commitment payment pending':false,
+        'Streak status':'Frozen',
+        'Streak frozen since':String(member['Streak frozen since']||'').slice(0,10)||today,
+        'Membership status':'Active'
+      };
+      await updateRow(cfg,cfg.members,member.id,patch);
+      Object.assign(member,patch);
+      return json({ok:true,regularCommitmentStoppedAt:today,message:'Your regular commitment has been stopped. No further regular payments are expected while you use your remaining Member Credit. Remember to cancel the standing order with your bank.'});
+    }
+
+    if(String(body.action||'')==='resolve-credit-and-close'){
+      if(body.confirmClose!==true)return json({ok:false,message:'Please confirm that you want to donate your remaining Member Credit and close your membership.'},400);
+      if(await hasProcessingOrder())return json({ok:false,message:'Please wait for your current order to finish processing before resolving your Member Credit and closing your membership.'},409);
+      if(!cfg.transactions)return json({ok:false,message:'Member Credit cannot be resolved automatically at the moment. Please contact us.'},503);
+      const credit=currentMemberCredit();
+      if(credit<=0.005)return json({ok:false,message:'There is no positive Member Credit to donate. Please close your membership normally.'},409);
+      const recipientValue=String(body.recipient||'').trim();
+      let recipientName='';
+      if(recipientValue==='rooted-commons')recipientName='Rooted Commons';
+      else if(/^partner:\d+$/.test(recipientValue)&&cfg.networkPartners){
+        const partnerId=Number(recipientValue.split(':')[1]);
+        const partner=await getRow(cfg,cfg.networkPartners,partnerId).catch(()=>null);
+        if(partner&&truthy(partner.Active,true)&&truthy(partner['Accepts Member Credit donations'],false)&&unwrap(partner.Name))recipientName=unwrap(partner.Name);
+      }
+      if(!recipientName)return json({ok:false,message:'Choose where you would like to donate your remaining Member Credit.'},400);
+      const today=ukDate();
+      const reference=`RC-CLOSE-DONATION-${member.id}-${today}`;
+      const existing=await listRowsFiltered(cfg,cfg.transactions,{'Transaction reference':reference},{size:5}).catch(()=>[]);
+      if(!existing.length){
+        await createRow(cfg,cfg.transactions,{
+          Date:new Date().toISOString(),Type:'Adjustment',Amount:-Math.round(credit*100)/100,
+          Member:[Number(member.id)],Notes:`Remaining Member Credit donated to ${recipientName} on member-requested closure.`,
+          Email:String(member.Email||'').trim(),'Transaction reference':reference,'Included in credit':true
+        });
+      }
+      try{
+        await closeMembership();
+      }catch(error){
+        console.error('membership close failed after credit donation',error);
+        return json({ok:false,creditResolved:true,message:`Your £${credit.toFixed(2)} Member Credit was recorded as donated to ${recipientName}, but we could not finish closing your membership. Please contact us so we can complete the closure.`},500);
+      }
+      return json({ok:true,closed:true,creditResolved:true,donatedAmount:Math.round(credit*100)/100,recipientName,message:'Your remaining Member Credit has been donated and your membership has been closed.'});
+    }
+
+    if(String(body.action||'')==='close-account'){
+      if(body.confirmClose!==true)return json({ok:false,message:'Please confirm that you want to close your membership.'},400);
+      if(await hasProcessingOrder())return json({ok:false,message:'Please wait for your current order to finish processing before closing your membership.'},409);
+      const credit=currentMemberCredit();
+      if(credit>0.005)return json({ok:false,creditResolutionRequired:true,credit,message:'Your remaining Member Credit must be resolved before your membership can be closed.'},409);
+      if(credit<-0.005)return json({ok:false,creditResolutionRequired:true,credit,message:'Your Member Credit balance must be resolved before your membership can be closed. Please contact us.'},409);
+      await closeMembership();
+      return json({ok:true,closed:true,message:'Your membership has been closed.'});
+    }
+
     if(String(body.action||'')==='pause'){
       const status=unwrap(member['Membership status']) || 'Active';
       if(status!=='Active') return json({ok:false,message:'Only an active membership can be paused from the dashboard.'},409);
@@ -121,8 +253,8 @@ export async function onRequestPatch(context) {
         'Current pause weeks':weeks,
         'Pause allowance year':startDate.getUTCFullYear(),
         'Pause weeks used':allowance.used+weeks,
-        'Pause ending email sent at':'',
-        ...(activeNow?{'Membership status':'Paused','Streak status':'Frozen','Regular payment overdue since':'','Payment overdue email sent at':''}:{})
+        'Pause ending email sent at':null,
+        ...(activeNow?{'Membership status':'Paused','Streak status':'Frozen','Streak frozen since':String(member['Streak frozen since']||'').slice(0,10)||start}:{})
       };
       await updateRow(cfg,cfg.members,member.id,patch);
       Object.assign(member,patch);
@@ -148,10 +280,17 @@ export async function onRequestPatch(context) {
       const allowance=pauseAllowance(member,new Date(`${start}T00:00:00Z`).getUTCFullYear());
       const adjustedUsed=Math.max(0,allowance.used-Math.max(0,plannedWeeks-actualWeeks));
       const frequency=unwrap(member['Contribution frequency'])==='Monthly'?'Monthly':'Weekly';
-      const expected=today<=start ? (member['Regular payment expected at']||'') : advanceExpectedPastPause(member['Regular payment expected at'],actualEnd,frequency);
-      const patch={'Membership status':'Active','Streak status':'Active','Pause starts':'','Pause ends':'','Current pause weeks':0,'Pause weeks used':adjustedUsed,'Pause ending email sent at':'','Regular payment overdue since':'','Payment overdue email sent at':'','Regular payment expected at':expected};
+      const hadPrePauseOverdue=Boolean(String(member['Regular payment overdue since']||'').trim());
+      const expectedBeforePause=String(member['Regular payment expected at']||'').slice(0,10);
+      const skippedExpected=Boolean(expectedBeforePause && expectedBeforePause>=start && expectedBeforePause<actualEnd);
+      const resumedStreakStatus=(hadPrePauseOverdue||skippedExpected)?'Frozen':'Active';
+      const expected=hadPrePauseOverdue ? (member['Regular payment expected at']||null) : (today<=start ? (member['Regular payment expected at']||null) : advanceExpectedPastPause(member['Regular payment expected at'],actualEnd,frequency));
+      const remainsFrozen=resumedStreakStatus==='Frozen';
+      const frozenSince=String(member['Streak frozen since']||'').slice(0,10)||(today>start?start:'');
+      const shiftedAnchor=today<=start?(member['Streak credited through']||null):(remainsFrozen?(member['Streak credited through']||null):shiftStreakAnchorForGap(member['Streak credited through'],frozenSince||start,actualEnd));
+      const patch={'Membership status':'Active','Streak status':resumedStreakStatus,'Streak frozen since':remainsFrozen?(frozenSince||start||null):null,'Pause starts':null,'Pause ends':null,'Current pause weeks':0,'Pause weeks used':adjustedUsed,'Pause ending email sent at':null,'Regular payment overdue since':hadPrePauseOverdue?(member['Regular payment overdue since']||null):null,'Payment overdue email sent at':hadPrePauseOverdue?(member['Payment overdue email sent at']||null):null,'Regular payment expected at':expected,'Streak credited through':shiftedAnchor||null};
       await updateRow(cfg,cfg.members,member.id,patch);
-      return json({ok:true,membershipStatus:'Active',streakStatus:'Active',pauseWeeksUsed:adjustedUsed,pauseWeeksRemaining:Math.max(0,8-adjustedUsed)});
+      return json({ok:true,membershipStatus:'Active',streakStatus:resumedStreakStatus,pauseWeeksUsed:adjustedUsed,pauseWeeksRemaining:Math.max(0,8-adjustedUsed)});
     }
 
     if(String(body.action||'')==='commitment'){
@@ -167,19 +306,51 @@ export async function onRequestPatch(context) {
       const weeklyCommitment=contributionFrequency==='Weekly'?money(contributionAmount):money(contributionAmount*12/52);
       const monthlyEquivalent=contributionFrequency==='Monthly'?money(contributionAmount):money(contributionAmount*52/12);
       const commitmentChangedAt=new Date().toISOString();
+      let revertedToConfirmed=false;
+      let expectedAt=nextExpectedPayment(commitmentChangedAt,contributionFrequency);
+
+      // While a commitment change is waiting for its first matching payment, allow the
+      // member to return to the last payment-confirmed amount without creating another
+      // pending standing-order change. This deliberately uses the most recent included
+      // Payment from before the pending change, so no extra Baserow schema is required.
+      if(truthy(member['Commitment payment pending'],false) && cfg.transactions){
+        const changedAt=member['Commitment changed at'] ? new Date(member['Commitment changed at']).getTime() : NaN;
+        const rows=await listRowsFiltered(cfg,cfg.transactions,{Member:{operator:'link_row_has',value:Number(member.id)}},{size:200,all:true});
+        const priorPayments=rows.filter(row=>{
+          if(transactionType(row).toLowerCase()!=='payment'||transactionAmount(row)<=0||!truthy(row['Included in credit'],true))return false;
+          const t=new Date(transactionDate(row)||0).getTime();
+          return Number.isFinite(t) && (!Number.isFinite(changedAt)||t<changedAt);
+        }).sort((a,b)=>new Date(transactionDate(b)||0)-new Date(transactionDate(a)||0));
+        const amountGroups=new Map();
+        priorPayments.forEach((row,index)=>{
+          const amount=money(transactionAmount(row));
+          const key=amount.toFixed(2);
+          const group=amountGroups.get(key)||{amount,count:0,latestIndex:index,latestRow:row};
+          group.count+=1;
+          if(index<group.latestIndex){group.latestIndex=index;group.latestRow=row;}
+          amountGroups.set(key,group);
+        });
+        const confirmedGroup=[...amountGroups.values()].sort((a,b)=>b.count-a.count||a.latestIndex-b.latestIndex)[0]||null;
+        if(confirmedGroup&&Math.abs(confirmedGroup.amount-money(contributionAmount))<0.005){
+          revertedToConfirmed=true;
+          expectedAt=nextExpectedPayment(transactionDate(confirmedGroup.latestRow),contributionFrequency);
+        }
+      }
+
       await updateRow(cfg,cfg.members,member.id,{
         'Weekly commitment':weeklyCommitment,
         'Monthly equivalent':monthlyEquivalent,
         'Contribution frequency':contributionFrequency,
         'Commitment changed at':commitmentChangedAt,
-        'Commitment payment pending':true,
-        'Regular payment expected at':nextExpectedPayment(commitmentChangedAt,contributionFrequency),
-        'Regular payment overdue since':'',
-        'Payment overdue email sent at':''
+        'Commitment payment pending':!revertedToConfirmed,
+        'Regular commitment stopped at':null,
+        'Regular payment expected at':expectedAt||null,
+        'Regular payment overdue since':null,
+        'Payment overdue email sent at':null
       });
       const metricRefresh=refreshMemberMetricCache(cfg).catch(error=>console.warn('Unable to refresh public member metrics',error));
       if(typeof context.waitUntil==='function')context.waitUntil(metricRefresh);
-      return json({ok:true,weeklyCommitment,monthlyEquivalent,contributionFrequency,contributionAmount:money(contributionAmount),commitmentChangedAt,commitmentPaymentPending:true});
+      return json({ok:true,weeklyCommitment,monthlyEquivalent,contributionFrequency,contributionAmount:money(contributionAmount),commitmentChangedAt,commitmentPaymentPending:!revertedToConfirmed,revertedToConfirmed,regularPaymentExpectedAt:expectedAt||''});
     }
 
     const collectionPointId = Number(body.collectionPointId || 0);

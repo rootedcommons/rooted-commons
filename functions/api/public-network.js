@@ -37,7 +37,8 @@ function publicPartner(row) {
     imageAlt: unwrap(row['Image alt text']),
     image2Alt: unwrap(row['Image 2 alt text']),
     image3Alt: unwrap(row['Image 3 alt text']),
-    order: Number(unwrap(row['Display order'] || row.Order) || 9999)
+    order: Number(unwrap(row['Display order'] || row.Order) || 9999),
+    acceptsMemberCreditDonations: truthy(row['Accepts Member Credit donations'], false)
   };
 }
 
@@ -54,7 +55,8 @@ function publicMetric(row, { members = null, transactions = null, partnerCount =
     icon: fileUrl(row.Icon),
     placements: linkedValues(row.Placement),
     networkPartner: partnerNames[0] || '',
-    order: Number(unwrap(row['Display order'] || row.Order) || 9999)
+    order: Number(unwrap(row['Display order'] || row.Order) || 9999),
+    acceptsMemberCreditDonations: truthy(row['Accepts Member Credit donations'], false)
   };
 }
 

@@ -113,7 +113,7 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
       pauseIntro.hidden=true;pauseForm.hidden=false;pauseMessage.textContent='';pauseStart.focus();
     });
     pauseStart?.addEventListener('change',()=>{if(pauseStart.value){pauseEnd.min=pauseStart.value;if(pauseEnd.value<=pauseStart.value){const d=new Date(`${pauseStart.value}T12:00:00Z`);d.setUTCDate(d.getUTCDate()+7);pauseEnd.value=d.toISOString().slice(0,10);}}});
-    document.querySelector('#dashboard-pause-form-cancel')?.addEventListener('click',()=>{pauseForm.hidden=true;pauseIntro.hidden=false;pauseMessage.textContent='';});
+    document.querySelector('#dashboard-pause-form-cancel')?.addEventListener('click',()=>{pauseForm.hidden=true;pauseIntro.hidden=false;pauseMessage.textContent='';pauseStart.value='';pauseEnd.value='';});
     pauseForm?.addEventListener('submit',async event=>{
       event.preventDefault();
       const button=pauseForm.querySelector('button[type="submit"]');button.disabled=true;pauseMessage.textContent=copy.pauseSaving;
@@ -123,14 +123,30 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
         window.RootedData?.invalidate?.('member');location.reload();
       }catch(error){pauseMessage.textContent=error?.message||copy.pauseFailed;button.disabled=false;}
     });
-    document.querySelector('#dashboard-pause-end')?.addEventListener('click',async()=>{
-      if(!window.confirm(copy.pauseEndConfirm||'End pause'))return;
-      const button=document.querySelector('#dashboard-pause-end');button.disabled=true;
+    const pauseConfirmDialog=document.querySelector('#dashboard-pause-confirm-dialog');
+    const pauseConfirmHeading=document.querySelector('#dashboard-pause-confirm-heading');
+    const pauseConfirmBody=document.querySelector('#dashboard-pause-confirm-body');
+    const pauseConfirmKeep=document.querySelector('#dashboard-pause-confirm-keep');
+    const pauseConfirmAction=document.querySelector('#dashboard-pause-confirm-action');
+    const pauseConfirmMessage=document.querySelector('#dashboard-pause-confirm-message');
+    document.querySelector('#dashboard-pause-end')?.addEventListener('click',()=>{
+      if(!currentMember||!pauseConfirmDialog)return;
+      const scheduled=(currentMember.membershipStatus||'Active')!=='Paused';
+      pauseConfirmHeading.textContent=scheduled?copy.pauseCancelScheduledConfirmHeading:copy.pauseEndEarlyConfirmHeading;
+      pauseConfirmBody.textContent=scheduled?copy.pauseCancelScheduledConfirmBody:copy.pauseEndEarlyConfirmBody;
+      pauseConfirmAction.textContent=scheduled?copy.pauseConfirmCancelScheduled:copy.pauseConfirmEnd;
+      pauseConfirmMessage.textContent='';
+      pauseConfirmDialog.showModal();
+    });
+    pauseConfirmKeep?.addEventListener('click',()=>pauseConfirmDialog?.close());
+    pauseConfirmDialog?.addEventListener('click',event=>{if(event.target===pauseConfirmDialog)pauseConfirmDialog.close();});
+    pauseConfirmAction?.addEventListener('click',async()=>{
+      pauseConfirmAction.disabled=true;pauseConfirmKeep.disabled=true;pauseConfirmMessage.textContent='';
       try{
         const response=await fetch('/api/member',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({action:'end-pause'})});
         const payload=await response.json();if(!response.ok||!payload.ok)throw new Error(payload.message||copy.pauseFailed);
         window.RootedData?.invalidate?.('member');location.reload();
-      }catch(error){button.disabled=false;alert(error?.message||copy.pauseFailed);}
+      }catch(error){pauseConfirmMessage.textContent=error?.message||copy.pauseFailed;pauseConfirmAction.disabled=false;pauseConfirmKeep.disabled=false;}
     });
 
     const renderPerks=(weeks,isNew)=>{
@@ -262,12 +278,12 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
         if(!response.ok||!payload.ok)throw new Error(payload.message||copy.commitmentFailed);
         window.RootedData?.invalidate?.('member');
         currentCommitment={weekly:Number(payload.weeklyCommitment)||10,monthly:Number(payload.monthlyEquivalent)||43.33,frequency:payload.contributionFrequency||frequency};
-        if(currentMember){currentMember.weeklyCommitment=currentCommitment.weekly;currentMember.monthlyEquivalent=currentCommitment.monthly;currentMember.contributionFrequency=currentCommitment.frequency;currentMember.commitmentPaymentPending=true;currentMember.commitmentChangedAt=payload.commitmentChangedAt||new Date().toISOString();currentMember.regularPaymentOverdueSince='';}
+        if(currentMember){currentMember.weeklyCommitment=currentCommitment.weekly;currentMember.monthlyEquivalent=currentCommitment.monthly;currentMember.contributionFrequency=currentCommitment.frequency;currentMember.commitmentPaymentPending=Boolean(payload.commitmentPaymentPending);currentMember.commitmentChangedAt=payload.commitmentChangedAt||new Date().toISOString();currentMember.regularPaymentOverdueSince='';currentMember.regularPaymentExpectedAt=payload.regularPaymentExpectedAt||currentMember.regularPaymentExpectedAt;currentMember.regularCommitmentStoppedAt='';}
         setCommitmentDisplay();
-        document.querySelector('#dashboard-regular-payment-heading').textContent=copy.updateRegularPaymentHeading;
-        regularPaymentDetails.hidden=false;
+        document.querySelector('#dashboard-regular-payment-heading').textContent=copy.regularPaymentHeading;
         renderRegularPaymentState();
-        commitmentMessage.textContent=copy.commitmentUpdated;
+        if(payload.revertedToConfirmed){commitmentForm.hidden=true;commitmentMessage.textContent='';}
+        else commitmentMessage.textContent=copy.commitmentUpdated;
         updateCommitmentPrompt();
       }catch(error){commitmentMessage.textContent=error?.message||copy.commitmentFailed;}
       button.disabled=false;
@@ -275,6 +291,7 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
 
     const renderRegularPaymentState=()=>{
       const pending=Boolean(currentMember?.commitmentPaymentPending);
+      const stopped=Boolean(currentMember?.regularCommitmentStoppedAt);
       const status=currentMember?.membershipStatus||'Active';
       const overdue=Boolean(currentMember?.regularPaymentOverdueSince)&&status==='Active';
       const inactive=status==='Inactive';
@@ -292,10 +309,13 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
       }else if(overdue){
         document.querySelector('#dashboard-regular-payment-heading').textContent=copy.regularPaymentHeading;
         showReminder(copy.paymentOverdueHeading,copy.paymentOverdueBody);
+      }else if(stopped){
+        document.querySelector('#dashboard-regular-payment-heading').textContent=copy.regularPaymentHeading;
+        showReminder(copy.commitmentStoppedHeading,copy.commitmentStoppedBody);
       }else if(pending){
         const frequency=currentCommitment.frequency==='Monthly'?'monthly':'weekly';
         const amount=currentCommitment.frequency==='Monthly'?currentCommitment.monthly:currentCommitment.weekly;
-        document.querySelector('#dashboard-regular-payment-heading').textContent=copy.updateRegularPaymentHeading;
+        document.querySelector('#dashboard-regular-payment-heading').textContent=copy.regularPaymentHeading;
         showReminder(copy.updateRegularPaymentHeading,interpolate(copy.commitmentPaymentReminder,{frequency,amount:displayMoney(amount),period:frequency==='monthly'?'month':'week'}));
       }else{
         reminder.hidden=true;

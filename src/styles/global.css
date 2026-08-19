@@ -1542,3 +1542,35 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .dashboard-status-highlight .rich-body p{margin:.25rem 0}
 .dashboard-pause-active .button{margin-top:.8rem}
 @media(max-width:640px){.dashboard-pause-form{grid-template-columns:1fr}.dashboard-pause-form .small-print,.dashboard-pause-form .dashboard-point-actions{grid-column:auto}}
+
+
+/* v2.9.81 — checkout collection parity, pause interaction and confirmation UI */
+.dashboard-pause-form[hidden]{display:none!important}
+.dashboard-pause-form .small-print:empty{display:none}
+.dashboard-pause-form .dashboard-point-actions{margin-bottom:0}
+#dashboard-pause-active .rich-body{margin-bottom:.8rem}
+#dashboard-pause-active .button{margin-top:0}
+.dashboard-confirm-dialog{width:min(430px,calc(100vw - 2rem));padding:0;border:1px solid var(--border);border-radius:1rem;background:var(--surface);color:inherit;box-shadow:0 20px 60px rgba(0,0,0,.28)}
+.dashboard-confirm-dialog::backdrop{background:rgba(35,24,31,.32);backdrop-filter:blur(1px)}
+.dashboard-confirm-dialog-inner{padding:1.2rem}
+.dashboard-confirm-dialog h3{margin:0 0 .55rem;color:var(--primary)}
+.dashboard-confirm-dialog p{margin:.2rem 0 .9rem;line-height:1.5}
+.dashboard-confirm-dialog .dashboard-point-actions{margin-top:1rem}
+.dashboard-confirm-dialog .small-print:empty{display:none}
+.checkout-top-grid .dashboard-card{margin:0;height:100%;box-sizing:border-box}
+.checkout-collection-summary .button{margin-top:.2rem}
+.checkout-collection-summary .checkout-collection-warning + .dashboard-change-point{margin-top:.2rem}
+
+.checkout-collection-summary h2{margin:.25rem 0 .5rem}
+.checkout-collection-summary .dashboard-point-image{margin:.35rem 0 1rem}
+.checkout-collection-summary #checkout-point-time{margin:.05rem 0;line-height:1.25}
+.checkout-collection-summary #checkout-point-address{margin:.05rem 0 .6rem;line-height:1.25}
+
+
+/* v2.9.82 membership account */
+.dashboard-manage-membership{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+.account-shell{width:min(780px,calc(100% - 2rem));margin:clamp(1.5rem,5vw,4rem) auto}.account-back{display:inline-block;margin-bottom:1rem}.account-header{margin-bottom:1.2rem}.account-header h1{margin-bottom:.45rem}.account-header p{max-width:680px}.account-card{margin-bottom:1.25rem}.account-form{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.account-form .full{grid-column:1/-1}.account-form label:not(.signup-check){display:grid;gap:.4rem;font-weight:700}.account-form input{width:100%;box-sizing:border-box;padding:.8rem;border:1px solid var(--border);border-radius:.65rem;background:var(--highlight);color:inherit;font:inherit}.account-email-help{margin:-.2rem 0 0}.account-email-preferences{margin-top:.35rem;padding-top:1rem;border-top:1px solid var(--border)}.account-email-preferences h3{margin:0 0 .7rem}.account-actions{display:flex;gap:.75rem}.account-close-card{margin-top:1.6rem;border-left:4px solid var(--primary)}.account-close-card h2{margin-top:0}
+@media(max-width:700px){.account-form{grid-template-columns:1fr}.account-form .full{grid-column:1}}
+
+/* v2.9.83 — Member Credit resolution before account closure */
+.account-resolution{margin-top:1.1rem}.account-credit-highlight{margin-bottom:1rem}.account-credit-highlight h3{margin-top:0}.account-resolution-option{padding:1rem 0;border-top:1px solid var(--border)}.account-resolution-option h3{margin:.05rem 0 .45rem}.account-resolution-option p{margin:.35rem 0 .85rem}.account-contact-option{padding-bottom:0}.account-donation-select{display:grid;gap:.4rem;max-width:480px;margin:.8rem 0;font-weight:700}.account-donation-select select{width:100%;box-sizing:border-box;padding:.8rem;border:1px solid var(--border);border-radius:.65rem;background:var(--highlight);color:inherit;font:inherit}.account-resolution-message{margin-top:.8rem}.account-resolution-option .small-print{margin-top:.75rem}

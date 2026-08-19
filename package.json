@@ -1,6 +1,6 @@
 {
   "name": "rooted-commons",
-  "version": "2.9.80",
+  "version": "2.9.83",
   "private": true,
   "type": "module",
   "scripts": {

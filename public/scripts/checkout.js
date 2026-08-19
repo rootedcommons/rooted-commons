@@ -1,5 +1,5 @@
 const configNode=document.querySelector('#checkout-config');
-const {products,points,checkoutEmptyHeading,checkoutEmptyText,checkoutConfirmButton,checkoutFreshnessWarning}=JSON.parse(configNode?.textContent||'{}');
+const {products,points,checkoutEmptyHeading,checkoutEmptyText,checkoutConfirmButton,checkoutFreshnessWarning,collectionEyebrow,collectionNotSelected,chooseCollection,collectionMapLink,preferredCollectionDay}=JSON.parse(configNode?.textContent||'{}');
 const STORAGE_KEY='rooted-commons-basket-v1';
 const POINT_KEY='rooted-commons-collection-point-v1';
 const REQUEST_KEY='rooted-commons-checkout-request-v2';
@@ -177,7 +177,7 @@ function renderCollectionSummary(){
   checkoutWarning.hidden=true;checkoutWarning.innerHTML='';
   checkoutPointDetails.hidden=false;
   if(!selectionConfirmed||!selectedPoint()){
-    checkoutPointName.textContent='Not selected';checkoutPointTime.textContent='';checkoutPointAddress.textContent='';checkoutPointImage.hidden=true;checkoutPointImage.removeAttribute('src');changeCollectionButton.textContent='Choose collection options';return;
+    checkoutPointName.textContent=member?(collectionNotSelected||'Not selected'):(chooseCollection||'Choose your collection point');checkoutPointTime.textContent='';checkoutPointAddress.textContent='';checkoutPointImage.hidden=true;checkoutPointImage.removeAttribute('src');changeCollectionButton.textContent='Choose collection options';return;
   }
   const point=selectedPoint();
   const slot=(point.collectionSlots||[]).find(item=>item.day===selectedCollectionDay);
@@ -294,6 +294,21 @@ async function loadLiveProducts(){
     saveBasket();renderBasket();
   }catch(error){submitMessage.textContent='Current prices and availability could not be loaded. Please refresh before confirming.';submitButton.disabled=true;console.error(error);}
 }
+function applyMappedCollectionPoint(mappedPointId){
+  const point=pointMap.get(Number(mappedPointId));
+  if(!point||!pointCompatible(point))return false;
+  const slots=availableSlots(point);
+  if(!slots.length)return false;
+  selectedPointId=Number(point.id);
+  selectedCollectionDay=(member?.preferredCollectionDay&&slots.some(slot=>slot.day===member.preferredCollectionDay))?member.preferredCollectionDay:slots[0].day;
+  selectionConfirmed=Boolean(selectedCollectionDay);
+  usingCustomSelection=true;
+  preferenceIssue=null;
+  if(selectionConfirmed)localStorage.setItem(POINT_KEY,String(selectedPointId));
+  renderCollectionSummary();renderMemberSummary();updateSubmitState();
+  return selectionConfirmed;
+}
+
 async function verifyMember(){
   const response=await(window.RootedData?.member?.()||fetch('/api/member',{cache:'no-store'}));
   if(!response.ok){if(response.status===401)window.__rootedSetAuthState?.(false);return;}
@@ -305,7 +320,11 @@ async function verifyMember(){
   const legacyMappedPointId=Number(localStorage.getItem('rooted-commons-checkout-collection-point')||0);
   if(legacyMappedPointId)localStorage.removeItem('rooted-commons-checkout-collection-point');
   const mappedPointId=Number(new URLSearchParams(location.search).get('collection_point')||legacyMappedPointId||0);
-  if(mappedPointId){openCollectionPicker(mappedPointId);requestAnimationFrame(()=>document.querySelector('#collection-point')?.scrollIntoView({block:'start'}));}
+  if(mappedPointId){
+    if(applyMappedCollectionPoint(mappedPointId))openCollectionPicker(mappedPointId);
+    else openCollectionPicker(mappedPointId);
+    requestAnimationFrame(()=>document.querySelector('#collection-point')?.scrollIntoView({block:'start'}));
+  }
 }
 
 document.querySelector('#email-form').addEventListener('submit',async event=>{
@@ -327,6 +346,8 @@ submitButton.addEventListener('click',async()=>{
 });
 
 renderBasket();
+const initialMappedPointId=Number(new URLSearchParams(location.search).get('collection_point')||0);
+if(initialMappedPointId){applyMappedCollectionPoint(initialMappedPointId);openCollectionPicker(initialMappedPointId);}
 loadOrderStatus();
 loadLiveProducts();
 verifyMember();

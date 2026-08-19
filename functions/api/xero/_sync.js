@@ -122,20 +122,41 @@ export async function syncMemberPayments(env, { maxPages = 5 } = {}) {
       const isRegular=regular.amount > 0 && Math.abs(received-regular.amount) < 0.005;
       if(isRegular){
         const status=unwrap(member['Membership status']) || 'Active';
+        const commitmentStopped=Boolean(String(member['Regular commitment stopped at']||'').trim());
         const memberPatch={};
-        if(status!=='Paused'&&status!=='Closed'){
-          const base=status==='Inactive'?0:Math.max(0,Math.trunc(number(member['Consecutive weeks'])));
-          memberPatch['Consecutive weeks']=base+regular.weeks;
-          memberPatch['Streak status']='Active';
-          memberPatch['Membership status']='Active';
-          memberPatch['Regular payment expected at']=nextExpectedPayment(xeroDate(tx),regular.frequency);
-          memberPatch['Regular payment overdue since']='';
-          memberPatch['Membership inactive at']='';
-          memberPatch['Payment overdue email sent at']='';
-          memberPatch['Membership inactive email sent at']='';
-          memberPatch['Membership follow-up email sent at']='';
+        if(status!=='Closed'&&!commitmentStopped){
+          const paymentDate=xeroDate(tx).slice(0,10);
+          const anchor=String(member['Streak credited through']||'').slice(0,10);
+          const frozenSince=String(member['Streak frozen since']||member['Regular payment overdue since']||'').slice(0,10);
+          if(status==='Inactive'){
+            memberPatch['Consecutive weeks']=0;
+            memberPatch['Streak credited through']=paymentDate;
+            memberPatch['Streak frozen since']=null;
+            memberPatch['Streak status']='Active';
+            memberPatch['Membership status']='Active';
+          }else if(!anchor){
+            // First qualifying commitment payment starts the streak clock at zero.
+            memberPatch['Streak credited through']=paymentDate;
+            if(status!=='Paused'){memberPatch['Streak frozen since']=null;memberPatch['Streak status']='Active';}
+          }else if(status!=='Paused'&&frozenSince){
+            // Resume after the complete frozen interval (missed payment and/or pause).
+            const gapDays=Math.max(0,Math.round((new Date(`${paymentDate}T12:00:00Z`)-new Date(`${frozenSince}T12:00:00Z`))/86400000));
+            const shifted=new Date(`${anchor}T12:00:00Z`);shifted.setUTCDate(shifted.getUTCDate()+gapDays);
+            memberPatch['Streak credited through']=shifted.toISOString().slice(0,10);
+            memberPatch['Streak frozen since']=null;
+            memberPatch['Streak status']='Active';
+            memberPatch['Membership status']='Active';
+          }
+          // A payment received during an approved pause can resolve a pre-pause overdue
+          // payment, but it must not unfreeze the streak or end the pause.
+          memberPatch['Regular payment expected at']=nextExpectedPayment(paymentDate,regular.frequency);
+          memberPatch['Regular payment overdue since']=null;
+          memberPatch['Membership inactive at']=null;
+          memberPatch['Payment overdue email sent at']=null;
+          memberPatch['Membership inactive email sent at']=null;
+          memberPatch['Membership follow-up email sent at']=null;
         }
-        if (truthy(member['Commitment payment pending'], false)) {
+        if (!commitmentStopped && truthy(member['Commitment payment pending'], false)) {
           const changedDate=member['Commitment changed at'] ? new Date(member['Commitment changed at']).toISOString().slice(0,10) : '';
           const paymentDate=xeroDate(tx).slice(0,10);
           if(!changedDate || paymentDate >= changedDate) memberPatch['Commitment payment pending']=false;

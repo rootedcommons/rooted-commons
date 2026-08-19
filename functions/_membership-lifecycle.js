@@ -41,8 +41,28 @@ export function pauseAllowance(member,year=Number(londonDate(new Date()).slice(0
 
 export function expectedAmount(member){
   const frequency=unwrap(member['Contribution frequency'])==='Monthly'?'Monthly':'Weekly';
-  return {frequency,amount:frequency==='Monthly'?number(member['Monthly equivalent']):number(member['Weekly commitment']),weeks:frequency==='Monthly'?4:1};
+  return {frequency,amount:frequency==='Monthly'?number(member['Monthly equivalent']):number(member['Weekly commitment'])};
 }
+
+export function shiftStreakAnchorForGap(anchor,start,end){
+  const base=dateOnly(anchor),from=dateOnly(start),to=dateOnly(end);
+  if(!base||!from||!to)return base||'';
+  if(base>=to)return base;
+  const overlapStart=base>from?base:from;
+  const gap=daysBetween(overlapStart,to);
+  return Number.isFinite(gap)&&gap>0?addDaysDate(base,gap):base;
+}
+
+function accrueSupportedWeeks(member,through){
+  const anchor=dateOnly(member['Streak credited through']);
+  const limit=dateOnly(through);
+  if(!anchor||!limit)return {};
+  const elapsed=daysBetween(anchor,limit);
+  const weeks=Number.isFinite(elapsed)?Math.max(0,Math.floor(elapsed/7)):0;
+  if(!weeks)return {};
+  return {'Consecutive weeks':Math.max(0,Math.trunc(number(member['Consecutive weeks'])))+weeks,'Streak credited through':addDaysDate(anchor,weeks*7)};
+}
+
 
 export function ukDate(value=new Date()){ return londonDate(value); }
 
@@ -58,7 +78,7 @@ export function advanceExpectedPastPause(expectedAt,pauseEnd,frequency){
   const end=dateOnly(pauseEnd);
   if(!next||!end)return next||'';
   let guard=0;
-  while(next<=end && guard<60){next=advanceCadenceDate(next,frequency);guard+=1;}
+  while(next<end && guard<60){next=advanceCadenceDate(next,frequency);guard+=1;}
   return next;
 }
 
@@ -120,21 +140,27 @@ export async function processMembershipLifecycle(env,{now=new Date()}={}){
       const frequency=expectedAmount(member).frequency;
       const pauseStart=dateOnly(member['Pause starts']);
       const pauseEnd=dateOnly(member['Pause ends']);
+      const commitmentStopped=dateOnly(member['Regular commitment stopped at']);
 
 
       // Scheduled notified pause becomes active on its start date.
       if(pauseStart&&pauseEnd&&today>=pauseStart&&today<pauseEnd&&status==='Active'){
         patch['Membership status']='Paused';
         patch['Streak status']='Frozen';
-        patch['Regular payment overdue since']='';
-        patch['Payment overdue email sent at']='';
+        if(!dateOnly(member['Streak frozen since']))patch['Streak frozen since']=pauseStart;
         status='Paused';results.paused+=1;
       }
 
       // A notified pause ends automatically. Keep the annual-used counter, but clear the current pause.
       if(status==='Paused'&&pauseEnd&&today>=pauseEnd){
-        const expected=advanceExpectedPastPause(member['Regular payment expected at'],pauseEnd,frequency);
-        patch={...patch,'Membership status':'Active','Streak status':'Active','Pause starts':'','Pause ends':'','Current pause weeks':0,'Pause ending email sent at':'','Regular payment overdue since':'','Payment overdue email sent at':'','Regular payment expected at':expected};
+        const expectedBeforePause=dateOnly(member['Regular payment expected at']);
+        const prePauseOverdue=dateOnly(member['Regular payment overdue since']);
+        const skippedExpected=Boolean(expectedBeforePause&&pauseStart&&expectedBeforePause>=pauseStart&&expectedBeforePause<pauseEnd);
+        const expected=prePauseOverdue ? expectedBeforePause : advanceExpectedPastPause(member['Regular payment expected at'],pauseEnd,frequency);
+        const remainsFrozen=Boolean(prePauseOverdue||skippedExpected);
+        const frozenSince=dateOnly(patch['Streak frozen since']||member['Streak frozen since'])||pauseStart;
+        const shiftedAnchor=remainsFrozen?(member['Streak credited through']||null):shiftStreakAnchorForGap(member['Streak credited through'],frozenSince,pauseEnd);
+        patch={...patch,'Membership status':'Active','Streak status':remainsFrozen?'Frozen':'Active','Streak frozen since':remainsFrozen?(frozenSince||null):null,'Pause starts':null,'Pause ends':null,'Current pause weeks':0,'Pause ending email sent at':null,'Regular payment overdue since':prePauseOverdue||null,'Payment overdue email sent at':prePauseOverdue?(member['Payment overdue email sent at']||null):null,'Regular payment expected at':expected||null,'Streak credited through':shiftedAnchor||null};
         status='Active';results.resumed+=1;
       }
 
@@ -147,15 +173,27 @@ export async function processMembershipLifecycle(env,{now=new Date()}={}){
         }
       }
 
+      // Streak progression is elapsed-time based, not payment-count based. A qualifying
+      // payment establishes/maintains funding; each full supported seven-day period adds one.
+      // Cap accrual at the expected payment date so downtime after a missed payment is never credited.
+      const effectiveStreakStatus=unwrap(patch['Streak status']||member['Streak status']) || 'Active';
+      if(status==='Active'&&!commitmentStopped&&effectiveStreakStatus==='Active'){
+        const expectedForAccrual=dateOnly(patch['Regular payment expected at']||member['Regular payment expected at']);
+        const through=expectedForAccrual&&today>expectedForAccrual?expectedForAccrual:today;
+        const accrued=accrueSupportedWeeks({...member,...patch},through);
+        if(Object.keys(accrued).length)patch={...patch,...accrued};
+      }
+
       // Pauses suppress overdue logic and routine payment reminders. Policy dates are date-only:
       // the entire expected day is allowed to pass before a payment is treated as missed.
-      if(status==='Active'){
-        const expected=dateOnly(member['Regular payment expected at']);
-        let overdue=dateOnly(member['Regular payment overdue since']);
+      if(status==='Active'&&!commitmentStopped){
+        const expected=dateOnly(patch['Regular payment expected at']||member['Regular payment expected at']);
+        let overdue=dateOnly(patch['Regular payment overdue since']||member['Regular payment overdue since']);
         if(expected&&today>expected&&!overdue){
           overdue=expected;
           patch['Regular payment overdue since']=overdue;
           patch['Streak status']='Frozen';
+          if(!dateOnly(patch['Streak frozen since']||member['Streak frozen since']))patch['Streak frozen since']=overdue;
           results.overdue+=1;
         }
         if(overdue&&!member['Payment overdue email sent at']&&!patch['Payment overdue email sent at']){
@@ -164,7 +202,7 @@ export async function processMembershipLifecycle(env,{now=new Date()}={}){
         // One full calendar month remains protected. Example: due 7 Sep -> inactive from 8 Oct.
         if(overdue&&today>addMonthsDate(overdue,1)){
           const currentWeeks=Math.max(0,Math.trunc(number(member['Consecutive weeks'])));
-          patch={...patch,'Membership status':'Inactive','Streak status':'Ended','Previous streak weeks':currentWeeks,'Consecutive weeks':0,'Membership inactive at':today};
+          patch={...patch,'Membership status':'Inactive','Streak status':'Ended','Previous streak weeks':currentWeeks,'Consecutive weeks':0,'Streak frozen since':null,'Membership inactive at':today};
           status='Inactive';results.inactive+=1;
         }
       }
