@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.9.90
+
+- Build fix: rewrote `Icon.astro` frontmatter as plain JavaScript, removing TypeScript-only declarations and nullish-coalescing syntax from the component that Cloudflare/Vite was failing to parse.
+- No intended UI or behaviour changes from v2.9.89.
+
 ## 2.9.89 - 2026-08-19
 
 - Fixed the Astro build failure in `src/components/Icon.astro` by replacing aliased prop destructuring (`class: className`) with explicit prop reads.

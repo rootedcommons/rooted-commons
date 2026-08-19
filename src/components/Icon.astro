@@ -1,35 +1,13 @@
 ---
-export type IconName =
-  | 'calendar'
-  | 'refill'
-  | 'collection-point'
-  | 'grower'
-  | 'shop'
-  | 'cafe'
-  | 'volunteering'
-  | 'website'
-  | 'instagram'
-  | 'directions'
-  | 'bar'
-  | 'bee';
-
-interface Props {
-  name: IconName;
-  size?: number | string;
-  class?: string;
-  title?: string;
-  strokeWidth?: number;
-}
-
-const props = Astro.props as Props;
+const props = Astro.props;
 
 const name = props.name;
-const size = props.size ?? 24;
-const className = props.class ?? '';
+const size = props.size === undefined ? 24 : props.size;
+const className = props.class || '';
 const title = props.title;
-const strokeWidth = props.strokeWidth ?? 1.8;
+const strokeWidth = props.strokeWidth === undefined ? 1.8 : props.strokeWidth;
 
-const icons: Record<IconName, string> = {
+const icons = {
   calendar: `
     <path d="M7 2v3M17 2v3"/>
     <path d="M4.5 8.5h15"/>
