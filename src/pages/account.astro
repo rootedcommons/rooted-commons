@@ -6,15 +6,14 @@ const s=data.settings;
 const c=(key,fallback='')=>data.interfaceContent[key]||fallback;
 const copy={
   title:c('account.title','Manage your membership'),
-  intro:c('account.intro','Update your contact details, choose whether to receive occasional news in your weekly email, or close your membership.'),
-  detailsHeading:c('account.details_heading','Your details'),
+  intro:'',
+  detailsHeading:c('account.details_heading','Update your details'),
   firstName:c('account.first_name','First name'),lastName:c('account.last_name','Last name'),email:c('account.email','Email address'),confirmEmail:c('account.confirm_email','Confirm email address'),phone:c('account.phone','Phone number'),
   save:c('account.save','Save changes'),saving:c('account.saving','Saving…'),
   emailHelp:c('account.email_help','If you change your email address, we’ll send a confirmation link to the new address before changing the email on your membership.'),
   emailsHeading:c('account.emails_heading','Your emails'),
   newsletter:c('account.newsletter','Include occasional Rooted Commons news and updates in my weekly market email.'),
-  closeHeading:c('account.close_heading','Close your membership'),
-  closeBody:c('account.close_body','Before your membership can close, any remaining Member Credit needs to be resolved. We recommend spending it through the market. You can also choose to donate your remaining credit to Rooted Commons or an organisation in our network, or contact us if you need to resolve it another way.'),
+  closeToggle:c('account.close_toggle','Close my account'),
   creditHeading:c('account.credit_heading','You still have {credit} of Member Credit'),
   creditIntro:c('account.credit_intro','Your Member Credit must be resolved before your membership can close.'),
   spendHeading:c('account.spend_heading','Spend down your Member Credit'),
@@ -43,7 +42,7 @@ const config=JSON.stringify({copy}).replace(/</g,'\\u003c');
     <a class="text-link account-back" href="/dashboard/">← {copy.back}</a>
     <section id="account-loading" class="dashboard-card"><p>Loading your membership…</p></section>
     <div id="account-content" hidden>
-      <header class="account-header"><h1>{copy.title}</h1><p>{copy.intro}</p></header>
+      <header class="account-header"><h1>{copy.title}</h1></header>
       <section class="dashboard-card account-card">
         <h2>{copy.detailsHeading}</h2>
         <form id="account-details-form" class="account-form">
@@ -62,9 +61,9 @@ const config=JSON.stringify({copy}).replace(/</g,'\\u003c');
         </form>
       </section>
 
-      <section class="dashboard-card account-card account-close-card">
-        <h2>{copy.closeHeading}</h2>
-        <p>{copy.closeBody}</p>
+      <div class="account-close-area">
+        <button id="account-close-toggle" class="button button-secondary account-close-toggle" type="button" aria-expanded="false" aria-controls="account-close-panel">{copy.closeToggle}</button>
+        <section id="account-close-panel" class="dashboard-card account-card account-close-card" hidden>
         <div id="account-positive-credit" class="account-resolution" hidden>
           <div class="highlight-box account-credit-highlight">
             <h3 id="account-credit-heading"></h3>
@@ -90,7 +89,8 @@ const config=JSON.stringify({copy}).replace(/</g,'\\u003c');
           <button id="account-close-open" class="button button-secondary" type="button">{copy.closeButton}</button>
         </div>
         <p id="account-resolution-message" class="small-print" aria-live="polite"></p>
-      </section>
+        </section>
+      </div>
     </div>
 
     <dialog id="account-close-dialog" class="dashboard-confirm-dialog">
@@ -98,5 +98,5 @@ const config=JSON.stringify({copy}).replace(/</g,'\\u003c');
     </dialog>
   </main>
   <script id="account-config" type="application/json" set:html={config}></script>
-  <script type="module" src="/scripts/account.js?v=2.9.83"></script>
+  <script type="module" src="/scripts/account.js?v=2.9.88"></script>
 </BaseLayout>

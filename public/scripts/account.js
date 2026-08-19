@@ -1,3 +1,10 @@
+
+  const closeToggle=document.querySelector('#account-close-toggle'), closePanel=document.querySelector('#account-close-panel');
+  closeToggle?.addEventListener('click',()=>{
+    const willOpen=closePanel?.hidden ?? false;
+    if (closePanel) closePanel.hidden=!willOpen;
+    closeToggle.setAttribute('aria-expanded',String(willOpen));
+  });
 (()=>{
   const config=JSON.parse(document.querySelector('#account-config')?.textContent||'{}');
   const copy=config.copy||{};

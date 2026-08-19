@@ -46,81 +46,72 @@ const offeringIcons = {
     const description = partner.longDescription || partner.summary;
     return (
       <>
-        <article class="network-card">
-          {(partner.image || partner.image2 || partner.image3) && <CardGallery images={images} imageSize="large" imageFit="cover" />}
+        <article class="network-card" data-network-partner-id={partner.id}>
+          {(partner.image || partner.image2 || partner.image3) && <div class="network-card-media-trigger" data-network-open={modalId} role="button" tabindex="0" aria-label={`Learn more about ${partner.name}`}><CardGallery images={images} imageSize="large" imageFit="cover" /></div>}
           <div class="network-card-copy">
-            <h3>{partner.name}</h3>
-            {partner.role?.length > 0 && <p class="network-role">{partner.role.join(' · ')}</p>}
-            {partner.summary && <p>{partner.summary}</p>}
-            <button class="network-explore" type="button" data-network-open={modalId}>Explore <span aria-hidden="true">→</span></button>
+            <h3><button class="network-card-title" type="button" data-network-open={modalId} data-live-card-name>{partner.name}</button></h3>
+            <p class="network-role" data-live-card-role hidden={!partner.role?.length}>{partner.role?.join(' · ') || ''}</p>
+            <p data-live-card-summary hidden={!partner.summary}>{partner.summary || ''}</p>
+            <button class="network-explore" type="button" data-network-open={modalId}>Learn more <span aria-hidden="true">→</span></button>
           </div>
         </article>
 
-        <dialog class="network-dialog" id={modalId} data-network-dialog>
+        <dialog class="network-dialog" id={modalId} data-network-dialog data-network-partner-id={partner.id}>
           <button class="network-dialog-close" type="button" data-network-close aria-label={`Close ${partner.name}`}>×</button>
           <div class="network-dialog-inner">
             <div class="network-dialog-media">
-              {(partner.image || partner.image2 || partner.image3) && <CardGallery images={images} imageSize="large" imageFit="cover" />}
+              {(partner.image || partner.image2 || partner.image3) && <CardGallery images={images} imageSize="large" imageFit="cover" dotsOverlay={true} />}
             </div>
             <div class="network-dialog-copy">
               <header>
-                <h2>{partner.name}</h2>
-                {partner.role?.length > 0 && <p class="network-role">{partner.role.join(' · ')}</p>}
-                {description && <FormattedText text={description} class="rich-body network-partner-intro" />}
+                <h2 data-live-modal-name>{partner.name}</h2>
+                <p class="network-role" data-live-modal-role hidden={!partner.role?.length}>{partner.role?.join(' · ') || ''}</p>
+                <div data-live-modal-intro hidden={!description}>{description && <FormattedText text={description} class="rich-body network-partner-intro" />}</div>
               </header>
 
-              {partnerMetrics.length > 0 && (
-                <section>
-                  <h3>Our work together</h3>
-                  <div class="network-partner-stats">
-                    {partnerMetrics.map((metric) => (
-                      <div><strong>{metricHeadline(metric)}</strong><span>{metric.name}</span></div>
-                    ))}
-                  </div>
-                </section>
-              )}
+              <section data-live-partner-metrics hidden={!partnerMetrics.length}>
+                <h3>Our work together</h3>
+                <div class="network-partner-stats" data-live-partner-metrics-list>
+                  {partnerMetrics.map((metric) => (
+                    <div><strong>{metricHeadline(metric)}</strong><span>{metric.name}</span></div>
+                  ))}
+                </div>
+              </section>
 
-              {offeringRows.length > 0 && (
-                <section class="network-offerings">
-                  <h3>What you can do here</h3>
-                  <div class="network-offering-list">
-                    {offeringRows.map((offering) => (
-                      <div class:list={['network-offering-row', { 'network-offering-row-no-icon': !offering.icon }]}>
-                        {offering.icon && <span class="network-icon-badge"><Icon name={offering.icon} /></span>}
-                        <span>{offering.text}</span>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
+              <section class="network-offerings" data-live-offerings hidden={!offeringRows.length}>
+                <h3>What you can do here</h3>
+                <div class="network-offering-list" data-live-offerings-list>
+                  {offeringRows.map((offering) => (
+                    <div class:list={['network-offering-row', { 'network-offering-row-no-icon': !offering.icon }]}>
+                      {offering.icon && <span class="network-icon-badge"><Icon name={offering.icon} /></span>}
+                      <span>{offering.text}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
 
-              {collectionPoint && (
-                <section class="network-collection-details">
-                  <h3>Collection details</h3>
-                  <div class="network-detail-row">
-                    <span class="network-detail-icon"><Icon name="calendar" /></span>
-                    <span>{collectionPoint.collectionSlots?.map((slot) => `${slot.day} · ${slot.time}`).join('  ·  ') || collectionPoint.collectionTime}</span>
-                  </div>
-                  <div class="network-detail-row">
-                    <span class="network-detail-icon"><Icon name="collection-point" /></span>
-                    <span>{collectionPoint.availableCategories?.length ? collectionPoint.availableCategories.join(', ') : 'Rooted Commons orders'}</span>
-                  </div>
-                </section>
-              )}
+              <section class="network-collection-details" data-live-collection hidden={!collectionPoint}>
+                <h3>Collection details</h3>
+                <div class="network-detail-row">
+                  <span class="network-detail-icon"><Icon name="calendar" /></span>
+                  <span data-live-collection-time>{collectionPoint?.collectionSlots?.map((slot) => `${slot.day} · ${slot.time}`).join('  ·  ') || collectionPoint?.collectionTime || ''}</span>
+                </div>
+                <div class="network-detail-row">
+                  <span class="network-detail-icon"><Icon name="collection-point" /></span>
+                  <span data-live-collection-items>{collectionPoint?.availableCategories?.length ? collectionPoint.availableCategories.join(', ') : 'Rooted Commons orders'}</span>
+                </div>
+              </section>
 
-              {(partner.getInvolvedUrl || partner.volunteerUrl || partner.website || partner.socialUrl || directionsHref) && (
-                <section class="network-links">
-                  <h3>Get involved</h3>
-                  <div>
-                    {partner.getInvolvedUrl && <a class="button button-medium" href={partner.getInvolvedUrl}>{partner.getInvolvedLabel || 'Get involved'}</a>}
-                    {partner.volunteerUrl && <a class="text-link" href={partner.volunteerUrl}>Volunteer →</a>}
-                    {partner.website && <a class="text-link network-icon-link" href={partner.website}><Icon name="website" /> <span>Website →</span></a>}
-                    {partner.socialUrl && <a class="text-link network-icon-link" href={partner.socialUrl}><Icon name="instagram" /> <span>Follow →</span></a>}
-                    {directionsHref && <a class="text-link network-icon-link" href={directionsHref}><Icon name="directions" /> <span>Directions →</span></a>}
-                  </div>
-                </section>
-              )}
-            </div>
+              <section class="network-links" data-live-links hidden={!(partner.getInvolvedUrl || partner.volunteerUrl || partner.website || partner.socialUrl || directionsHref)}>
+                <h3>Get involved</h3>
+                <div>
+                  <a class="button button-medium" data-live-get-involved href={partner.getInvolvedUrl || '#'} hidden={!partner.getInvolvedUrl}>{partner.getInvolvedLabel || 'Get involved'}</a>
+                  <a class="text-link" data-live-volunteer href={partner.volunteerUrl || '#'} hidden={!partner.volunteerUrl}>Volunteer →</a>
+                  <a class="text-link network-icon-link" data-live-website href={partner.website || '#'} hidden={!partner.website}><Icon name="website" /> <span>Website →</span></a>
+                  <a class="text-link network-icon-link" data-live-social href={partner.socialUrl || '#'} hidden={!partner.socialUrl}><Icon name="instagram" /> <span>Follow →</span></a>
+                  <a class="text-link network-icon-link" data-live-directions href={directionsHref || '#'} hidden={!directionsHref}><Icon name="directions" /> <span>Directions →</span></a>
+                </div>
+              </section>            </div>
           </div>
         </dialog>
       </>
@@ -133,10 +124,13 @@ const offeringIcons = {
     document.querySelectorAll('[data-network-open]').forEach((button) => {
       if (button.dataset.ready === 'true') return;
       button.dataset.ready = 'true';
-      button.addEventListener('click', () => {
+      const open = (event) => {
+        if (event?.target?.closest?.('[data-card-gallery-prev],[data-card-gallery-next]')) return;
         const dialog = document.getElementById(button.getAttribute('data-network-open') || '');
         if (dialog && typeof dialog.showModal === 'function') dialog.showModal();
-      });
+      };
+      button.addEventListener('click', open);
+      if (button.getAttribute('role') === 'button') button.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(event); } });
     });
     document.querySelectorAll('[data-network-dialog]').forEach((dialog) => {
       if (dialog.dataset.ready === 'true') return;

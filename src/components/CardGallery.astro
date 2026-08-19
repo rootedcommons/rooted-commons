@@ -1,5 +1,5 @@
 ---
-const { images = [], imageSize = 'medium', imageFit = 'cover', caption = '' } = Astro.props;
+const { images = [], imageSize = 'medium', imageFit = 'cover', caption = '', dotsOverlay = false } = Astro.props;
 const usableImages = images.filter((image) => image?.src);
 const hasGallery = usableImages.length > 1;
 const galleryId = `card-gallery-${Math.random().toString(36).slice(2, 10)}`;
@@ -13,7 +13,7 @@ const galleryId = `card-gallery-${Math.random().toString(36).slice(2, 10)}`;
 )}
 
 {hasGallery && (
-  <figure class="card-gallery-shell" data-card-gallery id={galleryId}>
+  <figure class:list={['card-gallery-shell', { 'card-gallery-dots-overlay': dotsOverlay }]} data-card-gallery id={galleryId}>
     <div class={`card-gallery image-size-${imageSize} fit-${imageFit}`} data-card-gallery-track tabindex="0" aria-label="Image gallery">
       {usableImages.map((image, index) => (
         <div class="card-gallery-slide" data-card-gallery-slide>

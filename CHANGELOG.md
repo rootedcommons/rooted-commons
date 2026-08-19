@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.9.88 — 2026-08-19
+
+- Network partner cards now anchor **Learn more** at the bottom of each card; the partner title and image also open the modal.
+- Partner modal carousel dots use an explicit overlay mode so the compact indicator pill sits over the image on desktop and mobile.
+- Removed the second client-side implementation of Network Partner cards/modals from `LiveNetworkHydrator`; live Baserow data now updates the Astro-rendered structure instead of replacing it.
+- `/account/`: removed the introductory sentence, tightened Back-to-dashboard spacing, renamed **Your details** to **Update your details**, and moved account closure into a separate collapsed **Close my account** panel.
+
+
 ## 2.9.87 — 2026-08-19
 
 - Extracted the dashboard collection-point card into a single shared `CollectionPointCard.astro` component.
