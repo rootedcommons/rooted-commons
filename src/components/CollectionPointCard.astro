@@ -1,6 +1,7 @@
 ---
 const {
-  variant = 'dashboard',
+  idPrefix = 'dashboard',
+  className = '',
   collectionEyebrow = 'Your collection point',
   collectionNotSelected = 'Not selected',
   changeCollection = 'Change collection preferences',
@@ -10,61 +11,44 @@ const {
   saveCollection = 'Save collection point',
   cancel = 'Cancel',
   mapHref = '/collection-points/',
+  headingId = '',
+  detailsId = '',
+  changeButtonId = idPrefix === 'dashboard' ? 'dashboard-change-point' : `${idPrefix}-change-collection`,
+  pickerId = idPrefix === 'dashboard' ? 'dashboard-point-form' : `${idPrefix}-collection-picker`,
+  cancelButtonId = idPrefix === 'dashboard' ? 'dashboard-cancel-point' : `${idPrefix}-cancel-collection`,
 } = Astro.props;
 
-const isCheckout = variant === 'checkout';
-const prefix = isCheckout ? 'checkout' : 'dashboard';
-const pickerId = isCheckout ? 'checkout-collection-picker' : 'dashboard-point-form';
+const prefix = idPrefix;
 const pointSelectId = `${prefix}-point-select`;
 const daySelectId = `${prefix}-day-select`;
+const hasWarningSlot = Astro.slots.has('warning');
+const hasExpandedSlot = Astro.slots.has('expanded');
 ---
 
-<div class:list={['collection-point-module', isCheckout && 'checkout-collection-module']}>
-  <article
-    id="collection-point"
-    class:list={['dashboard-card','dashboard-collection', isCheckout && 'checkout-collection-summary']}
-    aria-labelledby={isCheckout ? 'collection-heading' : undefined}
-  >
-    <p class="eyebrow" id={isCheckout ? 'collection-heading' : undefined}>{collectionEyebrow}</p>
+<article
+  id="collection-point"
+  class:list={['dashboard-card', 'dashboard-collection', className]}
+  aria-labelledby={headingId || undefined}
+>
+  <p class="eyebrow" id={headingId || undefined}>{collectionEyebrow}</p>
 
-    <div id={isCheckout ? 'checkout-point-details' : undefined} class="dashboard-collection-preview">
-      <img id={`${prefix}-point-image`} class="dashboard-point-image" src="" alt="" hidden />
-      <div class="dashboard-collection-copy">
-        <h2 id={`${prefix}-point-name`}>{collectionNotSelected}</h2>
-        <p id={`${prefix}-point-time`}></p>
-        <p id={`${prefix}-point-address`}></p>
-      </div>
-    </div>
+  <div id={detailsId || undefined}>
+    <img id={`${prefix}-point-image`} class="dashboard-point-image" src="" alt="" hidden />
+    <h2 id={`${prefix}-point-name`}>{collectionNotSelected}</h2>
+    <p id={`${prefix}-point-time`}></p>
+    <p id={`${prefix}-point-address`}></p>
+  </div>
 
-    {isCheckout && <div id="checkout-collection-warning" class="checkout-collection-warning" hidden aria-live="polite"></div>}
+  {hasWarningSlot && <slot name="warning" />}
 
-    <button id={isCheckout ? 'checkout-change-collection' : 'dashboard-change-point'} class="button dashboard-change-point" type="button">
-      {isCheckout ? 'Change collection options' : changeCollection}
-    </button>
-  </article>
+  <button id={changeButtonId} class="button dashboard-change-point" type="button">
+    {changeCollection}
+  </button>
 
-  {isCheckout ? (
-    <div id={pickerId} class="dashboard-point-form collection-point-editor checkout-collection-picker" aria-label="Change collection options" hidden>
-      <div class="checkout-collection-form">
-        <div class="dashboard-point-label-row checkout-collection-label-row">
-          <label for={pointSelectId}>{chooseCollection}</label>
-          <a class="dashboard-map-link" href={mapHref}>({collectionMapLink})</a>
-        </div>
-        <select id={pointSelectId}></select>
-        <div id="collection-slot-panel" class="collection-slot-panel" hidden>
-          <label for={daySelectId}>{preferredCollectionDay}</label>
-          <select id={daySelectId}></select>
-          <p id="collection-freshness-warning" class="collection-freshness-warning" hidden></p>
-        </div>
-        <div class="dashboard-point-actions checkout-collection-actions">
-          <button id="checkout-use-collection" class="button" type="button">Use this collection option</button>
-          <button id="checkout-cancel-collection" class="button button-secondary" type="button">{cancel}</button>
-        </div>
-        <p id="collection-message" class="small-print" aria-live="polite"></p>
-      </div>
-    </div>
+  {hasExpandedSlot ? (
+    <slot name="expanded" />
   ) : (
-    <form id={pickerId} class="dashboard-point-form collection-point-editor" hidden>
+    <form id={pickerId} class="dashboard-point-form" hidden>
       <div class="dashboard-point-label-row">
         <label for={pointSelectId}>{chooseCollection}</label>
         <a class="dashboard-map-link" href={mapHref}>({collectionMapLink})</a>
@@ -74,9 +58,9 @@ const daySelectId = `${prefix}-day-select`;
       <select id={daySelectId} required></select>
       <div class="dashboard-point-actions">
         <button class="button" type="submit">{saveCollection}</button>
-        <button id="dashboard-cancel-point" class="button button-secondary" type="button">{cancel}</button>
+        <button id={cancelButtonId} class="button button-secondary" type="button">{cancel}</button>
       </div>
       <p id="dashboard-point-message" class="small-print" aria-live="polite"></p>
     </form>
   )}
-</div>
+</article>

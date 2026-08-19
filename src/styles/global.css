@@ -1623,38 +1623,42 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .account-close-toggle{display:block}
 .account-close-card{margin-top:.75rem}
 
-/* v2.9.91 — one compact collection-point presentation on dashboard and checkout */
-.collection-point-module{min-width:0}
-.collection-point-module>.dashboard-card{height:auto!important}
-.dashboard-collection-preview{display:grid;grid-template-columns:112px minmax(0,1fr);gap:1rem;align-items:center;margin:.45rem 0 .8rem}
-.dashboard-collection-preview .dashboard-point-image{
-  display:block;
-  width:112px!important;
-  height:88px!important;
-  max-height:88px!important;
-  aspect-ratio:auto!important;
-  object-fit:cover!important;
-  object-position:center;
-  border-radius:.75rem;
-  margin:0!important;
-  background:var(--background);
+/* v2.9.92 — dashboard membership refinements + one canonical collection-point UI */
+.dashboard-membership-identity .dashboard-membership-credit{
+  align-items:center!important;
+  text-align:center!important;
+  width:100%;
 }
-.dashboard-collection-preview .dashboard-point-image[hidden]{display:none!important}
-.dashboard-collection-copy{min-width:0}
-.dashboard-collection-copy h2{margin:0 0 .25rem!important}
-.dashboard-collection-copy p{margin:.06rem 0!important;line-height:1.3}
-.dashboard-collection .dashboard-change-point{margin-top:.35rem!important}
-.collection-point-editor{
-  margin:1rem 0 0!important;
-  padding:clamp(1rem,2.5vw,1.5rem)!important;
-  border:1px solid var(--border)!important;
-  border-radius:1rem!important;
-  background:var(--surface)!important;
+.dashboard-membership-identity .dashboard-membership-credit span,
+.dashboard-membership-identity .dashboard-membership-credit strong{
+  text-align:center!important;
+}
+.dashboard-membership-actions .dashboard-manage-membership{
+  width:100%;
+  margin:0;
+  padding:0;
+  border:0;
+}
+.dashboard-membership-actions .dashboard-manage-membership .button{
+  width:100%;
   box-sizing:border-box;
+  justify-content:center;
+  text-align:center;
 }
-.collection-point-editor[hidden]{display:none!important}
-.checkout-collection-picker{margin-top:1rem!important}
-@media(max-width:520px){
-  .dashboard-collection-preview{grid-template-columns:88px minmax(0,1fr);gap:.8rem}
-  .dashboard-collection-preview .dashboard-point-image{width:88px!important;height:72px!important;max-height:72px!important}
-}
+.dashboard-membership-tenure{gap:0}
+.dashboard-streak-line span{font-size:.92rem;line-height:1.3}
+.dashboard-pause-area{margin-top:.65rem;padding-top:0;border-top:0}
+.dashboard-pause-intro{display:block}
+.dashboard-pause-intro .button{margin-top:0}
+.dashboard-pause-form-intro{grid-column:1/-1;display:grid;gap:.45rem}
+.dashboard-pause-form-intro>.rich-body p{margin:.1rem 0}
+
+/* Checkout uses the same CollectionPointCard presentation as the dashboard. */
+.checkout-top-grid .dashboard-collection{height:auto}
+.checkout-collection-summary .dashboard-point-image{margin:.35rem 0 1rem}
+.checkout-collection-summary #checkout-point-time{margin:.05rem 0;line-height:1.25}
+.checkout-collection-summary #checkout-point-address{margin:.05rem 0 .6rem;line-height:1.25}
+.checkout-collection-summary .dashboard-change-point{margin-top:.2rem}
+.checkout-collection-summary .dashboard-point-actions .button{margin-top:0}
+.checkout-slot-fields[hidden]{display:none!important}
+.checkout-slot-fields:not([hidden]){display:contents}

@@ -1,9 +1,14 @@
 # Changelog
 
-## v2.9.91
-- Corrected the shared collection-point component so dashboard and checkout now use the same compact thumbnail-and-details presentation.
-- Moved the collection-point editor out of the normal card into a separate panel, so opening “Change collection options” no longer enlarges or reshapes the collection-point card.
-- Preserved the existing dashboard and checkout element IDs and JavaScript behaviour while removing checkout-only image sizing overrides from the final rendered presentation.
+## 2.9.92 — 2026-08-19
+
+- Restarted from **v2.9.90**; the v2.9.91 collection-card styling change is intentionally discarded.
+- Fixed the blank Network page without restoring the old second hand-written card/modal renderer: `NetworkGrid.astro` now owns one canonical partner card/modal template, and the live hydrator only clones that template and supplies Baserow data.
+- Network partner images, carousel controls, Metrics, offering rows, collection details and action links are populated into that canonical template at runtime, so newly added partners can still appear without an Astro rebuild.
+- Refactored `CollectionPointCard.astro` so dashboard and checkout use one visual card implementation. Checkout contributes only its basket-specific warning and expanded selector controls through slots inside the same card.
+- Preserved the v2.9.90 dashboard collection-point appearance and left `checkout.js` basket/point/day validation logic unchanged.
+- Dashboard Member Credit is centred in its column; **Manage your membership** now sits between Member Credit and **Browse this week’s market**.
+- Dashboard streak copy now reads continuously as `X consecutive weeks supporting local producers`; the default pause area shows only **Pause your membership**, with the “Taking a break?” explanation moved inside the opened pause box.
 
 ## 2.9.90
 

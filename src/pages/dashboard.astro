@@ -154,6 +154,7 @@ const dashboardConfigJson = JSON.stringify({ badgeLogos, memberBadge, membership
               <span>{copy.creditLabel}</span>
               <strong id="dashboard-credit-value">£0.00</strong>
             </p>
+            <div class="dashboard-manage-membership"><a class="button button-secondary" href="/account/">{copy.manageMembership}</a></div>
             <a id="dashboard-shop-link" class="button dashboard-market-button" href="/orders/">{copy.browseMarket}</a>
           </div>
         </div>
@@ -199,14 +200,11 @@ const dashboardConfigJson = JSON.stringify({ badgeLogos, memberBadge, membership
         </section>
 
         <div class="dashboard-membership-tenure">
-          <div class="dashboard-streak-line"><strong id="dashboard-member-weeks">0</strong> <a href="/faqs/#member-streaks">{copy.consecutiveWeeks}</a></div>
-          <span>{copy.weeksSupporting}</span>
+          <div class="dashboard-streak-line"><strong id="dashboard-member-weeks">0</strong> <a href="/faqs/#member-streaks">{copy.consecutiveWeeks}</a> <span>{copy.weeksSupporting}</span></div>
         </div>
 
         <section id="dashboard-pause-area" class="dashboard-pause-area">
           <div id="dashboard-pause-intro" class="dashboard-pause-intro">
-            <strong>{copy.pauseIntroHeading}</strong>
-            <FormattedText text={copy.pauseIntroBody} class="rich-body" />
             <button id="dashboard-pause-open" class="button button-secondary" type="button">{copy.pauseButton}</button>
           </div>
           <div id="dashboard-pause-active" class="dashboard-status-highlight" hidden>
@@ -215,6 +213,10 @@ const dashboardConfigJson = JSON.stringify({ badgeLogos, memberBadge, membership
             <button id="dashboard-pause-end" class="button button-secondary" type="button">{copy.pauseEndEarly}</button>
           </div>
           <form id="dashboard-pause-form" class="dashboard-pause-form" hidden>
+            <div class="dashboard-pause-form-intro">
+              <strong>{copy.pauseIntroHeading}</strong>
+              <FormattedText text={copy.pauseIntroBody} class="rich-body" />
+            </div>
             <label>{copy.pauseFrom}<input id="dashboard-pause-start" type="date" required /></label>
             <label>{copy.pauseUntil}<input id="dashboard-pause-end" type="date" required /></label>
             <p id="dashboard-pause-allowance" class="small-print"></p>
@@ -226,7 +228,6 @@ const dashboardConfigJson = JSON.stringify({ badgeLogos, memberBadge, membership
           </form>
         </section>
         <div id="dashboard-perks" class="dashboard-perks"></div>
-        <div class="dashboard-manage-membership"><a class="button button-secondary" href="/account/">{copy.manageMembership}</a></div>
 
         <dialog id="dashboard-pause-confirm-dialog" class="dashboard-confirm-dialog">
           <div class="dashboard-confirm-dialog-inner">
@@ -352,5 +353,5 @@ const dashboardConfigJson = JSON.stringify({ badgeLogos, memberBadge, membership
   {blocks.map((block)=><SectionRenderer block={block} products={data.products} settings={s} />)}
 
   <script id="dashboard-config" type="application/json" set:html={dashboardConfigJson}></script>
-  <script type="module" src="/scripts/dashboard.js?v=2.9.83"></script>
+  <script type="module" src="/scripts/dashboard.js?v=2.9.92"></script>
 </BaseLayout>

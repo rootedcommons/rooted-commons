@@ -1,153 +1,179 @@
 ---
-import CardGallery from './CardGallery.astro';
-import FormattedText from './FormattedText.astro';
 import Icon from './Icon.astro';
 
-const { partners = [], metrics = [], collectionPoints = [], columns = 2 } = Astro.props;
-const safeId = (value) => String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-const metricHeadline = (metric) => metric.displayValue || (metric.value !== null && metric.value !== undefined ? `${metric.value.toLocaleString('en-GB')}${metric.unit ? ` ${metric.unit}` : ''}` : metric.valueText || '');
-const normalise = (value) => String(value || '').trim().toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, ' ').trim().replace(/\s+/g, ' ');
-const findCollectionPoint = (partner) => collectionPoints.find((point) =>
-  normalise(point.name) === normalise(partner.name) ||
-  (partner.address && point.address && (normalise(point.address) === normalise(partner.address) || normalise(point.address).includes(normalise(partner.address)) || normalise(partner.address).includes(normalise(point.address))))
-);
-
-const offeringIcons = {
-  'Refills': 'refill',
-  'Coffee': 'cafe',
-  'Evening drinks': 'bar',
-  'Workshops': 'volunteering',
-  'Volunteering': 'volunteering',
-  'Fruit': 'grower',
-  "Kid's club": 'volunteering',
-  'Bees': 'bee',
-  'Food bank': 'collection-point'
-};
+const { columns = 2 } = Astro.props;
 ---
+
 <div class="network-grid" data-network-grid data-live-network style={`--columns:${columns}`}>
-  {partners.map((partner) => {
-    const modalId = `network-partner-${safeId(partner.name)}-${partner.id}`;
-    const partnerMetrics = metrics.filter((metric) => metric.networkPartner === partner.name && (metric.placements || []).includes('Partner'));
-    const images = [
-      { src: partner.image, alt: partner.imageAlt },
-      { src: partner.image2, alt: partner.image2Alt },
-      { src: partner.image3, alt: partner.image3Alt }
-    ];
-    const collectionPoint = findCollectionPoint(partner);
-    const returnPath = `/our-network/?partner=${partner.id}`;
-    const directionsHref = collectionPoint ? `/collection-points/?focus=${collectionPoint.id}&return=${encodeURIComponent(returnPath)}` : '';
-    const offeringRows = Object.entries(partner.offeringText || {})
-      .filter(([, value]) => String(value || '').trim())
-      .map(([offering, value]) => ({
-        name: offering,
-        text: String(value).trim(),
-        icon: offeringIcons[offering] || ''
-      }));
-    const description = partner.longDescription || partner.summary;
-    return (
-      <>
-        <article class="network-card" data-network-partner-id={partner.id}>
-          {(partner.image || partner.image2 || partner.image3) && <div class="network-card-media-trigger" data-network-open={modalId} role="button" tabindex="0" aria-label={`Learn more about ${partner.name}`}><CardGallery images={images} imageSize="large" imageFit="cover" /></div>}
-          <div class="network-card-copy">
-            <h3><button class="network-card-title" type="button" data-network-open={modalId} data-live-card-name>{partner.name}</button></h3>
-            <p class="network-role" data-live-card-role hidden={!partner.role?.length}>{partner.role?.join(' · ') || ''}</p>
-            <p data-live-card-summary hidden={!partner.summary}>{partner.summary || ''}</p>
-            <button class="network-explore" type="button" data-network-open={modalId}>Learn more <span aria-hidden="true">→</span></button>
+  <template data-network-partner-template>
+    <article class="network-card" data-network-generated>
+      <div class="network-card-media-trigger" data-live-card-media role="button" tabindex="0" hidden>
+        <figure class="card-gallery-shell" data-network-gallery>
+          <div class="card-gallery image-size-large fit-cover" data-network-gallery-track tabindex="0" aria-label="Image gallery">
+            <div class="card-gallery-slide" data-network-image-slot><img data-live-network-image alt="" loading="lazy" /></div>
+            <div class="card-gallery-slide" data-network-image-slot><img data-live-network-image alt="" loading="lazy" /></div>
+            <div class="card-gallery-slide" data-network-image-slot><img data-live-network-image alt="" loading="lazy" /></div>
           </div>
-        </article>
+          <button class="card-gallery-arrow card-gallery-arrow-prev" type="button" data-network-gallery-prev aria-label="Previous image">‹</button>
+          <button class="card-gallery-arrow card-gallery-arrow-next" type="button" data-network-gallery-next aria-label="Next image">›</button>
+          <div class="card-gallery-dots" data-network-gallery-dots aria-hidden="true">
+            <span class="card-gallery-dot active" data-network-image-dot></span>
+            <span class="card-gallery-dot" data-network-image-dot></span>
+            <span class="card-gallery-dot" data-network-image-dot></span>
+          </div>
+        </figure>
+      </div>
+      <div class="network-card-copy">
+        <h3><button class="network-card-title" type="button" data-live-card-name></button></h3>
+        <p class="network-role" data-live-card-role hidden></p>
+        <p data-live-card-summary hidden></p>
+        <button class="network-explore" type="button">Learn more <span aria-hidden="true">→</span></button>
+      </div>
+    </article>
 
-        <dialog class="network-dialog" id={modalId} data-network-dialog data-network-partner-id={partner.id}>
-          <button class="network-dialog-close" type="button" data-network-close aria-label={`Close ${partner.name}`}>×</button>
-          <div class="network-dialog-inner">
-            <div class="network-dialog-media">
-              {(partner.image || partner.image2 || partner.image3) && <CardGallery images={images} imageSize="large" imageFit="cover" dotsOverlay={true} />}
+    <dialog class="network-dialog" data-network-dialog data-network-generated>
+      <button class="network-dialog-close" type="button" data-network-close aria-label="Close partner">×</button>
+      <div class="network-dialog-inner">
+        <div class="network-dialog-media" data-live-modal-media hidden>
+          <figure class="card-gallery-shell card-gallery-dots-overlay" data-network-gallery>
+            <div class="card-gallery image-size-large fit-cover" data-network-gallery-track tabindex="0" aria-label="Image gallery">
+              <div class="card-gallery-slide" data-network-image-slot><img data-live-network-image alt="" loading="lazy" /></div>
+              <div class="card-gallery-slide" data-network-image-slot><img data-live-network-image alt="" loading="lazy" /></div>
+              <div class="card-gallery-slide" data-network-image-slot><img data-live-network-image alt="" loading="lazy" /></div>
             </div>
-            <div class="network-dialog-copy">
-              <header>
-                <h2 data-live-modal-name>{partner.name}</h2>
-                <p class="network-role" data-live-modal-role hidden={!partner.role?.length}>{partner.role?.join(' · ') || ''}</p>
-                <div data-live-modal-intro hidden={!description}>{description && <FormattedText text={description} class="rich-body network-partner-intro" />}</div>
-              </header>
+            <button class="card-gallery-arrow card-gallery-arrow-prev" type="button" data-network-gallery-prev aria-label="Previous image">‹</button>
+            <button class="card-gallery-arrow card-gallery-arrow-next" type="button" data-network-gallery-next aria-label="Next image">›</button>
+            <div class="card-gallery-dots" data-network-gallery-dots aria-hidden="true">
+              <span class="card-gallery-dot active" data-network-image-dot></span>
+              <span class="card-gallery-dot" data-network-image-dot></span>
+              <span class="card-gallery-dot" data-network-image-dot></span>
+            </div>
+          </figure>
+        </div>
+        <div class="network-dialog-copy">
+          <header>
+            <h2 data-live-modal-name></h2>
+            <p class="network-role" data-live-modal-role hidden></p>
+            <div data-live-modal-intro hidden></div>
+          </header>
 
-              <section data-live-partner-metrics hidden={!partnerMetrics.length}>
-                <h3>Our work together</h3>
-                <div class="network-partner-stats" data-live-partner-metrics-list>
-                  {partnerMetrics.map((metric) => (
-                    <div><strong>{metricHeadline(metric)}</strong><span>{metric.name}</span></div>
-                  ))}
-                </div>
-              </section>
+          <section data-live-partner-metrics hidden>
+            <h3>Our work together</h3>
+            <div class="network-partner-stats" data-live-partner-metrics-list></div>
+            <template data-network-metric-template>
+              <div><strong data-live-metric-value></strong><span data-live-metric-name></span></div>
+            </template>
+          </section>
 
-              <section class="network-offerings" data-live-offerings hidden={!offeringRows.length}>
-                <h3>What you can do here</h3>
-                <div class="network-offering-list" data-live-offerings-list>
-                  {offeringRows.map((offering) => (
-                    <div class:list={['network-offering-row', { 'network-offering-row-no-icon': !offering.icon }]}>
-                      {offering.icon && <span class="network-icon-badge"><Icon name={offering.icon} /></span>}
-                      <span>{offering.text}</span>
-                    </div>
-                  ))}
-                </div>
-              </section>
+          <section class="network-offerings" data-live-offerings hidden>
+            <h3>What you can do here</h3>
+            <div class="network-offering-list" data-live-offerings-list>
+              <div class="network-offering-row" data-live-offering-row="Refills" hidden><span class="network-icon-badge"><Icon name="refill" /></span><span data-live-offering-text></span></div>
+              <div class="network-offering-row" data-live-offering-row="Coffee" hidden><span class="network-icon-badge"><Icon name="cafe" /></span><span data-live-offering-text></span></div>
+              <div class="network-offering-row" data-live-offering-row="Evening drinks" hidden><span class="network-icon-badge"><Icon name="bar" /></span><span data-live-offering-text></span></div>
+              <div class="network-offering-row" data-live-offering-row="Workshops" hidden><span class="network-icon-badge"><Icon name="volunteering" /></span><span data-live-offering-text></span></div>
+              <div class="network-offering-row" data-live-offering-row="Volunteering" hidden><span class="network-icon-badge"><Icon name="volunteering" /></span><span data-live-offering-text></span></div>
+              <div class="network-offering-row" data-live-offering-row="Fruit" hidden><span class="network-icon-badge"><Icon name="grower" /></span><span data-live-offering-text></span></div>
+              <div class="network-offering-row" data-live-offering-row="Kid's club" hidden><span class="network-icon-badge"><Icon name="volunteering" /></span><span data-live-offering-text></span></div>
+              <div class="network-offering-row" data-live-offering-row="Bees" hidden><span class="network-icon-badge"><Icon name="bee" /></span><span data-live-offering-text></span></div>
+              <div class="network-offering-row" data-live-offering-row="Food bank" hidden><span class="network-icon-badge"><Icon name="collection-point" /></span><span data-live-offering-text></span></div>
+            </div>
+          </section>
 
-              <section class="network-collection-details" data-live-collection hidden={!collectionPoint}>
-                <h3>Collection details</h3>
-                <div class="network-detail-row">
-                  <span class="network-detail-icon"><Icon name="calendar" /></span>
-                  <span data-live-collection-time>{collectionPoint?.collectionSlots?.map((slot) => `${slot.day} · ${slot.time}`).join('  ·  ') || collectionPoint?.collectionTime || ''}</span>
-                </div>
-                <div class="network-detail-row">
-                  <span class="network-detail-icon"><Icon name="collection-point" /></span>
-                  <span data-live-collection-items>{collectionPoint?.availableCategories?.length ? collectionPoint.availableCategories.join(', ') : 'Rooted Commons orders'}</span>
-                </div>
-              </section>
+          <section class="network-collection-details" data-live-collection hidden>
+            <h3>Collection details</h3>
+            <div class="network-detail-row">
+              <span class="network-detail-icon"><Icon name="calendar" /></span>
+              <span data-live-collection-time></span>
+            </div>
+            <div class="network-detail-row">
+              <span class="network-detail-icon"><Icon name="collection-point" /></span>
+              <span data-live-collection-items></span>
+            </div>
+          </section>
 
-              <section class="network-links" data-live-links hidden={!(partner.getInvolvedUrl || partner.volunteerUrl || partner.website || partner.socialUrl || directionsHref)}>
-                <h3>Get involved</h3>
-                <div>
-                  <a class="button button-medium" data-live-get-involved href={partner.getInvolvedUrl || '#'} hidden={!partner.getInvolvedUrl}>{partner.getInvolvedLabel || 'Get involved'}</a>
-                  <a class="text-link" data-live-volunteer href={partner.volunteerUrl || '#'} hidden={!partner.volunteerUrl}>Volunteer →</a>
-                  <a class="text-link network-icon-link" data-live-website href={partner.website || '#'} hidden={!partner.website}><Icon name="website" /> <span>Website →</span></a>
-                  <a class="text-link network-icon-link" data-live-social href={partner.socialUrl || '#'} hidden={!partner.socialUrl}><Icon name="instagram" /> <span>Follow →</span></a>
-                  <a class="text-link network-icon-link" data-live-directions href={directionsHref || '#'} hidden={!directionsHref}><Icon name="directions" /> <span>Directions →</span></a>
-                </div>
-              </section>            </div>
-          </div>
-        </dialog>
-      </>
-    );
-  })}
+          <section class="network-links" data-live-links hidden>
+            <h3>Get involved</h3>
+            <div>
+              <a class="button button-medium" data-live-get-involved href="#" hidden>Get involved</a>
+              <a class="text-link" data-live-volunteer href="#" hidden>Volunteer →</a>
+              <a class="text-link network-icon-link" data-live-website href="#" hidden><Icon name="website" /> <span>Website →</span></a>
+              <a class="text-link network-icon-link" data-live-social href="#" hidden><Icon name="instagram" /> <span>Follow →</span></a>
+              <a class="text-link network-icon-link" data-live-directions href="#" hidden><Icon name="directions" /> <span>Directions →</span></a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </dialog>
+  </template>
 </div>
 
 <script>
+  const initialiseNetworkGalleries = () => {
+    document.querySelectorAll('[data-network-gallery]').forEach((gallery) => {
+      if (gallery.dataset.galleryReady === 'true') return;
+      gallery.dataset.galleryReady = 'true';
+      const track = gallery.querySelector('[data-network-gallery-track]');
+      const slides = [...gallery.querySelectorAll('[data-network-image-slot]')];
+      const dots = [...gallery.querySelectorAll('[data-network-image-dot]')];
+      const previous = gallery.querySelector('[data-network-gallery-prev]');
+      const next = gallery.querySelector('[data-network-gallery-next]');
+      if (!track || slides.length < 2) return;
+      const activeIndex = () => {
+        const width = track.clientWidth || 1;
+        return Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / width)));
+      };
+      const updateDots = () => {
+        const index = activeIndex();
+        dots.forEach((dot, dotIndex) => dot.classList.toggle('active', dotIndex === index));
+      };
+      const move = (direction) => {
+        const target = Math.max(0, Math.min(slides.length - 1, activeIndex() + direction));
+        track.scrollTo({ left: target * (track.clientWidth || 1), behavior: 'smooth' });
+      };
+      previous?.addEventListener('click', () => move(-1));
+      next?.addEventListener('click', () => move(1));
+      track.addEventListener('scroll', () => window.requestAnimationFrame(updateDots), { passive: true });
+      updateDots();
+    });
+  };
+
   const initNetworkDialogs = () => {
     document.querySelectorAll('[data-network-open]').forEach((button) => {
       if (button.dataset.ready === 'true') return;
       button.dataset.ready = 'true';
       const open = (event) => {
-        if (event?.target?.closest?.('[data-card-gallery-prev],[data-card-gallery-next]')) return;
+        if (event?.target?.closest?.('[data-network-gallery-prev],[data-network-gallery-next]')) return;
         const dialog = document.getElementById(button.getAttribute('data-network-open') || '');
         if (dialog && typeof dialog.showModal === 'function') dialog.showModal();
       };
       button.addEventListener('click', open);
-      if (button.getAttribute('role') === 'button') button.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(event); } });
+      if (button.getAttribute('role') === 'button') button.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(event); }
+      });
     });
     document.querySelectorAll('[data-network-dialog]').forEach((dialog) => {
       if (dialog.dataset.ready === 'true') return;
       dialog.dataset.ready = 'true';
       dialog.querySelector('[data-network-close]')?.addEventListener('click', () => dialog.close());
-      dialog.addEventListener('click', (event) => {
-        if (event.target === dialog) dialog.close();
-      });
+      dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
     });
   };
+
   const openRequestedPartner = () => {
     const requested = new URLSearchParams(window.location.search).get('partner');
     if (!requested) return;
     const dialog = [...document.querySelectorAll('[data-network-dialog]')].find((item) => item.id.endsWith(`-${requested}`));
     if (dialog && !dialog.open && typeof dialog.showModal === 'function') dialog.showModal();
   };
-  initNetworkDialogs();
-  openRequestedPartner();
-  document.addEventListener('astro:page-load', () => { initNetworkDialogs(); openRequestedPartner(); });
+
+  const initialiseNetwork = () => {
+    initialiseNetworkGalleries();
+    initNetworkDialogs();
+    openRequestedPartner();
+  };
+
+  initialiseNetwork();
+  document.addEventListener('rooted:network-rendered', initialiseNetwork);
+  document.addEventListener('astro:page-load', initialiseNetwork);
 </script>

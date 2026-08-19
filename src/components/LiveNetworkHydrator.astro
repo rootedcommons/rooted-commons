@@ -8,109 +8,208 @@
     return safe.split(/\n\s*\n/).filter(Boolean).map((paragraph) => `<p>${paragraph.replace(/\n/g, '<br>')}</p>`).join('');
   };
 
-  const iconHtml = (name) => {
-    const paths = {
-      refill: '<path d="M9 3h6M12 3v3M10 6h4"/><path d="M9 7.5h6l1 3v8.5a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-8.5l1-3Z"/><path d="M10.5 13h3M12 11.5v3"/>',
-      'collection-point': '<path d="m4.5 7.5 7.5-4 7.5 4-7.5 4-7.5-4Z"/><path d="M4.5 7.5V16.5L12 20.5l7.5-4V7.5M12 11.5v9"/><path d="M8.5 5.4 16 9.4"/>',
-      grower: '<path d="M12 21V10"/><path d="M12 14c-4.5 0-7-2.4-7-6.5 4.7 0 7 2.2 7 6.5Z"/><path d="M12 10c0-4.5 2.3-7 6.8-7 0 4.8-2.3 7-6.8 7Z"/><path d="M8 21h8"/>',
-      cafe: '<path d="M5 8h11v6a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5V8Z"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 4c0 1 1 1.2 1 2M12 4c0 1 1 1.2 1 2"/><path d="M4 21h15"/>',
-      volunteering: '<path d="M12 19.5 5.7 13.4a3.9 3.9 0 0 1 5.5-5.5l.8.8.8-.8a3.9 3.9 0 0 1 5.5 5.5L12 19.5Z"/><path d="M3 18.5c2.5.2 4.3.8 6 2.5M21 18.5c-2.5.2-4.3.8-6 2.5"/>',
-      bar: '<path d="M7 4h10l-1 5.5a4.1 4.1 0 0 1-4 3.5 4.1 4.1 0 0 1-4-3.5L7 4Z"/><path d="M12 13v6"/><path d="M9 21h6"/>',
-      bee: '<ellipse cx="12" cy="13" rx="3.2" ry="5"/><path d="M9.2 11.2h5.6M9 14h6M9.6 16.7h4.8"/><path d="M10 8.8C8.5 6.2 6 5.8 4.8 7.5c-.8 1.2.1 3.1 3 3.5"/><path d="M14 8.8c1.5-2.6 4-3 5.2-1.3.8 1.2-.1 3.1-3 3.5"/><path d="M10.5 7.5 9.7 5.8M13.5 7.5l.8-1.7"/><circle cx="12" cy="7.8" r="1.8"/><path d="M12 18v2"/>'
-    };
-    if (!paths[name]) return '';
-    return `<svg class="rc-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]}</svg>`;
+  const safeId = (value) => String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const setText = (root, selector, value) => {
+    const el = root?.querySelector(selector);
+    if (!el) return;
+    el.textContent = value || '';
+    el.hidden = !value;
+  };
+  const setLink = (root, selector, href, label) => {
+    const el = root?.querySelector(selector);
+    if (!el) return;
+    el.hidden = !href;
+    if (href) el.href = href;
+    if (label) el.textContent = label;
   };
 
-  const offeringIcons = { Refills:'refill', Coffee:'cafe', 'Evening drinks':'bar', Workshops:'volunteering', Volunteering:'volunteering', Fruit:'grower', "Kid's club":'volunteering', Bees:'bee', 'Food bank':'collection-point' };
-  const setText = (root, selector, value) => { const el=root.querySelector(selector); if (!el) return; el.textContent=value || ''; el.hidden=!value; };
-  const setLink = (root, selector, href, label) => { const el=root.querySelector(selector); if (!el) return; el.hidden=!href; if (href) el.href=href; if (label) el.textContent=label; };
+  const populateGallery = (container, partner, modalId, opensDialog = false) => {
+    if (!container) return;
+    const images = [
+      { src: partner.image, alt: partner.imageAlt },
+      { src: partner.image2, alt: partner.image2Alt },
+      { src: partner.image3, alt: partner.image3Alt }
+    ].filter((image) => image.src);
+    container.hidden = images.length === 0;
+    if (!images.length) return;
 
-  const updatePartner = (partner, metrics) => {
-    const nodes=[...document.querySelectorAll(`[data-network-partner-id="${CSS.escape(String(partner.id))}"]`)];
-    if (!nodes.length) return;
-    const card=nodes.find((n)=>n.matches('.network-card'));
-    const dialog=nodes.find((n)=>n.matches('.network-dialog'));
-    const role=(partner.role || []).join(' · ');
-    if (card) {
-      setText(card,'[data-live-card-name]',partner.name);
-      setText(card,'[data-live-card-role]',role);
-      setText(card,'[data-live-card-summary]',partner.summary || '');
-    }
-    if (!dialog) return;
-    setText(dialog,'[data-live-modal-name]',partner.name);
-    setText(dialog,'[data-live-modal-role]',role);
-    const intro=dialog.querySelector('[data-live-modal-intro]');
-    const description=partner.longDescription || partner.summary || '';
-    if (intro) { intro.hidden=!description; intro.innerHTML=description ? `<div class="rich-body network-partner-intro">${richText(description)}</div>` : ''; }
-
-    const partnerMetrics=metrics.filter((metric)=>metric.networkPartner===partner.name && (metric.placements || []).includes('Partner'));
-    const metricSection=dialog.querySelector('[data-live-partner-metrics]');
-    const metricList=dialog.querySelector('[data-live-partner-metrics-list]');
-    if (metricSection && metricList) {
-      metricSection.hidden=!partnerMetrics.length;
-      metricList.innerHTML=partnerMetrics.map((metric)=>`<div><strong>${escapeHtml(metric.displayValue ?? metric.value ?? metric.valueText ?? '')}</strong><span>${escapeHtml(metric.name || '')}</span></div>`).join('');
+    if (opensDialog) {
+      container.setAttribute('data-network-open', modalId);
+      container.setAttribute('aria-label', `Learn more about ${partner.name || 'this partner'}`);
     }
 
-    const offerings=Object.entries(partner.offeringText || {}).filter(([,value])=>String(value || '').trim());
-    const offeringSection=dialog.querySelector('[data-live-offerings]');
-    const offeringList=dialog.querySelector('[data-live-offerings-list]');
-    if (offeringSection && offeringList) {
-      offeringSection.hidden=!offerings.length;
-      offeringList.innerHTML=offerings.map(([name,value])=>{ const icon=offeringIcons[name] || ''; return `<div class="network-offering-row${icon ? '' : ' network-offering-row-no-icon'}">${icon ? `<span class="network-icon-badge">${iconHtml(icon)}</span>` : ''}<span>${escapeHtml(String(value).trim())}</span></div>`; }).join('');
+    const gallery = container.querySelector('[data-network-gallery]');
+    if (!gallery) return;
+    const track = gallery.querySelector('[data-network-gallery-track]');
+    if (track) track.setAttribute('aria-label', `${partner.name || 'Partner'} image gallery`);
+
+    const slots = [...gallery.querySelectorAll('[data-network-image-slot]')];
+    slots.forEach((slot, index) => {
+      const image = images[index];
+      if (!image) { slot.remove(); return; }
+      const img = slot.querySelector('[data-live-network-image]');
+      if (img) {
+        img.src = image.src;
+        img.alt = image.alt || '';
+      }
+    });
+
+    const dots = [...gallery.querySelectorAll('[data-network-image-dot]')];
+    dots.forEach((dot, index) => { if (!images[index]) dot.remove(); });
+    const multiple = images.length > 1;
+    const previous = gallery.querySelector('[data-network-gallery-prev]');
+    const next = gallery.querySelector('[data-network-gallery-next]');
+    const dotsWrap = gallery.querySelector('[data-network-gallery-dots]');
+    if (previous) previous.hidden = !multiple;
+    if (next) next.hidden = !multiple;
+    if (dotsWrap) dotsWrap.hidden = !multiple;
+  };
+
+  const populateMetrics = (dialog, partner, metrics) => {
+    const partnerMetrics = metrics.filter((metric) => metric.networkPartner === partner.name && (metric.placements || []).includes('Partner'));
+    const section = dialog.querySelector('[data-live-partner-metrics]');
+    const list = dialog.querySelector('[data-live-partner-metrics-list]');
+    const template = dialog.querySelector('[data-network-metric-template]');
+    if (!section || !list) return;
+    section.hidden = !partnerMetrics.length;
+    list.replaceChildren();
+    if (!template) return;
+    partnerMetrics.forEach((metric) => {
+      const node = template.content.firstElementChild?.cloneNode(true);
+      if (!node) return;
+      const value = node.querySelector('[data-live-metric-value]');
+      const name = node.querySelector('[data-live-metric-name]');
+      if (value) value.textContent = metric.displayValue ?? metric.value ?? metric.valueText ?? '';
+      if (name) name.textContent = metric.name || '';
+      list.appendChild(node);
+    });
+  };
+
+  const populateOfferings = (dialog, partner) => {
+    const section = dialog.querySelector('[data-live-offerings]');
+    const rows = [...dialog.querySelectorAll('[data-live-offering-row]')];
+    let visible = 0;
+    rows.forEach((row) => {
+      const key = row.getAttribute('data-live-offering-row') || '';
+      const value = String(partner.offeringText?.[key] || '').trim();
+      row.hidden = !value;
+      const text = row.querySelector('[data-live-offering-text]');
+      if (text) text.textContent = value;
+      if (value) visible += 1;
+    });
+    if (section) section.hidden = visible === 0;
+  };
+
+  const updatePartner = (card, dialog, partner, metrics, modalId) => {
+    const role = (partner.role || []).join(' · ');
+    const description = partner.longDescription || partner.summary || '';
+    card.dataset.networkPartnerId = String(partner.id);
+    dialog.dataset.networkPartnerId = String(partner.id);
+    dialog.id = modalId;
+
+    card.querySelectorAll('[data-live-card-media],[data-live-card-name],.network-explore').forEach((node) => node.setAttribute('data-network-open', modalId));
+    const close = dialog.querySelector('[data-network-close]');
+    if (close) close.setAttribute('aria-label', `Close ${partner.name || 'partner'}`);
+
+    populateGallery(card.querySelector('[data-live-card-media]'), partner, modalId, true);
+    populateGallery(dialog.querySelector('[data-live-modal-media]'), partner, modalId, false);
+
+    setText(card, '[data-live-card-name]', partner.name);
+    setText(card, '[data-live-card-role]', role);
+    setText(card, '[data-live-card-summary]', partner.summary || '');
+    setText(dialog, '[data-live-modal-name]', partner.name);
+    setText(dialog, '[data-live-modal-role]', role);
+
+    const intro = dialog.querySelector('[data-live-modal-intro]');
+    if (intro) {
+      intro.hidden = !description;
+      intro.innerHTML = description ? `<div class="rich-body network-partner-intro">${richText(description)}</div>` : '';
     }
 
-    const point=partner.collectionPoint || null;
-    const collection=dialog.querySelector('[data-live-collection]');
+    populateMetrics(dialog, partner, metrics);
+    populateOfferings(dialog, partner);
+
+    const point = partner.collectionPoint || null;
+    const collection = dialog.querySelector('[data-live-collection]');
     if (collection) {
-      collection.hidden=!point;
+      collection.hidden = !point;
       if (point) {
-        const time=collection.querySelector('[data-live-collection-time]');
-        const items=collection.querySelector('[data-live-collection-items]');
-        if (time) time.textContent=(point.collectionSlots || []).map((slot)=>`${slot.day} · ${slot.time}`).join('  ·  ') || point.collectionTime || '';
-        if (items) items.textContent=(point.availableCategories || []).length ? point.availableCategories.join(', ') : 'Rooted Commons orders';
+        const time = collection.querySelector('[data-live-collection-time]');
+        const items = collection.querySelector('[data-live-collection-items]');
+        if (time) time.textContent = (point.collectionSlots || []).map((slot) => `${slot.day} · ${slot.time}`).join('  ·  ') || point.collectionTime || '';
+        if (items) items.textContent = (point.availableCategories || []).length ? point.availableCategories.join(', ') : 'Rooted Commons orders';
       }
     }
 
-    const returnPath=`/our-network/?partner=${partner.id}`;
-    const directionsHref=point ? `/collection-points/?focus=${encodeURIComponent(point.id)}&return=${encodeURIComponent(returnPath)}` : '';
-    const links=dialog.querySelector('[data-live-links]');
-    const hasLinks=partner.getInvolvedUrl || partner.volunteerUrl || partner.website || partner.socialUrl || directionsHref;
-    if (links) links.hidden=!hasLinks;
-    const gi=dialog.querySelector('[data-live-get-involved]'); if (gi) { gi.hidden=!partner.getInvolvedUrl; if (partner.getInvolvedUrl) gi.href=partner.getInvolvedUrl; gi.textContent=partner.getInvolvedLabel || 'Get involved'; }
-    setLink(dialog,'[data-live-volunteer]',partner.volunteerUrl,'Volunteer →');
-    setLink(dialog,'[data-live-website]',partner.website);
-    setLink(dialog,'[data-live-social]',partner.socialUrl);
-    setLink(dialog,'[data-live-directions]',directionsHref);
+    const returnPath = `/our-network/?partner=${partner.id}`;
+    const directionsHref = point ? `/collection-points/?focus=${encodeURIComponent(point.id)}&return=${encodeURIComponent(returnPath)}` : '';
+    const links = dialog.querySelector('[data-live-links]');
+    const hasLinks = partner.getInvolvedUrl || partner.volunteerUrl || partner.website || partner.socialUrl || directionsHref;
+    if (links) links.hidden = !hasLinks;
+    const getInvolved = dialog.querySelector('[data-live-get-involved]');
+    if (getInvolved) {
+      getInvolved.hidden = !partner.getInvolvedUrl;
+      if (partner.getInvolvedUrl) getInvolved.href = partner.getInvolvedUrl;
+      getInvolved.textContent = partner.getInvolvedLabel || 'Get involved';
+    }
+    setLink(dialog, '[data-live-volunteer]', partner.volunteerUrl, 'Volunteer →');
+    setLink(dialog, '[data-live-website]', partner.website);
+    setLink(dialog, '[data-live-social]', partner.socialUrl);
+    setLink(dialog, '[data-live-directions]', directionsHref);
+  };
+
+  const renderNetworkGrid = (grid, partners, metrics) => {
+    const template = grid.querySelector('template[data-network-partner-template]');
+    if (!template) return;
+    grid.querySelectorAll('[data-network-generated]').forEach((node) => node.remove());
+    partners.forEach((partner) => {
+      const fragment = template.content.cloneNode(true);
+      const card = fragment.querySelector('.network-card');
+      const dialog = fragment.querySelector('.network-dialog');
+      if (!card || !dialog) return;
+      const modalId = `network-partner-${safeId(partner.name)}-${partner.id}`;
+      updatePartner(card, dialog, partner, metrics, modalId);
+      grid.appendChild(fragment);
+    });
   };
 
   let liveNetworkPromise;
-  const fetchLiveNetwork = () => liveNetworkPromise ||= (window.RootedData?.publicNetwork?.() || fetch('/api/public-network', { headers: { accept: 'application/json' } })).then((response)=>{ if (!response.ok) throw new Error(`Public network request failed (${response.status})`); return response.json(); });
+  const fetchLiveNetwork = () => liveNetworkPromise ||= (window.RootedData?.publicNetwork?.() || fetch('/api/public-network', { headers: { accept: 'application/json' } })).then((response) => {
+    if (!response.ok) throw new Error(`Public network request failed (${response.status})`);
+    return response.json();
+  });
 
   const hydrateLiveNetwork = async () => {
-    const metricGrids=[...document.querySelectorAll('[data-live-metrics]')];
-    const networkGrids=[...document.querySelectorAll('[data-live-network]')];
+    const metricGrids = [...document.querySelectorAll('[data-live-metrics]')];
+    const networkGrids = [...document.querySelectorAll('[data-live-network]')];
     if (!metricGrids.length && !networkGrids.length) return;
     try {
-      const data=await fetchLiveNetwork();
-      const metrics=data.metrics || [];
-      const partners=data.partners || [];
-      window.__rootedPublicNetwork=data;
-      window.dispatchEvent(new CustomEvent('rooted:public-network',{detail:data}));
-      const statSections=data.statSections || [];
-      metricGrids.forEach((grid)=>{
-        const sectionId=Number(grid.dataset.sectionId), sectionKey=String(grid.dataset.sectionKey || '').trim();
-        const liveSection=statSections.find((section)=>(Number.isFinite(sectionId)&&section.id===sectionId)||(sectionKey&&section.key===sectionKey));
-        const ids=liveSection ? (liveSection.metricIds || []).map(Number).filter(Number.isFinite) : String(grid.dataset.metricIds || '').split(',').map(Number).filter(Number.isFinite);
-        const names=liveSection ? (liveSection.metricNames || []).map((value)=>String(value).trim()).filter(Boolean) : String(grid.dataset.metricNames || '').split('|').map((value)=>value.trim()).filter(Boolean);
-        const selected=metrics.filter((metric)=>ids.includes(metric.id)||names.includes(metric.name));
-        if (liveSection?.columns) grid.style.setProperty('--columns',String(liveSection.columns));
+      const data = await fetchLiveNetwork();
+      const metrics = data.metrics || [];
+      const partners = data.partners || [];
+      window.__rootedPublicNetwork = data;
+      window.dispatchEvent(new CustomEvent('rooted:public-network', { detail: data }));
+      const statSections = data.statSections || [];
+
+      metricGrids.forEach((grid) => {
+        const sectionId = Number(grid.dataset.sectionId);
+        const sectionKey = String(grid.dataset.sectionKey || '').trim();
+        const liveSection = statSections.find((section) => (Number.isFinite(sectionId) && section.id === sectionId) || (sectionKey && section.key === sectionKey));
+        const ids = liveSection ? (liveSection.metricIds || []).map(Number).filter(Number.isFinite) : String(grid.dataset.metricIds || '').split(',').map(Number).filter(Number.isFinite);
+        const names = liveSection ? (liveSection.metricNames || []).map((value) => String(value).trim()).filter(Boolean) : String(grid.dataset.metricNames || '').split('|').map((value) => value.trim()).filter(Boolean);
+        const selected = metrics.filter((metric) => ids.includes(metric.id) || names.includes(metric.name));
+        if (liveSection?.columns) grid.style.setProperty('--columns', String(liveSection.columns));
         if (!selected.length) return;
-        grid.innerHTML=selected.map((metric)=>`<article class="stat-tile align-center">${metric.icon ? `<img class="impact-stat-icon" src="${escapeHtml(metric.icon)}" alt="" aria-hidden="true">` : ''}<strong class="stat-number">${escapeHtml(metric.value)}</strong>${metric.description ? `<small class="stat-description">${escapeHtml(metric.description)}</small>` : ''}</article>`).join('');
+        grid.innerHTML = selected.map((metric) => `<article class="stat-tile align-center">${metric.icon ? `<img class="impact-stat-icon" src="${escapeHtml(metric.icon)}" alt="" aria-hidden="true">` : ''}<strong class="stat-number">${escapeHtml(metric.value)}</strong>${metric.description ? `<small class="stat-description">${escapeHtml(metric.description)}</small>` : ''}</article>`).join('');
       });
-      partners.forEach((partner)=>updatePartner(partner,metrics));
-    } catch (error) { console.error('Unable to load live Metrics / Network Partners',error); }
+
+      networkGrids.forEach((grid) => renderNetworkGrid(grid, partners, metrics));
+      document.dispatchEvent(new CustomEvent('rooted:network-rendered'));
+    } catch (error) {
+      console.error('Unable to load live Metrics / Network Partners', error);
+    }
   };
+
   hydrateLiveNetwork();
-  document.addEventListener('astro:page-load',hydrateLiveNetwork);
+  document.addEventListener('astro:page-load', hydrateLiveNetwork);
 </script>

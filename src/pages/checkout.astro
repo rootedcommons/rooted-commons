@@ -33,15 +33,40 @@ const checkoutConfigJson = JSON.stringify({ products: checkoutProducts, points: 
   <main class="checkout-shell checkout-shell-wide">
     <div class="checkout-top-grid">
       <CollectionPointCard
-        variant="checkout"
+        idPrefix="checkout"
+        className="checkout-collection-summary"
+        headingId="collection-heading"
+        detailsId="checkout-point-details"
+        changeButtonId="checkout-change-collection"
         collectionEyebrow={c('dashboard.collection_eyebrow','Your collection point')}
         collectionNotSelected={c('dashboard.collection_not_selected','Not selected')}
+        changeCollection="Change collection options"
         chooseCollection={c('dashboard.choose_collection','Choose your collection point')}
         collectionMapLink={c('dashboard.collection_map_link','see our map')}
         preferredCollectionDay={c('dashboard.preferred_collection_day','and collection day')}
         cancel={c('dashboard.cancel','Cancel')}
         mapHref="/collection-points/?return=/checkout/&select=1"
-      />
+      >
+        <div slot="warning" id="checkout-collection-warning" class="checkout-collection-warning" hidden aria-live="polite"></div>
+
+        <div slot="expanded" id="checkout-collection-picker" class="dashboard-point-form" aria-label="Change collection options" hidden>
+          <div class="dashboard-point-label-row">
+            <label for="checkout-point-select">{c('dashboard.choose_collection','Choose your collection point')}</label>
+            <a class="dashboard-map-link" href="/collection-points/?return=/checkout/&select=1">({c('dashboard.collection_map_link','see our map')})</a>
+          </div>
+          <select id="checkout-point-select"></select>
+          <div id="collection-slot-panel" class="checkout-slot-fields" hidden>
+            <label for="checkout-day-select">{c('dashboard.preferred_collection_day','and collection day')}</label>
+            <select id="checkout-day-select"></select>
+            <p id="collection-freshness-warning" class="collection-freshness-warning" hidden></p>
+          </div>
+          <div class="dashboard-point-actions">
+            <button id="checkout-use-collection" class="button" type="button">Use this collection option</button>
+            <button id="checkout-cancel-collection" class="button button-secondary" type="button">{c('dashboard.cancel','Cancel')}</button>
+          </div>
+          <p id="collection-message" class="small-print" aria-live="polite"></p>
+        </div>
+      </CollectionPointCard>
 
       <section class="checkout-card checkout-review" aria-labelledby="checkout-order-heading">
         <h2 id="checkout-order-heading">{c('checkout.basket_heading')}</h2>
@@ -84,5 +109,5 @@ const checkoutConfigJson = JSON.stringify({ products: checkoutProducts, points: 
   {ordinaryBlocks.map((block) => <SectionRenderer block={block} products={data.products} settings={data.settings} />)}
 
   <script id="checkout-config" type="application/json" set:html={checkoutConfigJson}></script>
-  <script type="module" src="/scripts/checkout.js?v=2.9.81"></script>
+  <script type="module" src="/scripts/checkout.js?v=2.9.92"></script>
 </BaseLayout>
