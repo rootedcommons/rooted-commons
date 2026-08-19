@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.9.91
+- Corrected the shared collection-point component so dashboard and checkout now use the same compact thumbnail-and-details presentation.
+- Moved the collection-point editor out of the normal card into a separate panel, so opening “Change collection options” no longer enlarges or reshapes the collection-point card.
+- Preserved the existing dashboard and checkout element IDs and JavaScript behaviour while removing checkout-only image sizing overrides from the final rendered presentation.
+
 ## 2.9.90
 
 - Build fix: rewrote `Icon.astro` frontmatter as plain JavaScript, removing TypeScript-only declarations and nullish-coalescing syntax from the component that Cloudflare/Vite was failing to parse.

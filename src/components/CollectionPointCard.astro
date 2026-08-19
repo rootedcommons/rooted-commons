@@ -19,28 +19,32 @@ const pointSelectId = `${prefix}-point-select`;
 const daySelectId = `${prefix}-day-select`;
 ---
 
-<article
-  id="collection-point"
-  class:list={['dashboard-card','dashboard-collection', isCheckout && 'checkout-collection-summary']}
-  aria-labelledby={isCheckout ? 'collection-heading' : undefined}
->
-  <p class="eyebrow" id={isCheckout ? 'collection-heading' : undefined}>{collectionEyebrow}</p>
+<div class:list={['collection-point-module', isCheckout && 'checkout-collection-module']}>
+  <article
+    id="collection-point"
+    class:list={['dashboard-card','dashboard-collection', isCheckout && 'checkout-collection-summary']}
+    aria-labelledby={isCheckout ? 'collection-heading' : undefined}
+  >
+    <p class="eyebrow" id={isCheckout ? 'collection-heading' : undefined}>{collectionEyebrow}</p>
 
-  <div id={isCheckout ? 'checkout-point-details' : undefined}>
-    <img id={`${prefix}-point-image`} class="dashboard-point-image" src="" alt="" hidden />
-    <h2 id={`${prefix}-point-name`}>{collectionNotSelected}</h2>
-    <p id={`${prefix}-point-time`}></p>
-    <p id={`${prefix}-point-address`}></p>
-  </div>
+    <div id={isCheckout ? 'checkout-point-details' : undefined} class="dashboard-collection-preview">
+      <img id={`${prefix}-point-image`} class="dashboard-point-image" src="" alt="" hidden />
+      <div class="dashboard-collection-copy">
+        <h2 id={`${prefix}-point-name`}>{collectionNotSelected}</h2>
+        <p id={`${prefix}-point-time`}></p>
+        <p id={`${prefix}-point-address`}></p>
+      </div>
+    </div>
 
-  {isCheckout && <div id="checkout-collection-warning" class="checkout-collection-warning" hidden aria-live="polite"></div>}
+    {isCheckout && <div id="checkout-collection-warning" class="checkout-collection-warning" hidden aria-live="polite"></div>}
 
-  <button id={isCheckout ? 'checkout-change-collection' : 'dashboard-change-point'} class="button dashboard-change-point" type="button">
-    {isCheckout ? 'Change collection options' : changeCollection}
-  </button>
+    <button id={isCheckout ? 'checkout-change-collection' : 'dashboard-change-point'} class="button dashboard-change-point" type="button">
+      {isCheckout ? 'Change collection options' : changeCollection}
+    </button>
+  </article>
 
   {isCheckout ? (
-    <div id={pickerId} class="dashboard-point-form checkout-collection-picker checkout-collection-picker-inline" aria-label="Change collection options" hidden>
+    <div id={pickerId} class="dashboard-point-form collection-point-editor checkout-collection-picker" aria-label="Change collection options" hidden>
       <div class="checkout-collection-form">
         <div class="dashboard-point-label-row checkout-collection-label-row">
           <label for={pointSelectId}>{chooseCollection}</label>
@@ -60,7 +64,7 @@ const daySelectId = `${prefix}-day-select`;
       </div>
     </div>
   ) : (
-    <form id={pickerId} class="dashboard-point-form" hidden>
+    <form id={pickerId} class="dashboard-point-form collection-point-editor" hidden>
       <div class="dashboard-point-label-row">
         <label for={pointSelectId}>{chooseCollection}</label>
         <a class="dashboard-map-link" href={mapHref}>({collectionMapLink})</a>
@@ -75,4 +79,4 @@ const daySelectId = `${prefix}-day-select`;
       <p id="dashboard-point-message" class="small-print" aria-live="polite"></p>
     </form>
   )}
-</article>
+</div>
