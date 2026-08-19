@@ -1,4 +1,4 @@
-import { cachedPublicGet, envConfig, fileUrl, json, jsonCached, linkedIds, linkedValues, listRows, truthy, unwrap, updateRow } from '../_baserow.js';
+import { cachedPublicGet, envConfig, fileUrl, json, jsonCached, linkedIds, linkedValues, listRows, publicCollectionPoint, truthy, unwrap, updateRow } from '../_baserow.js';
 
 function originalFileUrl(value) {
   return Array.isArray(value) && value.length ? String(value[0]?.url || '') : '';
@@ -31,6 +31,17 @@ function publicPartner(row) {
     socialUrl: unwrap(row['Social URL']),
     getInvolvedLabel: unwrap(row['Get involved label']) || 'Get involved',
     getInvolvedUrl: unwrap(row['Get involved URL']),
+    offeringText: {
+      'Refills': unwrap(row['Refills']),
+      'Coffee': unwrap(row['Coffee']),
+      'Evening drinks': unwrap(row['Evening drinks']),
+      'Workshops': unwrap(row['Workshops']),
+      'Volunteering': unwrap(row['Volunteering']),
+      'Fruit': unwrap(row['Fruit']),
+      "Kid's club": unwrap(row["Kid's club"]),
+      'Bees': unwrap(row['Bees']),
+      'Food bank': unwrap(row['Food bank'])
+    },
     image: originalFileUrl(row.Image),
     image2: originalFileUrl(row['Image 2']),
     image3: originalFileUrl(row['Image 3']),
@@ -69,15 +80,28 @@ async function safeTable(cfg, tableId, label) {
 export async function onRequestGet(context) {
   return cachedPublicGet(context, async () => {
     const cfg = envConfig(context.env);
-    const [partnersResult, metricsResult, sectionsResult] = await Promise.all([
+    const [partnersResult, metricsResult, sectionsResult, collectionPointsResult] = await Promise.all([
       safeTable(cfg, cfg.networkPartners, 'networkPartners'),
       safeTable(cfg, cfg.metrics, 'metrics'),
-      safeTable(cfg, cfg.sections, 'sections')
+      safeTable(cfg, cfg.sections, 'sections'),
+      safeTable(cfg, cfg.collectionPoints, 'collectionPoints')
     ]);
+
+    const normalise = (value) => String(value || '').trim().toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, ' ').trim().replace(/\s+/g, ' ');
+    const publicPoints = collectionPointsResult.rows
+      .filter(row => truthy(row.Active, true) && unwrap(row.Name))
+      .map(publicCollectionPoint);
 
     const partners = partnersResult.rows
       .filter(row => truthy(row.Active, true) && unwrap(row.Name))
-      .map(publicPartner)
+      .map(row => {
+        const partner = publicPartner(row);
+        const point = publicPoints.find(item =>
+          normalise(item.name) === normalise(partner.name) ||
+          (partner.address && item.address && (normalise(item.address) === normalise(partner.address) || normalise(item.address).includes(normalise(partner.address)) || normalise(partner.address).includes(normalise(item.address))))
+        );
+        return { ...partner, collectionPoint: point || null };
+      })
       .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
 
     const metricRows = metricsResult.rows.filter(row => truthy(row.Active, true) && truthy(row.Public, true) && unwrap(row.Name));
@@ -122,7 +146,7 @@ export async function onRequestGet(context) {
       partners,
       metrics,
       statSections,
-      errors:[partnersResult, metricsResult, sectionsResult].filter(result => !result.ok).map(result => result.label).concat(extraErrors)
+      errors:[partnersResult, metricsResult, sectionsResult, collectionPointsResult].filter(result => !result.ok).map(result => result.label).concat(extraErrors)
     };
     return coreOk
       ? jsonCached(payload, 200, 'public, max-age=60, s-maxage=300, stale-while-revalidate=600')

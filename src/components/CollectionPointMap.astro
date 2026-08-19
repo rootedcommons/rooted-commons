@@ -31,14 +31,16 @@ const mapPoints = points
       const params=new URLSearchParams(window.location.search);
       const returnPath=params.get('return')||'';
       const selectionMode=params.get('select')==='1';
+      const focusPointId=Number(params.get('focus')||'');
       localStorage.removeItem('rooted-commons-order-token-v1');
       const urlToken=params.get('token')||'';
       if(urlToken)location.replace(`/api/access?token=${encodeURIComponent(urlToken)}&return=${encodeURIComponent(location.pathname+location.search.replace(/([?&])token=[^&]*&?/,'$1').replace(/[?&]$/,''))}`);
       let memberAuthenticated=false;
       const backButton=document.getElementById('collection-map-back');
       backButton?.addEventListener('click',()=>{
+        if(returnPath){window.location.href=returnPath;return;}
         if(window.history.length>1)window.history.back();
-        else window.location.href=returnPath||'/';
+        else window.location.href='/';
       });
 
       const initialise=async()=>{
@@ -48,6 +50,7 @@ const mapPoints = points
         const canSelect=selectionMode||memberAuthenticated;
         const map=L.map(mapEl,{scrollWheelZoom:false});
         const bounds=[];
+        const markers=new Map();
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
           maxZoom:19,
           attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -62,7 +65,8 @@ const mapPoints = points
           const image=point.image?`<img class="map-popup-image" src="${escapeHtml(point.image)}" alt="" loading="lazy">`:'';
           const selectButton=canSelect?`<button class="map-select-button" type="button" data-map-select-point="${Number(point.id)}">Select collection point</button><p class="map-select-status" data-map-select-status="${Number(point.id)}" hidden></p>`:'';
           const popup=`<div class="map-popup">${image}<strong>${escapeHtml(point.name)}</strong>${point.address?`<p>${escapeHtml(point.address).replace(/\n/g,'<br>')}</p>`:''}${slots?`<ul>${slots}</ul>`:''}${selectButton}</div>`;
-          L.marker(coords).addTo(map).bindPopup(popup);
+          const marker=L.marker(coords).addTo(map).bindPopup(popup);
+          markers.set(Number(point.id),marker);
         });
 
         map.on('popupopen',event=>{
@@ -105,7 +109,11 @@ const mapPoints = points
           },{once:true});
         });
 
-        if(bounds.length===1)map.setView(bounds[0],13);
+        if(Number.isFinite(focusPointId)&&markers.has(focusPointId)){
+          const marker=markers.get(focusPointId);
+          map.setView(marker.getLatLng(),15);
+          marker.openPopup();
+        }else if(bounds.length===1)map.setView(bounds[0],13);
         else map.fitBounds(bounds,{padding:[32,32],maxZoom:13});
       };
       if(window.L){initialise();return;}

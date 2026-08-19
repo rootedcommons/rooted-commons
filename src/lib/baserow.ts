@@ -420,6 +420,17 @@ async function loadSiteData() {
     socialUrl: text(row, 'Social URL'),
     getInvolvedLabel: text(row, 'Get involved label', 'Get involved'),
     getInvolvedUrl: text(row, 'Get involved URL'),
+    offeringText: {
+      'Refills': text(row, 'Refills'),
+      'Coffee': text(row, 'Coffee'),
+      'Evening drinks': text(row, 'Evening drinks'),
+      'Workshops': text(row, 'Workshops'),
+      'Volunteering': text(row, 'Volunteering'),
+      'Fruit': text(row, 'Fruit'),
+      "Kid's club": text(row, "Kid's club"),
+      'Bees': text(row, 'Bees'),
+      'Food bank': text(row, 'Food bank')
+    },
     image: originalFileUrl(row, 'Image'),
     image2: originalFileUrl(row, 'Image 2'),
     image3: originalFileUrl(row, 'Image 3'),

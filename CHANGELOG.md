@@ -1,5 +1,27 @@
 # Changelog
 
+## 2.9.86 — 2026-08-19
+
+- Simplified Network Partner activity fields again: renamed `Fresh fruit` to `Fruit`, renamed `Honey & Beeswax` to `Bees`, and removed `Cupboard staples`.
+- Updated partner modal icon mappings, Baserow loaders/API, import CSVs, field specification, and network documentation to match.
+
+## 2.9.85 — 2026-08-19
+
+- Simplified Network Partner `What you can do here`: removed the separate `Offerings` selector entirely.
+- Renamed the ten one-line offering fields to remove the ` text` suffix.
+- A modal offering row now renders automatically whenever its corresponding Network Partner field contains text; blank fields render nothing.
+- Icon choice is driven directly by the field name in code, so Baserow no longer needs to maintain both an offering selector and matching copy field.
+
+## 2.9.84 — 2026-08-19
+
+- Refined Network Partner modal layout while preserving partner Metrics.
+- Added `What you can do here`, driven by Network Partners → `Offerings` plus one-line text fields for each offering.
+- Added reusable inline SVG icons for partner actions/offerings and moved the campaign calendar icon into the shared Astro icon component.
+- Added full-width Collection details for partners that match an active Collection Point, using the existing collection slots and `Available to collect here` data.
+- Added Website, Follow and Directions icons; Directions focuses the matching location on the existing Collection Points map.
+- Map return links now explicitly reopen the same partner modal.
+- Moved partner-modal carousel dots into a compact overlay pill on the image.
+
 ## 2.9.83 — 2026-08-19
 
 - Reworked member-requested closure so non-zero Member Credit must be resolved before an account can close.

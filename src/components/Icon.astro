@@ -1,0 +1,128 @@
+---
+export type IconName =
+  | 'calendar'
+  | 'refill'
+  | 'collection-point'
+  | 'grower'
+  | 'shop'
+  | 'cafe'
+  | 'volunteering'
+  | 'website'
+  | 'instagram'
+  | 'directions'
+  | 'bar'
+  | 'bee';
+
+interface Props {
+  name: IconName;
+  size?: number | string;
+  class?: string;
+  title?: string;
+  strokeWidth?: number;
+}
+
+const {
+  name,
+  size = 24,
+  class: className = '',
+  title,
+  strokeWidth = 1.8,
+} = Astro.props;
+
+const icons: Record<IconName, string> = {
+  calendar: `
+    <path d="M7 2v3M17 2v3"/>
+    <path d="M4.5 8.5h15"/>
+    <path d="M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/>
+    <circle cx="9" cy="14" r="1" fill="currentColor" stroke="none"/>
+    <circle cx="12" cy="14" r="1" fill="currentColor" stroke="none"/>
+    <circle cx="15" cy="14" r="1" fill="currentColor" stroke="none"/>
+  `,
+  refill: `
+    <path d="M9 3h6M12 3v3M10 6h4"/>
+    <path d="M9 7.5h6l1 3v8.5a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-8.5l1-3Z"/>
+    <path d="M10.5 13h3M12 11.5v3"/>
+  `,
+  'collection-point': `
+    <path d="m4.5 7.5 7.5-4 7.5 4-7.5 4-7.5-4Z"/>
+    <path d="M4.5 7.5V16.5L12 20.5l7.5-4V7.5M12 11.5v9"/>
+    <path d="M8.5 5.4 16 9.4"/>
+  `,
+  grower: `
+    <path d="M12 21V10"/>
+    <path d="M12 14c-4.5 0-7-2.4-7-6.5 4.7 0 7 2.2 7 6.5Z"/>
+    <path d="M12 10c0-4.5 2.3-7 6.8-7 0 4.8-2.3 7-6.8 7Z"/>
+    <path d="M8 21h8"/>
+  `,
+  shop: `
+    <path d="M5 9v10h14V9"/>
+    <path d="M3.5 9 5 4h14l1.5 5"/>
+    <path d="M3.5 9c0 1.4 1 2.5 2.3 2.5S8 10.4 8 9c0 1.4 1 2.5 2.3 2.5S12.5 10.4 12.5 9c0 1.4 1 2.5 2.3 2.5S17 10.4 17 9c0 1.4 1 2.5 2.3 2.5S21 10.4 21 9"/>
+    <path d="M9 19v-5h6v5"/>
+  `,
+  cafe: `
+    <path d="M5 8h11v6a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5V8Z"/>
+    <path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16"/>
+    <path d="M8 4c0 1 1 1.2 1 2M12 4c0 1 1 1.2 1 2"/>
+    <path d="M4 21h15"/>
+  `,
+  volunteering: `
+    <path d="M12 19.5 5.7 13.4a3.9 3.9 0 0 1 5.5-5.5l.8.8.8-.8a3.9 3.9 0 0 1 5.5 5.5L12 19.5Z"/>
+    <path d="M3 18.5c2.5.2 4.3.8 6 2.5M21 18.5c-2.5.2-4.3.8-6 2.5"/>
+  `,
+  website: `
+    <circle cx="12" cy="12" r="9"/>
+    <path d="M3 12h18"/>
+    <path d="M12 3c2.6 2.4 4 5.4 4 9s-1.4 6.6-4 9"/>
+    <path d="M12 3c-2.6 2.4-4 5.4-4 9s1.4 6.6 4 9"/>
+    <path d="M5.2 6.7c2 .9 4.3 1.3 6.8 1.3s4.8-.4 6.8-1.3"/>
+    <path d="M5.2 17.3c2-.9 4.3-1.3 6.8-1.3s4.8.4 6.8 1.3"/>
+  `,
+  instagram: `
+    <rect x="4" y="4" width="16" height="16" rx="4"/>
+    <circle cx="12" cy="12" r="3.5"/>
+    <circle cx="17.2" cy="6.8" r=".8" fill="currentColor" stroke="none"/>
+  `,
+  directions: `
+    <path d="M12 21s6-5.6 6-11a6 6 0 1 0-12 0c0 5.4 6 11 6 11Z"/>
+    <circle cx="12" cy="10" r="2.2"/>
+  `,
+  bar: `
+    <path d="M7 4h10l-1 5.5a4.1 4.1 0 0 1-4 3.5 4.1 4.1 0 0 1-4-3.5L7 4Z"/>
+    <path d="M12 13v6"/>
+    <path d="M9 21h6"/>
+  `,
+  bee: `
+    <ellipse cx="12" cy="13" rx="3.2" ry="5"/>
+    <path d="M9.2 11.2h5.6M9 14h6M9.6 16.7h4.8"/>
+    <path d="M10 8.8C8.5 6.2 6 5.8 4.8 7.5c-.8 1.2.1 3.1 3 3.5"/>
+    <path d="M14 8.8c1.5-2.6 4-3 5.2-1.3.8 1.2-.1 3.1-3 3.5"/>
+    <path d="M10.5 7.5 9.7 5.8M13.5 7.5l.8-1.7"/>
+    <circle cx="12" cy="7.8" r="1.8"/>
+    <path d="M12 18v2"/>
+  `,
+};
+
+const markup = icons[name];
+---
+
+<svg
+  class:list={['rc-icon', className]}
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width={strokeWidth}
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden={title ? undefined : 'true'}
+  role={title ? 'img' : undefined}
+>
+  {title && <title>{title}</title>}
+  <Fragment set:html={markup} />
+</svg>
+
+<style>
+  .rc-icon { display:block; flex:0 0 auto; }
+</style>
