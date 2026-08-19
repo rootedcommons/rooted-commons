@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.9.89 - 2026-08-19
+
+- Fixed the Astro build failure in `src/components/Icon.astro` by replacing aliased prop destructuring (`class: className`) with explicit prop reads.
+- No UI or behaviour changes beyond allowing the icon component and the accumulated 2.9.88 changes to compile and deploy.
+
 ## v2.9.88 — 2026-08-19
 
 - Network partner cards now anchor **Learn more** at the bottom of each card; the partner title and image also open the modal.

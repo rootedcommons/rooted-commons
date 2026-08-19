@@ -21,13 +21,13 @@ interface Props {
   strokeWidth?: number;
 }
 
-const {
-  name,
-  size = 24,
-  class: className = '',
-  title,
-  strokeWidth = 1.8,
-} = Astro.props;
+const props = Astro.props as Props;
+
+const name = props.name;
+const size = props.size ?? 24;
+const className = props.class ?? '';
+const title = props.title;
+const strokeWidth = props.strokeWidth ?? 1.8;
 
 const icons: Record<IconName, string> = {
   calendar: `
