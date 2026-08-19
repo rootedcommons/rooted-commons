@@ -1,0 +1,78 @@
+---
+const {
+  variant = 'dashboard',
+  collectionEyebrow = 'Your collection point',
+  collectionNotSelected = 'Not selected',
+  changeCollection = 'Change collection preferences',
+  chooseCollection = 'Choose your collection point',
+  collectionMapLink = 'see our map',
+  preferredCollectionDay = 'and collection day',
+  saveCollection = 'Save collection point',
+  cancel = 'Cancel',
+  mapHref = '/collection-points/',
+} = Astro.props;
+
+const isCheckout = variant === 'checkout';
+const prefix = isCheckout ? 'checkout' : 'dashboard';
+const pickerId = isCheckout ? 'checkout-collection-picker' : 'dashboard-point-form';
+const pointSelectId = `${prefix}-point-select`;
+const daySelectId = `${prefix}-day-select`;
+---
+
+<article
+  id="collection-point"
+  class:list={['dashboard-card','dashboard-collection', isCheckout && 'checkout-collection-summary']}
+  aria-labelledby={isCheckout ? 'collection-heading' : undefined}
+>
+  <p class="eyebrow" id={isCheckout ? 'collection-heading' : undefined}>{collectionEyebrow}</p>
+
+  <div id={isCheckout ? 'checkout-point-details' : undefined}>
+    <img id={`${prefix}-point-image`} class="dashboard-point-image" src="" alt="" hidden />
+    <h2 id={`${prefix}-point-name`}>{collectionNotSelected}</h2>
+    <p id={`${prefix}-point-time`}></p>
+    <p id={`${prefix}-point-address`}></p>
+  </div>
+
+  {isCheckout && <div id="checkout-collection-warning" class="checkout-collection-warning" hidden aria-live="polite"></div>}
+
+  <button id={isCheckout ? 'checkout-change-collection' : 'dashboard-change-point'} class="button dashboard-change-point" type="button">
+    {isCheckout ? 'Change collection options' : changeCollection}
+  </button>
+
+  {isCheckout ? (
+    <div id={pickerId} class="dashboard-point-form checkout-collection-picker checkout-collection-picker-inline" aria-label="Change collection options" hidden>
+      <div class="checkout-collection-form">
+        <div class="dashboard-point-label-row checkout-collection-label-row">
+          <label for={pointSelectId}>{chooseCollection}</label>
+          <a class="dashboard-map-link" href={mapHref}>({collectionMapLink})</a>
+        </div>
+        <select id={pointSelectId}></select>
+        <div id="collection-slot-panel" class="collection-slot-panel" hidden>
+          <label for={daySelectId}>{preferredCollectionDay}</label>
+          <select id={daySelectId}></select>
+          <p id="collection-freshness-warning" class="collection-freshness-warning" hidden></p>
+        </div>
+        <div class="dashboard-point-actions checkout-collection-actions">
+          <button id="checkout-use-collection" class="button" type="button">Use this collection option</button>
+          <button id="checkout-cancel-collection" class="button button-secondary" type="button">{cancel}</button>
+        </div>
+        <p id="collection-message" class="small-print" aria-live="polite"></p>
+      </div>
+    </div>
+  ) : (
+    <form id={pickerId} class="dashboard-point-form" hidden>
+      <div class="dashboard-point-label-row">
+        <label for={pointSelectId}>{chooseCollection}</label>
+        <a class="dashboard-map-link" href={mapHref}>({collectionMapLink})</a>
+      </div>
+      <select id={pointSelectId} required></select>
+      <label for={daySelectId}>{preferredCollectionDay}</label>
+      <select id={daySelectId} required></select>
+      <div class="dashboard-point-actions">
+        <button class="button" type="submit">{saveCollection}</button>
+        <button id="dashboard-cancel-point" class="button button-secondary" type="button">{cancel}</button>
+      </div>
+      <p id="dashboard-point-message" class="small-print" aria-live="polite"></p>
+    </form>
+  )}
+</article>

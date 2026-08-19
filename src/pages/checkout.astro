@@ -3,6 +3,7 @@ import FormattedText from '../components/FormattedText.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
 import SectionRenderer from '../components/SectionRenderer.astro';
+import CollectionPointCard from '../components/CollectionPointCard.astro';
 import { getSiteData } from '../lib/baserow';
 import { buildSectionBlocks } from '../lib/sections';
 
@@ -31,34 +32,16 @@ const checkoutConfigJson = JSON.stringify({ products: checkoutProducts, points: 
 
   <main class="checkout-shell checkout-shell-wide">
     <div class="checkout-top-grid">
-      <section id="collection-point" class="dashboard-card dashboard-collection checkout-collection-summary" aria-labelledby="collection-heading">
-        <p class="eyebrow" id="collection-heading">{c('dashboard.collection_eyebrow','Your collection point')}</p>
-        <div id="checkout-point-details">
-          <img id="checkout-point-image" class="dashboard-point-image" src="" alt="" hidden />
-          <h2 id="checkout-point-name">{c('dashboard.collection_not_selected','Not selected')}</h2>
-          <p id="checkout-point-time"></p>
-          <p id="checkout-point-address"></p>
-        </div>
-        <div id="checkout-collection-warning" class="checkout-collection-warning" hidden aria-live="polite"></div>
-        <button id="checkout-change-collection" class="button dashboard-change-point" type="button">Change collection options</button>
-
-        <div id="checkout-collection-picker" class="checkout-collection-picker checkout-collection-picker-inline" aria-label="Change collection options" hidden>
-                    <div class="checkout-collection-form">
-            <div class="dashboard-point-label-row checkout-collection-label-row"><label for="checkout-point-select">{c('dashboard.choose_collection','Choose your collection point')}</label> <a class="dashboard-map-link" href="/collection-points/?return=/checkout/&select=1">({c('dashboard.collection_map_link','see our map')})</a></div>
-            <select id="checkout-point-select"></select>
-            <div id="collection-slot-panel" class="collection-slot-panel" hidden>
-              <label for="checkout-day-select">{c('dashboard.preferred_collection_day','and collection day')}</label>
-              <select id="checkout-day-select"></select>
-              <p id="collection-freshness-warning" class="collection-freshness-warning" hidden></p>
-            </div>
-            <div class="checkout-collection-actions">
-              <button id="checkout-use-collection" class="button" type="button">Use this collection option</button>
-              <button id="checkout-cancel-collection" class="button button-secondary" type="button">Cancel</button>
-            </div>
-            <p id="collection-message" class="small-print" aria-live="polite"></p>
-          </div>
-        </div>
-      </section>
+      <CollectionPointCard
+        variant="checkout"
+        collectionEyebrow={c('dashboard.collection_eyebrow','Your collection point')}
+        collectionNotSelected={c('dashboard.collection_not_selected','Not selected')}
+        chooseCollection={c('dashboard.choose_collection','Choose your collection point')}
+        collectionMapLink={c('dashboard.collection_map_link','see our map')}
+        preferredCollectionDay={c('dashboard.preferred_collection_day','and collection day')}
+        cancel={c('dashboard.cancel','Cancel')}
+        mapHref="/collection-points/?return=/checkout/&select=1"
+      />
 
       <section class="checkout-card checkout-review" aria-labelledby="checkout-order-heading">
         <h2 id="checkout-order-heading">{c('checkout.basket_heading')}</h2>

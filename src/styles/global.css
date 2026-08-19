@@ -1596,3 +1596,11 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
   .network-dialog-copy section{padding-top:.9rem}
   .network-dialog-media .card-gallery,.network-dialog-media .card-media{max-height:none;height:clamp(300px,72vw,430px)}
 }
+
+/* v2.9.87 — one shared collection-point card on dashboard and checkout */
+.checkout-collection-summary.dashboard-collection h2{margin:.25rem 0 .5rem}
+.checkout-collection-summary.dashboard-collection .dashboard-point-image{margin:.35rem 0 1rem}
+.checkout-collection-summary.dashboard-collection #checkout-point-time,
+.checkout-collection-summary.dashboard-collection #checkout-point-address{margin:0 0 .45rem;line-height:inherit}
+.checkout-collection-summary.dashboard-collection .dashboard-change-point{margin-top:.75rem}
+.checkout-collection-summary .dashboard-point-form{margin-top:1rem;padding-top:1rem;border-top:1px solid color-mix(in srgb,var(--border) 75%,transparent)}

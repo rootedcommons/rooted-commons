@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.9.87 — 2026-08-19
+
+- Extracted the dashboard collection-point card into a single shared `CollectionPointCard.astro` component.
+- Checkout now renders that same component instead of maintaining a copied collection card.
+- Checkout keeps basket-specific availability warnings and its temporary collection selector inside the shared card's change state.
+- Dashboard and checkout therefore share the same collection-point structure and base presentation going forward.
+
 ## 2.9.86 — 2026-08-19
 
 - Simplified Network Partner activity fields again: renamed `Fresh fruit` to `Fruit`, renamed `Honey & Beeswax` to `Bees`, and removed `Cupboard staples`.

@@ -3,6 +3,7 @@ import FormattedText from '../components/FormattedText.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
 import SectionRenderer from '../components/SectionRenderer.astro';
+import CollectionPointCard from '../components/CollectionPointCard.astro';
 import { getSiteData } from '../lib/baserow';
 import { buildSectionBlocks } from '../lib/sections';
 
@@ -306,29 +307,18 @@ const dashboardConfigJson = JSON.stringify({ badgeLogos, memberBadge, membership
       </div>
 
       <div class="dashboard-secondary-grid">
-        <article id="collection-point" class="dashboard-card dashboard-collection">
-          <p class="eyebrow">{copy.collectionEyebrow}</p>
-          <img id="dashboard-point-image" class="dashboard-point-image" src="" alt="" hidden />
-          <h2 id="dashboard-point-name">{copy.collectionNotSelected}</h2>
-          <p id="dashboard-point-time"></p>
-          <p id="dashboard-point-address"></p>
-          <button id="dashboard-change-point" class="button dashboard-change-point" type="button">{copy.changeCollection}</button>
-
-          <form id="dashboard-point-form" class="dashboard-point-form" hidden>
-            <div class="dashboard-point-label-row">
-              <label for="dashboard-point-select">{copy.chooseCollection}</label>
-              <a class="dashboard-map-link" href="/collection-points/?return=/dashboard/&select=1">({copy.collectionMapLink})</a>
-            </div>
-            <select id="dashboard-point-select" required></select>
-            <label for="dashboard-day-select">and collection day</label>
-            <select id="dashboard-day-select" required></select>
-            <div class="dashboard-point-actions">
-              <button class="button" type="submit">{copy.saveCollection}</button>
-              <button id="dashboard-cancel-point" class="button button-secondary" type="button">{copy.cancel}</button>
-            </div>
-            <p id="dashboard-point-message" class="small-print" aria-live="polite"></p>
-          </form>
-        </article>
+        <CollectionPointCard
+          variant="dashboard"
+          collectionEyebrow={copy.collectionEyebrow}
+          collectionNotSelected={copy.collectionNotSelected}
+          changeCollection={copy.changeCollection}
+          chooseCollection={copy.chooseCollection}
+          collectionMapLink={copy.collectionMapLink}
+          preferredCollectionDay={copy.preferredCollectionDay}
+          saveCollection={copy.saveCollection}
+          cancel={copy.cancel}
+          mapHref="/collection-points/?return=/dashboard/&select=1"
+        />
 
         <article class="dashboard-card dashboard-impact-card dashboard-involvement-card">
           <p class="eyebrow">{copy.involvementEyebrow}</p>
