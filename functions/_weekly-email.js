@@ -21,7 +21,8 @@ export const FALLBACK_WEEKLY_EMAIL_HTML=`<!doctype html>
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#ded8cc;width:100%;">
 <tr><td align="center" style="padding:24px 12px;">
 <table role="presentation" width="620" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:620px;background:#faf7f2;border-collapse:collapse;">
-<tr><td style="padding:34px 40px 10px;"><h1 style="margin:0 0 18px;color:#5a2d4d;font-family:Georgia,serif;font-size:30px;">Orders are closed</h1><p style="margin:0;font-size:16px;line-height:1.6;">Hi {{first_name}},</p></td></tr>
+<tr><td align="center" style="background:#5a2d4d;padding:28px 24px;"><img src="{{header_logo_url}}" width="150" alt="Rooted Commons" style="display:block;width:150px;max-width:80%;height:auto;border:0;"></td></tr>
+<tr><td style="padding:34px 40px 10px;"><h1 style="margin:0 0 18px;color:#5a2d4d;font-family:Georgia,serif;font-size:30px;">Orders are closed.</h1><p style="margin:0 0 12px;font-size:16px;line-height:1.6;">Hi {{first_name}},</p><p style="margin:0;font-size:16px;line-height:1.6;">This week's market is closed and next week's is now open.</p></td></tr>
 <tr><td style="padding:10px 40px 0;"><p style="margin:0;font-size:16px;line-height:1.6;">Your current member balance is <strong>&pound;{{balance}}</strong>.</p></td></tr>
 {{#if balance_negative}}
 <tr><td style="padding:20px 40px 0;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f8f2e9;border:1px solid #d9dec5;border-left:4px solid #5a2d4d;"><tr><td style="padding:18px 20px;"><p style="margin:0 0 10px;font-size:15px;line-height:1.6;"><strong>Your account is &pound;{{amount_due}} short.</strong> Please bring your balance to &pound;0.00 or above before Thursday morning.</p><p style="margin:0;font-size:15px;line-height:1.6;"><a href="{{topup_url}}" style="color:#5a2d4d;font-weight:bold;">Top up from your dashboard</a>.</p></td></tr></table></td></tr>
@@ -29,7 +30,8 @@ export const FALLBACK_WEEKLY_EMAIL_HTML=`<!doctype html>
 {{#if payment_overdue}}
 <tr><td style="padding:20px 40px 0;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f8f2e9;border:1px solid #ded8cc;border-left:4px solid #5a2d4d;"><tr><td style="padding:18px 20px;"><p style="margin:0 0 8px;font-size:16px;line-height:1.6;"><strong>{{payment_overdue_heading}}</strong></p><p style="margin:0;font-size:15px;line-height:1.6;">{{payment_overdue_body_html}}</p></td></tr></table></td></tr>
 {{/if}}
-<tr><td style="padding:22px 40px 8px;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f8f2e9;border:1px solid #d9dec5;"><tr><td align="center" style="padding:26px 24px;"><a href="{{login_url}}" style="display:inline-block;background:#5a2d4d;color:#faf7f2;font-family:Georgia,serif;font-size:18px;text-decoration:none;padding:14px 30px;">Browse next week's market</a><p style="margin:14px 0 0;font-size:13px;line-height:1.5;color:#3f6b3d;">This private link stops working at 18.05 on Wednesday {{cutoff_date}}.</p></td></tr></table></td></tr>
+<tr><td style="padding:22px 40px 0;"><p style="margin:0;font-size:16px;line-height:1.6;">Here is this week's secure sign-in link:</p></td></tr>
+<tr><td style="padding:22px 40px 8px;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f8f2e9;border:1px solid #d9dec5;"><tr><td align="center" style="padding:26px 24px;"><a href="{{login_url}}" style="display:inline-block;background:#5a2d4d;color:#faf7f2;font-family:Georgia,serif;font-size:18px;text-decoration:none;padding:14px 30px;">Browse next week's market</a><p style="margin:14px 0 0;font-size:13px;line-height:1.5;color:#3f6b3d;">Keep this link secret like you would a password. To keep your account secure, it will expire in 7 days and we will send you a fresh link.</p></td></tr></table></td></tr>
 {{#if order}}
 <tr><td style="padding:24px 40px 0;"><h2 style="margin:0 0 8px;font-family:Georgia,serif;font-size:22px;">Your collection</h2><p style="margin:0 0 14px;font-size:15px;line-height:1.6;"><strong>{{collection_point_name}}</strong><br>{{collection_point_address}}<br>{{preferred_day}} {{collection_window}}</p><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;background:#f8f2e9;border:1px solid #d9dec5;">{{#each order.items}}<tr><td style="padding:9px 12px;font-size:14px;border-bottom:1px solid #d9dec5;">{{name}}</td><td align="center" style="padding:9px 8px;font-size:14px;border-bottom:1px solid #d9dec5;">{{qty}}</td><td align="right" style="padding:9px 12px;font-size:14px;border-bottom:1px solid #d9dec5;">&pound;{{total}}</td></tr>{{/each}}</table></td></tr>
 {{/if}}
@@ -108,6 +110,21 @@ function valueHtml(key,value){
   if(key==='collection_point_address') return escapeHtml(value).replace(/\r?\n/g,'<br>');
   return escapeHtml(value);
 }
+function normaliseWeeklyTemplate(template){
+  let html=String(template||'');
+  html=html.replace(/(<img\b[^>]*\balt=["']Rooted Commons["'][^>]*\bwidth=["'])240(["'])/gi,(_m,a,b)=>`${a}150${b}`);
+  html=html.replace(/(<img\b[^>]*\bwidth=["'])240(["'][^>]*\balt=["']Rooted Commons["'])/gi,(_m,a,b)=>`${a}150${b}`);
+  html=html.replace(/width\s*:\s*240px/gi,'width:150px');
+  html=html.replace(/<span\b[^>]*>\s*{{\s*membership_tier\s*}}\s*<\/span>/gi,'');
+  html=html.replace(/(<h1\b[^>]*>)\s*Orders are closed\s*(<\/h1>)/i,'$1Orders are closed.$2');
+  html=html.replace(/<p\b([^>]*)>\s*This week[’']s market is closed and next week[’']s is now open\.\s*Here is your new link\.\s*<\/p>/i,'<p$1>Here is this week\'s secure sign-in link:</p>');
+  if(!/This week[’']s market is closed and next week[’']s is now open\.<\/p>/i.test(html)){
+    html=html.replace(/(<p\b[^>]*>\s*Hi\s+{{\s*first_name\s*}},\s*<\/p>)/i,'$1<p style="margin:12px 0 0;font-size:16px;line-height:1.6;">This week\'s market is closed and next week\'s is now open.</p>');
+  }
+  html=html.replace(/<p\b([^>]*)>\s*This link signs you in and is just for you[\s\S]*?<\/p>/i,'<p$1>Keep this link secret like you would a password. To keep your account secure, it will expire in 7 days and we will send you a fresh link.</p>');
+  return html;
+}
+
 function renderVariables(template,data){
   return template.replace(/{{\s*([a-zA-Z0-9_.]+)\s*}}/g,(_match,key)=>{
     const value=key.split('.').reduce((current,part)=>current==null?'':current[part],data);
@@ -137,10 +154,10 @@ export function renderWeeklyEmail({template,member,settings,interfaceContent={},
   const candidate=String(template||'').trim();
   const useEditable=candidate && candidate.includes('{{login_url}}');
   try{
-    return {html:renderWeeklyEmailTemplate(useEditable?candidate:FALLBACK_WEEKLY_EMAIL_HTML,data),data,usedFallback:!useEditable};
+    return {html:renderWeeklyEmailTemplate(normaliseWeeklyTemplate(useEditable?candidate:FALLBACK_WEEKLY_EMAIL_HTML),data),data,usedFallback:!useEditable};
   }catch(error){
     console.error('weekly email template render failed; using fallback',error);
-    return {html:renderWeeklyEmailTemplate(FALLBACK_WEEKLY_EMAIL_HTML,data),data,usedFallback:true};
+    return {html:renderWeeklyEmailTemplate(normaliseWeeklyTemplate(FALLBACK_WEEKLY_EMAIL_HTML),data),data,usedFallback:true};
   }
 }
 
@@ -148,5 +165,5 @@ export function weeklyEmailText(data){
   const arrears=data.balance_negative?`\nYour account is £${data.amount_due} short. Please bring your balance to £0.00 or above before Thursday morning.\nTop up: ${data.topup_url}\n`:'';
   const overdue=data.payment_overdue?`\n${data.payment_overdue_heading}\nYour consecutive-weeks streak is frozen while we wait for your regular payment. If you're taking a break, see https://rootedcommons.uk/faqs/#pauses\n`:'';
   const order=data.order?`\nFor collection on ${data.preferred_day}\n${data.collection_point_name}${data.collection_point_address?`\n${data.collection_point_address}`:''}${data.collection_window?`\n${data.collection_window}`:''}\n${data.order.items.map(item=>`- ${item.name} × ${item.qty}: £${item.total}`).join('\n')}\n`:`\nYou didn't order this week, so there's nothing to collect.\n`;
-  return `Orders are closed\n\nHi ${data.first_name},\n\nBalance: £${data.balance}\n${arrears}${overdue}\nThis week's market is closed and next week's is now open.\n\nBrowse next week's market:\n${data.login_url}\n\nThis private link stops working at 18.05 on Wednesday ${data.cutoff_date}.\n${order}\nQuestions? Reply to this email or contact ${data.contact_email}.\n\nRooted Commons is operated by Roots to Fruits CIC.`;
+  return `Orders are closed.\n\nHi ${data.first_name},\n\nThis week's market is closed and next week's is now open.\n\nBalance: £${data.balance}\n${arrears}${overdue}\nHere is this week's secure sign-in link:\n\nBrowse next week's market:\n${data.login_url}\n\nKeep this link secret like you would a password. To keep your account secure, it will expire in 7 days and we will send you a fresh link.\n${order}\nQuestions? Reply to this email or contact ${data.contact_email}.\n\nRooted Commons is operated by Roots to Fruits CIC.`;
 }

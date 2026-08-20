@@ -1,5 +1,5 @@
 import { envConfig } from '../_baserow.js';
-import { authenticatedMember, createDeviceSession, revokeSession, safeReturnPath, sessionCookie } from '../_auth.js';
+import { authenticatedMember, createDeviceSession, deleteSession, safeReturnPath, sessionCookie } from '../_auth.js';
 
 export async function onRequestGet({request,env}){
   const url=new URL(request.url);
@@ -28,7 +28,7 @@ export async function onRequestGet({request,env}){
         if(Number(existingDevice.member.id)===Number(auth.member.id)){
           device={token:existingDevice.token,session:existingDevice.session};
         }else{
-          await revokeSession(cfg,existingDevice.session);
+          await deleteSession(cfg,existingDevice.session);
           device=await createDeviceSession(cfg,auth.member.id,env);
         }
       }else{

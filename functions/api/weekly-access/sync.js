@@ -1,5 +1,5 @@
-import { envConfig, fileUrl, json, linkedIds, listRows, truthy, unwrap, updateRow, orderWeek } from '../../_baserow.js';
-import { buildSessionToken, nextWednesdayExpiry, replaceWeeklyAccessSession } from '../../_auth.js';
+import { envConfig, fileUrl, json, linkedIds, listRows, unwrap, updateRow, orderWeek } from '../../_baserow.js';
+import { buildSessionToken, deleteExpiredSessions, nextWednesdayExpiry, replaceWeeklyAccessSession, sessionUsable } from '../../_auth.js';
 import { sendMail } from '../../_smtp.js';
 import { renderWeeklyEmail, weeklyEmailText, WEEKLY_EMAIL_TEMPLATE_FIELD } from '../../_weekly-email.js';
 
@@ -45,6 +45,8 @@ export async function onRequestPost({request,env}){
       listRows(cfg,cfg.settings),
       cfg.interfaceContent?listRows(cfg,cfg.interfaceContent):Promise.resolve([])
     ]);
+    const expiredSessionsDeleted=await deleteExpiredSessions(cfg,sessions,now);
+    const liveSessions=sessions.filter(session=>sessionUsable(session,now));
     const settings=settingsRow(settingsRows);
     const interfaceContent=Object.fromEntries(interfaceRows.map(row=>[unwrap(row.Key),String(row.Content??'')]).filter(([key])=>key));
     const pointsById=new Map(points.map(point=>[Number(point.id),point]));
@@ -62,24 +64,23 @@ export async function onRequestPost({request,env}){
 
     const expiresAt=nextWednesdayExpiry(now);
     const origin=new URL(request.url).origin;
-    const results={members:activeMembers.length,created:0,emailed:0,alreadySent:0,failed:0,orderWeek:closedWeek};
+    const results={members:activeMembers.length,created:0,emailed:0,alreadySent:0,failed:0,expiredSessionsDeleted,orderWeek:closedWeek};
     const failures=[];
 
     for(const member of activeMembers){
       try{
-        let weekly=sessions.find(session=>
+        let weekly=liveSessions.find(session=>
           linkedIds(session.Member).includes(Number(member.id)) &&
           String(session.Purpose||'')==='Weekly access' &&
-          truthy(session.Active,true) &&
-          !session['Revoked at'] &&
+          sessionUsable(session,now) &&
           sameExpiry(session['Expires at'],expiresAt)
         );
         let token='';
         if(!weekly){
-          const created=await replaceWeeklyAccessSession(cfg,member.id,env,{existingSessions:sessions,expiresAt});
+          const created=await replaceWeeklyAccessSession(cfg,member.id,env,{existingSessions:liveSessions,expiresAt});
           weekly=created.session;
           token=created.token;
-          sessions.push(weekly);
+          liveSessions.push(weekly);
           results.created+=1;
         }else{
           token=await buildSessionToken(String(weekly['Session ID']),env.AUTH_SESSION_SECRET);

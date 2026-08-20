@@ -1,5 +1,27 @@
 # Changelog
 
+## 2.9.96 — 2026-08-20
+
+- Refined mobile CTA spacing so the body copy has equal visual breathing room between the heading and button, halved/equalised the medium footer-logo buffer, tightened/equalised FAQ answer padding, and moved **Close my account** onto the account form action row as a purple far-right action.
+- Corrected the Collection Point / Network Partner location model: both tables keep their own Address/Latitude/Longitude fields, while Collection Points use an optional Network Partner link only where a genuine partner relationship exists.
+- Increased the missed-payment reminder grace to two full England & Wales business days after the expected payment date. The payment-overdue email now names the expected weekly weekday or monthly day-of-month and links **Member streak** to the relevant FAQ.
+- Standardised email branding: lifecycle headers use the Rooted Commons logo, header logos render at 150px, Founder-tier text is removed beneath badge artwork, and the Wednesday weekly email has the revised heading, intro placement, secure-link introduction and link-security wording.
+- Simplified Member Sessions further: removed `Revoked at`; deliberate revocation now means row deletion, email-change confirmation deletes every existing session before issuing one fresh Device session, account closure deletes all sessions, superseded Weekly access rows are deleted, and expired session rows are cleaned automatically. Session validity is now simply row exists + `Expires at` is a valid future Date/time.
+- Kept stale files under `docs/` unchanged for the planned v3 documentation refresh.
+
+## 2.9.95 — 2026-08-20
+
+- Removed the **Member Sessions** `Active` Boolean from runtime/schema/imports. Session usability is now determined solely by `Revoked at` being blank and `Expires at` still being in the future. Creating a replacement weekly-access credential now also revokes any older unrevoked weekly-access rows for that member.
+- Kept `Created at`, `Last used at`, and `Expires at` as Date/time fields. `Last used at` is now updated on real authenticated use, throttled to at most once per 24 hours per session; new Device sessions are stamped immediately because creation is itself a successful sign-in.
+- Added successful-send audit timestamps for `Welcome email sent at`, `Email change confirmation sent at`, and the renamed `Pause confirmation email sent at`. The existing `Pause ending email sent at` remains the separate pre-end reminder timestamp.
+- Documentation under `docs/` is intentionally left for the planned v3 documentation refresh.
+
+## 2.9.94 — 2026-08-20
+
+- Removed the legacy Members `Active` Boolean from runtime/schema/import documentation. Member lifecycle and scheduled weekly email eligibility use `Membership status`; authentication continues to use the separate **Member Sessions** `Active` Boolean, expiry and revocation fields.
+- Removed the redundant Members `Email verified` Boolean. `Email verified at` is now the sole stored verification state and is written on initial-email verification and confirmed email changes.
+- Updated Baserow field specifications/imports and operational/technical documentation to match the simplified Members schema.
+
 ## 2.9.93 — 2026-08-19
 
 - Completed the FAQ data-model migration: FAQ rows are paired by `Area = FAQs` plus `Label = Question N / Answer N`, and the new `Anchor` column controls URL fragments. Legacy `faq.N.anchor` rows are removed from the import template/fallback path.

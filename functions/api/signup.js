@@ -1,4 +1,4 @@
-import { createRow, envConfig, json, listRows, listRowsFiltered, normaliseEmail, publicCollectionPoint, truthy } from '../_baserow.js';
+import { createRow, envConfig, json, listRows, listRowsFiltered, normaliseEmail, publicCollectionPoint, truthy, updateRow } from '../_baserow.js';
 import { createSignedSession, nextWednesdayExpiry } from '../_auth.js';
 import { refreshMemberMetricCache } from '../_public-metrics.js';
 import { sendMail } from '../_smtp.js';
@@ -98,7 +98,6 @@ export async function onRequestPost(context){
       'Member since':now.toISOString(),
       'Membership consent':true,
       'Weekly newsletter':body.weeklyNewsletter===true,
-      'Email verified':false,
       'Product requests':productRequests,
       'Membership status':'Active',
       'Consecutive weeks':0,
@@ -139,6 +138,7 @@ export async function onRequestPost(context){
         text:welcomeEmailText(rendered.data)
       });
       welcomeEmailSent=true;
+      await updateRow(cfg,cfg.members,member.id,{'Welcome email sent at':new Date().toISOString()}).catch(error=>console.warn('Unable to record welcome-email timestamp',{memberId:member.id,error}));
       if(rendered.usedFallback)console.warn('welcome email fallback used',{memberId:member.id});
     }catch(error){
       console.error('welcome email send failed',error);

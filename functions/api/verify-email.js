@@ -14,7 +14,7 @@ export async function onRequestGet({request,env}){
     const cfg=envConfig(env);
     const auth=await authenticatedMember(cfg,request,env,token);
     if(!auth)return redirectWithCookie(request,'/signup/?verification=invalid');
-    await updateRow(cfg,cfg.members,auth.member.id,{'Email verified':true,'Email verified at':new Date().toISOString()});
+    await updateRow(cfg,cfg.members,auth.member.id,{'Email verified at':new Date().toISOString()});
     const device=await createDeviceSession(cfg,auth.member.id,env);
     return redirectWithCookie(request,'/dashboard/?verified=1',sessionCookie(device.token,device.session['Expires at']));
   }catch(error){

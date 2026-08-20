@@ -1,4 +1,4 @@
-import { envConfig, linkedIds, listRows, number, truthy, unwrap, updateRow } from './_baserow.js';
+import { deleteRow, envConfig, linkedIds, listRows, number, unwrap, updateRow } from './_baserow.js';
 import { sendMail } from './_smtp.js';
 import { LIFECYCLE_EMAIL_FIELDS, renderLifecycleEmail, lifecycleEmailText } from './_membership-emails.js';
 
@@ -86,12 +86,70 @@ function interfaceMap(rows=[]){
   return Object.fromEntries(rows.map(row=>[unwrap(row.Key),String(row.Content??'')]).filter(([key])=>key));
 }
 
-async function revokeMemberSessions(cfg,sessions,memberId,now){
-  const mine=sessions.filter(session=>linkedIds(session.Member).includes(Number(memberId))&&truthy(session.Active,true)&&!session['Revoked at']);
+async function deleteMemberSessions(cfg,sessions,memberId){
+  const mine=sessions.filter(session=>linkedIds(session.Member).includes(Number(memberId)));
   for(const session of mine){
-    await updateRow(cfg,cfg.sessions,session.id,{'Revoked at':now,Active:false});
-    session.Active=false;session['Revoked at']=now;
+    if(session.id)await deleteRow(cfg,cfg.sessions,session.id);
   }
+}
+
+async function deleteExpiredSessions(cfg,sessions,now){
+  if(!cfg.sessions)return 0;
+  let deleted=0;
+  for(const session of sessions){
+    if(!session?.id)continue;
+    const expires=new Date(session['Expires at']||0).getTime();
+    if(Number.isFinite(expires)&&expires>now.getTime())continue;
+    try{await deleteRow(cfg,cfg.sessions,session.id);deleted+=1;}
+    catch(error){console.warn('Unable to delete expired Member Session',{sessionRowId:session.id,error});}
+  }
+  return deleted;
+}
+
+function easterSundayDate(year){
+  const a=year%19,b=Math.floor(year/100),c=year%100,d=Math.floor(b/4),e=b%4;
+  const f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30;
+  const i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451);
+  const month=Math.floor((h+l-7*m+114)/31),day=((h+l-7*m+114)%31)+1;
+  return new Date(Date.UTC(year,month-1,day,12));
+}
+function isoFromDate(d){return d.toISOString().slice(0,10);}
+function shiftedDate(iso,days){const d=dateAtNoon(iso);d.setUTCDate(d.getUTCDate()+days);return isoFromDate(d);}
+function nthWeekdayOfMonth(year,monthIndex,weekday,nth){
+  const d=new Date(Date.UTC(year,monthIndex,1,12));
+  d.setUTCDate(1+((weekday-d.getUTCDay()+7)%7)+(nth-1)*7);return isoFromDate(d);
+}
+function lastWeekdayOfMonth(year,monthIndex,weekday){
+  const d=new Date(Date.UTC(year,monthIndex+1,0,12));
+  d.setUTCDate(d.getUTCDate()-((d.getUTCDay()-weekday+7)%7));return isoFromDate(d);
+}
+function weekendSubstitute(iso,occupied=new Set()){
+  const d=dateAtNoon(iso);
+  if(d.getUTCDay()!==0&&d.getUTCDay()!==6&&!occupied.has(iso))return iso;
+  do{d.setUTCDate(d.getUTCDate()+1);}while(d.getUTCDay()===0||d.getUTCDay()===6||occupied.has(isoFromDate(d)));
+  return isoFromDate(d);
+}
+function englandWalesBankHolidays(year){
+  const holidays=new Set();
+  const newYear=`${year}-01-01`;holidays.add(weekendSubstitute(newYear,holidays));
+  const easter=easterSundayDate(year);holidays.add(shiftedDate(isoFromDate(easter),-2));holidays.add(shiftedDate(isoFromDate(easter),1));
+  holidays.add(nthWeekdayOfMonth(year,4,1,1));
+  holidays.add(lastWeekdayOfMonth(year,4,1));
+  holidays.add(lastWeekdayOfMonth(year,7,1));
+  const christmas=`${year}-12-25`,boxing=`${year}-12-26`;
+  holidays.add(weekendSubstitute(christmas,holidays));holidays.add(weekendSubstitute(boxing,holidays));
+  return holidays;
+}
+function isBusinessDay(iso){
+  const d=dateAtNoon(iso);if(!Number.isFinite(d.getTime()))return false;
+  const weekday=d.getUTCDay();if(weekday===0||weekday===6)return false;
+  return !englandWalesBankHolidays(d.getUTCFullYear()).has(iso);
+}
+export function addBusinessDaysDate(value,count){
+  let current=dateOnly(value);if(!current)return '';
+  let remaining=Math.max(0,Math.trunc(count));
+  while(remaining>0){current=addDaysDate(current,1);if(isBusinessDay(current))remaining-=1;}
+  return current;
 }
 
 async function sendLifecycle(env,{kind,member,settings,field,pauseWeeksRemaining=0,pauseStart='',pauseEnd=''}){
@@ -131,7 +189,9 @@ export async function processMembershipLifecycle(env,{now=new Date()}={}){
   const content=interfaceMap(interfaceRows);
   const nowIso=now.toISOString();
   const today=londonDate(now);
-  const results={checked:members.length,paused:0,resumed:0,overdue:0,inactive:0,followups:0,closed:0,dataReviews:0,emails:0,errors:[]};
+  const expiredSessionsDeleted=cfg.sessions?await deleteExpiredSessions(cfg,sessions,now):0;
+  const liveSessions=sessions.filter(session=>{const expires=new Date(session['Expires at']||0).getTime();return Number.isFinite(expires)&&expires>now.getTime();});
+  const results={checked:members.length,paused:0,resumed:0,overdue:0,inactive:0,followups:0,closed:0,dataReviews:0,emails:0,expiredSessionsDeleted,errors:[]};
 
   for(const member of members){
     try{
@@ -196,7 +256,8 @@ export async function processMembershipLifecycle(env,{now=new Date()}={}){
           if(!dateOnly(patch['Streak frozen since']||member['Streak frozen since']))patch['Streak frozen since']=overdue;
           results.overdue+=1;
         }
-        if(overdue&&!member['Payment overdue email sent at']&&!patch['Payment overdue email sent at']){
+        const overdueEmailGraceThrough=overdue?addBusinessDaysDate(overdue,2):'';
+        if(overdue&&overdueEmailGraceThrough&&today>overdueEmailGraceThrough&&!member['Payment overdue email sent at']&&!patch['Payment overdue email sent at']){
           if(await sendLifecycle(env,{kind:'paymentOverdue',member:{...member,...patch},settings,field:LIFECYCLE_EMAIL_FIELDS.paymentOverdue})){results.emails+=1;patch['Payment overdue email sent at']=nowIso;}
         }
         // One full calendar month remains protected. Example: due 7 Sep -> inactive from 8 Oct.
@@ -221,7 +282,7 @@ export async function processMembershipLifecycle(env,{now=new Date()}={}){
           }
           patch['Membership status']='Closed';patch['Membership closed at']=today;
           status='Closed';results.closed+=1;
-          if(cfg.sessions)await revokeMemberSessions(cfg,sessions,member.id,nowIso);
+          if(cfg.sessions)await deleteMemberSessions(cfg,liveSessions,member.id);
         }
       }
 

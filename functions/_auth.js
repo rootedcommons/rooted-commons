@@ -1,4 +1,4 @@
-import { createRow, deleteRow, getRow, linkedIds, listRows, listRowsFiltered, truthy, unwrap, updateRow } from './_baserow.js';
+import { createRow, deleteRow, getRow, linkedIds, listRows, listRowsFiltered, unwrap, updateRow } from './_baserow.js';
 
 const SESSION_PREFIX='rcs_';
 const COOKIE_NAME='rc_session';
@@ -69,10 +69,24 @@ export function deviceSessionExpiry(from=new Date()){
   return new Date(from.getTime()+DEVICE_SESSION_DAYS*86400000).toISOString();
 }
 
-function sessionUsable(session){
-  if(!session||!truthy(session.Active,true)||session['Revoked at']) return false;
-  const expiry=session['Expires at'];
-  return !expiry || new Date(expiry).getTime()>Date.now();
+export function sessionUsable(session,now=new Date()){
+  if(!session) return false;
+  const expiry=new Date(session['Expires at']||0).getTime();
+  return Number.isFinite(expiry)&&expiry>now.getTime();
+}
+
+const LAST_USED_WRITE_INTERVAL_MS=24*60*60*1000;
+async function touchSessionLastUsed(cfg,session,now=new Date()){
+  if(!session?.id)return;
+  const previous=new Date(session['Last used at']||0).getTime();
+  if(Number.isFinite(previous)&&now.getTime()-previous>=0&&now.getTime()-previous<LAST_USED_WRITE_INTERVAL_MS)return;
+  const usedAt=now.toISOString();
+  try{
+    await updateRow(cfg,cfg.sessions,session.id,{'Last used at':usedAt});
+    session['Last used at']=usedAt;
+  }catch(error){
+    console.warn('Unable to update session last-used timestamp',{sessionId:session.id,error});
+  }
 }
 
 export async function createSignedSession(cfg,memberId,env,{purpose=ACCESS_PURPOSE,expiresAt=nextWednesdayExpiry()}={}){
@@ -85,8 +99,8 @@ export async function createSignedSession(cfg,memberId,env,{purpose=ACCESS_PURPO
     'Session ID':sessionId,
     'Created at':createdAt,
     'Expires at':expiresAt,
-    Purpose:purpose,
-    Active:true
+    ...(purpose===DEVICE_PURPOSE?{'Last used at':createdAt}:{}),
+    Purpose:purpose
   });
   return {session,token:await buildSessionToken(sessionId,env.AUTH_SESSION_SECRET)};
 }
@@ -98,7 +112,7 @@ export async function getOrCreateCurrentAccessSession(cfg,memberId,env){
     .filter(s=>linkedIds(s.Member).includes(Number(memberId)) && s['Session ID'] && sessionUsable(s) && String(s.Purpose||'')===ACCESS_PURPOSE)
     .sort((a,b)=>new Date(b['Created at']||0)-new Date(a['Created at']||0))[0];
   if(current) return {session:current,token:await buildSessionToken(String(current['Session ID']),env.AUTH_SESSION_SECRET)};
-  return createSignedSession(cfg,memberId,env,{purpose:ACCESS_PURPOSE,expiresAt:nextWednesdayExpiry()});
+  return replaceWeeklyAccessSession(cfg,memberId,env,{existingSessions:sessions,expiresAt:nextWednesdayExpiry()});
 }
 
 
@@ -111,13 +125,10 @@ export async function replaceWeeklyAccessSession(cfg,memberId,env,{existingSessi
   const sessions=existingSessions||await listRows(cfg,cfg.sessions);
   const current=sessions.filter(s=>
     linkedIds(s.Member).includes(Number(memberId)) &&
-    String(s.Purpose||'')===ACCESS_PURPOSE &&
-    truthy(s.Active,true) &&
-    !s['Revoked at']
+    String(s.Purpose||'')===ACCESS_PURPOSE
   );
-  const revokedAt=new Date().toISOString();
   for(const session of current){
-    if(session.id) await updateRow(cfg,cfg.sessions,session.id,{'Revoked at':revokedAt,Active:false});
+    if(session.id) await deleteRow(cfg,cfg.sessions,session.id);
   }
   return createSignedSession(cfg,memberId,env,{purpose:ACCESS_PURPOSE,expiresAt});
 }
@@ -150,6 +161,7 @@ export async function authenticatedMember(cfg,request,env,explicitToken=''){
   if(!memberId) return null;
   const member=await getRow(cfg,cfg.members,memberId);
   if(!member||unwrap(member['Membership status'])==='Closed') return null;
+  await touchSessionLastUsed(cfg,session);
   return {member,session,token};
 }
 
@@ -167,9 +179,19 @@ export function safeReturnPath(value='/dashboard/'){
   return path.startsWith('/')&&!path.startsWith('//')?path:'/dashboard/';
 }
 
-export async function revokeSession(cfg,session){
-  if(!session?.id)return;
-  await updateRow(cfg,cfg.sessions,session.id,{'Revoked at':new Date().toISOString(),Active:false});
+export async function deleteExpiredSessions(cfg,sessions=[],now=new Date()){
+  if(!cfg.sessions)return 0;
+  let deleted=0;
+  for(const session of sessions){
+    if(!session?.id||sessionUsable(session,now))continue;
+    try{
+      await deleteRow(cfg,cfg.sessions,session.id);
+      deleted+=1;
+    }catch(error){
+      console.warn('Unable to delete expired session',{sessionRowId:session.id,error});
+    }
+  }
+  return deleted;
 }
 
 export async function deleteSession(cfg,session){

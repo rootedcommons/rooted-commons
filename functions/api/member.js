@@ -1,4 +1,4 @@
-import { envConfig, createRow, getRow, json, listRows, listRowsFiltered, updateRow, publicMember, publicCollectionPoint, linkedIds, unwrap, number, truthy, ukMarketCycle, normaliseEmail } from '../_baserow.js';
+import { envConfig, createRow, deleteRow, getRow, json, listRows, listRowsFiltered, updateRow, publicMember, publicCollectionPoint, linkedIds, unwrap, number, truthy, ukMarketCycle, normaliseEmail } from '../_baserow.js';
 import { authenticatedMember } from '../_auth.js';
 import { refreshMemberMetricCache } from '../_public-metrics.js';
 import { pauseAllowance, pauseWeeksBetween, advanceExpectedPastPause, nextExpectedPayment, ukDate, shiftStreakAnchorForGap } from '../_membership-lifecycle.js';
@@ -123,12 +123,13 @@ export async function onRequestPatch(context) {
         const changeToken=createEmailChangeToken();
         const tokenHash=await hashEmailChangeToken(changeToken);
         const expiresAt=new Date(Date.now()+24*60*60*1000).toISOString();
-        await updateRow(cfg,cfg.members,member.id,{...basePatch,'Pending email':requestedEmail,'Email change token hash':tokenHash,'Email change expires at':expiresAt});
+        await updateRow(cfg,cfg.members,member.id,{...basePatch,'Pending email':requestedEmail,'Email change token hash':tokenHash,'Email change expires at':expiresAt,'Email change confirmation sent at':null});
         try{
           const verifyUrl=`${new URL(request.url).origin}/api/confirm-email-change?token=${encodeURIComponent(changeToken)}`;
           const html=`<!doctype html><html><body style="margin:0;background:#faf8f1;font-family:Arial,sans-serif;color:#2d2a32"><div style="max-width:620px;margin:0 auto;padding:32px 20px"><div style="background:#fff;border:1px solid #ddd6ce;border-radius:18px;padding:28px"><h1 style="margin:0 0 14px;font-size:24px">Confirm your new email address</h1><p>You asked to change the email address for your Rooted Commons membership.</p><p><a href="${verifyUrl}" style="display:inline-block;padding:12px 18px;border-radius:999px;background:#5f3b78;color:#fff;text-decoration:none;font-weight:700">Confirm new email address</a></p><p style="font-size:14px">This link expires in 24 hours. Your existing email address will stay on the account until you confirm the new one.</p></div></div></body></html>`;
           await sendMail(env,{to:requestedEmail,subject:'Confirm your new Rooted Commons email address',html,text:`Confirm your new Rooted Commons email address: ${verifyUrl}\n\nThis link expires in 24 hours. Your existing email address will stay on the account until you confirm the new one.`});
           emailVerificationSent=true;
+          await updateRow(cfg,cfg.members,member.id,{'Email change confirmation sent at':new Date().toISOString()}).catch(error=>console.warn('Unable to record email-change confirmation timestamp',{memberId:member.id,error}));
         }catch(error){console.error('email change verification send failed',error);await updateRow(cfg,cfg.members,member.id,{'Pending email':null,'Email change token hash':'','Email change expires at':null}).catch(()=>{});}
       }else{
         await updateRow(cfg,cfg.members,member.id,{...basePatch,'Pending email':null,'Email change token hash':'','Email change expires at':null});
@@ -152,8 +153,7 @@ export async function onRequestPatch(context) {
       Object.assign(member,patch);
       if(cfg.sessions){
         const sessions=await listRowsFiltered(cfg,cfg.sessions,{Member:{operator:'link_row_has',value:Number(member.id)}},{size:100,all:true});
-        const revokedAt=new Date().toISOString();
-        for(const session of sessions){if(truthy(session.Active,true)&&!session['Revoked at'])await updateRow(cfg,cfg.sessions,session.id,{'Revoked at':revokedAt,Active:false});}
+        for(const session of sessions){if(session.id)await deleteRow(cfg,cfg.sessions,session.id);}
       }
       const metricRefresh=refreshMemberMetricCache(cfg).catch(error=>console.warn('Unable to refresh public member metrics',error));
       if(typeof context.waitUntil==='function')context.waitUntil(metricRefresh);
@@ -253,6 +253,7 @@ export async function onRequestPatch(context) {
         'Current pause weeks':weeks,
         'Pause allowance year':startDate.getUTCFullYear(),
         'Pause weeks used':allowance.used+weeks,
+        'Pause confirmation email sent at':null,
         'Pause ending email sent at':null,
         ...(activeNow?{'Membership status':'Paused','Streak status':'Frozen','Streak frozen since':String(member['Streak frozen since']||'').slice(0,10)||start}:{})
       };
@@ -265,6 +266,9 @@ export async function onRequestPatch(context) {
         const rendered=renderLifecycleEmail({kind:'pauseConfirmation',template:settings[LIFECYCLE_EMAIL_FIELDS.pauseConfirmation],member,settings,pauseWeeksRemaining:Math.max(0,8-(allowance.used+weeks)),pauseStart:start,pauseEnd:end});
         await sendMail(env,{to:String(member.Email||'').trim(),subject:'Your Rooted Commons membership pause is confirmed',html:rendered.html,text:lifecycleEmailText('pauseConfirmation',rendered.data)});
         emailSent=true;
+        const pauseConfirmationSentAt=new Date().toISOString();
+        await updateRow(cfg,cfg.members,member.id,{'Pause confirmation email sent at':pauseConfirmationSentAt}).catch(error=>console.warn('Unable to record pause-confirmation timestamp',{memberId:member.id,error}));
+        member['Pause confirmation email sent at']=pauseConfirmationSentAt;
       }catch(error){console.error('pause confirmation email failed',error);}
       return json({ok:true,membershipStatus:activeNow?'Paused':'Active',streakStatus:activeNow?'Frozen':unwrap(member['Streak status'])||'Active',pauseStarts:start,pauseEnds:end,currentPauseWeeks:weeks,pauseWeeksUsed:allowance.used+weeks,pauseWeeksRemaining:Math.max(0,8-(allowance.used+weeks)),emailSent});
     }

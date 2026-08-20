@@ -1678,3 +1678,31 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
   .price-card-info-toggle{width:.78rem;height:1rem;flex:0 0 .78rem;font-size:.78rem;margin-left:.02rem}
 }
 @media(max-width:430px){.campaign-calendar-icon{width:6rem;height:6rem}}
+
+
+/* v2.9.96 — review refinements: CTA, footer, FAQ and account actions */
+/* Keep the medium footer's lower content breathing room, but halve and equalise the logo's own vertical buffer. */
+.site-footer.height-medium{padding-top:2rem;padding-bottom:4rem}
+.site-footer.height-medium .footer-logo{margin-bottom:2rem}
+
+/* Expanded FAQ answers use equal outer breathing room and slightly tighter paragraph rhythm. */
+.faq-answer{padding:.75rem 1.25rem}
+.faq-answer p{margin:0 0 .65rem}
+.faq-answer p:last-child{margin-bottom:0}
+
+.account-actions{justify-content:space-between;align-items:center;flex-wrap:wrap}
+.account-close-toggle{margin-left:auto}
+
+@media(max-width:760px){
+  /* Equal visual rhythm around CTA body copy without changing tablet/desktop layout. */
+  .cta-section .cta-copy{row-gap:1rem}
+  .cta-section .cta-text{display:grid;gap:1rem}
+  .cta-section .cta-text>*{margin-top:0;margin-bottom:0}
+  .cta-section .cta-text .rich-body p{margin:0}
+  .cta-section .cta-button{margin-top:0}
+}
+@media(max-width:640px){
+  .faq-answer{padding:.65rem 1rem}
+  .account-actions{gap:.75rem}
+}
+.site-footer.height-medium .footer-logo + .footer-tagline{margin-top:0}

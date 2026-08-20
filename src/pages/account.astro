@@ -56,13 +56,12 @@ const config=JSON.stringify({copy}).replace(/</g,'\\u003c');
             <h3>{copy.emailsHeading}</h3>
             <label class="signup-check"><input id="account-newsletter" name="weeklyNewsletter" type="checkbox" /><span>{copy.newsletter}</span></label>
           </div>
-          <div class="full account-actions"><button id="account-save" class="button" type="submit">{copy.save}</button></div>
+          <div class="full account-actions"><button id="account-save" class="button" type="submit">{copy.save}</button><button id="account-close-toggle" class="button account-close-toggle" type="button" aria-expanded="false" aria-controls="account-close-panel">{copy.closeToggle}</button></div>
           <p id="account-message" class="small-print full" aria-live="polite"></p>
         </form>
       </section>
 
       <div class="account-close-area">
-        <button id="account-close-toggle" class="button button-secondary account-close-toggle" type="button" aria-expanded="false" aria-controls="account-close-panel">{copy.closeToggle}</button>
         <section id="account-close-panel" class="dashboard-card account-card account-close-card" hidden>
         <div id="account-positive-credit" class="account-resolution" hidden>
           <div class="highlight-box account-credit-highlight">
