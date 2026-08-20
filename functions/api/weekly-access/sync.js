@@ -1,4 +1,4 @@
-import { envConfig, fileUrl, json, linkedIds, listRows, unwrap, updateRow, orderWeek } from '../../_baserow.js';
+import { envConfig, fileUrl, json, linkedIds, listRows, truthy, unwrap, updateRow, orderWeek } from '../../_baserow.js';
 import { buildSessionToken, deleteExpiredSessions, nextWednesdayExpiry, replaceWeeklyAccessSession, sessionUsable } from '../../_auth.js';
 import { sendMail } from '../../_smtp.js';
 import { renderWeeklyEmail, weeklyEmailText, WEEKLY_EMAIL_TEMPLATE_FIELD } from '../../_weekly-email.js';
@@ -48,6 +48,9 @@ export async function onRequestPost({request,env}){
     const expiredSessionsDeleted=await deleteExpiredSessions(cfg,sessions,now);
     const liveSessions=sessions.filter(session=>sessionUsable(session,now));
     const settings=settingsRow(settingsRows);
+    if(truthy(settings['Orders temporarily closed'],false)){
+      return json({ok:true,skipped:true,message:'Orders are temporarily closed; the Wednesday weekly market email is suppressed.',expiredSessionsDeleted});
+    }
     const interfaceContent=Object.fromEntries(interfaceRows.map(row=>[unwrap(row.Key),String(row.Content??'')]).filter(([key])=>key));
     const pointsById=new Map(points.map(point=>[Number(point.id),point]));
     const activeMembers=members.filter(member=>(unwrap(member['Membership status'])||'Active')==='Active'&&String(member.Email||'').trim());

@@ -3,7 +3,6 @@ import { createSignedSession, nextWednesdayExpiry } from '../_auth.js';
 import { refreshMemberMetricCache } from '../_public-metrics.js';
 import { sendMail } from '../_smtp.js';
 import { renderWelcomeEmail, welcomeEmailText, WELCOME_EMAIL_TEMPLATE_FIELD } from '../_welcome-email.js';
-import { nextExpectedPayment } from '../_membership-lifecycle.js';
 
 const clean=value=>String(value||'').trim();
 const money=value=>Math.round((Number(value)+Number.EPSILON)*100)/100;
@@ -108,7 +107,7 @@ export async function onRequestPost(context){
       'Pause weeks used':0,
       'Pause allowance year':now.getUTCFullYear(),
       'Current pause weeks':0,
-      'Regular payment expected at':nextExpectedPayment(now.toISOString(),contributionFrequency),
+      'Regular payment expected at':null,
       ...(founderBadge?{'Founder badge':founderBadge}:{})
     };
     const member=await createRow(cfg,cfg.members,fields);
@@ -118,7 +117,7 @@ export async function onRequestPost(context){
     const memberNumber=String(member['Member number']||`RC-${member.id}`);
     const origin=new URL(request.url).origin;
     const dashboardUrl=`/api/access?token=${encodeURIComponent(orderToken)}&return=${encodeURIComponent('/dashboard/')}`;
-    const verificationUrl=`${origin}/api/verify-email?token=${encodeURIComponent(orderToken)}`;
+    const verificationUrl=`${origin}/api/verify-email?token=${encodeURIComponent(orderToken)}&return=${encodeURIComponent('/orders/')}`;
     let welcomeEmailSent=false;
     try{
       const rendered=renderWelcomeEmail({

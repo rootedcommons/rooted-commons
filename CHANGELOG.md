@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.9.98 — 2026-08-20
+
+- New memberships no longer receive a `Regular payment expected at` date at signup. The first qualifying regular payment now establishes the weekly/monthly expectation; lifecycle processing also clears legacy pre-payment expectations for members who have not yet made a qualifying regular payment. Editing a commitment before the first qualifying payment likewise leaves the expectation blank.
+- Suppressed the Wednesday weekly-market/access email whenever Site Settings → `Orders temporarily closed` is enabled. Expired sessions may still be cleaned, but no new weekly-access session is created merely for a suppressed mailing.
+- Refined the Welcome email: removed the always-£0 Member Credit balance, changed the CTA to **Start your first order** and route it through secure sign-in to `/orders/`, tightened the payment-reference warning, moved the pause explanation to the bottom of the payment box with **Member Streak** linked to its FAQ, and simplified the passwordless-link explanation.
+- After a confirmed email-address change, the new address still has to verify before replacing the old one; all old sessions are deleted as before, and a separate security notification is now sent to the previous email address with instructions to contact Rooted Commons if the change was not theirs.
+- Deliberately left the proposed **Your involvement** activity-ledger redesign out of this release for the next design discussion.
+
 ## 2.9.97 — 2026-08-20
 
 - Restored founder-campaign sublabels on mobile and reduced the mobile countdown text size.

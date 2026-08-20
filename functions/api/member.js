@@ -1,7 +1,7 @@
 import { envConfig, createRow, deleteRow, getRow, json, listRows, listRowsFiltered, updateRow, publicMember, publicCollectionPoint, linkedIds, unwrap, number, truthy, ukMarketCycle, normaliseEmail } from '../_baserow.js';
 import { authenticatedMember } from '../_auth.js';
 import { refreshMemberMetricCache } from '../_public-metrics.js';
-import { pauseAllowance, pauseWeeksBetween, advanceExpectedPastPause, nextExpectedPayment, ukDate, shiftStreakAnchorForGap } from '../_membership-lifecycle.js';
+import { pauseAllowance, pauseWeeksBetween, advanceExpectedPastPause, expectedAmount, nextExpectedPayment, ukDate, shiftStreakAnchorForGap } from '../_membership-lifecycle.js';
 import { sendMail } from '../_smtp.js';
 import { LIFECYCLE_EMAIL_FIELDS, renderLifecycleEmail, lifecycleEmailText } from '../_membership-emails.js';
 import { createEmailChangeToken, hashEmailChangeToken } from '../_email-change.js';
@@ -311,15 +311,22 @@ export async function onRequestPatch(context) {
       const monthlyEquivalent=contributionFrequency==='Monthly'?money(contributionAmount):money(contributionAmount*52/12);
       const commitmentChangedAt=new Date().toISOString();
       let revertedToConfirmed=false;
-      let expectedAt=nextExpectedPayment(commitmentChangedAt,contributionFrequency);
+      const paymentRows=cfg.transactions?await listRowsFiltered(cfg,cfg.transactions,{Member:{operator:'link_row_has',value:Number(member.id)}},{size:200,all:true}):[];
+      const previousRegularAmount=expectedAmount(member).amount;
+      const hasRegularPaymentHistory=Boolean(String(member['Streak credited through']||'').slice(0,10)) || paymentRows.some(row=>
+        transactionType(row).toLowerCase()==='payment' && transactionAmount(row)>0 && truthy(row['Included in credit'],true) && Math.abs(transactionAmount(row)-previousRegularAmount)<0.005
+      );
+      // A member who has never made a qualifying regular payment still has no payment
+      // schedule to miss, even if they edit their commitment before that first payment.
+      let expectedAt=hasRegularPaymentHistory?nextExpectedPayment(commitmentChangedAt,contributionFrequency):'';
 
       // While a commitment change is waiting for its first matching payment, allow the
       // member to return to the last payment-confirmed amount without creating another
       // pending standing-order change. This deliberately uses the most recent included
       // Payment from before the pending change, so no extra Baserow schema is required.
-      if(truthy(member['Commitment payment pending'],false) && cfg.transactions){
+      if(truthy(member['Commitment payment pending'],false) && paymentRows.length){
         const changedAt=member['Commitment changed at'] ? new Date(member['Commitment changed at']).getTime() : NaN;
-        const rows=await listRowsFiltered(cfg,cfg.transactions,{Member:{operator:'link_row_has',value:Number(member.id)}},{size:200,all:true});
+        const rows=paymentRows;
         const priorPayments=rows.filter(row=>{
           if(transactionType(row).toLowerCase()!=='payment'||transactionAmount(row)<=0||!truthy(row['Included in credit'],true))return false;
           const t=new Date(transactionDate(row)||0).getTime();

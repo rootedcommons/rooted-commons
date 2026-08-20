@@ -1,4 +1,4 @@
-import { deleteRow, envConfig, linkedIds, listRows, number, unwrap, updateRow } from './_baserow.js';
+import { deleteRow, envConfig, linkedIds, listRows, number, truthy, unwrap, updateRow } from './_baserow.js';
 import { sendMail } from './_smtp.js';
 import { LIFECYCLE_EMAIL_FIELDS, renderLifecycleEmail, lifecycleEmailText } from './_membership-emails.js';
 
@@ -73,6 +73,17 @@ export function nextExpectedPayment(receivedAt,frequency){
 }
 
 
+
+function hasQualifyingRegularPayment(member,transactions=[]){
+  if(dateOnly(member['Streak credited through']))return true;
+  const target=expectedAmount(member).amount;
+  if(!(target>0))return false;
+  return transactions.some(row=>{
+    if(unwrap(row.Type).trim().toLowerCase()!=='payment'||!truthy(row['Included in credit'],true))return false;
+    const amount=number(row.Amount,0);
+    return amount>0&&Math.abs(amount-target)<0.005;
+  });
+}
 export function advanceExpectedPastPause(expectedAt,pauseEnd,frequency){
   let next=dateOnly(expectedAt);
   const end=dateOnly(pauseEnd);
@@ -182,8 +193,8 @@ async function sendLifecycle(env,{kind,member,settings,field,pauseWeeksRemaining
 
 export async function processMembershipLifecycle(env,{now=new Date()}={}){
   const cfg=envConfig(env);
-  const [members,settingsRows,interfaceRows,sessions]=await Promise.all([
-    listRows(cfg,cfg.members),cfg.settings?listRows(cfg,cfg.settings):Promise.resolve([]),cfg.interfaceContent?listRows(cfg,cfg.interfaceContent):Promise.resolve([]),cfg.sessions?listRows(cfg,cfg.sessions):Promise.resolve([])
+  const [members,settingsRows,interfaceRows,sessions,transactions]=await Promise.all([
+    listRows(cfg,cfg.members),cfg.settings?listRows(cfg,cfg.settings):Promise.resolve([]),cfg.interfaceContent?listRows(cfg,cfg.interfaceContent):Promise.resolve([]),cfg.sessions?listRows(cfg,cfg.sessions):Promise.resolve([]),cfg.transactions?listRows(cfg,cfg.transactions):Promise.resolve([])
   ]);
   const settings=settingsRows.find(row=>unwrap(row['Site title']))||settingsRows[0]||{};
   const content=interfaceMap(interfaceRows);
@@ -191,7 +202,14 @@ export async function processMembershipLifecycle(env,{now=new Date()}={}){
   const today=londonDate(now);
   const expiredSessionsDeleted=cfg.sessions?await deleteExpiredSessions(cfg,sessions,now):0;
   const liveSessions=sessions.filter(session=>{const expires=new Date(session['Expires at']||0).getTime();return Number.isFinite(expires)&&expires>now.getTime();});
-  const results={checked:members.length,paused:0,resumed:0,overdue:0,inactive:0,followups:0,closed:0,dataReviews:0,emails:0,expiredSessionsDeleted,errors:[]};
+  const transactionsByMember=new Map();
+  for(const row of transactions){
+    for(const memberId of linkedIds(row.Member)){
+      const rows=transactionsByMember.get(memberId)||[];
+      rows.push(row);transactionsByMember.set(memberId,rows);
+    }
+  }
+  const results={checked:members.length,paused:0,resumed:0,overdue:0,inactive:0,followups:0,closed:0,dataReviews:0,emails:0,prePaymentExpectationsCleared:0,expiredSessionsDeleted,errors:[]};
 
   for(const member of members){
     try{
@@ -202,6 +220,16 @@ export async function processMembershipLifecycle(env,{now=new Date()}={}){
       const pauseEnd=dateOnly(member['Pause ends']);
       const commitmentStopped=dateOnly(member['Regular commitment stopped at']);
 
+      // Before a member's first qualifying regular payment there is no payment schedule to miss.
+      // This also self-heals legacy signup rows that were given an expected date immediately.
+      const memberTransactions=transactionsByMember.get(Number(member.id))||[];
+      const hasRegularPayment=hasQualifyingRegularPayment(member,memberTransactions);
+      if(!commitmentStopped&&!hasRegularPayment&&dateOnly(member['Regular payment expected at'])){
+        patch['Regular payment expected at']=null;
+        patch['Regular payment overdue since']=null;
+        patch['Payment overdue email sent at']=null;
+        results.prePaymentExpectationsCleared+=1;
+      }
 
       // Scheduled notified pause becomes active on its start date.
       if(pauseStart&&pauseEnd&&today>=pauseStart&&today<pauseEnd&&status==='Active'){
