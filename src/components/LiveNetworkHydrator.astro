@@ -18,9 +18,18 @@
   const setLink = (root, selector, href, label) => {
     const el = root?.querySelector(selector);
     if (!el) return;
-    el.hidden = !href;
-    if (href) el.href = href;
+    const target = String(href || '').trim();
+    el.hidden = !target;
+    if (target) el.href = target;
     if (label) el.textContent = label;
+  };
+  const participationHref = (value = '') => {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw)) return `mailto:${raw}`;
+    if (/^[a-z][a-z0-9+.-]*:/i.test(raw)) return raw;
+    if (/^www\./i.test(raw)) return `https://${raw}`;
+    return raw;
   };
 
   const populateGallery = (container, partner, modalId, opensDialog = false) => {
@@ -144,17 +153,14 @@
     const returnPath = `/our-network/?partner=${partner.id}`;
     const directionsHref = point ? `/collection-points/?focus=${encodeURIComponent(point.id)}&return=${encodeURIComponent(returnPath)}` : '';
     const links = dialog.querySelector('[data-live-links]');
-    const hasLinks = partner.getInvolvedUrl || partner.volunteerUrl || partner.website || partner.socialUrl || directionsHref;
+    const volunteerHref = participationHref(partner.volunteerUrl);
+    const websiteHref = String(partner.website || '').trim();
+    const socialHref = String(partner.socialUrl || '').trim();
+    const hasLinks = volunteerHref || websiteHref || socialHref || directionsHref;
     if (links) links.hidden = !hasLinks;
-    const getInvolved = dialog.querySelector('[data-live-get-involved]');
-    if (getInvolved) {
-      getInvolved.hidden = !partner.getInvolvedUrl;
-      if (partner.getInvolvedUrl) getInvolved.href = partner.getInvolvedUrl;
-      getInvolved.textContent = partner.getInvolvedLabel || 'Get involved';
-    }
-    setLink(dialog, '[data-live-volunteer]', partner.volunteerUrl, 'Volunteer →');
-    setLink(dialog, '[data-live-website]', partner.website);
-    setLink(dialog, '[data-live-social]', partner.socialUrl);
+    setLink(dialog, '[data-live-volunteer]', volunteerHref, 'Volunteer →');
+    setLink(dialog, '[data-live-website]', websiteHref);
+    setLink(dialog, '[data-live-social]', socialHref);
     setLink(dialog, '[data-live-directions]', directionsHref);
   };
 

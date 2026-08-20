@@ -46,6 +46,9 @@ const {basketEmptyText='',basketNotice='',broadCategories=[],collectionPointsFor
     const search = document.querySelector('#product-search');
     const sort = document.querySelector('#product-sort');
     const grid = document.querySelector('#shop-products .product-grid');
+    const shopShell = document.querySelector('[data-shop-shell]');
+    const basketBar = document.querySelector('.shop-basket-bar');
+    const sharedSections = document.querySelector('[data-orders-shared-sections]');
 
     const state = {
       category: broadCategories.find(category => slugify(category) === slugify(params.get('category'))) || broadCategories[0] || '',
@@ -146,6 +149,10 @@ const {basketEmptyText='',basketNotice='',broadCategories=[],collectionPointsFor
     function renderCatalogue({ updateUrl = false, rebuildTabs = false } = {}){
       categoryTabs.forEach(tab => tab.classList.toggle('active', normalise(tab.dataset.shopCategory) === normalise(state.category)));
       panels.forEach(panel => panel.hidden = normalise(panel.dataset.cataloguePanel) !== normalise(state.category));
+      const refillsPreviewOnly = normalise(state.category) === 'refills';
+      if (shopShell) shopShell.hidden = refillsPreviewOnly;
+      if (basketBar) basketBar.hidden = refillsPreviewOnly;
+      if (sharedSections) sharedSections.hidden = refillsPreviewOnly;
       if (rebuildTabs) rebuildSubcategories();
       const visible = new Set(visibleCards());
       cards.sort(compareCards).forEach(card => {

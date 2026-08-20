@@ -92,7 +92,7 @@
 /* v1.8 checkout and member dashboard */
 .checkout-shell-wide{max-width:1180px}
 .checkout-review{margin-top:0}
-.checkout-total-row{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding-top:1rem;margin-top:1rem;border-top:1px solid var(--border);font-size:1.1rem}
+.checkout-total-row{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding-top:1rem;margin-top:1rem;border-top:0;font-size:1.1rem}
 .checkout-total-row strong{font-size:1.45rem}
 .checkout-line{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:.75rem 1rem;padding:.85rem 0;border-bottom:1px solid color-mix(in srgb,var(--border) 75%,transparent)}
 .checkout-line>div:first-child{display:flex;flex-direction:column;min-width:0}
@@ -1662,3 +1662,19 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .checkout-collection-summary .dashboard-point-actions .button{margin-top:0}
 .checkout-slot-fields[hidden]{display:none!important}
 .checkout-slot-fields:not([hidden]){display:contents}
+
+
+/* v2.9.93 — review polish, FAQ/network visibility fixes and temporary Refills preview */
+.network-offering-row[hidden],.network-links a[hidden]{display:none!important}
+.dashboard-card .eyebrow:first-child,.checkout-card .eyebrow:first-child{margin-top:0}
+.site-footer.height-small .footer-logo{margin-bottom:2rem}
+.site-footer.height-medium .footer-logo{margin-bottom:4rem}
+.site-footer.height-large .footer-logo{margin-bottom:6rem}
+.campaign-calendar-icon{width:6.5rem;height:6.5rem}
+.campaign-calendar-icon svg{width:3.4rem;height:3.4rem}
+.shop-basket-bar[hidden],[data-orders-shared-sections][hidden]{display:none!important}
+@media(max-width:650px){
+  .product-price-with-info{gap:0}
+  .price-card-info-toggle{width:.78rem;height:1rem;flex:0 0 .78rem;font-size:.78rem;margin-left:.02rem}
+}
+@media(max-width:430px){.campaign-calendar-icon{width:6rem;height:6rem}}

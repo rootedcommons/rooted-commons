@@ -53,7 +53,7 @@ const shopConfigJson = JSON.stringify({ basketEmptyText: c('basket.empty'), bask
     ))}
   </section>
 
-  <section class={`shop-shell background-${gridSection?.backgroundStyle || 'default'} space-above-${gridSection?.spaceAbove || 'small'} space-below-${gridSection?.spaceBelow || 'large'}`}>
+  <section data-shop-shell class={`shop-shell background-${gridSection?.backgroundStyle || 'default'} space-above-${gridSection?.spaceAbove || 'small'} space-below-${gridSection?.spaceBelow || 'large'}`}>
     <div id="market-rollover-notice" class="market-rollover-notice" hidden></div>
     <section id="member-summary" class="member-summary" hidden aria-label="Member summary">
       <div class="member-summary-main">
@@ -98,7 +98,9 @@ const shopConfigJson = JSON.stringify({ basketEmptyText: c('basket.empty'), bask
     </div>
   </section>
 
-  {sharedBlocks.map((block) => <SectionRenderer block={block} products={data.products} settings={s} />)}
+  <div data-orders-shared-sections>
+    {sharedBlocks.map((block) => <SectionRenderer block={block} products={data.products} settings={s} />)}
+  </div>
   <div id="basket-backdrop" class="basket-backdrop" hidden></div>
   <aside id="basket-drawer" class="basket-drawer" aria-hidden="true" aria-live="polite">
     <div class="basket-drawer-header"><h2>{c('basket.heading')}</h2><button id="close-basket" type="button" aria-label="Close basket">×</button></div>
@@ -109,5 +111,5 @@ const shopConfigJson = JSON.stringify({ basketEmptyText: c('basket.empty'), bask
   </aside>
 
   <script id="shop-config" type="application/json" set:html={shopConfigJson}></script>
-  <script type="module" src="/scripts/shop.js?v=2.9.78"></script>
+  <script type="module" src="/scripts/shop.js?v=2.9.93"></script>
 </BaseLayout>

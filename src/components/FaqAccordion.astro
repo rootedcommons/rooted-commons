@@ -1,21 +1,7 @@
 ---
 import FormattedText from './FormattedText.astro';
 
-const { content = {} } = Astro.props;
-
-const items = Object.entries(content)
-  .map(([key, value]) => {
-    const match = key.match(/^faq\.(\d+)\.question$/i);
-    if (!match) return null;
-    const number = match[1];
-    const question = String(value || '').trim();
-    const answer = String(content[`faq.${number}.answer`] || '').trim();
-    const order = Number(number);
-    const anchor = String(content[`faq.${number}.anchor`] || `faq-${number}`).trim().replace(/^#/, '') || `faq-${number}`;
-    return question && answer ? { number, order, question, answer, anchor } : null;
-  })
-  .filter(Boolean)
-  .sort((a, b) => a.order - b.order);
+const { items = [] } = Astro.props;
 ---
 
 {items.length > 0 && (

@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.9.93 — 2026-08-19
+
+- Completed the FAQ data-model migration: FAQ rows are paired by `Area = FAQs` plus `Label = Question N / Answer N`, and the new `Anchor` column controls URL fragments. Legacy `faq.N.anchor` rows are removed from the import template/fallback path.
+- Fixed Network Partner activity/link visibility so blank offering, Website and Social URL fields render no icon, text or spacing; the whole activities/links sections hide when empty.
+- Removed `Get involved label` / `Get involved URL`; `Volunteer URL` is now a Single line text field that accepts a web URL or email address (email becomes `mailto:`).
+- Made Network Partners the canonical source for Address/Latitude/Longitude and Collection Points explicitly link a Network Partner, exposing location values as lookups; public-network collection matching now uses that link instead of name/address heuristics.
+- Doubled the campaign countdown calendar treatment while preserving its icon-to-circle proportion.
+- Equalised footer logo whitespace for each configured footer height.
+- Removed default first-paragraph top margin from card eyebrows; changed checkout **Your basket** and **Your member order** headings to eyebrows and removed the duplicate separator above Estimated total.
+- Added temporary Refills preview mode: selecting Refills shows its configured category intro/image while hiding the normal shop shell, shared shop sections and floating basket shortcut; products remain intact for later re-enabling.
+- Tightened the mobile product-card price info icon against the price and reduced its reserved width to prevent overlap with the quantity pill.
+
 ## 2.9.92 — 2026-08-19
 
 - Restarted from **v2.9.90**; the v2.9.91 collection-card styling change is intentionally discarded.

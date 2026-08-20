@@ -26,11 +26,11 @@ function publicPartner(row) {
     howWeWorkTogether: unwrap(row['How we work together']),
     priceExplanation: unwrap(row['Price explanation']),
     address: unwrap(row.Address),
+    latitude: Number(unwrap(row.Latitude)) || null,
+    longitude: Number(unwrap(row.Longitude)) || null,
     website: unwrap(row.Website),
     volunteerUrl: unwrap(row['Volunteer URL']),
     socialUrl: unwrap(row['Social URL']),
-    getInvolvedLabel: unwrap(row['Get involved label']) || 'Get involved',
-    getInvolvedUrl: unwrap(row['Get involved URL']),
     offeringText: {
       'Refills': unwrap(row['Refills']),
       'Coffee': unwrap(row['Coffee']),
@@ -87,20 +87,16 @@ export async function onRequestGet(context) {
       safeTable(cfg, cfg.collectionPoints, 'collectionPoints')
     ]);
 
-    const normalise = (value) => String(value || '').trim().toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, ' ').trim().replace(/\s+/g, ' ');
     const publicPoints = collectionPointsResult.rows
       .filter(row => truthy(row.Active, true) && unwrap(row.Name))
-      .map(publicCollectionPoint);
+      .map(row => ({ point: publicCollectionPoint(row), partnerIds: linkedIds(row['Network Partner']) }));
 
     const partners = partnersResult.rows
       .filter(row => truthy(row.Active, true) && unwrap(row.Name))
       .map(row => {
         const partner = publicPartner(row);
-        const point = publicPoints.find(item =>
-          normalise(item.name) === normalise(partner.name) ||
-          (partner.address && item.address && (normalise(item.address) === normalise(partner.address) || normalise(item.address).includes(normalise(partner.address)) || normalise(partner.address).includes(normalise(item.address))))
-        );
-        return { ...partner, collectionPoint: point || null };
+        const match = publicPoints.find(item => item.partnerIds.includes(partner.id));
+        return { ...partner, collectionPoint: match?.point || null };
       })
       .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
 

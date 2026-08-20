@@ -69,7 +69,7 @@ const checkoutConfigJson = JSON.stringify({ products: checkoutProducts, points: 
       </CollectionPointCard>
 
       <section class="checkout-card checkout-review" aria-labelledby="checkout-order-heading">
-        <h2 id="checkout-order-heading">{c('checkout.basket_heading')}</h2>
+        <p id="checkout-order-heading" class="eyebrow">{c('checkout.basket_heading')}</p>
         <div id="checkout-basket-lines"></div>
         <div class="checkout-total-row"><span>{c('basket.total_label')}</span><strong id="checkout-total">£0.00</strong></div>
       </section>
@@ -88,7 +88,7 @@ const checkoutConfigJson = JSON.stringify({ products: checkoutProducts, points: 
         </div>
 
         <div id="verified-member-panel" hidden>
-          <h2>{c('checkout.member_order_heading')}</h2>
+          <p class="eyebrow">{c('checkout.member_order_heading')}</p>
           <div id="verified-member"></div>
           <FormattedText text={c('checkout.terms_confirmation','By confirming your order, you agree to our [Terms of Sale](/terms-of-sale/).')} class="checkout-terms-confirmation" />
           <button id="submit-order" class="button" type="button" disabled>{c('checkout.confirm_button')}</button>
@@ -109,5 +109,5 @@ const checkoutConfigJson = JSON.stringify({ products: checkoutProducts, points: 
   {ordinaryBlocks.map((block) => <SectionRenderer block={block} products={data.products} settings={data.settings} />)}
 
   <script id="checkout-config" type="application/json" set:html={checkoutConfigJson}></script>
-  <script type="module" src="/scripts/checkout.js?v=2.9.92"></script>
+  <script type="module" src="/scripts/checkout.js?v=2.9.93"></script>
 </BaseLayout>

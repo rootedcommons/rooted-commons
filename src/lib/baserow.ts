@@ -392,8 +392,8 @@ async function loadSiteData() {
     image: originalFileUrl(row, 'Image'),
     link: text(row, 'Link', text(row, 'Website', text(row, 'URL'))),
     description: text(row, 'Description'),
-    latitude: numeric(row, 'Latitude', NaN),
-    longitude: numeric(row, 'Longitude', NaN),
+    latitude: (() => { const value = Number(text(row, 'Latitude')); return Number.isFinite(value) ? value : NaN; })(),
+    longitude: (() => { const value = Number(text(row, 'Longitude')); return Number.isFinite(value) ? value : NaN; })(),
     collectionTime: cleanCollectionTime(text(row, 'Thursday collection time', text(row, 'Collection time', text(row, 'Collection slot', text(row, 'Collection day/time'))))),
     collectionSlots: [
       { day: 'Thursday', time: cleanCollectionTime(text(row, 'Thursday collection time', text(row, 'Collection time', text(row, 'Collection slot', text(row, 'Collection day/time'))))) },
@@ -415,11 +415,11 @@ async function loadSiteData() {
     howWeWorkTogether: text(row, 'How we work together'),
     priceExplanation: text(row, 'Price explanation'),
     address: text(row, 'Address'),
+    latitude: numeric(row, 'Latitude', NaN),
+    longitude: numeric(row, 'Longitude', NaN),
     website: text(row, 'Website'),
     volunteerUrl: text(row, 'Volunteer URL'),
     socialUrl: text(row, 'Social URL'),
-    getInvolvedLabel: text(row, 'Get involved label', 'Get involved'),
-    getInvolvedUrl: text(row, 'Get involved URL'),
     offeringText: {
       'Refills': text(row, 'Refills'),
       'Coffee': text(row, 'Coffee'),
@@ -476,5 +476,47 @@ async function loadSiteData() {
     if (key && content) interfaceContent[key] = content;
   }
 
-  return { settings, interfaceContent, pages, sections, products, collectionPoints, networkPartners, metrics };
+  // FAQs are paired by the editor-facing Label field rather than by the legacy Key.
+  // This keeps numbering/order, question/answer pairing and URL anchors independent.
+  const faqMap = new Map<number, any>();
+  for (const row of interfaceRows || []) {
+    if (text(row, 'Area').trim().toLowerCase() !== 'faqs') continue;
+    const match = text(row, 'Label').trim().match(/^(Question|Answer)\s*(\d+)$/i);
+    if (!match) continue;
+    const order = Number(match[2]);
+    if (!Number.isFinite(order)) continue;
+    const item = faqMap.get(order) || { order, question: '', answer: '', questionAnchor: '', answerAnchor: '' };
+    const content = resolveStatTokens(text(row, 'Content')).trim();
+    const anchor = text(row, 'Anchor').trim().replace(/^#/, '');
+    if (match[1].toLowerCase() === 'question') { item.question = content; item.questionAnchor = anchor; }
+    else { item.answer = content; item.answerAnchor = anchor; }
+    faqMap.set(order, item);
+  }
+
+  let faqs = [...faqMap.values()]
+    .filter((item) => item.question && item.answer)
+    .sort((a, b) => a.order - b.order)
+    .map((item) => ({
+      order: item.order,
+      question: item.question,
+      answer: item.answer,
+      anchor: item.questionAnchor || item.answerAnchor || `faq-${item.order}`
+    }));
+
+  if (!faqs.length) {
+    faqs = Object.entries(fallbackInterfaceContent)
+      .map(([key, value]) => {
+        const match = key.match(/^faq\.(\d+)\.question$/i);
+        if (!match) return null;
+        const number = match[1];
+        const order = Number(number);
+        const question = String(value || '').trim();
+        const answer = String((fallbackInterfaceContent as Record<string, string>)[`faq.${number}.answer`] || '').trim();
+        return question && answer ? { order, question, answer, anchor: `faq-${order}` } : null;
+      })
+      .filter(Boolean)
+      .sort((a: any, b: any) => a.order - b.order);
+  }
+
+  return { settings, interfaceContent, faqs, pages, sections, products, collectionPoints, networkPartners, metrics };
 }
