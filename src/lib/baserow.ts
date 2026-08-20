@@ -213,7 +213,8 @@ async function loadSiteData() {
           const number = match[1];
           const label = text(validSettingsRow, key);
           const unlockWeeks = numeric(validSettingsRow, `Perk ${number} unlock weeks`, 0);
-          return label ? { order: Number(number), label, unlockWeeks } : null;
+          const explainer = text(validSettingsRow, `Perk ${number} explainer`);
+          return label ? { order: Number(number), label, unlockWeeks, explainer } : null;
         })
         .filter(Boolean)
         .sort((a: any, b: any) => a.unlockWeeks - b.unlockWeeks || a.order - b.order);

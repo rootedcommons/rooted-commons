@@ -28,12 +28,11 @@ const copy={
   contactBody:c('account.contact_body','Contact us and we’ll work out an appropriate way to resolve your remaining Member Credit.'),
   contactButton:c('account.contact_button','Contact us'),
   negativeCredit:c('account.negative_credit','Your Member Credit balance is {credit}. Please resolve this balance before closing your membership.'),
-  closeButton:c('account.close_button','Close my membership'),
   closeConfirmHeading:c('account.close_confirm_heading','Close your membership?'),
   closeConfirmBody:c('account.close_confirm_body','This will close your Rooted Commons membership and sign you out on all devices. You will still need to cancel your standing order with your bank. Order and accounting records are retained where required.'),
   donateConfirmHeading:c('account.donate_confirm_heading','Donate your remaining Member Credit and close?'),
   donateConfirmBody:c('account.donate_confirm_body','You are choosing to donate {credit} of Member Credit to {recipient}. This will reduce your Member Credit to £0, close your Rooted Commons membership and sign you out on all devices. This donation cannot be undone through your member account.'),
-  keep:c('account.keep','Keep my membership'),confirmClose:c('account.confirm_close','Close my membership'),confirmDonate:c('account.confirm_donate','Donate and close'),back:c('account.back','Back to dashboard')
+  keep:c('account.keep','Keep my membership'),cancel:c('account.cancel','Cancel'),confirmClose:c('account.confirm_close','Confirm closure'),confirmDonate:c('account.confirm_donate','Donate and close'),back:c('account.back','Back to dashboard')
 };
 const config=JSON.stringify({copy}).replace(/</g,'\\u003c');
 ---
@@ -85,9 +84,13 @@ const config=JSON.stringify({copy}).replace(/</g,'\\u003c');
         <div id="account-negative-credit" class="account-resolution" hidden><p id="account-negative-credit-copy"></p><a class="button button-secondary" href="/contact/">{copy.contactButton}</a></div>
         <div id="account-zero-credit" hidden>
           <p id="account-close-context" class="small-print"></p>
-          <button id="account-close-open" class="button button-secondary" type="button">{copy.closeButton}</button>
+          <p>{copy.closeConfirmBody}</p>
         </div>
         <p id="account-resolution-message" class="small-print" aria-live="polite"></p>
+        <div class="account-close-panel-actions">
+          <button id="account-close-cancel" class="button button-secondary" type="button">{copy.cancel}</button>
+          <button id="account-close-confirm-inline" class="button account-close-confirm-inline" type="button" hidden>{copy.confirmClose}</button>
+        </div>
         </section>
       </div>
     </div>
@@ -97,5 +100,5 @@ const config=JSON.stringify({copy}).replace(/</g,'\\u003c');
     </dialog>
   </main>
   <script id="account-config" type="application/json" set:html={config}></script>
-  <script type="module" src="/scripts/account.js?v=2.9.88"></script>
+  <script type="module" src="/scripts/account.js?v=2.9.97"></script>
 </BaseLayout>

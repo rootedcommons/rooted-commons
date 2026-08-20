@@ -149,26 +149,40 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
       }catch(error){pauseConfirmMessage.textContent=error?.message||copy.pauseFailed;pauseConfirmAction.disabled=false;pauseConfirmKeep.disabled=false;}
     });
 
+    const perkHtml=(item,countdown='')=>{
+      const id=`dashboard-perk-${Number(item.order)||0}-explainer`;
+      const explainer=String(item.explainer||'').trim();
+      const info=explainer?`<button class="dashboard-perk-info-toggle" type="button" aria-label="More information about ${escapeHtml(item.label)}" aria-expanded="false" aria-controls="${id}" data-perk-info="${id}">ⓘ</button>`:'';
+      const detail=explainer?`<div id="${id}" class="dashboard-perk-explainer" hidden>${richHtml(explainer)}</div>`:'';
+      return `<li class="dashboard-perk-item"><div class="dashboard-perk-label-row"><span>${escapeHtml(item.label)}</span>${info}</div>${countdown?`<strong class="dashboard-perk-countdown">${escapeHtml(countdown)}</strong>`:''}${detail}</li>`;
+    };
     const renderPerks=(weeks,isNew)=>{
       const container=document.querySelector('#dashboard-perks');
       if(isNew){container.hidden=true;return;}
       const perks=(membershipPerks||[])
-        .map(item=>({label:item.label,unlockWeeks:Number(item.unlockWeeks)||0}))
+        .map(item=>({order:Number(item.order)||0,label:item.label,unlockWeeks:Number(item.unlockWeeks)||0,explainer:item.explainer||''}))
         .filter(item=>item.label)
-        .sort((a,b)=>a.unlockWeeks-b.unlockWeeks);
+        .sort((a,b)=>a.unlockWeeks-b.unlockWeeks||a.order-b.order);
       if(!perks.length){container.hidden=true;return;}
       const unlocked=perks.filter(item=>weeks>=item.unlockWeeks);
       const upcoming=perks.filter(item=>weeks<item.unlockWeeks);
       const unlockedHtml=unlocked.length
-        ? `<h3>${copy.perksUnlocked}</h3><ul>${unlocked.map(item=>`<li>${item.label}</li>`).join('')}</ul>`
+        ? `<h3>${copy.perksUnlocked}</h3><ul>${unlocked.map(item=>perkHtml(item)).join('')}</ul>`
         : '';
       const upcomingHtml=upcoming.length
         ? `<h3 class="dashboard-upcoming-perks-heading">${copy.perksUpcoming}</h3><ul class="dashboard-upcoming-perks">${upcoming.map(item=>{
             const remaining=item.unlockWeeks-weeks;
-            return `<li><span>${item.label}</span><strong>${interpolate(copy.perkInWeeks,{weeks:remaining,plural:remaining===1?'':'s'})}</strong></li>`;
+            return perkHtml(item,interpolate(copy.perkInWeeks,{weeks:remaining,plural:remaining===1?'':'s'}));
           }).join('')}</ul>`
         : '';
       container.innerHTML=unlockedHtml+upcomingHtml;
+      container.querySelectorAll('[data-perk-info]').forEach(button=>button.addEventListener('click',()=>{
+        const panel=document.getElementById(button.dataset.perkInfo||'');
+        if(!panel)return;
+        const open=panel.hidden;
+        panel.hidden=!open;
+        button.setAttribute('aria-expanded',String(open));
+      }));
       container.hidden=false;
     };
 

@@ -27,12 +27,12 @@ const signupConfigJson=JSON.stringify({collectionPoints}).replace(/</g,'\\u003c'
         <label class="full">{c('signup.confirm_email_label','Confirm email address')}<input name="confirmEmail" type="email" autocomplete="email" required /></label>
         <label class="full"><span class="signup-label-line"><span>{c('signup.phone_label','Phone number')}</span><small class="signup-inline-help">{c('signup.phone_help',"We'll only need this if there's an issue with your membership or an order.")}</small></span><input name="phone" type="tel" autocomplete="tel" required /></label>
 
-        <div class="signup-section-heading full">
+        <div id="collection-details" class="signup-section-heading full">
           <h2>{c('signup.collection_details_heading','Collection details')}</h2>
           <p class="signup-inline-help">{c('signup.collection_point_help','This can be changed at checkout or from your membership dashboard.')}</p>
         </div>
 
-        <label class="full"><span class="signup-label-line"><span>{c('signup.collection_point_label','Collection point')} <a class="signup-map-link" href="/collection-points/?return=/signup/&select=1">({c('signup.collection_points_map_link','see our map')})</a></span><small class="signup-inline-help">{c('signup.collection_point_late_help','Only some locations support late collection.')}</small></span>
+        <label class="full"><span class="signup-label-line"><span>{c('signup.collection_point_label','Collection point')} <a class="signup-map-link" href="/collection-points/?return=%2Fsignup%2F%23collection-details&select=1">({c('signup.collection_points_map_link','see our map')})</a></span><small class="signup-inline-help">{c('signup.collection_point_late_help','Only some locations support late collection.')}</small></span>
           <select name="collectionPointId" id="signup-collection-point" required><option value="">Choose a collection point</option></select>
         </label>
 

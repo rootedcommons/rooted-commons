@@ -1065,7 +1065,9 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
   .campaign-section .campaign-inner{padding:1.35rem}
   .campaign-images{margin:1.8rem -.35rem 1.5rem}
   .campaign-image+.campaign-image{border-left:0}
-  .campaign-image figcaption span{display:none}
+  .campaign-image figcaption span{display:block}
+  .campaign-countdown-value{font-size:1.45rem}
+  .campaign-countdown-post{font-size:.9rem}
   .campaign-launch-panel{padding:1rem}
   .campaign-calendar-icon{width:3rem;height:3rem}
 }
@@ -1706,3 +1708,50 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
   .account-actions{gap:.75rem}
 }
 .site-footer.height-medium .footer-logo + .footer-tagline{margin-top:0}
+
+
+/* v2.9.97 — campaign mobile labels, dashboard perk explainers and closure refinements */
+.dashboard-reference-help,.dashboard-regular-reference-help{
+  padding-left:0!important;
+  text-align:right;
+  font-weight:700;
+}
+.dashboard-streak-count-label{
+  font-size:clamp(1.55rem,3.2vw,2.3rem);
+  line-height:1.05;
+  font-family:Georgia,serif;
+  font-weight:700;
+}
+.dashboard-perks ul{list-style:none;padding-left:0}
+.dashboard-perk-item{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:.35rem .8rem;
+  align-items:start;
+  padding:.45rem 0;
+  border-bottom:0;
+}
+.dashboard-perk-item+.dashboard-perk-item{border-top:1px solid color-mix(in srgb,var(--border) 70%,transparent)}
+.dashboard-perk-label-row{display:flex;align-items:center;gap:.38rem;min-width:0}
+.dashboard-perk-info-toggle{
+  display:inline-grid;
+  place-items:center;
+  width:1.15rem;
+  height:1.15rem;
+  flex:0 0 1.15rem;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:var(--primary);
+  font:inherit;
+  font-size:.9rem;
+  line-height:1;
+  cursor:pointer;
+}
+.dashboard-perk-info-toggle:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:999px}
+.dashboard-perk-countdown{white-space:nowrap;font-size:.9rem;color:var(--primary)}
+.dashboard-perk-explainer{grid-column:1/-1;margin:.05rem 0 .2rem;padding:.65rem .75rem;border-radius:.65rem;background:var(--highlight);font-size:.92rem;line-height:1.5}
+.dashboard-perk-explainer[hidden]{display:none!important}
+.account-close-panel-actions{display:flex;justify-content:space-between;gap:.75rem;align-items:center;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+.account-close-panel-actions .account-close-confirm-inline{margin-left:auto}
+@media(max-width:640px){.account-close-panel-actions{flex-wrap:wrap}.account-close-panel-actions .account-close-confirm-inline{margin-left:auto}}

@@ -86,7 +86,10 @@ function openProductDetail(product){
   const dialog=ensureDetailDialog();
   if(!detailContent)return;
   detailContent.innerHTML=productDetailHtml(product);
+  dialog.scrollTop=0;
+  detailContent.scrollTop=0;
   dialog.showModal();
+  requestAnimationFrame(()=>{dialog.scrollTop=0;detailContent.scrollTop=0;});
 }
 
 let priceDialog;

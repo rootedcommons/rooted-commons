@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.9.97 — 2026-08-20
+
+- Restored founder-campaign sublabels on mobile and reduced the mobile countdown text size.
+- Reset product-detail modal scroll position to the top on every open, and return signup map selections/back navigation to the Collection details section.
+- Removed the dashboard streak FAQ link while preserving its typography; added per-perk info controls driven by new Site Settings `Perk N explainer` fields; made payment-reference warnings bold, italic and right-aligned.
+- Simplified the zero-credit account-closure flow so the revealed panel is the confirmation step, with Cancel available at the bottom in every closure state. Confirm closure is only shown when Member Credit is resolved; server-side credit/order safeguards remain unchanged.
+- Removed Stock Movement `Active` from generated movement JSON and the Baserow import/spec. `Available stock` is specified as the sum of every linked Stock Movement `Quantity change` row.
+- Deliberately deferred the proposed Your involvement activity-ledger redesign to the next update, and left stale `docs/` material for v3 as agreed.
+
 ## 2.9.96 — 2026-08-20
 
 - Refined mobile CTA spacing so the body copy has equal visual breathing room between the heading and button, halved/equalised the medium footer-logo buffer, tightened/equalised FAQ answer padding, and moved **Close my account** onto the account form action row as a purple far-right action.

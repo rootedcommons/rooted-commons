@@ -1,10 +1,11 @@
 
   const closeToggle=document.querySelector('#account-close-toggle'), closePanel=document.querySelector('#account-close-panel');
-  closeToggle?.addEventListener('click',()=>{
-    const willOpen=closePanel?.hidden ?? false;
-    if (closePanel) closePanel.hidden=!willOpen;
-    closeToggle.setAttribute('aria-expanded',String(willOpen));
-  });
+  const setClosePanelOpen=(open)=>{
+    if(closePanel)closePanel.hidden=!open;
+    closeToggle?.setAttribute('aria-expanded',String(open));
+  };
+  closeToggle?.addEventListener('click',()=>setClosePanelOpen(closePanel?.hidden ?? false));
+  document.querySelector('#account-close-cancel')?.addEventListener('click',()=>setClosePanelOpen(false));
 (()=>{
   const config=JSON.parse(document.querySelector('#account-config')?.textContent||'{}');
   const copy=config.copy||{};
@@ -30,8 +31,8 @@
 
   const renderClosureState=()=>{
     const credit=Number(member?.credit)||0;
-    const positive=document.querySelector('#account-positive-credit'),negative=document.querySelector('#account-negative-credit'),zero=document.querySelector('#account-zero-credit');
-    positive.hidden=true;negative.hidden=true;zero.hidden=true;
+    const positive=document.querySelector('#account-positive-credit'),negative=document.querySelector('#account-negative-credit'),zero=document.querySelector('#account-zero-credit'),inlineConfirm=document.querySelector('#account-close-confirm-inline');
+    positive.hidden=true;negative.hidden=true;zero.hidden=true;inlineConfirm.hidden=true;
     if(credit>0.005){
       positive.hidden=false;
       document.querySelector('#account-credit-heading').textContent=interpolate(copy.creditHeading,{credit:money(credit)});
@@ -43,6 +44,7 @@
       negative.hidden=false;document.querySelector('#account-negative-credit-copy').textContent=interpolate(copy.negativeCredit,{credit:money(credit)});
     }else{
       zero.hidden=false;
+      inlineConfirm.hidden=false;
       const notes=[];
       if(member.currentOrder)notes.push(`You currently have order ${member.currentOrder.orderNumber||member.currentOrder.id} in progress. Closing your membership will not cancel that order.`);
       document.querySelector('#account-close-context').textContent=notes.join(' ');
@@ -103,7 +105,17 @@
     }
     dialog?.showModal();
   };
-  document.querySelector('#account-close-open')?.addEventListener('click',()=>openDialog('close'));
+  const closeAccountDirect=async()=>{
+    const confirm=document.querySelector('#account-close-confirm-inline'),status=document.querySelector('#account-resolution-message');
+    if(!confirm||confirm.hidden)return;
+    confirm.disabled=true;status.textContent='';
+    try{
+      const response=await fetch('/api/member',{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({action:'close-account',confirmClose:true})});
+      const payload=await response.json();if(!response.ok||!payload.ok)throw new Error(payload.message||'Your membership could not be closed.');
+      location.href='/?membership=closed';
+    }catch(error){status.textContent=error?.message||'Your membership could not be closed.';confirm.disabled=false;}
+  };
+  document.querySelector('#account-close-confirm-inline')?.addEventListener('click',closeAccountDirect);
   document.querySelector('#account-donate-open')?.addEventListener('click',()=>openDialog('donate'));
   document.querySelector('#account-close-keep')?.addEventListener('click',()=>dialog?.close());
   dialog?.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});

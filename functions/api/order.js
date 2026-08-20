@@ -191,8 +191,7 @@ export async function onRequestPost({ request, env }) {
       'Movement type': 'Order',
       Order: [orderNumber],
       Date: movementDate,
-      'Idempotency key': `order-${orderNumber}-product-${line.product_id}`,
-      Active: true
+      'Idempotency key': `order-${orderNumber}-product-${line.product_id}`
     }));
 
     await createRow(cfg, cfg.orders, {

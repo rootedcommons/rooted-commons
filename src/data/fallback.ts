@@ -20,9 +20,9 @@ export const fallbackSettings = {
   founder25Badge: '',
   founder50Badge: '',
   membershipPerks: [
-    { order: 1, unlockWeeks: 1, label: 'Priority access to limited seasonal produce' },
-    { order: 2, unlockWeeks: 12, label: 'Access to quarterly wholesale orders' },
-    { order: 3, unlockWeeks: 25, label: 'One free workshop' }
+    { order: 1, unlockWeeks: 1, label: 'Priority access to limited seasonal produce', explainer: '' },
+    { order: 2, unlockWeeks: 12, label: 'Access to quarterly wholesale orders', explainer: '' },
+    { order: 3, unlockWeeks: 25, label: 'One free workshop', explainer: '' }
   ],
   bankAccountName: 'Roots to Fruits CIC',
   bankSortCode: '',
