@@ -2,11 +2,14 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getSiteData } from '../lib/baserow';
 const data = await getSiteData();
+const wholesalePerk = (data.settings?.membershipPerks || []).find((item) => /wholesale/i.test(String(item.label || '')));
+const wholesaleUnlockWeeks = Math.max(0, Number(wholesalePerk?.unlockWeeks || 12));
 ---
 <BaseLayout settings={data.settings} pages={data.pages} title="Wholesale request" description="Request products through your Rooted Commons wholesale-order perk." noIndex={true}>
   <section class="section-shell wholesale-request-shell">
     <div class="section-heading"><p class="eyebrow">Member perk</p><h1>Request a wholesale order</h1><p>Tell us what you would like us to source. This is a request, not a confirmed order: we’ll check availability and price before anything is ordered.</p></div>
     <form class="wholesale-request-form card" data-wholesale-form>
+      <p class="wholesale-request-perk-state" data-wholesale-perk-state hidden></p>
       <div data-wholesale-lines></div>
       <template data-wholesale-line-template>
         <fieldset class="wholesale-request-line">
@@ -23,18 +26,57 @@ const data = await getSiteData();
       </template>
       <button class="button button-secondary" type="button" data-add-line>Add another item</button>
       <label class="wholesale-request-notes">Anything else? <span class="small-print">optional</span><textarea name="requestNotes" rows="4" maxlength="2000"></textarea></label>
-      <div class="form-actions"><a class="button button-secondary" href="/dashboard/">Cancel</a><button class="button" type="submit">Send request</button></div>
+      <div class="form-actions"><a class="button button-secondary" href="/dashboard/">Cancel</a><button class="button wholesale-request-submit" type="submit" data-wholesale-submit>Submit wholesale request</button></div>
       <p class="form-message" data-wholesale-message aria-live="polite"></p>
     </form>
   </section>
-  <script>
+  <script is:inline define:vars={{ wholesaleUnlockWeeks }}>
     const form=document.querySelector('[data-wholesale-form]');
     const lines=document.querySelector('[data-wholesale-lines]');
     const template=document.querySelector('[data-wholesale-line-template]');
     const message=document.querySelector('[data-wholesale-message]');
+    const submit=document.querySelector('[data-wholesale-submit]');
+    const perkState=document.querySelector('[data-wholesale-perk-state]');
+    let perkUnlocked=false;
+    let remainingWeeks=0;
+    let accessResolved=false;
+    const updateSubmitState=()=>{
+      if(!submit)return;
+      if(!accessResolved){
+        submit.disabled=true;
+        submit.textContent='Checking access…';
+        if(perkState)perkState.hidden=true;
+        return;
+      }
+      if(perkUnlocked){
+        submit.disabled=false;
+        submit.textContent='Submit wholesale request';
+        if(perkState)perkState.hidden=true;
+        return;
+      }
+      submit.disabled=true;
+      submit.textContent=`Available in ${remainingWeeks} week${remainingWeeks===1?'':'s'}`;
+      if(perkState){
+        perkState.hidden=false;
+        perkState.textContent=`You haven’t unlocked this perk yet. It becomes available after ${wholesaleUnlockWeeks} consecutive weeks of support.`;
+      }
+    };
     const renumber=()=>{[...lines.children].forEach((row,index)=>{row.querySelector('[data-line-number]').textContent=String(index+1);const remove=row.querySelector('[data-remove-line]');remove.hidden=lines.children.length===1;});};
     const addLine=()=>{const row=template.content.firstElementChild.cloneNode(true);row.querySelector('[data-remove-line]').addEventListener('click',()=>{row.remove();renumber();});lines.appendChild(row);renumber();};
     addLine(); document.querySelector('[data-add-line]').addEventListener('click',addLine);
-    form.addEventListener('submit',async(event)=>{event.preventDefault();message.textContent='Sending…';const submit=form.querySelector('button[type="submit"]');submit.disabled=true;const requestLines=[...lines.children].map(row=>({productName:row.querySelector('[name="productName"]').value,productCode:row.querySelector('[name="productCode"]').value,quantity:Number(row.querySelector('[name="quantity"]').value),supplier:row.querySelector('[name="supplier"]').value,notes:row.querySelector('[name="notes"]').value}));try{const response=await fetch('/api/wholesale-request',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({lines:requestLines,notes:form.elements.requestNotes.value})});const payload=await response.json();if(!response.ok||!payload.ok)throw new Error(payload.message||'Request failed.');form.reset();lines.replaceChildren();addLine();message.textContent=payload.message||'Your wholesale request has been sent.';}catch(error){message.textContent=error?.message||'We could not submit your request.';}finally{submit.disabled=false;}});
+    const initialiseAccess=async()=>{
+      try{
+        const response=await (window.RootedData?.member?.() || fetch('/api/member',{cache:'no-store'})).then(r=>typeof r.json==='function'?r.json():r);
+        const weeks=Math.max(0,Number(response?.member?.consecutiveWeeks||0));
+        remainingWeeks=Math.max(0,wholesaleUnlockWeeks-weeks);
+        perkUnlocked=remainingWeeks===0;
+      }catch(error){
+        console.error('Unable to resolve wholesale perk access',error);
+      }
+      accessResolved=true;
+      updateSubmitState();
+    };
+    initialiseAccess();
+    form.addEventListener('submit',async(event)=>{event.preventDefault();if(!perkUnlocked)return;message.textContent='Sending…';submit.disabled=true;const requestLines=[...lines.children].map(row=>({productName:row.querySelector('[name="productName"]').value,productCode:row.querySelector('[name="productCode"]').value,quantity:Number(row.querySelector('[name="quantity"]').value),supplier:row.querySelector('[name="supplier"]').value,notes:row.querySelector('[name="notes"]').value}));try{const response=await fetch('/api/wholesale-request',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({lines:requestLines,notes:form.elements.requestNotes.value})});const payload=await response.json();if(!response.ok||!payload.ok)throw new Error(payload.message||'Request failed.');form.reset();lines.replaceChildren();addLine();message.textContent=payload.message||'Your wholesale request has been sent.';}catch(error){message.textContent=error?.message||'We could not submit your request.';}finally{updateSubmitState();}});
   </script>
 </BaseLayout>

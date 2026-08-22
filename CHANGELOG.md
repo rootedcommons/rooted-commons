@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.9.102 — 2026-08-22
+
+- Tightened the dashboard perks UI: only one info explainer can be open at a time, upcoming-perk explainers now render on their own full-width row beneath the perk/countdown line, and row spacing is reduced to a single normal divider gap.
+- Refined the wholesale-request flow so authenticated members can always view the form. Submission remains server-side gated by the wholesale perk threshold; locked members now see a disabled button labelled **Available in X weeks** plus an inline notice, while unlocked members can submit normally.
+- Refined desktop Network Partner modals again: prevented grid row stretching with `align-content:start`, slightly widened the desktop dialog and rebalanced the columns for a more landscape-friendly image area, added the volunteer icon before **Volunteer**, removed the icon from collection-point **Directions**, and hide partner-level **Directions** when the partner has no Address. Mobile layout remains unchanged.
+- Improved map behaviour: focused collection-point popups auto-pan so the full popup card stays visible above the pin, and partner maps now show the full network of mappable partners while keeping the selected partner focused/open.
+
 ## 2.9.101 — 2026-08-22
 
 - Refined desktop Network Partner modals: fixed the modal/image column height, kept the right-hand content independently scrollable, removed excess rich-text spacing after **How we work together**, removed the deleted `Social Saturdays` field, added the directions icon to collection-point links, and suppresses the duplicate partner-level Directions action whenever linked Collection Points are shown. Mobile modal behaviour is unchanged.

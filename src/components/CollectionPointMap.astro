@@ -51,6 +51,20 @@ const mapPoints = points
         const map=L.map(mapEl,{scrollWheelZoom:false});
         const bounds=[];
         const markers=new Map();
+        const ensurePopupVisible=(popup)=>{
+          const popupEl=popup?.getElement?.();
+          const mapRect=mapEl.getBoundingClientRect();
+          const popupRect=popupEl?.getBoundingClientRect?.();
+          if(!popupRect)return;
+          let dx=0;
+          let dy=0;
+          const padding=16;
+          if(popupRect.left<mapRect.left+padding)dx=popupRect.left-(mapRect.left+padding);
+          else if(popupRect.right>mapRect.right-padding)dx=popupRect.right-(mapRect.right-padding);
+          if(popupRect.top<mapRect.top+padding)dy=popupRect.top-(mapRect.top+padding);
+          else if(popupRect.bottom>mapRect.bottom-padding)dy=popupRect.bottom-(mapRect.bottom-padding);
+          if(dx||dy)map.panBy([dx,dy],{animate:false});
+        };
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
           maxZoom:19,
           attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -65,11 +79,12 @@ const mapPoints = points
           const image=point.image?`<img class="map-popup-image" src="${escapeHtml(point.image)}" alt="" loading="lazy">`:'';
           const selectButton=canSelect?`<button class="map-select-button" type="button" data-map-select-point="${Number(point.id)}">Select collection point</button><p class="map-select-status" data-map-select-status="${Number(point.id)}" hidden></p>`:'';
           const popup=`<div class="map-popup">${image}<strong>${escapeHtml(point.name)}</strong>${point.address?`<p>${escapeHtml(point.address).replace(/\n/g,'<br>')}</p>`:''}${slots?`<ul>${slots}</ul>`:''}${selectButton}</div>`;
-          const marker=L.marker(coords).addTo(map).bindPopup(popup);
+          const marker=L.marker(coords).addTo(map).bindPopup(popup,{keepInView:true,autoPan:true,autoPanPadding:[18,18]});
           markers.set(Number(point.id),marker);
         });
 
         map.on('popupopen',event=>{
+          ensurePopupVisible(event.popup);
           const root=event.popup.getElement();
           const button=root?.querySelector('[data-map-select-point]');
           if(!button)return;

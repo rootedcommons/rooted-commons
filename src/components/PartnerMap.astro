@@ -35,7 +35,8 @@
       try{
         const response=await (window.RootedData?.publicNetwork?.() || fetch('/api/public-network',{headers:{accept:'application/json'}}));
         const data=typeof response?.json==='function' ? await response.json() : response;
-        const partner=(data?.partners||[]).find((item)=>Number(item.id)===partnerId);
+        const partners=(data?.partners||[]);
+        const partner=partners.find((item)=>Number(item.id)===partnerId);
         if(!partner){ if(status) status.innerHTML='<p>We couldn’t find that network partner.</p>'; return; }
         document.title=`${partner.name} location | ${document.title.split(' | ').slice(-1)[0]}`;
         const lat=Number(partner.latitude); const lng=Number(partner.longitude);
@@ -53,9 +54,21 @@
           maxZoom:19,
           attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
-        const image=partner.image?`<img class="map-popup-image" src="${escapeHtml(partner.image)}" alt="" loading="lazy">`:'';
-        const address=partner.address?`<p>${escapeHtml(partner.address).replace(/\n/g,'<br>')}</p>`:'';
-        window.L.marker(coords).addTo(map).bindPopup(`<div class="map-popup">${image}<strong>${escapeHtml(partner.name)}</strong>${address}</div>`).openPopup();
+        const markers=[];
+        partners.filter((item)=>Number.isFinite(Number(item.latitude))&&Number.isFinite(Number(item.longitude))).forEach((item)=>{
+          const itemCoords=[Number(item.latitude),Number(item.longitude)];
+          const image=item.image?`<img class="map-popup-image" src="${escapeHtml(item.image)}" alt="" loading="lazy">`:'';
+          const address=item.address?`<p>${escapeHtml(item.address).replace(/\n/g,'<br>')}</p>`:'';
+          const marker=window.L.marker(itemCoords).addTo(map).bindPopup(`<div class="map-popup">${image}<strong>${escapeHtml(item.name)}</strong>${address}</div>`,{keepInView:true,autoPan:true,autoPanPadding:[18,18]});
+          markers.push(marker);
+          if(Number(item.id)===partnerId) marker.openPopup();
+        });
+        if(markers.length>1){
+          const group=window.L.featureGroup(markers);
+          map.fitBounds(group.getBounds(),{padding:[28,28],maxZoom:15});
+          const selected=markers.find((marker)=>marker.isPopupOpen());
+          if(selected) selected.openPopup();
+        }
       }catch(error){
         console.error('Partner map failed',error);
         if(status) status.innerHTML='<p>We couldn’t load this partner’s location. Please try again.</p>';

@@ -172,7 +172,7 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
       const explainer=resolvePerkExplainer(item,unlocked).trimEnd();
       const info=explainer?`<button class="dashboard-perk-info-toggle" type="button" aria-label="More information about ${escapeHtml(item.label)}" aria-expanded="false" aria-controls="${id}" data-perk-info="${id}">ⓘ</button>`:'';
       const detail=explainer?`<div id="${id}" class="dashboard-perk-explainer" hidden>${richHtml(explainer)}</div>`:'';
-      return `<li class="dashboard-perk-item"><div class="dashboard-perk-label-row"><span>${escapeHtml(item.label)}</span>${info}</div>${countdown?`<strong class="dashboard-perk-countdown">${escapeHtml(countdown)}</strong>`:''}${detail}</li>`;
+      return `<li class="dashboard-perk-item"><div class="dashboard-perk-main"><div class="dashboard-perk-label-row"><span>${escapeHtml(item.label)}</span>${info}</div>${countdown?`<strong class="dashboard-perk-countdown">${escapeHtml(countdown)}</strong>`:''}</div>${detail}</li>`;
     };
     const renderPerks=(weeks,isNew)=>{
       const container=document.querySelector('#dashboard-perks');
@@ -197,9 +197,16 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
       container.querySelectorAll('[data-perk-info]').forEach(button=>button.addEventListener('click',()=>{
         const panel=document.getElementById(button.dataset.perkInfo||'');
         if(!panel)return;
-        const open=panel.hidden;
-        panel.hidden=!open;
-        button.setAttribute('aria-expanded',String(open));
+        const willOpen=panel.hidden;
+        container.querySelectorAll('[data-perk-info]').forEach(other=>{
+          const otherPanel=document.getElementById(other.dataset.perkInfo||'');
+          if(otherPanel)otherPanel.hidden=true;
+          other.setAttribute('aria-expanded','false');
+        });
+        if(willOpen){
+          panel.hidden=false;
+          button.setAttribute('aria-expanded','true');
+        }
       }));
       container.hidden=false;
     };

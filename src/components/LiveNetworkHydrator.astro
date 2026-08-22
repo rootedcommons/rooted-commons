@@ -199,7 +199,8 @@
 
     const returnPath = `/our-network/?partner=${partner.id}`;
     const hasPartnerLocation = Number.isFinite(Number(partner.latitude)) && Number.isFinite(Number(partner.longitude));
-    const directionsHref = hasPartnerLocation ? `/partner-map/?partner=${encodeURIComponent(partner.id)}&return=${encodeURIComponent(returnPath)}` : '';
+    const hasPartnerAddress = String(partner.address || '').trim().length > 0;
+    const directionsHref = hasPartnerLocation && hasPartnerAddress ? `/partner-map/?partner=${encodeURIComponent(partner.id)}&return=${encodeURIComponent(returnPath)}` : '';
     const links = dialog.querySelector('[data-live-links]');
     const volunteerHref = participationHref(partner.volunteerUrl);
     const websiteHref = String(partner.website || '').trim();
