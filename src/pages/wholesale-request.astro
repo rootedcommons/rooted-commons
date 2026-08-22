@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getSiteData } from '../lib/baserow';
+const data = await getSiteData();
+---
+<BaseLayout settings={data.settings} pages={data.pages} title="Wholesale request" description="Request products through your Rooted Commons wholesale-order perk." noIndex={true}>
+  <section class="section-shell wholesale-request-shell">
+    <div class="section-heading"><p class="eyebrow">Member perk</p><h1>Request a wholesale order</h1><p>Tell us what you would like us to source. This is a request, not a confirmed order: we’ll check availability and price before anything is ordered.</p></div>
+    <form class="wholesale-request-form card" data-wholesale-form>
+      <div data-wholesale-lines></div>
+      <template data-wholesale-line-template>
+        <fieldset class="wholesale-request-line">
+          <legend>Product <span data-line-number></span></legend>
+          <div class="wholesale-request-grid">
+            <label>Product name<input name="productName" type="text" maxlength="200" required /></label>
+            <label>Product code / SKU<input name="productCode" type="text" maxlength="120" /></label>
+            <label>Quantity<input name="quantity" type="number" min="1" step="1" required /></label>
+            <label>Supplier <span class="small-print">optional</span><input name="supplier" type="text" maxlength="200" /></label>
+          </div>
+          <label>Notes <span class="small-print">optional</span><input name="notes" type="text" maxlength="1000" /></label>
+          <button class="text-link" type="button" data-remove-line hidden>Remove product</button>
+        </fieldset>
+      </template>
+      <button class="button button-secondary" type="button" data-add-line>Add another item</button>
+      <label class="wholesale-request-notes">Anything else? <span class="small-print">optional</span><textarea name="requestNotes" rows="4" maxlength="2000"></textarea></label>
+      <div class="form-actions"><a class="button button-secondary" href="/dashboard/">Cancel</a><button class="button" type="submit">Send request</button></div>
+      <p class="form-message" data-wholesale-message aria-live="polite"></p>
+    </form>
+  </section>
+  <script>
+    const form=document.querySelector('[data-wholesale-form]');
+    const lines=document.querySelector('[data-wholesale-lines]');
+    const template=document.querySelector('[data-wholesale-line-template]');
+    const message=document.querySelector('[data-wholesale-message]');
+    const renumber=()=>{[...lines.children].forEach((row,index)=>{row.querySelector('[data-line-number]').textContent=String(index+1);const remove=row.querySelector('[data-remove-line]');remove.hidden=lines.children.length===1;});};
+    const addLine=()=>{const row=template.content.firstElementChild.cloneNode(true);row.querySelector('[data-remove-line]').addEventListener('click',()=>{row.remove();renumber();});lines.appendChild(row);renumber();};
+    addLine(); document.querySelector('[data-add-line]').addEventListener('click',addLine);
+    form.addEventListener('submit',async(event)=>{event.preventDefault();message.textContent='Sending…';const submit=form.querySelector('button[type="submit"]');submit.disabled=true;const requestLines=[...lines.children].map(row=>({productName:row.querySelector('[name="productName"]').value,productCode:row.querySelector('[name="productCode"]').value,quantity:Number(row.querySelector('[name="quantity"]').value),supplier:row.querySelector('[name="supplier"]').value,notes:row.querySelector('[name="notes"]').value}));try{const response=await fetch('/api/wholesale-request',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({lines:requestLines,notes:form.elements.requestNotes.value})});const payload=await response.json();if(!response.ok||!payload.ok)throw new Error(payload.message||'Request failed.');form.reset();lines.replaceChildren();addLine();message.textContent=payload.message||'Your wholesale request has been sent.';}catch(error){message.textContent=error?.message||'We could not submit your request.';}finally{submit.disabled=false;}});
+  </script>
+</BaseLayout>

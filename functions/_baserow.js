@@ -15,7 +15,9 @@ export function envConfig(env) {
     sections: env.BASEROW_SECTIONS_TABLE_ID,
     networkPartners: env.BASEROW_NETWORK_PARTNERS_TABLE_ID,
     metrics: env.BASEROW_METRICS_TABLE_ID || env.BASEROW_IMPACT_METRICS_TABLE_ID,
-    interfaceContent: env.BASEROW_INTERFACE_CONTENT_TABLE_ID
+    interfaceContent: env.BASEROW_INTERFACE_CONTENT_TABLE_ID,
+    wholesaleRequests: env.BASEROW_WHOLESALE_REQUESTS_TABLE_ID,
+    wholesaleRequestLines: env.BASEROW_WHOLESALE_REQUEST_LINES_TABLE_ID
   };
 }
 
@@ -230,6 +232,7 @@ export function publicMember(member, { collectionPoint = null, lastOrder = null,
     dataMinimisationDueAt: member['Data minimisation due at'] || '',
     volunteerDays: number(member['Volunteer days']),
     workshopsAttended: number(member['Workshops attended']),
+    lastFreeWorkshopClaimed: member['Last free workshop claimed'] || '',
     eventsAttended: number(member['Events attended']),
     account: account || { payments: [], averageWeeklySpend: 0, totalOrderSpend: 0, totalPaymentsReceived: 0 },
     lastOrder: orderSummary(lastOrder),

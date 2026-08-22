@@ -13,7 +13,8 @@ const noIndexPaths = new Set([
   '/privacy/',
   '/signin/',
   '/signup/',
-  '/terms-of-sale/'
+  '/terms-of-sale/',
+  '/wholesale-request/'
 ]);
 
 export default defineConfig({

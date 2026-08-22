@@ -204,12 +204,15 @@
     const volunteerHref = participationHref(partner.volunteerUrl);
     const websiteHref = String(partner.website || '').trim();
     const socialHref = String(partner.socialUrl || '').trim();
-    const hasLinks = volunteerHref || websiteHref || socialHref || directionsHref;
+    const partnerDirectionsHref = points.length ? '' : directionsHref;
+    const hasLinks = volunteerHref || websiteHref || socialHref || partnerDirectionsHref;
     if (links) links.hidden = !hasLinks;
     setLink(dialog, '[data-live-volunteer]', volunteerHref, 'Volunteer →');
     setLink(dialog, '[data-live-website]', websiteHref);
     setLink(dialog, '[data-live-social]', socialHref);
-    setLink(dialog, '[data-live-directions]', directionsHref);
+    setLink(dialog, '[data-live-directions]', partnerDirectionsHref);
+    const partnerDirections = dialog.querySelector('[data-live-directions]');
+    if (partnerDirections && partnerDirectionsHref) { partnerDirections.target = '_self'; partnerDirections.removeAttribute('rel'); }
   };
 
   const renderNetworkGrid = (grid, partners, metrics) => {

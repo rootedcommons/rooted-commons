@@ -149,9 +149,27 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
       }catch(error){pauseConfirmMessage.textContent=error?.message||copy.pauseFailed;pauseConfirmAction.disabled=false;pauseConfirmKeep.disabled=false;}
     });
 
-    const perkHtml=(item,countdown='')=>{
+
+    const addCalendarMonths=(value,months)=>{
+      const raw=String(value||'').slice(0,10); if(!raw)return null;
+      const parts=raw.split('-').map(Number); if(parts.length!==3||parts.some(n=>!Number.isFinite(n)))return null;
+      const [year,month,day]=parts; const targetMonth=month-1+months;
+      const targetYear=year+Math.floor(targetMonth/12); const normalizedMonth=((targetMonth%12)+12)%12;
+      const lastDay=new Date(Date.UTC(targetYear,normalizedMonth+1,0)).getUTCDate();
+      return new Date(Date.UTC(targetYear,normalizedMonth,Math.min(day,lastDay),12));
+    };
+    const freeWorkshopStatus=(unlocked)=>{
+      if(!unlocked)return '';
+      const next=addCalendarMonths(currentMember?.lastFreeWorkshopClaimed,6);
+      if(!next||next.getTime()<=Date.now())return '\n\n**Available now**';
+      const formatted=new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(next);
+      return `\n\n**Next available ${formatted}**`;
+    };
+    const resolvePerkExplainer=(item,unlocked)=>String(item.explainer||'').replace(/\{\{free_workshop_status\}\}/g,freeWorkshopStatus(unlocked));
+
+    const perkHtml=(item,countdown='',unlocked=false)=>{
       const id=`dashboard-perk-${Number(item.order)||0}-explainer`;
-      const explainer=String(item.explainer||'').trim();
+      const explainer=resolvePerkExplainer(item,unlocked).trimEnd();
       const info=explainer?`<button class="dashboard-perk-info-toggle" type="button" aria-label="More information about ${escapeHtml(item.label)}" aria-expanded="false" aria-controls="${id}" data-perk-info="${id}">ⓘ</button>`:'';
       const detail=explainer?`<div id="${id}" class="dashboard-perk-explainer" hidden>${richHtml(explainer)}</div>`:'';
       return `<li class="dashboard-perk-item"><div class="dashboard-perk-label-row"><span>${escapeHtml(item.label)}</span>${info}</div>${countdown?`<strong class="dashboard-perk-countdown">${escapeHtml(countdown)}</strong>`:''}${detail}</li>`;
@@ -167,12 +185,12 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
       const unlocked=perks.filter(item=>weeks>=item.unlockWeeks);
       const upcoming=perks.filter(item=>weeks<item.unlockWeeks);
       const unlockedHtml=unlocked.length
-        ? `<h3>${copy.perksUnlocked}</h3><ul>${unlocked.map(item=>perkHtml(item)).join('')}</ul>`
+        ? `<h3>${copy.perksUnlocked}</h3><ul>${unlocked.map(item=>perkHtml(item,'',true)).join('')}</ul>`
         : '';
       const upcomingHtml=upcoming.length
         ? `<h3 class="dashboard-upcoming-perks-heading">${copy.perksUpcoming}</h3><ul class="dashboard-upcoming-perks">${upcoming.map(item=>{
             const remaining=item.unlockWeeks-weeks;
-            return perkHtml(item,interpolate(copy.perkInWeeks,{weeks:remaining,plural:remaining===1?'':'s'}));
+            return perkHtml(item,interpolate(copy.perkInWeeks,{weeks:remaining,plural:remaining===1?'':'s'}),false);
           }).join('')}</ul>`
         : '';
       container.innerHTML=unlockedHtml+upcomingHtml;

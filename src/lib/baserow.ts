@@ -427,7 +427,6 @@ async function loadSiteData() {
       'Workshops': text(row, 'Workshops'),
       'Volunteering': text(row, 'Volunteering'),
       'Pick your Own': text(row, 'Pick your Own'),
-      'Social Saturdays': text(row, 'Social Saturdays'),
       "Kid's club": text(row, "Kid's club"),
       'Bees': text(row, 'Bees'),
       'Food bank': text(row, 'Food bank')

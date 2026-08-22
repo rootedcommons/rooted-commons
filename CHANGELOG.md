@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.9.101 — 2026-08-22
+
+- Refined desktop Network Partner modals: fixed the modal/image column height, kept the right-hand content independently scrollable, removed excess rich-text spacing after **How we work together**, removed the deleted `Social Saturdays` field, added the directions icon to collection-point links, and suppresses the duplicate partner-level Directions action whenever linked Collection Points are shown. Mobile modal behaviour is unchanged.
+- Added the private `/wholesale-request/` member-perk workflow. Access is enforced through authenticated member sessions and the configured wholesale unlock threshold; members can submit multiple product/SKU/quantity lines plus optional supplier/notes. Requests write to new Wholesale Requests / Wholesale Request Lines tables and do not debit Member Credit or create Web Orders.
+- Added Members → `Last free workshop claimed` and dashboard `{{free_workshop_status}}` explainer support. The token emits no gap while locked, **Available now** once unlocked/eligible, or a calculated **Next available D Month YYYY** until six calendar months after the last claim.
+
 ## 2.9.100 — 2026-08-22
 
 - Added a dedicated partner-location map at `/partner-map/`, using each Network Partner's `Latitude`, `Longitude` and public `Address`. The partner modal's **Directions** action now opens this internal map in the same tab, and the map's **Back** button returns to `/our-network/?partner=…` so the same partner modal reopens. Collection-point-specific Directions continue to use the collection-points map.

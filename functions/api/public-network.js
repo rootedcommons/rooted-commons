@@ -37,7 +37,6 @@ function publicPartner(row) {
       'Workshops': unwrap(row['Workshops']),
       'Volunteering': unwrap(row['Volunteering']),
       'Pick your Own': unwrap(row['Pick your Own']),
-      'Social Saturdays': unwrap(row['Social Saturdays']),
       "Kid's club": unwrap(row["Kid's club"]),
       'Bees': unwrap(row['Bees']),
       'Food bank': unwrap(row['Food bank'])
