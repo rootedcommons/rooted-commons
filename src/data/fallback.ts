@@ -19,6 +19,7 @@ export const fallbackSettings = {
   founder10Badge: '',
   founder25Badge: '',
   founder50Badge: '',
+  showInvolvementCard: false,
   membershipPerks: [
     { order: 1, unlockWeeks: 1, label: 'Priority access to limited seasonal produce', explainer: '' },
     { order: 2, unlockWeeks: 12, label: 'Access to quarterly wholesale orders', explainer: '' },

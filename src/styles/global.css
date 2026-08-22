@@ -1755,3 +1755,14 @@ h3.size-very-large{font-size:clamp(1.65rem,2.8vw,2.25rem)}
 .account-close-panel-actions{display:flex;justify-content:space-between;gap:.75rem;align-items:center;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
 .account-close-panel-actions .account-close-confirm-inline{margin-left:auto}
 @media(max-width:640px){.account-close-panel-actions{flex-wrap:wrap}.account-close-panel-actions .account-close-confirm-inline{margin-left:auto}}
+
+/* v2.9.99 partner product badges + multi-point partner collection links */
+.partner-product-badge{display:block;width:auto;height:28px;max-width:72px;object-fit:contain}
+[data-product-partner-badge-slot]:empty{display:none}
+.network-collection-point-list{display:grid;gap:.75rem}
+.network-collection-point-row{display:grid;grid-template-columns:2.6rem minmax(0,1fr) auto;gap:.8rem;align-items:center}
+.network-collection-point-copy{display:grid;gap:.15rem;min-width:0}
+.network-collection-point-copy>span{font-size:.92em;opacity:.82}
+@media (max-width:640px){.network-collection-point-row{grid-template-columns:2.6rem minmax(0,1fr)}.network-collection-point-row>a{grid-column:2}}
+.network-offering-row [data-live-offering-text] p{margin:0}
+.network-offering-row [data-live-offering-text] ul{margin:.25rem 0;padding-left:1.2rem}

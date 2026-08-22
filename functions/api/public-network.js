@@ -22,7 +22,6 @@ function publicPartner(row) {
     role: linkedValues(row['Network role'] || row.Role),
     summary: unwrap(row.Summary),
     longDescription: unwrap(row['Long description']),
-    whatTheyBring: unwrap(row['What they bring']),
     howWeWorkTogether: unwrap(row['How we work together']),
     priceExplanation: unwrap(row['Price explanation']),
     address: unwrap(row.Address),
@@ -37,7 +36,8 @@ function publicPartner(row) {
       'Evening drinks': unwrap(row['Evening drinks']),
       'Workshops': unwrap(row['Workshops']),
       'Volunteering': unwrap(row['Volunteering']),
-      'Fruit': unwrap(row['Fruit']),
+      'Pick your Own': unwrap(row['Pick your Own']),
+      'Social Saturdays': unwrap(row['Social Saturdays']),
       "Kid's club": unwrap(row["Kid's club"]),
       'Bees': unwrap(row['Bees']),
       'Food bank': unwrap(row['Food bank'])
@@ -48,6 +48,7 @@ function publicPartner(row) {
     imageAlt: unwrap(row['Image alt text']),
     image2Alt: unwrap(row['Image 2 alt text']),
     image3Alt: unwrap(row['Image 3 alt text']),
+    productBadge: originalFileUrl(row['Product badge']),
     order: Number(unwrap(row['Display order'] || row.Order) || 9999),
     acceptsMemberCreditDonations: truthy(row['Accepts Member Credit donations'], false)
   };
@@ -95,8 +96,8 @@ export async function onRequestGet(context) {
       .filter(row => truthy(row.Active, true) && unwrap(row.Name))
       .map(row => {
         const partner = publicPartner(row);
-        const match = publicPoints.find(item => item.partnerIds.includes(partner.id));
-        return { ...partner, collectionPoint: match?.point || null };
+        const matches = publicPoints.filter(item => item.partnerIds.includes(partner.id)).map(item => item.point);
+        return { ...partner, collectionPoints: matches, collectionPoint: matches[0] || null };
       })
       .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
 

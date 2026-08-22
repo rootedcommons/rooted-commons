@@ -37,7 +37,7 @@ const nutritionRowsFor = (product) => [
 const displayProducts = filtered.map((product) => {
   const categories = cleanValues(product.categories || [product.category]);
   const subcategories = cleanValues(product.subcategories || [product.subcategory]);
-  const countries = cleanValues(product.grownIn || []);
+  const countries = cleanValues(product.producedIn || []);
   const certifications = cleanValues(product.certifications || []);
   const availableStock = Math.max(0, Number(product.availableStock ?? 0));
   const lowStockThreshold = Math.max(0, Number(product.lowStockThreshold ?? 5));
@@ -47,7 +47,7 @@ const displayProducts = filtered.map((product) => {
   const sourceValue = Number(product.sourceValue || 0);
   const commonsBalance = Number(product.priceNumber || 0) - sourceValue;
   const hasPriceBreakdown = Boolean(product.sourceValueRecipientName && sourceValue > 0);
-  const hasDetails = Boolean(product.expandedDescription || product.description || product.ingredients || product.allergens || product.mayContain || product.storage || product.onceOpened || product.howToCook || product.packaging || product.disposal || product.fboImporter || product.origin || product.secondaryOrigin || nutritionRows.length);
+  const hasDetails = Boolean(product.expandedDescription || product.description || product.ingredients || product.allergens || product.mayContain || product.storage || product.onceOpened || product.howToCook || product.packaging || product.disposal || product.fboImporter || product.origin || nutritionRows.length);
   return { ...product, categories, subcategories, countries, certifications, availableStock, outOfStock, lowStock, nutritionRows, sourceValue, commonsBalance, hasPriceBreakdown, hasDetails };
 });
 
@@ -67,7 +67,6 @@ const interactionPayload = {
     size: product.size,
     image: product.image,
     origin: product.origin,
-    secondaryOrigin: product.secondaryOrigin,
     expandedDescription: product.expandedDescription,
     description: product.description,
     ingredients: product.ingredients,
@@ -104,7 +103,9 @@ const interactionJson = JSON.stringify(interactionPayload).replace(/</g, '\\u003
       data-search={[product.name, product.description, product.expandedDescription, ...product.categories, ...product.subcategories, ...product.countries].filter(Boolean).join(' ').toLowerCase()}
       data-id={product.id}
       data-price={product.priceNumber}
-      data-popularity={product.popularity ?? product.order ?? 9999}
+      data-units-sold={product.unitsSold ?? 0}
+      data-popularity={product.popularity ?? 9999}
+      data-source-partner-id={product.sourceValueRecipientId || ''}
       data-country={product.countries[0] || ''}
       data-stock={product.availableStock}
       data-out-of-stock={product.outOfStock ? 'true' : 'false'}
@@ -117,18 +118,20 @@ const interactionJson = JSON.stringify(interactionPayload).replace(/</g, '\\u003
           <h3>{product.hasDetails ? <button type="button" class="product-title-button" data-open-product>{product.name}</button> : product.name}</h3>
         </div>
         {product.size && <p class="product-size">{product.size}</p>}
-        {(product.origin || product.secondaryOrigin) && <p class="product-origin">{[product.origin, product.secondaryOrigin].filter(Boolean).join(', ')}.</p>}
+        {product.origin && <p class="product-origin">{product.origin}.</p>}
         <p class="stock-warning stock-warning-out" data-stock-out hidden={!product.outOfStock}>Out of stock</p>
         <p class="stock-warning" data-stock-low hidden={!product.lowStock}>Low stock — <span data-stock-count>{product.availableStock}</span> left</p>
 
-        {product.certifications.length > 0 && <div class="product-certifications" aria-label="Certifications">
+        {product.certifications.length > 0 && <div class="product-certifications" aria-label="Certifications and partner badges">
           {product.certifications.map((certification) => {
             const logo = certificationLogos[String(certification).toLowerCase()];
             return logo
               ? <img class="certification-logo" src={logo} alt={certification} title={certification} loading="lazy" />
               : <span class="certification-text" title={certification}>{certification}</span>;
           })}
+          {product.sourceValueRecipientId && <span data-product-partner-badge-slot data-partner-id={product.sourceValueRecipientId}></span>}
         </div>}
+        {product.certifications.length === 0 && product.sourceValueRecipientId && <span data-product-partner-badge-slot data-partner-id={product.sourceValueRecipientId} hidden></span>}
 
         <div class="product-transaction-row">
           <div class="product-price-with-info">
@@ -147,4 +150,4 @@ const interactionJson = JSON.stringify(interactionPayload).replace(/</g, '\\u003
 </div>
 {displayProducts.length === 0 && <p>No products currently match this section.</p>}
 <script type="application/json" data-product-grid-data set:html={interactionJson}></script>
-<script type="module" src="/scripts/product-interactions.js?v=2.9.97"></script>
+<script type="module" src="/scripts/product-interactions.js?v=2.9.99"></script>

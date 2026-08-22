@@ -4,8 +4,10 @@ import Footer from '../components/Footer.astro';
 import LiveNetworkHydrator from '../components/LiveNetworkHydrator.astro';
 import ClientData from '../components/ClientData.astro';
 import '../styles/global.css';
-const { settings, pages, title, description } = Astro.props;
+const { settings, pages, title, description, noIndex = false } = Astro.props;
 const pageTitle = title ? `${title} | ${settings.siteTitle}` : settings.siteTitle;
+const noIndexPaths = new Set(['/404/','/account/','/checkout/','/contact/','/dashboard/','/membership-terms/','/order/','/privacy/','/signin/','/signup/','/terms-of-sale/']);
+const shouldNoIndex = noIndex || noIndexPaths.has(Astro.url.pathname);
 ---
 <!doctype html>
 <html lang="en">
@@ -13,6 +15,7 @@ const pageTitle = title ? `${title} | ${settings.siteTitle}` : settings.siteTitl
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description || settings.tagline} />
+    {shouldNoIndex && <meta name="robots" content="noindex, follow" />}
     <title>{pageTitle}</title>
     <ClientData />
     <slot name="head" />

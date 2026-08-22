@@ -400,13 +400,17 @@ const {badgeLogos,memberBadge,membershipPerks,collectionPoints,bankAccountName,b
       const weeks=Number(member.consecutiveWeeks)||0;
       document.querySelector('#dashboard-member-weeks').textContent=String(weeks);
       const totalImpact=Number(member.account?.totalOrderSpend)||0;
-      document.querySelector('#dashboard-impact').textContent=money.format(totalImpact).replace('.00','');
+      const impactEl=document.querySelector('#dashboard-impact');
+      if(impactEl)impactEl.textContent=money.format(totalImpact).replace('.00','');
       const volunteerDays=Number(member.volunteerDays)||0;
-      document.querySelector('#dashboard-volunteer-days').textContent=`${volunteerDays} ${volunteerDays===1?copy.dayUnit:copy.daysUnit}`;
+      const volunteerDaysEl=document.querySelector('#dashboard-volunteer-days');
+      if(volunteerDaysEl)volunteerDaysEl.textContent=`${volunteerDays} ${volunteerDays===1?copy.dayUnit:copy.daysUnit}`;
       const workshops=Number(member.workshopsAttended)||0;
-      document.querySelector('#dashboard-workshops-attended').textContent=String(workshops);
+      const workshopsEl=document.querySelector('#dashboard-workshops-attended');
+      if(workshopsEl)workshopsEl.textContent=String(workshops);
       const events=Number(member.eventsAttended)||0;
-      document.querySelector('#dashboard-events-attended').textContent=String(events);
+      const eventsEl=document.querySelector('#dashboard-events-attended');
+      if(eventsEl)eventsEl.textContent=String(events);
       renderPerks(weeks,isNew);
       renderPauseState(member);
 

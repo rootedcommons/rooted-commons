@@ -321,7 +321,7 @@ const dashboardConfigJson = JSON.stringify({ badgeLogos, memberBadge, membership
           mapHref="/collection-points/?return=/dashboard/&select=1"
         />
 
-        <article class="dashboard-card dashboard-impact-card dashboard-involvement-card">
+        {s.showInvolvementCard && <article class="dashboard-card dashboard-impact-card dashboard-involvement-card">
           <p class="eyebrow">{copy.involvementEyebrow}</p>
           <div class="dashboard-participation-grid">
             <p class="dashboard-participation-stat">
@@ -345,7 +345,7 @@ const dashboardConfigJson = JSON.stringify({ badgeLogos, memberBadge, membership
             <strong>{copy.biggerHeading}</strong>
             <a class="text-link" href={copy.biggerUrl}>{copy.biggerLink}</a>
           </div>
-        </article>
+        </article>}
       </div>
     </section>
   </main>
@@ -353,5 +353,5 @@ const dashboardConfigJson = JSON.stringify({ badgeLogos, memberBadge, membership
   {blocks.map((block)=><SectionRenderer block={block} products={data.products} settings={s} />)}
 
   <script id="dashboard-config" type="application/json" set:html={dashboardConfigJson}></script>
-  <script type="module" src="/scripts/dashboard.js?v=2.9.97"></script>
+  <script type="module" src="/scripts/dashboard.js?v=2.9.99"></script>
 </BaseLayout>

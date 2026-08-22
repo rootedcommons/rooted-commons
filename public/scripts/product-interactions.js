@@ -67,7 +67,7 @@ function sentence(value=''){
   return text?`${text}.`:'';
 }
 function productDetailHtml(product){
-  const provenance=[product.origin,product.secondaryOrigin].filter(Boolean).map((value)=>`<p>${escapeHtml(value)}</p>`).join('');
+  const provenance=product.origin?`<p>${escapeHtml(product.origin)}</p>`:'';
   const description=product.expandedDescription||product.description||'';
   const ingredients=product.ingredients?`<section><h3>Ingredients</h3><p>${boldAllCaps(product.ingredients)}</p></section>`:'';
   const mayContain=product.mayContain?`<p class="product-detail-may-contain">${mayContainHtml(product.mayContain)}</p>`:'';
@@ -150,6 +150,44 @@ function openPriceBreakdown(product,toggle){
   toggle?.setAttribute('aria-expanded','true');
   dialog.showModal();
 }
+
+async function hydrateProductPartnerBadges(){
+  const slots=[...document.querySelectorAll('[data-product-partner-badge-slot][data-partner-id]')];
+  if(!slots.length)return;
+  try{
+    const response=await (window.RootedData?.publicNetwork?.()||fetch('/api/public-network',{headers:{accept:'application/json'}}));
+    if(!response.ok)return;
+    const payload=await response.json();
+    const partners=new Map((payload.partners||[]).map((partner)=>[String(partner.id),partner]));
+    slots.forEach((slot)=>{
+      const partner=partners.get(String(slot.dataset.partnerId||''));
+      if(!partner?.productBadge)return;
+      const img=document.createElement('img');
+      img.className='partner-product-badge';
+      img.src=partner.productBadge;
+      img.alt=partner.name?`${partner.name} badge`:'Partner badge';
+      img.title=partner.name||'';
+      img.loading='lazy';
+      const existingStrip=slot.closest('.product-certifications');
+      if(existingStrip){
+        slot.replaceWith(img);
+      }else{
+        const cardCopy=slot.closest('.product-copy');
+        const transactionRow=cardCopy?.querySelector('.product-transaction-row');
+        if(!cardCopy||!transactionRow)return;
+        const strip=document.createElement('div');
+        strip.className='product-certifications';
+        strip.setAttribute('aria-label','Partner badge');
+        strip.appendChild(img);
+        cardCopy.insertBefore(strip,transactionRow);
+        slot.remove();
+      }
+    });
+  }catch(error){console.warn('Unable to load product partner badges',error);}
+}
+
+hydrateProductPartnerBadges();
+document.addEventListener('astro:page-load',hydrateProductPartnerBadges);
 
 document.addEventListener('click',(event)=>{
   const productOpener=event.target.closest('[data-open-product]');

@@ -143,7 +143,7 @@ const {basketEmptyText='',basketNotice='',broadCategories=[],collectionPointsFor
       if(state.sort==='price-desc') return Number(b.dataset.price)-Number(a.dataset.price);
       if(state.sort==='name') return String(a.dataset.name).localeCompare(String(b.dataset.name));
       if(state.sort==='country') return String(a.dataset.country||'').localeCompare(String(b.dataset.country||'')) || String(a.dataset.name).localeCompare(String(b.dataset.name));
-      return Number(a.dataset.popularity||9999)-Number(b.dataset.popularity||9999) || String(a.dataset.name).localeCompare(String(b.dataset.name));
+      return Number(b.dataset.unitsSold||0)-Number(a.dataset.unitsSold||0) || Number(a.dataset.popularity||9999)-Number(b.dataset.popularity||9999) || String(a.dataset.name).localeCompare(String(b.dataset.name));
     }
 
     function renderCatalogue({ updateUrl = false, rebuildTabs = false } = {}){

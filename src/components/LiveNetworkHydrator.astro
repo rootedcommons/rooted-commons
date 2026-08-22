@@ -3,9 +3,36 @@
     '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
   }[char]));
 
+  const safeHref = (href = '') => {
+    const value = String(href || '').trim();
+    return /^(?:\/|#|https?:\/\/|mailto:|tel:)/i.test(value) ? value : '#';
+  };
+  const inlineMarkup = (value = '') => {
+    const source = String(value || '');
+    const pattern = /\[([^\]]+)\]\(([^)]+)\)|\*\*([^*]+)\*\*|(?<!\*)\*([^*\n]+)\*(?!\*)/g;
+    let output = '';
+    let cursor = 0;
+    let match;
+    while ((match = pattern.exec(source)) !== null) {
+      output += escapeHtml(source.slice(cursor, match.index));
+      if (match[1] !== undefined) {
+        const href = safeHref(match[2]);
+        output += `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(match[1])}</a>`;
+      } else if (match[3] !== undefined) output += `<strong>${escapeHtml(match[3])}</strong>`;
+      else output += `<em>${escapeHtml(match[4])}</em>`;
+      cursor = pattern.lastIndex;
+    }
+    return output + escapeHtml(source.slice(cursor));
+  };
   const richText = (value = '') => {
-    const safe = escapeHtml(value).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/\*([^*]+)\*/g, '<em>$1</em>');
-    return safe.split(/\n\s*\n/).filter(Boolean).map((paragraph) => `<p>${paragraph.replace(/\n/g, '<br>')}</p>`).join('');
+    const source = String(value || '').replace(/\r\n?/g, '\n').trim();
+    if (!source) return '';
+    return source.split(/\n\s*\n+/).filter(Boolean).map((block) => {
+      const lines = block.split('\n').filter((line) => line.trim());
+      const isList = lines.length && lines.every((line) => /^\s*(?:[-*•])\s+/.test(line));
+      if (isList) return `<ul>${lines.map((line) => `<li>${inlineMarkup(line.replace(/^\s*(?:[-*•])\s+/, ''))}</li>`).join('')}</ul>`;
+      return `<p>${block.split('\n').map(inlineMarkup).join('<br>')}</p>`;
+    }).join('');
   };
 
   const safeId = (value) => String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -20,7 +47,11 @@
     if (!el) return;
     const target = String(href || '').trim();
     el.hidden = !target;
-    if (target) el.href = target;
+    if (target) {
+      el.href = target;
+      el.target = '_blank';
+      el.rel = 'noopener noreferrer';
+    }
     if (label) el.textContent = label;
   };
   const participationHref = (value = '') => {
@@ -103,7 +134,7 @@
       const value = String(partner.offeringText?.[key] || '').trim();
       row.hidden = !value;
       const text = row.querySelector('[data-live-offering-text]');
-      if (text) text.textContent = value;
+      if (text) text.innerHTML = value ? richText(value) : '';
       if (value) visible += 1;
     });
     if (section) section.hidden = visible === 0;
@@ -135,23 +166,39 @@
       intro.innerHTML = description ? `<div class="rich-body network-partner-intro">${richText(description)}</div>` : '';
     }
 
+    const relationshipSection = dialog.querySelector('[data-live-how-we-work-together]');
+    const relationshipText = dialog.querySelector('[data-live-how-we-work-together-text]');
+    const relationship = String(partner.howWeWorkTogether || '').trim();
+    if (relationshipSection) relationshipSection.hidden = !relationship;
+    if (relationshipText) relationshipText.innerHTML = relationship ? richText(relationship) : '';
+
     populateMetrics(dialog, partner, metrics);
     populateOfferings(dialog, partner);
 
-    const point = partner.collectionPoint || null;
+    const points = Array.isArray(partner.collectionPoints) ? partner.collectionPoints : (partner.collectionPoint ? [partner.collectionPoint] : []);
     const collection = dialog.querySelector('[data-live-collection]');
-    if (collection) {
-      collection.hidden = !point;
-      if (point) {
-        const time = collection.querySelector('[data-live-collection-time]');
-        const items = collection.querySelector('[data-live-collection-items]');
+    const collectionList = dialog.querySelector('[data-live-collection-points]');
+    const collectionTemplate = dialog.querySelector('[data-network-collection-point-template]');
+    if (collection) collection.hidden = points.length === 0;
+    if (collectionList) {
+      collectionList.replaceChildren();
+      if (collectionTemplate) points.forEach((point) => {
+        const node = collectionTemplate.content.firstElementChild?.cloneNode(true);
+        if (!node) return;
+        const name = node.querySelector('[data-live-collection-point-name]');
+        const time = node.querySelector('[data-live-collection-point-time]');
+        const directions = node.querySelector('[data-live-collection-point-directions]');
+        const returnPath = `/our-network/?partner=${partner.id}`;
+        const href = `/collection-points/?focus=${encodeURIComponent(point.id)}&return=${encodeURIComponent(returnPath)}`;
+        if (name) name.textContent = point.name || 'Collection point';
         if (time) time.textContent = (point.collectionSlots || []).map((slot) => `${slot.day} · ${slot.time}`).join('  ·  ') || point.collectionTime || '';
-        if (items) items.textContent = (point.availableCategories || []).length ? point.availableCategories.join(', ') : 'Rooted Commons orders';
-      }
+        if (directions) directions.href = href;
+        collectionList.appendChild(node);
+      });
     }
 
     const returnPath = `/our-network/?partner=${partner.id}`;
-    const directionsHref = point ? `/collection-points/?focus=${encodeURIComponent(point.id)}&return=${encodeURIComponent(returnPath)}` : '';
+    const directionsHref = points.length === 1 ? `/collection-points/?focus=${encodeURIComponent(points[0].id)}&return=${encodeURIComponent(returnPath)}` : '';
     const links = dialog.querySelector('[data-live-links]');
     const volunteerHref = participationHref(partner.volunteerUrl);
     const websiteHref = String(partner.website || '').trim();

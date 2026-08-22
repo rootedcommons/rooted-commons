@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.9.99 — 2026-08-22
+
+- Added Site Settings → `Show involvement card`; when false the entire dashboard involvement card is omitted, allowing launch without involvement metrics/moments until the feature is ready.
+- Reworked default catalogue ranking to **Units sold DESC → Popularity ASC → Product name ASC**. Products now use the `Units sold` rollup from Stock Movement order movements, while `Popularity` remains the persistent manual fallback; obsolete Products `Display order`, `Order` and `Secondary origin` references were removed, and `Grown in` is renamed `Produced in` as optional search metadata.
+- Refined Network Partner modals: removed `What they bring`, added conditional `How we work together` after the long description, enabled safe markup in long descriptions/activity fields, added `Social Saturdays`, renamed `Fruit` to `Pick your Own` with a new apple icon, supported multiple linked Collection Points, and made modal action/markup links open in a new tab with `noopener noreferrer`.
+- Added Network Partners → `Product badge`; linked source-partner badges hydrate beside certification logos on product cards and display at approximately 28px high.
+- Added an explicit search-indexing policy: utility/legal/auth/account-flow pages emit `noindex, follow` and are excluded from the generated sitemap, while genuine public discovery pages remain indexable.
+- Documented the Cloudflare HSTS configuration and migration constraint: six-month max-age, no subdomain inclusion/preload, No-Sniff enabled; HSTS requires continued HTTPS but does not lock the site to Cloudflare.
+
 ## 2.9.98 — 2026-08-20
 
 - New memberships no longer receive a `Regular payment expected at` date at signup. The first qualifying regular payment now establishes the weekly/monthly expectation; lifecycle processing also clears legacy pre-payment expectations for members who have not yet made a qualifying regular payment. Editing a commitment before the first qualifying payment likewise leaves the expectation blank.

@@ -57,6 +57,11 @@ const { columns = 2 } = Astro.props;
             <div data-live-modal-intro hidden></div>
           </header>
 
+          <section data-live-how-we-work-together hidden>
+            <h3>How we work together</h3>
+            <div class="rich-body" data-live-how-we-work-together-text></div>
+          </section>
+
           <section data-live-partner-metrics hidden>
             <h3>Our work together</h3>
             <div class="network-partner-stats" data-live-partner-metrics-list></div>
@@ -68,37 +73,41 @@ const { columns = 2 } = Astro.props;
           <section class="network-offerings" data-live-offerings hidden>
             <h3>What you can do here</h3>
             <div class="network-offering-list" data-live-offerings-list>
-              <div class="network-offering-row" data-live-offering-row="Refills" hidden><span class="network-icon-badge"><Icon name="refill" /></span><span data-live-offering-text></span></div>
-              <div class="network-offering-row" data-live-offering-row="Coffee" hidden><span class="network-icon-badge"><Icon name="cafe" /></span><span data-live-offering-text></span></div>
-              <div class="network-offering-row" data-live-offering-row="Evening drinks" hidden><span class="network-icon-badge"><Icon name="bar" /></span><span data-live-offering-text></span></div>
-              <div class="network-offering-row" data-live-offering-row="Workshops" hidden><span class="network-icon-badge"><Icon name="volunteering" /></span><span data-live-offering-text></span></div>
-              <div class="network-offering-row" data-live-offering-row="Volunteering" hidden><span class="network-icon-badge"><Icon name="volunteering" /></span><span data-live-offering-text></span></div>
-              <div class="network-offering-row" data-live-offering-row="Fruit" hidden><span class="network-icon-badge"><Icon name="grower" /></span><span data-live-offering-text></span></div>
-              <div class="network-offering-row" data-live-offering-row="Kid's club" hidden><span class="network-icon-badge"><Icon name="volunteering" /></span><span data-live-offering-text></span></div>
-              <div class="network-offering-row" data-live-offering-row="Bees" hidden><span class="network-icon-badge"><Icon name="bee" /></span><span data-live-offering-text></span></div>
-              <div class="network-offering-row" data-live-offering-row="Food bank" hidden><span class="network-icon-badge"><Icon name="collection-point" /></span><span data-live-offering-text></span></div>
+              <div class="network-offering-row" data-live-offering-row="Refills" hidden><span class="network-icon-badge"><Icon name="refill" /></span><div data-live-offering-text></div></div>
+              <div class="network-offering-row" data-live-offering-row="Coffee" hidden><span class="network-icon-badge"><Icon name="cafe" /></span><div data-live-offering-text></div></div>
+              <div class="network-offering-row" data-live-offering-row="Evening drinks" hidden><span class="network-icon-badge"><Icon name="bar" /></span><div data-live-offering-text></div></div>
+              <div class="network-offering-row" data-live-offering-row="Workshops" hidden><span class="network-icon-badge"><Icon name="volunteering" /></span><div data-live-offering-text></div></div>
+              <div class="network-offering-row" data-live-offering-row="Volunteering" hidden><span class="network-icon-badge"><Icon name="volunteering" /></span><div data-live-offering-text></div></div>
+              <div class="network-offering-row" data-live-offering-row="Pick your Own" hidden><span class="network-icon-badge"><Icon name="apple" /></span><div data-live-offering-text></div></div>
+              <div class="network-offering-row" data-live-offering-row="Social Saturdays" hidden><span class="network-icon-badge"><Icon name="volunteering" /></span><div data-live-offering-text></div></div>
+              <div class="network-offering-row" data-live-offering-row="Kid's club" hidden><span class="network-icon-badge"><Icon name="volunteering" /></span><div data-live-offering-text></div></div>
+              <div class="network-offering-row" data-live-offering-row="Bees" hidden><span class="network-icon-badge"><Icon name="bee" /></span><div data-live-offering-text></div></div>
+              <div class="network-offering-row" data-live-offering-row="Food bank" hidden><span class="network-icon-badge"><Icon name="collection-point" /></span><div data-live-offering-text></div></div>
             </div>
           </section>
 
           <section class="network-collection-details" data-live-collection hidden>
-            <h3>Collection details</h3>
-            <div class="network-detail-row">
-              <span class="network-detail-icon"><Icon name="calendar" /></span>
-              <span data-live-collection-time></span>
-            </div>
-            <div class="network-detail-row">
-              <span class="network-detail-icon"><Icon name="collection-point" /></span>
-              <span data-live-collection-items></span>
-            </div>
+            <h3>Collect from this partner</h3>
+            <div class="network-collection-point-list" data-live-collection-points></div>
+            <template data-network-collection-point-template>
+              <div class="network-collection-point-row">
+                <span class="network-detail-icon"><Icon name="collection-point" /></span>
+                <div class="network-collection-point-copy">
+                  <strong data-live-collection-point-name></strong>
+                  <span data-live-collection-point-time></span>
+                </div>
+                <a class="text-link" data-live-collection-point-directions target="_blank" rel="noopener noreferrer">Directions →</a>
+              </div>
+            </template>
           </section>
 
           <section class="network-links" data-live-links hidden>
             <h3>Get involved</h3>
             <div>
-              <a class="text-link" data-live-volunteer href="#" hidden>Volunteer →</a>
-              <a class="text-link network-icon-link" data-live-website href="#" hidden><Icon name="website" /> <span>Website →</span></a>
-              <a class="text-link network-icon-link" data-live-social href="#" hidden><Icon name="instagram" /> <span>Follow →</span></a>
-              <a class="text-link network-icon-link" data-live-directions href="#" hidden><Icon name="directions" /> <span>Directions →</span></a>
+              <a class="text-link" data-live-volunteer href="#" target="_blank" rel="noopener noreferrer" hidden>Volunteer →</a>
+              <a class="text-link network-icon-link" data-live-website href="#" target="_blank" rel="noopener noreferrer" hidden><Icon name="website" /> <span>Website →</span></a>
+              <a class="text-link network-icon-link" data-live-social href="#" target="_blank" rel="noopener noreferrer" hidden><Icon name="instagram" /> <span>Follow →</span></a>
+              <a class="text-link network-icon-link" data-live-directions href="#" target="_blank" rel="noopener noreferrer" hidden><Icon name="directions" /> <span>Directions →</span></a>
             </div>
           </section>
         </div>

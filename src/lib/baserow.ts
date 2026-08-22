@@ -201,6 +201,7 @@ async function loadSiteData() {
     wildfarmedLogo: fileUrl(validSettingsRow, 'Wildfarmed logo'),
     glutenFreeLogo: fileUrl(validSettingsRow, 'Gluten Free logo'),
     organicFoodFederationLogo: fileUrl(validSettingsRow, 'Organic Food Federation logo'),
+    showInvolvementCard: boolean(validSettingsRow, 'Show involvement card', false),
     founder10Badge: fileUrl(validSettingsRow, 'Founder 10 badge'),
     founder25Badge: fileUrl(validSettingsRow, 'Founder 25 badge'),
     founder50Badge: fileUrl(validSettingsRow, 'Founder 50 badge'),
@@ -340,7 +341,6 @@ async function loadSiteData() {
     description: text(row, 'Description'),
     expandedDescription: text(row, 'Expanded description'),
     origin: text(row, 'Origin'),
-    secondaryOrigin: text(row, 'Secondary origin'),
     cropInfo: text(row, 'Crop info'),
     packagingAndDisposal: text(row, 'Packaging and disposal'),
     nutritionBasis: text(row, 'Nutrition basis', 'Per 100 g'),
@@ -368,8 +368,8 @@ async function loadSiteData() {
     image: fileLargeUrl(row, 'Image', '/images/placeholder.svg'),
     cardImage: fileCardUrl(row, 'Image', '/images/placeholder.svg'),
     link: text(row, 'Product Link', text(row, 'Link')),
-    popularity: numeric(row, 'Popularity', numeric(row, 'Display order', numeric(row, 'Order', 9999))),
-    order: numeric(row, 'Popularity', numeric(row, 'Display order', numeric(row, 'Order', 9999))),
+    unitsSold: numeric(row, 'Units sold', 0),
+    popularity: numeric(row, 'Popularity', 9999),
     available: boolean(row, 'Available', true),
     availableStock: numeric(row, 'Available stock', 0),
     lowStockThreshold: numeric(row, 'Low stock threshold', 5),
@@ -377,12 +377,12 @@ async function loadSiteData() {
     category: linkedValues(raw(row, 'Category'))[0] || 'Other',
     subcategories: linkedValues(raw(row, 'Subcategory')).length ? linkedValues(raw(row, 'Subcategory')) : ['Other'],
     subcategory: linkedValues(raw(row, 'Subcategory'))[0] || 'Other',
-    grownIn: linkedValues(raw(row, 'Grown in')),
+    producedIn: linkedValues(raw(row, 'Produced in')),
     certifications: linkedValues(raw(row, 'Certification')),
     collectionPointIds: linkedIds(raw(row, 'Available collection points')),
     collectionPointNames: linkedValues(raw(row, 'Available collection points')),
     lateCollection: normalized(choice(row, 'Late collection'), 'thursday-only')
-  })).filter((product: any) => product.name && product.available).sort((a: any, b: any) => a.order - b.order || a.name.localeCompare(b.name));
+  })).filter((product: any) => product.name && product.available).sort((a: any, b: any) => b.unitsSold - a.unitsSold || a.popularity - b.popularity || a.name.localeCompare(b.name));
 
   const sourceCollections = collectionRows?.length ? collectionRows : fallbackCollectionPoints;
   const collectionPoints = sourceCollections.map((row: any) => ({
@@ -412,7 +412,6 @@ async function loadSiteData() {
     role: linkedValues(raw(row, 'Network role')).length ? linkedValues(raw(row, 'Network role')) : linkedValues(raw(row, 'Role')),
     summary: text(row, 'Summary'),
     longDescription: text(row, 'Long description'),
-    whatTheyBring: text(row, 'What they bring'),
     howWeWorkTogether: text(row, 'How we work together'),
     priceExplanation: text(row, 'Price explanation'),
     address: text(row, 'Address'),
@@ -427,7 +426,8 @@ async function loadSiteData() {
       'Evening drinks': text(row, 'Evening drinks'),
       'Workshops': text(row, 'Workshops'),
       'Volunteering': text(row, 'Volunteering'),
-      'Fruit': text(row, 'Fruit'),
+      'Pick your Own': text(row, 'Pick your Own'),
+      'Social Saturdays': text(row, 'Social Saturdays'),
       "Kid's club": text(row, "Kid's club"),
       'Bees': text(row, 'Bees'),
       'Food bank': text(row, 'Food bank')
@@ -438,6 +438,7 @@ async function loadSiteData() {
     imageAlt: text(row, 'Image alt text'),
     image2Alt: text(row, 'Image 2 alt text'),
     image3Alt: text(row, 'Image 3 alt text'),
+    productBadge: originalFileUrl(row, 'Product badge'),
     order: numeric(row, 'Display order', numeric(row, 'Order', 9999)),
     active: boolean(row, 'Active', true)
   })).filter((partner: any) => partner.name && partner.active).sort((a: any, b: any) => a.order - b.order || a.name.localeCompare(b.name));
