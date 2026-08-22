@@ -1,0 +1,66 @@
+<section class="collection-map-section partner-map-section" aria-label="Partner location map">
+  <button id="partner-map-back" class="button collection-map-back" type="button">← Back</button>
+  <div id="partner-map-status" class="collection-map-empty"><p>Loading partner location…</p></div>
+  <div id="partner-location-map" class="collection-point-map" role="region" aria-label="Partner location map" hidden></div>
+</section>
+
+<script>
+  (()=>{
+    const params=new URLSearchParams(window.location.search);
+    const partnerId=Number(params.get('partner')||'');
+    const defaultReturn=Number.isFinite(partnerId) && partnerId > 0 ? `/our-network/?partner=${encodeURIComponent(partnerId)}` : '/our-network/';
+    const returnPath=params.get('return')||defaultReturn;
+    const backButton=document.getElementById('partner-map-back');
+    const status=document.getElementById('partner-map-status');
+    const mapEl=document.getElementById('partner-location-map');
+    backButton?.addEventListener('click',()=>{ window.location.href=returnPath; });
+
+    const escapeHtml=(value)=>String(value||'').replace(/[&<>'"]/g,(char)=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+    const loadLeaflet=()=>new Promise((resolve,reject)=>{
+      if(window.L){resolve(window.L);return;}
+      const existing=document.querySelector('script[data-partner-map-leaflet]');
+      if(existing){existing.addEventListener('load',()=>resolve(window.L),{once:true});existing.addEventListener('error',reject,{once:true});return;}
+      const script=document.createElement('script');
+      script.dataset.partnerMapLeaflet='true';
+      script.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      script.integrity='sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';
+      script.crossOrigin='';
+      script.onload=()=>resolve(window.L);
+      script.onerror=reject;
+      document.head.appendChild(script);
+    });
+
+    const initialise=async()=>{
+      if(!partnerId){ if(status) status.innerHTML='<p>We couldn’t find that network partner.</p>'; return; }
+      try{
+        const response=await (window.RootedData?.publicNetwork?.() || fetch('/api/public-network',{headers:{accept:'application/json'}}));
+        const data=typeof response?.json==='function' ? await response.json() : response;
+        const partner=(data?.partners||[]).find((item)=>Number(item.id)===partnerId);
+        if(!partner){ if(status) status.innerHTML='<p>We couldn’t find that network partner.</p>'; return; }
+        document.title=`${partner.name} location | ${document.title.split(' | ').slice(-1)[0]}`;
+        const lat=Number(partner.latitude); const lng=Number(partner.longitude);
+        if(!Number.isFinite(lat)||!Number.isFinite(lng)){
+          if(status) status.innerHTML=`<p>This partner's map location is not available yet.</p>${partner.address?`<p>${escapeHtml(partner.address).replace(/\n/g,'<br>')}</p>`:''}`;
+          return;
+        }
+        await loadLeaflet();
+        if(!window.L||!mapEl)return;
+        if(status) status.hidden=true;
+        mapEl.hidden=false;
+        const coords=[lat,lng];
+        const map=window.L.map(mapEl,{scrollWheelZoom:false}).setView(coords,15);
+        window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+          maxZoom:19,
+          attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        const image=partner.image?`<img class="map-popup-image" src="${escapeHtml(partner.image)}" alt="" loading="lazy">`:'';
+        const address=partner.address?`<p>${escapeHtml(partner.address).replace(/\n/g,'<br>')}</p>`:'';
+        window.L.marker(coords).addTo(map).bindPopup(`<div class="map-popup">${image}<strong>${escapeHtml(partner.name)}</strong>${address}</div>`).openPopup();
+      }catch(error){
+        console.error('Partner map failed',error);
+        if(status) status.innerHTML='<p>We couldn’t load this partner’s location. Please try again.</p>';
+      }
+    };
+    initialise();
+  })();
+</script>

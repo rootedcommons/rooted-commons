@@ -6,7 +6,7 @@ import ClientData from '../components/ClientData.astro';
 import '../styles/global.css';
 const { settings, pages, title, description, noIndex = false } = Astro.props;
 const pageTitle = title ? `${title} | ${settings.siteTitle}` : settings.siteTitle;
-const noIndexPaths = new Set(['/404/','/account/','/checkout/','/contact/','/dashboard/','/membership-terms/','/order/','/privacy/','/signin/','/signup/','/terms-of-sale/']);
+const noIndexPaths = new Set(['/404/','/account/','/checkout/','/contact/','/dashboard/','/membership-terms/','/order/','/partner-map/','/privacy/','/signin/','/signup/','/terms-of-sale/']);
 const shouldNoIndex = noIndex || noIndexPaths.has(Astro.url.pathname);
 ---
 <!doctype html>

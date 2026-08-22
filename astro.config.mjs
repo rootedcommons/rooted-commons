@@ -9,6 +9,7 @@ const noIndexPaths = new Set([
   '/dashboard/',
   '/membership-terms/',
   '/order/',
+  '/partner-map/',
   '/privacy/',
   '/signin/',
   '/signup/',

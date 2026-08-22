@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PartnerMap from '../components/PartnerMap.astro';
+import { getSiteData } from '../lib/baserow';
+
+const data = await getSiteData();
+---
+<BaseLayout settings={data.settings} pages={data.pages} title="Partner location" description="Map location for a Rooted Commons network partner." noIndex={true}>
+  <Fragment slot="head"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" /></Fragment>
+  <PartnerMap />
+</BaseLayout>

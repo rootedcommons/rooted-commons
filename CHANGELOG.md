@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.9.100 — 2026-08-22
+
+- Added a dedicated partner-location map at `/partner-map/`, using each Network Partner's `Latitude`, `Longitude` and public `Address`. The partner modal's **Directions** action now opens this internal map in the same tab, and the map's **Back** button returns to `/our-network/?partner=…` so the same partner modal reopens. Collection-point-specific Directions continue to use the collection-points map.
+
 ## 2.9.99 — 2026-08-22
 
 - Added Site Settings → `Show involvement card`; when false the entire dashboard involvement card is omitted, allowing launch without involvement metrics/moments until the feature is ready.

@@ -198,7 +198,8 @@
     }
 
     const returnPath = `/our-network/?partner=${partner.id}`;
-    const directionsHref = points.length === 1 ? `/collection-points/?focus=${encodeURIComponent(points[0].id)}&return=${encodeURIComponent(returnPath)}` : '';
+    const hasPartnerLocation = Number.isFinite(Number(partner.latitude)) && Number.isFinite(Number(partner.longitude));
+    const directionsHref = hasPartnerLocation ? `/partner-map/?partner=${encodeURIComponent(partner.id)}&return=${encodeURIComponent(returnPath)}` : '';
     const links = dialog.querySelector('[data-live-links]');
     const volunteerHref = participationHref(partner.volunteerUrl);
     const websiteHref = String(partner.website || '').trim();
